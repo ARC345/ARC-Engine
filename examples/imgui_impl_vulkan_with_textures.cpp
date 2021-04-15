@@ -842,6 +842,8 @@ void ImGui_ImplVulkan_Shutdown()
 
     // Clean up windows
     ImGui_ImplVulkan_ShutdownPlatformInterface();
+
+	ImGui_ImplVulkan_ClearCache();
 }
 
 void ImGui_ImplVulkan_NewFrame()
@@ -1296,6 +1298,11 @@ ImTextureID ImGui_ImplVulkan_UpdateTextureInfo(VkDescriptorSet descriptorSet, Vk
         vkUpdateDescriptorSets(v->Device, 1, write_desc, 0, NULL);
     }
     return (ImTextureID)descriptorSet;
+}
+
+void ImGui_ImplVulkan_ClearCache()
+{
+    s_VulkanCache.clear();
 }
 
 void ImGui_ImplVulkanH_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator)
