@@ -49,6 +49,8 @@
 #include "imgui_impl_vulkan_with_textures.h"
 #include <stdio.h>
 
+#include "Hazel/Platform/Vulkan/VulkanRenderer.h"
+
 // Reusable buffers used for rendering 1 current in-flight frame, for ImGui_ImplVulkan_RenderDrawData()
 // [Please zero-clear before use!]
 struct ImGui_ImplVulkanH_FrameRenderBuffers
@@ -109,6 +111,8 @@ void ImGui_ImplVulkanH_DestroyWindowRenderBuffers(VkDevice device, ImGui_ImplVul
 void ImGui_ImplVulkanH_DestroyAllViewportsRenderBuffers(VkDevice device, const VkAllocationCallbacks* allocator);
 void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, VkDevice device, ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count);
 void ImGui_ImplVulkanH_CreateWindowCommandBuffers(VkPhysicalDevice physical_device, VkDevice device, ImGui_ImplVulkanH_Window* wd, uint32_t queue_family, const VkAllocationCallbacks* allocator);
+
+ImTextureID ImGui_ImplVulkan_AddTexture_Internal(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout);
 
 //-----------------------------------------------------------------------------
 // SHADERS
@@ -507,7 +511,7 @@ bool ImGui_ImplVulkan_CreateFontsTexture(VkCommandBuffer command_buffer)
         check_vk_result(err);
     }
 
-    VkDescriptorSet font_descriptor_set = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture(g_FontSampler, g_FontView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+    VkDescriptorSet font_descriptor_set = (VkDescriptorSet)ImGui_ImplVulkan_AddTexture_Internal(g_FontSampler, g_FontView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
     // Create the Upload Buffer:
     {
@@ -1249,55 +1253,55 @@ struct VkDetails
 
 static std::unordered_map<void*, VkDetails> s_VulkanCache;
 
-ImTextureID ImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout) {
-    VkResult err;
+ImTextureID ImGui_ImplVulkan_AddTexture(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout)
+{
+    ImGui_ImplVulkan_InitInfo* v = &g_VulkanInitInfo;
 
-    if (s_VulkanCache.find((void*)image_view) == s_VulkanCache.end())
-    {
-        VkDetails& vulkanDetails = s_VulkanCache[(void*)image_view];
-        vulkanDetails.sampler = sampler;
-        vulkanDetails.image_view = image_view;
-        vulkanDetails.image_layout = image_layout;
+    VkDescriptorSetAllocateInfo alloc_info = {};
+    alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    alloc_info.descriptorSetCount = 1;
+    alloc_info.pSetLayouts = &g_DescriptorSetLayout;
 
-        ImGui_ImplVulkan_InitInfo* v = &g_VulkanInitInfo;
-        VkDescriptorSet descriptor_set;
-        // Create Descriptor Set:
-        {
-            VkDescriptorSetAllocateInfo alloc_info = {};
-            alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-            alloc_info.descriptorPool = v->DescriptorPool;
-            alloc_info.descriptorSetCount = 1;
-            alloc_info.pSetLayouts = &g_DescriptorSetLayout;
-            err = vkAllocateDescriptorSets(v->Device, &alloc_info, &descriptor_set);
-            check_vk_result(err);
-        }
+    VkDescriptorSet descriptor_set = Hazel::VulkanRenderer::RT_AllocateDescriptorSet(alloc_info);
+    ImGui_ImplVulkan_UpdateTextureInfo(descriptor_set, sampler, image_view, image_layout);
+    return (ImTextureID)descriptor_set;
+}
 
-        vulkanDetails.descriptor_set = descriptor_set;
-    }
+ImTextureID ImGui_ImplVulkan_AddTexture_Internal(VkSampler sampler, VkImageView image_view, VkImageLayout image_layout)
+{
+    ImGui_ImplVulkan_InitInfo* v = &g_VulkanInitInfo;
 
-    VkDetails& vulkanDetails = s_VulkanCache.at((void*)image_view);
-    ImGui_ImplVulkan_UpdateTextureInfo(vulkanDetails.descriptor_set, vulkanDetails.sampler, vulkanDetails.image_view, vulkanDetails.image_layout);
+    VkDescriptorSetAllocateInfo alloc_info = {};
+    alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    alloc_info.descriptorPool = v->DescriptorPool;
+    alloc_info.descriptorSetCount = 1;
+    alloc_info.pSetLayouts = &g_DescriptorSetLayout;
+    VkDescriptorSet descriptor_set;
+    VkResult err = vkAllocateDescriptorSets(v->Device, &alloc_info, &descriptor_set);
+    check_vk_result(err);
 
-    return (ImTextureID)vulkanDetails.descriptor_set;
+    ImGui_ImplVulkan_UpdateTextureInfo(descriptor_set, sampler, image_view, image_layout);
+    return (ImTextureID)descriptor_set;
 }
 
 ImTextureID ImGui_ImplVulkan_UpdateTextureInfo(VkDescriptorSet descriptorSet, VkSampler sampler, VkImageView image_view, VkImageLayout image_layout)
 {
     ImGui_ImplVulkan_InitInfo* v = &g_VulkanInitInfo;
-    // Update the Descriptor Set:
-    {
-        VkDescriptorImageInfo desc_image[1] = {};
-        desc_image[0].sampler = sampler;
-        desc_image[0].imageView = image_view;
-        desc_image[0].imageLayout = image_layout;
-        VkWriteDescriptorSet write_desc[1] = {};
-        write_desc[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        write_desc[0].dstSet = descriptorSet;
-        write_desc[0].descriptorCount = 1;
-        write_desc[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        write_desc[0].pImageInfo = desc_image;
-        vkUpdateDescriptorSets(v->Device, 1, write_desc, 0, NULL);
-    }
+
+    VkDescriptorImageInfo desc_image = {};
+    desc_image.sampler = sampler;
+    desc_image.imageView = image_view;
+    desc_image.imageLayout = image_layout;
+
+    VkWriteDescriptorSet write_desc = {};
+    write_desc.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write_desc.dstSet = descriptorSet;
+    write_desc.descriptorCount = 1;
+    write_desc.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    write_desc.pImageInfo = &desc_image;
+
+    vkUpdateDescriptorSets(v->Device, 1, &write_desc, 0, NULL);
+
     return (ImTextureID)descriptorSet;
 }
 
