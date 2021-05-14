@@ -111,8 +111,8 @@ static void ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
 
 void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (g_PrevUserCallbackMousebutton != NULL && window == g_Window)
-        g_PrevUserCallbackMousebutton(window, button, action, mods);
+    if (g_PrevUserCallbackMousebutton != NULL)
+        g_PrevUserCallbackMousebutton(g_Window, button, action, mods);
 
     if (action == GLFW_PRESS && button >= 0 && button < IM_ARRAYSIZE(g_MouseJustPressed))
         g_MouseJustPressed[button] = true;
@@ -120,8 +120,8 @@ void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int acti
 
 void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    if (g_PrevUserCallbackScroll != NULL && window == g_Window)
-        g_PrevUserCallbackScroll(window, xoffset, yoffset);
+    if (g_PrevUserCallbackScroll != NULL)
+        g_PrevUserCallbackScroll(g_Window, xoffset, yoffset);
 
     ImGuiIO& io = ImGui::GetIO();
     io.MouseWheelH += (float)xoffset;
@@ -130,8 +130,8 @@ void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yo
 
 void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (g_PrevUserCallbackKey != NULL && window == g_Window)
-        g_PrevUserCallbackKey(window, key, scancode, action, mods);
+    if (g_PrevUserCallbackKey != NULL)
+        g_PrevUserCallbackKey(g_Window, key, scancode, action, mods);
 
     ImGuiIO& io = ImGui::GetIO();
     if (action == GLFW_PRESS)
