@@ -1,3 +1,11 @@
+# Directories
+ARC-Engine/.vs/
+ARC-Engine/_bin/
+ARC-Engine/_int/
+
+#files
+*.user
+
 # Prerequisites
 *.d
 

@@ -1,0 +1,3 @@
+[submodule "ARC-Engine\\ARC-Engine\\vendor\\spdlog"]
+	path = ARC-Engine\\ARC-Engine\\vendor\\spdlog
+	url = https://github.com/gabime/spdlog/

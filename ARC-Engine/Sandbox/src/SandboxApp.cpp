@@ -1,4 +1,3 @@
-#include "ARC.h"
 #include <ARC.h>
 
 namespace ARC
@@ -8,6 +7,8 @@ namespace ARC
 	public:
 		CSandbox() = default;
 		~CSandbox() = default;
+
+		inline virtual std::string GetAppName() override { return "Sandbox"; };
 	};
 
 	Core::CApplication* Core::CreateApplication()
