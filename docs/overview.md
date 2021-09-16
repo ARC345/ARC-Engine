@@ -145,12 +145,31 @@ but you can convert that to pixel coordinates with a simple scaling
 factor. You can then use those pixel coordinates to place your sprites,
 etc. You can also account for flipped coordinate axes.
 
+Another limitation to consider is overall world size. If your world units
+become larger than 2 kilometers or so, then the lost precision can affect
+stability.
+
+> **Caution**: 
+> Box2D works best with world sizes less than 2 kilometers. Use
+> b2World::ShiftOrigin to support larger worlds.
+
+If you need to have a larger game world, consider using
+b2World::ShiftOrigin to keep the world origin close to your player. I recommend
+to use grid lines along with some hysteresis for triggering calls to ShiftOrigin.
+This call should be made infrequently because it is has CPU cost. You may
+need to store a physics offset when translating between game units and Box2D units.
+
 Box2D uses radians for angles. The body rotation is stored in radians
 and may grow unbounded. Consider normalizing the angle of your bodies if
-the magnitude of the angle becomes too large (use b2Body::SetAngle).
+the magnitude of the angle becomes too large (use `b2Body::SetTransform`).
 
 > **Caution**:
 > Box2D uses radians, not degrees.
+
+## Changing the length units
+Advanced users may change the length unit modifying `b2_lengthUnitsPerMeter`.
+You can avoid merge conflicts by defining `B2_USER_SETTINGS` and providing
+`b2_user_settings.h`. See the file `b2_settings.h` for details.
 
 ## Factories and Definitions
 Fast memory management plays a central role in the design of the Box2D
