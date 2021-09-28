@@ -2,7 +2,7 @@
 #include "Core.h"
 #include "spdlog/spdlog.h"
 #include <memory>
-#include "../Helpers/helpers.h"
+#include "Helpers/helpers.h"
 
 namespace ARC
 {
@@ -12,8 +12,8 @@ namespace ARC
 		static int Init();
 		//inline static void SetPattern(std::string& newPattern, pattern_time_type newTimeType = pattern_time_type::local ){ spdlog::set_pattern(newPattern, newTimeType);};
 	public:
-		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; };
-		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_ClientLogger; };
+		static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; };
+		static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_ClientLogger; };
 	private:
 		static std::shared_ptr<spdlog::logger> m_CoreLogger;
 		static std::shared_ptr<spdlog::logger> m_ClientLogger;
@@ -26,7 +26,7 @@ namespace ARC
 #define ARC_CORE_ERROR(...) ::ARC::CLog::GetCoreLogger()->error(__VA_ARGS__)
 #define ARC_CORE_FATAL(...) ::ARC::CLog::GetCoreLogger()->critical(__VA_ARGS__)
 
-#define ARC_TRACE(...) ::ARC::CLog::GetClientLogger()->error(__VA_ARGS__)
+#define ARC_TRACE(...) ::ARC::CLog::GetClientLogger()->trace(__VA_ARGS__)
 #define ARC_INFO(...)  ::ARC::CLog::GetClientLogger()->info(__VA_ARGS__)
 #define ARC_WARN(...)  ::ARC::CLog::GetClientLogger()->warn(__VA_ARGS__)
 #define ARC_ERROR(...) ::ARC::CLog::GetClientLogger()->error(__VA_ARGS__)

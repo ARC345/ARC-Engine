@@ -1,48 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ARC">
-      <UniqueIdentifier>{3BD2870B-A7DB-877C-3057-9E7C9C5F937C}</UniqueIdentifier>
+    <Filter Include="Runtime">
+      <UniqueIdentifier>{4995DAC4-B574-5960-BE8C-E4362AEBBFC1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Helpers">
-      <UniqueIdentifier>{D8389B9D-4418-1A39-4D30-A50FB98E809A}</UniqueIdentifier>
+    <Filter Include="Runtime\Events">
+      <UniqueIdentifier>{0D55BC06-F922-B00C-E2B6-2033CE238C71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Helpers">
+      <UniqueIdentifier>{0B7F0D9E-770A-7B62-801B-FE56EC25D762}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Runtime\Types">
+      <UniqueIdentifier>{AD6BE88C-192C-64C3-E266-AD404EE6A89F}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ARC.h" />
     <ClInclude Include="src\Runtime\Application.h">
-      <Filter>ARC</Filter>
+      <Filter>Runtime</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Core.h">
-      <Filter>ARC</Filter>
+      <Filter>Runtime</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\EntryPoint.h">
-      <Filter>ARC</Filter>
+      <Filter>Runtime</Filter>
     </ClInclude>
-    <ClInclude Include="src\Runtime\Log.h">
-      <Filter>ARC</Filter>
+    <ClInclude Include="src\Runtime\Events\Event.h">
+      <Filter>Runtime\Events</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Helpers\DllHelpers_Macros.h">
-      <Filter>Helpers</Filter>
+      <Filter>Runtime\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Runtime\Helpers\Enum.h">
+      <Filter>Runtime\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Helpers\Helpers.h">
-      <Filter>Helpers</Filter>
+      <Filter>Runtime\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Helpers\Macros.h">
-      <Filter>Helpers</Filter>
+      <Filter>Runtime\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Runtime\Log.h">
+      <Filter>Runtime</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Types\vector.h">
-      <Filter>Helpers</Filter>
+      <Filter>Runtime\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\Runtime\Helpers\Enum.h" />
-    <ClInclude Include="src\Runtime\Events\Event.h" />
+    <ClInclude Include="src\Runtime\Types\array.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Runtime\Application.cpp">
-      <Filter>ARC</Filter>
+      <Filter>Runtime</Filter>
     </ClCompile>
     <ClCompile Include="src\Runtime\Log.cpp">
-      <Filter>ARC</Filter>
+      <Filter>Runtime</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
 #include "Application.h"
+#include "Types\vector.h"
+#include "Log.h"
 
 namespace ARC
 {
@@ -16,9 +18,9 @@ namespace ARC
 
 		void CApplication::Run()
 		{
+			ARC_TRACE("xD");
 			while (1)
 			{
-
 			}
 		}	
 	}

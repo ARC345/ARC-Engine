@@ -3,17 +3,15 @@ typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef unsigned long ulong;
 
-namespace ARC::Math
+namespace ARC
 {
-	struct FVec
+	namespace Base
 	{
-	FVec(){};
-	protected:
-		virtual constexpr size_t GetSize() const =0;
-	};
+		struct FVec_Base : public FContainer{};
+	}
 
 	template <size_t N, typename T = float>
-	struct FVecX : public FVec
+	struct FVecX : public Base::FVec_Base
 	{
 		FVecX() : m_Data(){};
 		FVecX(const FVecX<N, T>& x)
@@ -41,39 +39,6 @@ namespace ARC::Math
 		{
 			return m_Data[x];
 		};
-// 
-// 		FVecX<N, T> operator +(const FVecX<N,T>& x)
-// 		{
-// 			FVecX<N, T> rval;
-// 			for (uint _x=0; x<=N; _x++)
-// 			{
-// 				rval[_x] = this[_x] + x[_x];
-// 			}
-// 			return rval;
-// 		};
-// 		float* operator +(const float*& x)
-// 		{
-// 			float* rval;
-// 			for (uint _x=0; x<=N; _x++)
-// 			{
-// 				rval[_x] = this[_x] + x[_x];
-// 			}
-// 			return rval;
-// 		};
-// 		void operator +=(const FVecX<N,T>& x)
-// 		{
-// 			for (uint _x=0; _x<=N; _x++)
-// 			{
-// 				this[_x] += x[_x];
-// 			}
-// 		};
-// 		void operator +=(const float*& x)
-// 		{
-// 			for (uint _x = 0; x <= N; _x++)
-// 			{
-// 				this[_x] += x[_x];
-// 			}
-// 		};
 
 		__forceinline T* Data() {return m_Data;}
 		__forceinline const T* Data() const {return m_Data;}
@@ -95,12 +60,11 @@ namespace ARC::Math
 		{
 			this->Set(tx, ty);
 		}
-		__forceinline T& x() {return Data()[0];};
-		__forceinline T& y() {return Data()[1];};
+		T& const x() {return Data()[0];};
+		T& const y() {return Data()[1];};
 
-		__forceinline T* Data() {return Super::Data();};
-		__forceinline const T* Data() const {return Super::Data();};
-
+		T* Data() {return Super::Data();};
+		const T* Data() const {return Super::Data();};
 
 		inline void Set(const T& tx, const T& ty) { x() = tx; y() = ty; };
 	};
@@ -119,6 +83,7 @@ namespace ARC::Math
 		T& x() { return Data()[0]; };
 		T& y() { return Data()[1]; };
 		T& z() { return Data()[2]; };
+
 		__forceinline T* Data() { return Super::Data(); };
 		__forceinline const T* Data() const { return Super::Data(); };
 
@@ -136,15 +101,15 @@ namespace ARC::Math
 			this->Set(tw, tx, ty, tz);
 		}
 
-		T& w() { return Data()[0]; };
-		T& x() { return Data()[1]; };
-		T& y() { return Data()[2]; };
-		T& z() { return Data()[3]; };
+		T& w() const { return Data()[0]; };
+		T& x() const { return Data()[1]; };
+		T& y() const { return Data()[2]; };
+		T& z() const { return Data()[3]; };
 		
-		T& r() { return w(); };
-		T& g() { return x(); };
-		T& b() { return y(); };
-		T& a() { return z(); };
+		T& r() const { return w(); };
+		T& g() const { return x(); };
+		T& b() const { return y(); };
+		T& a() const { return z(); };
 
 		__forceinline T* Data() { return Super::Data(); };
 
