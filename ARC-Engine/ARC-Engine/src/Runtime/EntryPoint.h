@@ -8,7 +8,7 @@ extern ARC::Core::CApplication* ARC::Core::CreateApplication();
 int main(int p_ArgA, char** p_ArgB)
 {	
 	printf("----Starting-ARC----\n");
-	
+
 	//-------------------Log-Init-------------------//
 	printf("----Initializing-Logger----\n");
 	bool bInitLogger = ARC::CLog::Init();

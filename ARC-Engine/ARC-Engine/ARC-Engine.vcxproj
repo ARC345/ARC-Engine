@@ -148,11 +148,12 @@
     <ClInclude Include="src\Runtime\Core.h" />
     <ClInclude Include="src\Runtime\EntryPoint.h" />
     <ClInclude Include="src\Runtime\Events\Event.h" />
-    <ClInclude Include="src\Runtime\Helpers\Enum.h" />
-    <ClInclude Include="src\Runtime\Log.h" />
     <ClInclude Include="src\Runtime\Helpers\DllHelpers_Macros.h" />
+    <ClInclude Include="src\Runtime\Helpers\Enum.h" />
     <ClInclude Include="src\Runtime\Helpers\Helpers.h" />
     <ClInclude Include="src\Runtime\Helpers\Macros.h" />
+    <ClInclude Include="src\Runtime\Log.h" />
+    <ClInclude Include="src\Runtime\Types\array.h" />
     <ClInclude Include="src\Runtime\Types\vector.h" />
   </ItemGroup>
   <ItemGroup>
