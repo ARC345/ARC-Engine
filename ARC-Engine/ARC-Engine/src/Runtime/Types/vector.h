@@ -1,4 +1,5 @@
 #pragma once
+#include "container.h"
 typedef unsigned int uint;
 typedef unsigned char uchar;
 typedef unsigned long ulong;
@@ -43,10 +44,11 @@ namespace ARC
 		__forceinline T* Data() {return m_Data;}
 		__forceinline const T* Data() const {return m_Data;}
 
-		virtual constexpr size_t GetSize() const override {return N;}		
+		virtual __forceinline const size_t& GetSize() const override {return N;}
 
 	private:
 		T m_Data[N];
+		constexpr size_t m_Size = N;
 
 	};
 

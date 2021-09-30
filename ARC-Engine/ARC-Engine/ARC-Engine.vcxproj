@@ -154,6 +154,7 @@
     <ClInclude Include="src\Runtime\Helpers\Macros.h" />
     <ClInclude Include="src\Runtime\Log.h" />
     <ClInclude Include="src\Runtime\Types\array.h" />
+    <ClInclude Include="src\Runtime\Types\container.h" />
     <ClInclude Include="src\Runtime\Types\vector.h" />
   </ItemGroup>
   <ItemGroup>

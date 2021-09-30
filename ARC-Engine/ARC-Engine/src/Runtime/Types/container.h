@@ -11,8 +11,7 @@ namespace ARC
 		struct FContainer
 		{
 			FContainer() {};
-		protected:
-			virtual constexpr [[nodiscard]] size_t GetSize() const = 0;
+			virtual __forceinline const size_t& GetSize() const = 0;
 		};
 	}
 }

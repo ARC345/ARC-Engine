@@ -47,6 +47,7 @@
       <Filter>Runtime\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\Runtime\Types\array.h" />
+    <ClInclude Include="src\Runtime\Types\container.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Runtime\Application.cpp">
