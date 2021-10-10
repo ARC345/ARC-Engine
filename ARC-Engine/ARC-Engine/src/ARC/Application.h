@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Core.h"
 #include <string>
 
@@ -13,7 +14,7 @@ namespace ARC{
 			void Run();
 
 			inline virtual std::string GetAppName() =0; 
-			inline std::string GetEngineName() {return "ARC-Engine";}; 
+			inline class std::string GetEngineName() {return "ARC-Engine";}; 
 		};
 
 		//Defined in client

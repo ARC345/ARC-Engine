@@ -1,6 +1,8 @@
+#include "arc_pch.h"
 #include "Application.h"
 #include "Types\vector.h"
 #include "Log.h"
+#include "Events\ApplicationEvent.h"
 
 namespace ARC
 {
@@ -18,7 +20,9 @@ namespace ARC
 
 		void CApplication::Run()
 		{
-			ARC_TRACE("xD");
+			CWindowResizeEvent e(1280, 720);
+			ARC_TRACE(e.ToString());
+
 			while (1)
 			{
 			}

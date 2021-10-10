@@ -17,7 +17,9 @@ project "ARC-Engine"
 
 	targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("_int/" .. outputdir .. "/%{prj.name}")
-
+	
+	pchheader "arc_pch.h"
+	pchsource "%{prj.name}/src/PCH/arc_pch.cpp"
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -26,10 +28,10 @@ project "ARC-Engine"
 
 	includedirs
 	{
-		"%{prj.name}/vendor",
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/src",
+		"%{prj.name}/out/spdlog/include"
 	}
-
+	
 	filter "system:windows"
 		cppdialect "C++17"
 		staticruntime "On"
@@ -73,8 +75,7 @@ project "Sandbox"
 	includedirs
 	{
 		"ARC-Engine/src",
-		"ARC-Engine/vendor",
-		"ARC-Engine/vendor/spdlog/include"
+		"ARC-Engine/out/spdlog/include"
 	}
 
 	links
