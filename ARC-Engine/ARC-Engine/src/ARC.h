@@ -4,8 +4,8 @@
 
 #include <stdio.h> // @todo replace with logging lib
 
-#include "Runtime/Application.h"
-#include "Runtime/Log.h"
+#include "ARC/Application.h"
+#include "ARC/Log.h"
 //--------EntryPoint-----------------
-#include "Runtime/EntryPoint.h"
+#include "ARC/EntryPoint.h"
 //-----------------------------------
