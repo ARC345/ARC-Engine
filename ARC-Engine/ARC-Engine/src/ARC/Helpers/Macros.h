@@ -9,3 +9,5 @@
 #define COMBINE4(a,b,c,d) a##b##c##d
 #define COMBINE3(a,b,c) a##b##c
 #define COMBINE2(a,b) a##b
+
+#define BIND_FUNC(x) std::bind(x, this, std::placeholders::_1)

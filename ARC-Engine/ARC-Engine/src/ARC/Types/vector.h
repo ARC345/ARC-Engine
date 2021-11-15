@@ -64,8 +64,8 @@ namespace ARC
 		{
 			this->Set(tx, ty);
 		}
-		T& const x() {return Data()[0];};
-		T& const y() {return Data()[1];};
+		T& const x()  { return Data()[0]; };
+		T& const y()  { return Data()[1]; };
 
 		inline void Set(const T& tx, const T& ty) { x() = tx; y() = ty; };
 	};

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Core.h"
+#include "../Core.h"
 
-#include "Helpers/Enum.h"
-#include "Helpers/Macros.h"
+#include "../Helpers/Enum.h"
+#include "../Helpers/Macros.h"
 
 #include "PCH/arc_pch.h"
+#include "../Helpers/Helpers.h"
 
 namespace ARC {
 	enum class EEventType
@@ -27,7 +28,7 @@ namespace ARC {
 		EET_MouseButtonPressed,
 		EET_MouseButtonReleased,
 		EET_MouseMoved,
-		EET_MouseReleased
+		EET_MouseScrolled
 	};
 	enum EEventCategory
 	{
@@ -47,9 +48,9 @@ namespace ARC {
 
 	class ARC_API CEvent
 	{
-		friend class EventDispatcher;
+		friend class CEventDispatcher;
 	public:
-		CEvent() : m_Handled(0) {}
+		CEvent() : bHandled(0) {}
 	
 		virtual EEventType GetEventType() const = 0;
 		virtual uint GetCategoryFlags() const = 0;
@@ -63,8 +64,8 @@ namespace ARC {
 		inline bool IsInCategory(EEventCategory category) {
 			return GetCategoryFlags() & category;
 		}
-	protected:
-		uint m_Handled : 1;
+
+		uint bHandled : 1;
 	};
 
 	class CEventDispatcher
@@ -78,9 +79,9 @@ namespace ARC {
 		template<typename T>
 		bool Dispatch(EventFn<T> p_Func)
 		{
-			if (m_Event.GetEventType == T::StaticType())
+			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.m_Handled = p_Func(*(T*)&m_Event);
+				m_Event.bHandled = p_Func(*(T*)&m_Event);
 				return true;
 			}
 			return false;
@@ -88,8 +89,9 @@ namespace ARC {
 	private:
 		CEvent& m_Event;
 	};
-	std::ostream& operator<<(std::ostream& os, const CEvent& e)
-	{
-		return os << e.ToString();
-	}
+	
+	//std::ostream& operator<<(std::ostream& os, const CEvent& e)
+	//{
+	//	return os << e.ToString();
+	//}
 }
