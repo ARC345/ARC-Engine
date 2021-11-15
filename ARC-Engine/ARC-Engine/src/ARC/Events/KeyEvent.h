@@ -1,5 +1,5 @@
 #pragma once
-#include "Events/Event.h"
+#include "Event.h"
 
 namespace ARC {
 
@@ -18,8 +18,9 @@ namespace ARC {
 	{
 		public:
 			CKeyPressedEvent(int p_KeyCode, uint p_RepeatCount) : 
-				m_KeyCode(p_KeyCode), 
-				m_RepeatCount() {}
+				m_RepeatCount() {
+					m_KeyCode = p_KeyCode;
+				}
 		
 			virtual std::string ToString() const override {
 				std::stringstream ss;
@@ -33,8 +34,10 @@ namespace ARC {
 	class ARC_API CKeyReleasedEvent : public CKeyEvent
 	{
 		public:
-			CKeyPressedEvent(int p_KeyCode) : 
-				m_KeyCode(p_KeyCode){}
+			CKeyReleasedEvent(int p_KeyCode)
+			{
+				m_KeyCode = p_KeyCode;
+			}
 
 			virtual std::string ToString() const override {
 				std::stringstream ss;

@@ -10,11 +10,17 @@
     <Filter Include="ARC\Helpers">
       <UniqueIdentifier>{FD8DD989-6943-527F-F237-4C565EEC4883}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ARC\Layers">
+      <UniqueIdentifier>{9A38CC3B-86F0-0D89-EFF7-E6E4DBCEA879}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ARC\Types">
       <UniqueIdentifier>{1F1620CC-8B80-D442-D4BE-85E84068B297}</UniqueIdentifier>
     </Filter>
     <Filter Include="PCH">
       <UniqueIdentifier>{2010880B-8C19-887C-1595-9E7C819D937C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +58,12 @@
     <ClInclude Include="src\ARC\Helpers\Macros.h">
       <Filter>ARC\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Layers\Layer.h">
+      <Filter>ARC\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Layers\LayerStack.h">
+      <Filter>ARC\Layers</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Log.h">
       <Filter>ARC</Filter>
     </ClInclude>
@@ -64,13 +76,27 @@
     <ClInclude Include="src\ARC\Types\vector.h">
       <Filter>ARC\Types</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Window.h">
+      <Filter>ARC</Filter>
+    </ClInclude>
     <ClInclude Include="src\PCH\arc_pch.h">
       <Filter>PCH</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\WindowsWindow.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
+    <ClInclude Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ARC\Application.cpp">
       <Filter>ARC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Layers\Layer.cpp">
+      <Filter>ARC\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Layers\LayerStack.cpp">
+      <Filter>ARC\Layers</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Log.cpp">
       <Filter>ARC</Filter>
@@ -78,5 +104,10 @@
     <ClCompile Include="src\PCH\arc_pch.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\WindowsWindow.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.cpp" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include "Types/vector.h"
+#include "../Types/vector.h"
 
 namespace ARC {
 	class ARC_API CWindowResizeEvent : public CEvent
