@@ -98,6 +98,11 @@ namespace ARC{
 				}
 			}
 		});
+		glfwSetCharCallback(m_Window, [](GLFWwindow* _window, uint _keycode) {
+			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			CKeyTypedEvent _event(_keycode);
+			Data.EventCallback(_event);
+			});
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* _window, int _button, int _action, int _mods) {
 			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
 			switch (_action)
@@ -121,8 +126,8 @@ namespace ARC{
 		});
  		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* _window, double _xpos, double _ypos) {
 			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
-			CMouseMovedEvent event((float)_xpos, (float)_ypos);
-			Data.EventCallback(event);
+			CMouseMovedEvent _event((float)_xpos, (float)_ypos);
+			Data.EventCallback(_event);
 		});
 	}
 

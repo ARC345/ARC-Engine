@@ -39,7 +39,6 @@ namespace ARC
 		{
 			CEventDispatcher dispatcher(_e);
 			dispatcher.Dispatch<CWindowCloseEvent>(BIND_FUNC(&CApplication::OnWindowClose));
-			ARC_CORE_TRACE("{0}", _e.ToString());
 
 			for (auto it = m_LayerStack.end(); it!= m_LayerStack.begin();)
 			{

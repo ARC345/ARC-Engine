@@ -4,6 +4,11 @@
 #include "GLFW/glfw3.h"
 #include "../Application.h"
 #include "../Window.h"
+#include "../Events/Event.h"
+#include "../Events/MouseEvent.h"
+#include "../Events/KeyEvent.h"
+#include "../Events/ApplicationEvent.h"
+#include "glad/glad.h"
 
 namespace ARC {
 	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")
@@ -78,5 +83,71 @@ namespace ARC {
 
 	void ImGuiLayer::OnEvent(CEvent& _event)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		switch (_event.GetEventType())
+		{
+		case EEventType::EET_MouseButtonPressed: {
+			CMouseButtonPressedEvent* x = (CMouseButtonPressedEvent*)&_event;
+			io.MouseDown[x->GetMouseButton()] = true;
+			break;
+			}
+		case EEventType::EET_MouseButtonReleased: {
+			CMouseButtonReleasedEvent* x = (CMouseButtonReleasedEvent*)&_event;
+			io.MouseDown[x->GetMouseButton()] = false;
+			break;
+			}
+		case EEventType::EET_MouseMoved: {
+			CMouseMovedEvent* x = (CMouseMovedEvent*)&_event;
+			io.MousePos = ImVec2(x->GetX(), x->GetY());
+			break;
+
+			}
+		case EEventType::EET_MouseScrolled: {
+			CMouseScrolledEvent* x = (CMouseScrolledEvent*)&_event;
+			io.MouseWheel += x->GetYOffset();
+			io.MouseWheelH += x->GetXOffset();
+			break;
+
+			}
+		case EEventType::EET_KeyPressed: {
+			CKeyPressedEvent* x = (CKeyPressedEvent*)&_event;
+
+			if (x->GetKeyCode() >= 0 && x->GetKeyCode() < IM_ARRAYSIZE(io.KeysDown))
+				io.KeysDown[x->GetKeyCode()] = true;
+			
+			// Modifiers are not reliable across systems
+			io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+			io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+			io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+#ifdef _WIN32
+			io.KeySuper = false;
+#else
+			io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+#endif
+			break;
+
+			}
+		case EEventType::EET_KeyReleased: {
+			CKeyReleasedEvent* x = (CKeyReleasedEvent*)&_event;
+
+			if (x->GetKeyCode() >= 0 && x->GetKeyCode() < IM_ARRAYSIZE(io.KeysDown))
+				io.KeysDown[x->GetKeyCode()]=false;
+			break;
+
+			}
+		case EEventType::EET_WindowResize: {
+			CWindowResizeEvent* x = (CWindowResizeEvent*)&_event;
+			io.DisplaySize = ImVec2(x->GetX(), x->GetY());
+			io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+			glViewport(0,0, x->GetX(), x->GetY());
+			break;
+			}
+		case EEventType::EET_KeyTyped: {
+			CKeyTypedEvent* x = (CKeyTypedEvent*)&_event;
+			io.AddInputCharacter(x->GetKeyCode());
+			break;
+			}
+		}
 	}
 }

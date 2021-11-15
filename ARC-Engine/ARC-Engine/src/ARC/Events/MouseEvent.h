@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.h"
+#include "..\Types\vector.h"
 
 namespace ARC {
 	class ARC_API CMouseMovedEvent : public CEvent
@@ -8,7 +9,8 @@ namespace ARC {
 		CMouseMovedEvent(FVec2<float> p_MouseXY) :
 			m_MouseXY(p_MouseXY) {}
 		CMouseMovedEvent(float p_MouseX, float p_MouseY) :
-			m_MouseXY(FVec2<float>(p_MouseY, p_MouseY)) {}
+			m_MouseXY(FVec2<float>(p_MouseX, p_MouseY)) {
+			}
 
 		inline FVec2<float> GetXY() const {return m_MouseXY;};
 		inline float GetX() const {return m_MouseXY[0];};
