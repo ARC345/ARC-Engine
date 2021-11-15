@@ -46,4 +46,19 @@ namespace ARC {
 			}
 			EVENT_CLASS_TYPE(KeyReleased);
 	};
+	class ARC_API CKeyTypedEvent : public CKeyEvent
+	{
+		public:
+			CKeyTypedEvent(int p_KeyCode)
+			{
+				m_KeyCode = p_KeyCode;
+			}
+
+			virtual std::string ToString() const override {
+				std::stringstream ss;
+				ss << GetName() << " [" << m_KeyCode << "]";
+				return ss.str();
+			}
+			EVENT_CLASS_TYPE(KeyTyped);
+	};
 }

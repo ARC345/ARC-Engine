@@ -24,6 +24,7 @@ namespace ARC {
 
 		EET_KeyPressed,
 		EET_KeyReleased,
+		EET_KeyTyped,
 		
 		EET_MouseButtonPressed,
 		EET_MouseButtonReleased,
