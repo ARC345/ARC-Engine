@@ -2,6 +2,7 @@
 #include "ARC\Events\Event.h"
 #include "SandboxApp.h"
 #include "ARC\GUI\ImGuiLayer.h"
+#include "ARC\Helpers\Helpers.h"
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
 {
@@ -17,7 +18,7 @@ void ExampleLayer::OnUpdate()
 
 void ExampleLayer::OnEvent(ARC::CEvent& _event)
 {
-	ARC_TRACE("{0}", _event.ToString());
+	ARC_TRACE("{0}", _event);
 }
 //-------------------[Layer]----------------------//
 

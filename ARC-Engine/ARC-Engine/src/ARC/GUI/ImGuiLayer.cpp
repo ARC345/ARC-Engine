@@ -11,25 +11,17 @@
 #include "glad/glad.h"
 
 namespace ARC {
-	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")
-	{
-		
-	}
-
-	ImGuiLayer::~ImGuiLayer()
-	{
-
-	}
-
+	ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer") {}
+	ImGuiLayer::~ImGuiLayer() {}
+	
 	void ImGuiLayer::OnAttach()
 	{
 		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
+		ImGui::StyleColorsClassic();
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
-
 
 		// TEMPORARY: should eventually use ARC key codes
 		io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;

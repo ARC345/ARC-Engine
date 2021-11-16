@@ -7,6 +7,7 @@
 
 #include "PCH/arc_pch.h"
 #include "../Helpers/Helpers.h"
+#include <spdlog/fmt/ostr.h>
 
 namespace ARC {
 	enum class EEventType
@@ -90,9 +91,8 @@ namespace ARC {
 	private:
 		CEvent& m_Event;
 	};
-	
-	//std::ostream& operator<<(std::ostream& os, const CEvent& e)
-	//{
-	//	return os << e.ToString();
-	//}
+
+	inline std::ostream& operator<<(std::ostream& os, const CEvent& e) {
+		return os << e.ToString();
+	}
 }
