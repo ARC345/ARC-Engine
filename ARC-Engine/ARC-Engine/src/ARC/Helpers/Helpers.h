@@ -1,5 +1,8 @@
 #pragma once
 #include "macros.h"
+#include <iosfwd>
+
+namespace ARC { class CEvent; }
 #define OUT
 
 using uint = unsigned int;

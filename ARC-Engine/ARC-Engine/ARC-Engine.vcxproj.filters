@@ -109,5 +109,6 @@
     </ClCompile>
     <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.cpp" />
+    <ClCompile Include="src\ARC\Helpers\Helpers.cpp" />
   </ItemGroup>
 </Project>
