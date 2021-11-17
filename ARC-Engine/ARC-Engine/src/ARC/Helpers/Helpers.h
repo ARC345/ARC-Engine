@@ -17,4 +17,7 @@ namespace ARC {
 // 			return BitField & T;
 // 		}
  	}
+	namespace INP {
+
+	}
 }

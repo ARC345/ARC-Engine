@@ -13,12 +13,10 @@ ARC::Core::CApplication* ARC::Core::CreateApplication()
 //-------------------[Layer]----------------------//
 void ExampleLayer::OnUpdate()
 {
-	ARC_INFO("ExampleLayer::Update");
 }
 
 void ExampleLayer::OnEvent(ARC::CEvent& _event)
 {
-	ARC_TRACE("{0}", _event);
 }
 //-------------------[Layer]----------------------//
 

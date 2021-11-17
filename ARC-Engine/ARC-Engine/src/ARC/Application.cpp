@@ -5,6 +5,7 @@
 #include "Events\ApplicationEvent.h"
 #include "Window.h"
 #include "glad\glad.h"
+#include "Input\Input.h"
 
 namespace ARC
 {
@@ -14,7 +15,7 @@ namespace ARC
 		
 		CApplication::CApplication() : m_bRunning(1u)
 		{
-			ARC_CORE_ASSERT(s_instance, "Application already exists")
+			ARC_CORE_ASSERT(!s_instance, "Application already exists")
 			s_instance= this;
 			m_Window = std::unique_ptr<Window>(Window::Create());
 			m_Window->SetEventCallback(BIND_FUNC(&CApplication::OnEvent));
@@ -31,6 +32,9 @@ namespace ARC
 
 				for (Layer* layer : m_LayerStack)
 					layer->OnUpdate();
+
+				ARC_CORE_TRACE("{0}", CInput::GetMouseXY());
+
 				m_Window->OnUpdate();
 			}
 		}

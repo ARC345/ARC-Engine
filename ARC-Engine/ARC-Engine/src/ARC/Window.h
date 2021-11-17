@@ -27,6 +27,8 @@ namespace ARC {
 		virtual void SetVSync(bool _bEnabled) = 0;
 		virtual bool IsVSync() const = 0;
 
+		virtual void* GetNativeWindow() const = 0;
+
 		static Window* Create(const WindowProps& _props = WindowProps());
 	};
 }

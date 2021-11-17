@@ -8,7 +8,7 @@ namespace ARC
 		{
 			FContainer() {};
 
-			virtual __forceinline const char* GetName() const = 0;
+			virtual const char* GetName() const = 0;
 		};
 	}
 }
