@@ -80,11 +80,10 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;ARC_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/MDd %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -94,7 +93,7 @@
       <ImportLibrary>..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Debug-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Debug-windows-x86_64\Sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Debug-windows-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Debug-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Debug-windows-x86_64\Sandbox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -103,14 +102,13 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;ARC_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -121,7 +119,7 @@
       <ImportLibrary>..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Release-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Release-windows-x86_64\Sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Release-windows-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Release-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Release-windows-x86_64\Sandbox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -130,14 +128,13 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;ARC_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalOptions>/MD %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -148,11 +145,11 @@
       <ImportLibrary>..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>IF EXIST ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Dist-windows-x86_64\Sandbox &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll ..\_bin\Dist-windows-x86_64\Sandbox &gt; nul)</Command>
+      <Command>IF EXIST ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll\ (xcopy /Q /E /Y /I ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Dist-windows-x86_64\Sandbox\" &gt; nul) ELSE (xcopy /Q /Y /I ..\_bin\Dist-windows-x86_64\ARC-Engine\ARC-Engine.dll "..\_bin\Dist-windows-x86_64\Sandbox\" &gt; nul)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
+    <ClInclude Include="CWindowsInput.h" />
     <ClInclude Include="src\ARC.h" />
     <ClInclude Include="src\ARC\Application.h" />
     <ClInclude Include="src\ARC\Core.h" />
@@ -161,10 +158,13 @@
     <ClInclude Include="src\ARC\Events\Event.h" />
     <ClInclude Include="src\ARC\Events\KeyEvent.h" />
     <ClInclude Include="src\ARC\Events\MouseEvent.h" />
+    <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\ARC\Helpers\DllHelpers_Macros.h" />
     <ClInclude Include="src\ARC\Helpers\Enum.h" />
     <ClInclude Include="src\ARC\Helpers\Helpers.h" />
     <ClInclude Include="src\ARC\Helpers\Macros.h" />
+    <ClInclude Include="src\ARC\Input\Input.h" />
+    <ClInclude Include="src\ARC\Input\KeyCodes.h" />
     <ClInclude Include="src\ARC\Layers\Layer.h" />
     <ClInclude Include="src\ARC\Layers\LayerStack.h" />
     <ClInclude Include="src\ARC\Log.h" />
@@ -177,8 +177,9 @@
     <ClInclude Include="src\Platform\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
+    <ClCompile Include="CWindowsInput.cpp" />
     <ClCompile Include="src\ARC\Application.cpp" />
+    <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\ARC\Helpers\Helpers.cpp" />
     <ClCompile Include="src\ARC\Layers\Layer.cpp" />
     <ClCompile Include="src\ARC\Layers\LayerStack.cpp" />

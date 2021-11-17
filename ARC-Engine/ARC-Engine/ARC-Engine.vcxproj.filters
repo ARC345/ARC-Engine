@@ -7,6 +7,9 @@
     <Filter Include="ARC\Events">
       <UniqueIdentifier>{BF4DE92C-AB05-2B7A-140D-04D600E4C56A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ARC\GUI">
+      <UniqueIdentifier>{CF766753-3B56-E6EE-446E-71C5B0CC4C50}</UniqueIdentifier>
+    </Filter>
     <Filter Include="ARC\Helpers">
       <UniqueIdentifier>{FD8DD989-6943-527F-F237-4C565EEC4883}</UniqueIdentifier>
     </Filter>
@@ -21,6 +24,9 @@
     </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\OpenGl">
+      <UniqueIdentifier>{3E7D2C1D-AA08-9AE1-B319-1DD61F24F6E1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +51,9 @@
     </ClInclude>
     <ClInclude Include="src\ARC\Events\MouseEvent.h">
       <Filter>ARC\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\GUI\ImGuiLayer.h">
+      <Filter>ARC\GUI</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Helpers\DllHelpers_Macros.h">
       <Filter>ARC\Helpers</Filter>
@@ -82,15 +91,25 @@
     <ClInclude Include="src\PCH\arc_pch.h">
       <Filter>PCH</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.h">
+      <Filter>Platform\OpenGl</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
-    <ClInclude Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.h" />
+    <ClInclude Include="src\ARC\Input\Input.h" />
+    <ClInclude Include="CWindowsInput.h" />
+    <ClInclude Include="src\ARC\Input\KeyCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ARC\Application.cpp">
       <Filter>ARC</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp">
+      <Filter>ARC\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Helpers\Helpers.cpp">
+      <Filter>ARC\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Layers\Layer.cpp">
       <Filter>ARC\Layers</Filter>
@@ -104,11 +123,12 @@
     <ClCompile Include="src\PCH\arc_pch.cpp">
       <Filter>PCH</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.cpp">
+      <Filter>Platform\OpenGl</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
-    <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGlRenderer.cpp" />
-    <ClCompile Include="src\ARC\Helpers\Helpers.cpp" />
+    <ClCompile Include="CWindowsInput.cpp" />
   </ItemGroup>
 </Project>

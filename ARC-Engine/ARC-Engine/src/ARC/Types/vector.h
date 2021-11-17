@@ -2,9 +2,22 @@
 #include "container.h"
 #include <type_traits>
 #include "../Helpers/Helpers.h"
+#include <string>
 
 namespace ARC
 {
+	template <size_t N, typename T = float>
+	class FVecX;
+	
+	template <size_t N, typename T = float>
+	std::ostream& operator<<(std::ostream& os, const FVecX<N, T>& e)
+	{
+		os << "[";
+		for (uint a = 0; a < N; a++)
+			os << e[a] << ((a != N - 1) ? ", " : "]");
+		return os;
+	}
+
 	namespace Base
 	{
 		struct ARC_API FVec_Base : public FContainer{};
@@ -16,10 +29,8 @@ namespace ARC
 		FVecX() : m_Data(){};
 		FVecX(const FVecX<N, T>& x)
 		{
-			for (uint a=0;a<=N;a++ )
-			{
-				m_Data[a]=x[a];
-			};
+			for (uint a=0;a<N;a++ )
+				m_Data[a] = x[a];
 		};
 		FVecX(const T* x)
 		{
@@ -44,9 +55,12 @@ namespace ARC
 		__forceinline const T* Data() const {return m_Data;}
 
 		virtual constexpr size_t GetSize() const { return N; }
-		virtual __forceinline const char* GetName() const override {
-			return "FVecX";
+		virtual const char* GetName() const override {
+			std::stringstream ss;
+			ss << "FVec";
+			return ss.str().c_str();
 		}
+		friend std::ostream& operator<< <>(std::ostream& os, const FVecX<N,T>& e);
 
 	private:
 		T m_Data[N];
@@ -110,4 +124,5 @@ namespace ARC
 
 		inline void Set(const T& tw, const T& tx, const T& ty, const T& tz) { w()=tw, x() = tx; y() = ty; z() = tz;};
 	};
+
 };

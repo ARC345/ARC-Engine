@@ -35,6 +35,11 @@ namespace ARC{
 		m_Data.bVSync = _bEnabled;
 	}
 
+	void* WindowsWindow::GetNativeWindow() const
+	{
+		return m_Window;
+	}
+
 	Window* Window::Create(const WindowProps& _props /*= WindowProps()*/)
 	{
 		return new WindowsWindow(_props);
