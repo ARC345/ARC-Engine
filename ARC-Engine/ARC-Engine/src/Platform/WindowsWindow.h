@@ -4,12 +4,12 @@
 #include "GLFW/glfw3.h"
 
 namespace ARC{
-	class WindowsWindow : public Window
+	class CWindowsWindow : public CWindow
 	 {
 		/*--------------FUNCS--------------*/
 		public:
-			WindowsWindow(const WindowProps& _props);
-			virtual ~WindowsWindow();
+			CWindowsWindow(const SWindowProps& _props);
+			virtual ~CWindowsWindow();
 
 			void OnUpdate() override;
 
@@ -25,7 +25,7 @@ namespace ARC{
 
 		protected:
 		private:
-			virtual void Init(const WindowProps& _props);
+			virtual void Init(const SWindowProps& _props);
 			virtual void Shutdown();
 		/*---------------------------------*/
 	

@@ -6,12 +6,12 @@ namespace ARC {
 	class ARC_API CWindowResizeEvent : public CEvent
 	{
 	public:
-		CWindowResizeEvent(FVec2<float>& p_Dimentions) :
+		CWindowResizeEvent(TVec2<int>& p_Dimentions) :
 			m_Dimentions(p_Dimentions) {}
-		CWindowResizeEvent(float p_DimentionsX, float p_DimentionsY) :
-			m_Dimentions(FVec2<float>(p_DimentionsX, p_DimentionsY)) {}
+		CWindowResizeEvent(int p_DimentionsX, int p_DimentionsY) :
+			m_Dimentions(TVec2<int>(p_DimentionsX, p_DimentionsY)) {}
 
-		inline FVec2<float> GetXY() const { return m_Dimentions; };
+		inline TVec2<int> GetXY() const { return m_Dimentions; };
 		inline float GetX() const { return GetXY().x(); };
 		inline float GetY() const { return GetXY().y(); };
 
@@ -25,7 +25,7 @@ namespace ARC {
 		EVENT_CLASS_TYPE(WindowResize)
 
 	private:
-		FVec2<float> m_Dimentions;
+		TVec2<int> m_Dimentions;
 	};
 	
 	class ARC_API CWindowCloseEvent : public CEvent

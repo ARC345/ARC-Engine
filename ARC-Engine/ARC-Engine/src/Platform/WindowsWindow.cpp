@@ -13,39 +13,39 @@ namespace ARC{
 	{
 		ARC_CORE_ERROR("GLFW Error ({0}): {1}", _error, _description);
 	};
-	WindowsWindow::WindowsWindow(const WindowProps& _props)
+	CWindowsWindow::CWindowsWindow(const SWindowProps& _props)
 	{
 		Init(_props);
 	}
 
-	WindowsWindow::~WindowsWindow()
+	CWindowsWindow::~CWindowsWindow()
 	{
 		Shutdown();
 	}
 
-	void WindowsWindow::OnUpdate()
+	void CWindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_Window);
 	}
 
-	void WindowsWindow::SetVSync(bool _bEnabled)
+	void CWindowsWindow::SetVSync(bool _bEnabled)
 	{
 		glfwSwapInterval(_bEnabled);
 		m_Data.bVSync = _bEnabled;
 	}
 
-	void* WindowsWindow::GetNativeWindow() const
+	void* CWindowsWindow::GetNativeWindow() const
 	{
 		return m_Window;
 	}
 
-	Window* Window::Create(const WindowProps& _props /*= WindowProps()*/)
+	CWindow* CWindow::Create(const SWindowProps& _props /*= WindowProps()*/)
 	{
-		return new WindowsWindow(_props);
+		return new CWindowsWindow(_props);
 	}
 
-	void WindowsWindow::Init(const WindowProps& _props)
+	void CWindowsWindow::Init(const SWindowProps& _props)
 	{
 		m_Data.Title = _props.Title;
 		m_Data.Width = _props.Width;
@@ -136,7 +136,7 @@ namespace ARC{
 		});
 	}
 
-	void WindowsWindow::Shutdown()
+	void CWindowsWindow::Shutdown()
 	{
 		glfwDestroyWindow(m_Window);
 	}

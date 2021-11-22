@@ -4,15 +4,16 @@
 namespace ARC {
 	class CEvent;
 
-	class ARC_API Layer
+	class ARC_API CLayer
 	{
 	public:
-		Layer(const std::string& _name="Layer");
-		virtual ~Layer();
+		CLayer(const std::string& _name="Layer");
+		virtual ~CLayer();
 
 		virtual void OnAttach(){}
-		virtual void OnDeattach(){}
+		virtual void OnDetach(){}
 		virtual void OnUpdate(){}
+		virtual void OnGuiRender(){}
 		virtual void OnEvent(CEvent& _event){}
 
 		inline const std::string& GetName() const { return m_DebugName; }

@@ -17,7 +17,9 @@ namespace ARC
 		{
 			ARC_CORE_ASSERT(!s_instance, "Application already exists")
 			s_instance= this;
-			m_Window = std::unique_ptr<Window>(Window::Create());
+			m_Window = std::unique_ptr<CWindow>(CWindow::Create());
+			m_ImGuiLayer = new CImGuiLayer();
+			PushOverlay(m_ImGuiLayer);
 			m_Window->SetEventCallback(BIND_FUNC(&CApplication::OnEvent));
 		}
 
@@ -30,11 +32,13 @@ namespace ARC
 				glClearColor(1, 0, 1, 1);
 				glClear(GL_COLOR_BUFFER_BIT);
 
-				for (Layer* layer : m_LayerStack)
+				for (CLayer* layer : m_LayerStack)
 					layer->OnUpdate();
-
-				ARC_CORE_TRACE("{0}", CInput::GetMouseXY());
-
+					
+				m_ImGuiLayer->Begin();
+				for (CLayer* layer : m_LayerStack)
+					layer->OnGuiRender();
+				m_ImGuiLayer->End();
 				m_Window->OnUpdate();
 			}
 		}
@@ -51,12 +55,12 @@ namespace ARC
 			}
 		}
 
-		void CApplication::PushLayer(Layer* _layer)
+		void CApplication::PushLayer(CLayer* _layer)
 		{
 			m_LayerStack.PushLayer(_layer);
 			_layer->OnAttach();
 		}
-		void CApplication::PushOverlay(Layer* _overlay)
+		void CApplication::PushOverlay(CLayer* _overlay)
 		{
 			m_LayerStack.PushOverlay(_overlay);
 			_overlay->OnAttach();

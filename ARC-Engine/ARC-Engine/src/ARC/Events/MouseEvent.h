@@ -6,13 +6,13 @@ namespace ARC {
 	class ARC_API CMouseMovedEvent : public CEvent
 	{
 	public:
-		CMouseMovedEvent(FVec2<float> p_MouseXY) :
+		CMouseMovedEvent(TVec2<float> p_MouseXY) :
 			m_MouseXY(p_MouseXY) {}
 		CMouseMovedEvent(float p_MouseX, float p_MouseY) :
-			m_MouseXY(FVec2<float>(p_MouseX, p_MouseY)) {
+			m_MouseXY(TVec2<float>(p_MouseX, p_MouseY)) {
 			}
 
-		inline FVec2<float> GetXY() const {return m_MouseXY;};
+		inline TVec2<float> GetXY() const {return m_MouseXY;};
 		inline float GetX() const {return m_MouseXY[0];};
 		inline float GetY() const {return m_MouseXY[1];};
 
@@ -26,16 +26,16 @@ namespace ARC {
 		EVENT_CLASS_TYPE(MouseMoved)
 
 	private:
-		FVec2<float> m_MouseXY;
+		TVec2<float> m_MouseXY;
 	};
 
 	class ARC_API CMouseScrolledEvent : public CEvent
 	{
 		public:
-			CMouseScrolledEvent(FVec2<float> p_Offset) :
+			CMouseScrolledEvent(TVec2<float> p_Offset) :
 				m_Offset(p_Offset) {}
 			CMouseScrolledEvent(float p_OffsetX, float p_OffsetY) :
-				m_Offset(FVec2<float>(p_OffsetY, p_OffsetY)) {}
+				m_Offset(TVec2<float>(p_OffsetY, p_OffsetY)) {}
 		
 			virtual std::string ToString() const override {
 				std::stringstream ss;
@@ -43,14 +43,14 @@ namespace ARC {
 				return ss.str();
 			}
 
-			inline FVec2<float> GetOffset() const { return m_Offset; }
+			inline TVec2<float> GetOffset() const { return m_Offset; }
 			inline float GetXOffset() const { return m_Offset[0]; }
 			inline float GetYOffset() const { return m_Offset[1]; }
 
 			EVENT_CLASS_CATEGORY(EEC_Mouse | EEC_Input)
 			EVENT_CLASS_TYPE(MouseScrolled)
 		private: 
-			FVec2<float> m_Offset;
+			TVec2<float> m_Offset;
 	};
 
 	class ARC_API CMouseButtonEvent : public CEvent
