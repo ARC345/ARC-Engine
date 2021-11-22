@@ -1,5 +1,6 @@
 #pragma once
 #include "Application.h"
+#include "Types\TybeBase.h"
 
 #ifdef ARC_PLATFORM_WINDOWS
 

@@ -2,6 +2,8 @@
 #include "macros.h"
 #include <iosfwd>
 
+namespace ARC { namespace Core { class CApplication; } }
+
 namespace ARC { class CEvent; }
 #define OUT
 

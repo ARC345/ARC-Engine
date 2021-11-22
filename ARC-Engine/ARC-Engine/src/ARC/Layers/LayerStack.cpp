@@ -5,34 +5,34 @@
 namespace ARC {
 	LayerStack::LayerStack()
 	{
-		m_LayerInsert = m_Layers.begin();
 	}
 
 	LayerStack::~LayerStack()
 	{
-		for(Layer* layer : m_Layers) delete layer;
+		for(CLayer* layer : m_Layers) delete layer;
 	}
 
-	void LayerStack::PushLayer(Layer* _layer)
+	void LayerStack::PushLayer(CLayer* _layer)
 	{
-		m_LayerInsert = m_Layers.emplace(m_LayerInsert, _layer);
+		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, _layer);
+		++m_LayerInsertIndex;
 	}
 
-	void LayerStack::PushOverlay(Layer* _overlay)
+	void LayerStack::PushOverlay(CLayer* _overlay)
 	{
 		m_Layers.emplace_back(_overlay);
 	}
 
-	void LayerStack::PopLayer(Layer* _layer)
+	void LayerStack::PopLayer(CLayer* _layer)
 	{
 		auto it = std::find(m_Layers.begin(), m_Layers.end(), _layer);
 		if (it != m_Layers.end()) {
 			m_Layers.erase(it);
-			m_LayerInsert--;
+			--m_LayerInsertIndex;
 		}
 	}
 
-	void LayerStack::PopOverlay(Layer* _overlay)
+	void LayerStack::PopOverlay(CLayer* _overlay)
 	{
 		auto it = std::find(m_Layers.begin(), m_Layers.end(), _overlay);
 		if (it != m_Layers.end()) {

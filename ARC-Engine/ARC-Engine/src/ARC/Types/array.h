@@ -1,21 +1,21 @@
 #pragma once
-#include "container.h"
+#include "TybeBase.h"
 
 namespace ARC
 {
 	namespace Base
 	{
-		struct FArray_Base : public FContainer{};
+		struct FArray_Base : public TTypeBase{};
 	}
 
 	template <typename T>
-	struct FArray : public FArray_Base
+	struct TArray : public FArray_Base
 	{
 		/*--------------FUNCS--------------*/
 		public:
-			FArray(size_t p_cap = 5u) : m_Cap(p_cap);
-			~FArray();
-			FArray(const FArray& p_obj)
+			TArray(size_t p_cap = 5u) : m_Cap(p_cap);
+			~TArray();
+			TArray(const TArray& p_obj)
 
 			T& operator[](const size_t p_index)
 

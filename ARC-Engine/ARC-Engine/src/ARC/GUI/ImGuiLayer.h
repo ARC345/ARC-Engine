@@ -2,16 +2,20 @@
 #include "ARC\Layers\Layer.h"
 
 namespace ARC {
-	class ARC_API ImGuiLayer : public Layer
+	class ARC_API CImGuiLayer : public CLayer
 	{
 	public:
-		ImGuiLayer();
-		~ImGuiLayer();
+		CImGuiLayer();
+		~CImGuiLayer();
 
-		void OnAttach() override;
-		void OnDeattach() override;
-		void OnUpdate() override;
-		void OnEvent(CEvent& _event) override;
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnGuiRender() override;
+
+		void Begin();
+		void End();
+
+
 	private:
 		float m_Time = 0.f;
 	};

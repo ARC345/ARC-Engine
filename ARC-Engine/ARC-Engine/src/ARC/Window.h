@@ -5,19 +5,19 @@
 namespace ARC { class CEvent; }
 
 namespace ARC {
-	struct WindowProps {
+	struct SWindowProps {
 		std::string Title;
 		unsigned int Width;
 		unsigned int Height;
 
-		WindowProps(const std::string& _title = "ARC-Engine", unsigned int _width = 1280, unsigned int _height = 720) : Title(_title), Width(_width), Height(_height){}
+		SWindowProps(const std::string& _title = "ARC-Engine", unsigned int _width = 1280, unsigned int _height = 720) : Title(_title), Width(_width), Height(_height){}
 	};
 
-	class Window {
+	class CWindow {
 	public:
 		using EventCallbackFn = std::function<void(CEvent&)>;
 
-		virtual ~Window() {}
+		virtual ~CWindow() {}
 		virtual void OnUpdate() = 0;
 
 		virtual unsigned int GetWidth() const = 0;
@@ -29,6 +29,6 @@ namespace ARC {
 
 		virtual void* GetNativeWindow() const = 0;
 
-		static Window* Create(const WindowProps& _props = WindowProps());
+		static CWindow* Create(const SWindowProps& _props = SWindowProps());
 	};
 }

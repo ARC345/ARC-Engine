@@ -9,15 +9,15 @@ namespace ARC {
 		LayerStack();
 		~LayerStack();
 
-		void PushLayer(Layer* _layer);
-		void PushOverlay(Layer* _overlay);
-		void PopLayer(Layer* _layer);
-		void PopOverlay(Layer* _overlay);
+		void PushLayer(CLayer* _layer);
+		void PushOverlay(CLayer* _overlay);
+		void PopLayer(CLayer* _layer);
+		void PopOverlay(CLayer* _overlay);
 
-		std::vector<Layer*>::iterator begin() { return m_Layers.begin(); }
-		std::vector<Layer*>::iterator end() { return m_Layers.end(); }
+		std::vector<CLayer*>::iterator begin() { return m_Layers.begin(); }
+		std::vector<CLayer*>::iterator end() { return m_Layers.end(); }
 	private:
-		std::vector<Layer*> m_Layers;
-		std::vector<Layer*>::iterator m_LayerInsert;
+		std::vector<CLayer*> m_Layers;
+		unsigned int m_LayerInsertIndex=0;
 	};
 }

@@ -6,12 +6,13 @@
 
 #include <string>
 #include <memory>
+#include "GUI\ImGuiLayer.h"
 
 namespace ARC { class CWindowCloseEvent; }
 namespace ARC { class CEvent; }
 
 namespace ARC{
-	class Window;
+	class CWindow;
 	namespace Core{
 		class ARC_API CApplication
 		{
@@ -22,10 +23,10 @@ namespace ARC{
 			void Run();
 			void OnEvent(CEvent& _e);
 
-			void PushLayer(Layer* _layer);
-			void PushOverlay(Layer* _overlay);
+			void PushLayer(CLayer* _layer);
+			void PushOverlay(CLayer* _overlay);
 			
-			inline Window& GetWindow() const { return *m_Window; }
+			inline CWindow& GetWindow() const { return *m_Window; }
 
 			inline static CApplication& Get() { return *s_instance; }
 			inline virtual std::string GetAppName() =0; 
@@ -34,7 +35,8 @@ namespace ARC{
 			bool OnWindowClose(CWindowCloseEvent& _e);
 		
 		private:
-			std::unique_ptr<Window> m_Window;
+			std::unique_ptr<CWindow> m_Window;
+			CImGuiLayer* m_ImGuiLayer;
 			unsigned int m_bRunning : 1;
 			LayerStack m_LayerStack;
 

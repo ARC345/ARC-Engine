@@ -1,5 +1,6 @@
 #pragma once
-#include "container.h"
+
+#include "TybeBase.h"
 #include <type_traits>
 #include "../Helpers/Helpers.h"
 #include <string>
@@ -7,10 +8,10 @@
 namespace ARC
 {
 	template <size_t N, typename T = float>
-	class FVecX;
+	class TVecX;
 	
 	template <size_t N, typename T = float>
-	std::ostream& operator<<(std::ostream& os, const FVecX<N, T>& e)
+	std::ostream& operator<<(std::ostream& os, const TVecX<N, T>& e)
 	{
 		os << "[";
 		for (uint a = 0; a < N; a++)
@@ -20,26 +21,27 @@ namespace ARC
 
 	namespace Base
 	{
-		struct ARC_API FVec_Base : public FContainer{};
+		struct ARC_API TVec_Base : public TTypeBase{};
 	}
 
 	template <size_t N, typename T = float>
-	struct ARC_API FVecX : public Base::FVec_Base
+	class ARC_API TVecX : public Base::TVec_Base
 	{
-		FVecX() : m_Data(){};
-		FVecX(const FVecX<N, T>& x)
+	public:
+		TVecX() : m_Data() {};
+		TVecX(const TVecX<N, T>& x)
 		{
 			for (uint a=0;a<N;a++ )
 				m_Data[a] = x[a];
 		};
-		FVecX(const T* x)
+		TVecX(const T* x)
 		{
 			for (uint a=0;a<=N;a++ )
 			{
 				m_Data[a]=x[a];
 			};
 		};
-		FVecX(T Data[N])
+		TVecX(T Data[N])
 			: m_Data(Data)
 		{}
 		T& operator[](size_t x)
@@ -55,12 +57,7 @@ namespace ARC
 		__forceinline const T* Data() const {return m_Data;}
 
 		virtual constexpr size_t GetSize() const { return N; }
-		virtual const char* GetName() const override {
-			std::stringstream ss;
-			ss << "FVec";
-			return ss.str().c_str();
-		}
-		friend std::ostream& operator<< <>(std::ostream& os, const FVecX<N,T>& e);
+		friend std::ostream& operator<< <>(std::ostream& os, const TVecX<N,T>& e);
 
 	private:
 		T m_Data[N];
@@ -69,12 +66,13 @@ namespace ARC
 	};
 
 	template <typename T = float>
-	struct ARC_API FVec2 : public FVecX<2,T>
+	class ARC_API TVec2 : public TVecX<2,T>
 	{
-		using Super = FVecX<2,T>;
+	public:
+		using Super = TVecX<2, T>;
 
-		FVec2() {}
-		FVec2(const T& tx, const T& ty)
+		TVec2() {}
+		TVec2(const T& tx, const T& ty)
 		{
 			this->Set(tx, ty);
 		}
@@ -85,29 +83,31 @@ namespace ARC
 	};
 
 	template <typename T = float>
-	struct ARC_API FVec3 : public FVecX<3,T>
+	class ARC_API TVec3 : public TVecX<3,T>
 	{
-		using Super = FVecX<3, T>;
+	public:
+		using Super = TVecX<3, T>;
 
-		FVec3(){}
-		FVec3(const T& tx, const T& ty, const T& tz)
+		TVec3(){}
+		TVec3(const T& tx, const T& ty, const T& tz)
 		{
 			this->Set(tx, ty, tz);
 		}
 
-		T& x() { return Data()[0]; };
-		T& y() { return Data()[1]; };
-		T& z() { return Data()[2]; };
+		T* x = &Data()[0];
+		T* y = &Data()[1];
+		T* z = &Data()[2];
 
-		inline void Set(const T& tx, const T& ty, const T& tz) { x() = tx; y() = ty; z() = tz;};
+		inline void Set(const T& tx, const T& ty, const T& tz) { *x = tx; *y = ty; *z = tz;};
 	};
 	template <typename T = float>
-	struct ARC_API FVec4 : public FVecX<4, T>
+	class ARC_API TVec4 : public TVecX<4, T>
 	{
-		using Super = FVecX<4, T>;
+	public:
+		using Super = TVecX<4, T>;
 		
-		FVec4() {}
-		FVec4(const T& tw, const T& tx, const T& ty, const T& tz)
+		TVec4() {}
+		TVec4(const T& tw, const T& tx, const T& ty, const T& tz)
 		{
 			this->Set(tw, tx, ty, tz);
 		}

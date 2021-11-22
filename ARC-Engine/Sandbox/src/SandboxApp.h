@@ -1,15 +1,18 @@
 #pragma once
 #include <string>
 #include "ARC\Application.h"
+#include "ARC\Layers\Layer.h"
 
 namespace ARC { class CEvent; }
 
-class ExampleLayer : public ARC::Layer
+class CExampleLayer : public ARC::CLayer
 {
 public:
-	ExampleLayer() : ARC::Layer("Example"){}
+	CExampleLayer() : ARC::CLayer("Example"){}
 	void OnUpdate() override;
 	void OnEvent(ARC::CEvent& _event) override;
+
+	void OnGuiRender() override;
 };
 
 class CSandbox : public ARC::Core::CApplication

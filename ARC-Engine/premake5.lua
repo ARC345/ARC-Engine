@@ -14,6 +14,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
+IncludeDir["glm"] = "ARC-Engine/out/glm"
 
 group "Dependencies"
 	include "ARC-Engine/out/GLFW"
@@ -34,7 +35,9 @@ project "ARC-Engine"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/out/glm/glm/**.hpp",
+		"%{prj.name}/out/glm/glm/**.inl"
 	}
 
 	includedirs
@@ -43,7 +46,8 @@ project "ARC-Engine"
 		"%{prj.name}/out/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.glm}"
 	}
 
 	links
@@ -101,7 +105,8 @@ project "Sandbox"
 	includedirs
 	{
 		"ARC-Engine/src",
-		"ARC-Engine/out/spdlog/include"
+		"ARC-Engine/out/spdlog/include",
+		"ARC-Engine/out"
 	}
 
 	links
