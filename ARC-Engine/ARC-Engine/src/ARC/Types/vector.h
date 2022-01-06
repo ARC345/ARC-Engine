@@ -24,7 +24,7 @@ namespace ARC
 		struct ARC_API TVec_Base : public TTypeBase{};
 	}
 
-	template <size_t N, typename T = float>
+	template <size_t N, typename T>
 	class ARC_API TVecX : public Base::TVec_Base
 	{
 	public:
@@ -76,8 +76,8 @@ namespace ARC
 		{
 			this->Set(tx, ty);
 		}
-		T& const x()  { return Data()[0]; };
-		T& const y()  { return Data()[1]; };
+		T& x() { return Data()[0]; };
+		T& y() { return Data()[1]; };
 
 		inline void Set(const T& tx, const T& ty) { x() = tx; y() = ty; };
 	};

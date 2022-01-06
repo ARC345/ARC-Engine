@@ -3,6 +3,8 @@
 #include "ARC/Window.h"
 #include "GLFW/glfw3.h"
 
+namespace ARC { class CGraphicsContext; }
+
 namespace ARC{
 	class CWindowsWindow : public CWindow
 	 {
@@ -34,7 +36,7 @@ namespace ARC{
 		protected:
 		private:
 			GLFWwindow* m_Window;
-
+			CGraphicsContext* m_Context;
 			struct WindowData
 			{
 				std::string Title;

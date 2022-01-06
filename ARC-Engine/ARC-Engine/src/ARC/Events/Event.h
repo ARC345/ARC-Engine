@@ -34,12 +34,12 @@ namespace ARC {
 	};
 	enum EEventCategory
 	{
-		EEC_None = 0,
-		EEC_Application = SBIT(0),
-		EEC_Input		= SBIT(1),
-		EEC_Keyboard	= SBIT(2),
-		EEC_Mouse		= SBIT(3),
-		EEC_MouseButton	= SBIT(4)
+		None = 0,
+		Application = SBIT(0),
+		Input		= SBIT(1),
+		Keyboard	= SBIT(2),
+		Mouse		= SBIT(3),
+		MouseButton	= SBIT(4)
 	};
 	#define EVENT_CLASS_TYPE(type) \
 		static EEventType GetStaticType() {return EEventType::COMBINE2(EET_, type);}\
@@ -74,6 +74,7 @@ namespace ARC {
 	{
 		template<typename T>
 		using EventFn = std::function<bool(T&)>;
+		
 
 	public:
 		CEventDispatcher(CEvent& p_Event) : m_Event(p_Event) {}

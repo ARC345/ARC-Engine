@@ -12,8 +12,8 @@ namespace ARC {
 			m_Dimentions(TVec2<int>(p_DimentionsX, p_DimentionsY)) {}
 
 		inline TVec2<int> GetXY() const { return m_Dimentions; };
-		inline float GetX() const { return GetXY().x(); };
-		inline float GetY() const { return GetXY().y(); };
+		inline int GetX() const { return GetXY().x(); };
+		inline int GetY() const { return GetXY().y(); };
 
 		virtual std::string ToString() const override {
 			std::stringstream ss;
@@ -21,7 +21,7 @@ namespace ARC {
 			return ss.str();
 		}
 
-		EVENT_CLASS_CATEGORY(EEC_Application)
+		EVENT_CLASS_CATEGORY(Application)
 		EVENT_CLASS_TYPE(WindowResize)
 
 	private:
@@ -33,7 +33,7 @@ namespace ARC {
 	public:
 		CWindowCloseEvent(){}
 
-		EVENT_CLASS_CATEGORY(EEC_Application)
+		EVENT_CLASS_CATEGORY(Application)
 		EVENT_CLASS_TYPE(WindowClose)
 	};
 	
@@ -42,7 +42,7 @@ namespace ARC {
 	public:
 		CAppTick(){}
 
-		EVENT_CLASS_CATEGORY(EEC_Application)
+		EVENT_CLASS_CATEGORY(Application)
 		EVENT_CLASS_TYPE(AppTick)
 	};
 	
@@ -51,7 +51,7 @@ namespace ARC {
 	public:
 		CAppUpdate(){}
 
-		EVENT_CLASS_CATEGORY(EEC_Application)
+		EVENT_CLASS_CATEGORY(Application)
 		EVENT_CLASS_TYPE(AppUpdate)
 	};
 	
@@ -60,7 +60,7 @@ namespace ARC {
 	public:
 		CAppRender(){}
 
-		EVENT_CLASS_CATEGORY(EEC_Application)
+		EVENT_CLASS_CATEGORY(Application)
 		EVENT_CLASS_TYPE(AppRender)
 	};
 }

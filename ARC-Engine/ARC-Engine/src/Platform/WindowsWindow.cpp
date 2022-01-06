@@ -5,10 +5,12 @@
 #include "ARC\Events\ApplicationEvent.h"
 #include "ARC\Events\KeyEvent.h"
 #include "ARC\Events\MouseEvent.h"
+
 #include "glad\glad.h"
+#include "OpenGl\OpenGLContext.h"
 
 namespace ARC{ 
-	static bool s_bGLFWInitialized = 0;
+	static bool s_bGLFWInitialized = false;
 	static void GLFWErrorCallback(int _error, const char* _description)
 	{
 		ARC_CORE_ERROR("GLFW Error ({0}): {1}", _error, _description);
@@ -26,7 +28,7 @@ namespace ARC{
 	void CWindowsWindow::OnUpdate()
 	{
 		glfwPollEvents();
-		glfwSwapBuffers(m_Window);
+		m_Context->SwapBuffers();
 	}
 
 	void CWindowsWindow::SetVSync(bool _bEnabled)
@@ -61,10 +63,9 @@ namespace ARC{
 		}
 
 		m_Window = glfwCreateWindow((int)_props.Width, (int)_props.Height, _props.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(m_Window);
 
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		ARC_CORE_ASSERT(status, "Failed to load GLAD!")
+		m_Context = new COpenGLContext(m_Window);
+		m_Context->Init();
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 		SetVSync(true);

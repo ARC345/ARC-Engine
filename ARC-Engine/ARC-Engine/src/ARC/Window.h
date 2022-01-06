@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ARC/Core.h"
+#include <functional>
 
 namespace ARC { class CEvent; }
 

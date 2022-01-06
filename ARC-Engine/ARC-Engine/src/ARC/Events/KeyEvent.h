@@ -9,7 +9,7 @@ namespace ARC {
 		public:
 			inline int GetKeyCode() const { return m_KeyCode; }
 
-			EVENT_CLASS_CATEGORY(EEC_Keyboard | EEC_Input)
+			EVENT_CLASS_CATEGORY(Keyboard | Input)
 		protected:
 			CKeyEvent() : m_KeyCode(0) {}
 			int m_KeyCode = 0;

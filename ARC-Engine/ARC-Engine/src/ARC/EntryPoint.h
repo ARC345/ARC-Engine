@@ -32,7 +32,7 @@ int main(int p_ArgA, char** p_ArgB)
 	//-----------------RunLoop-Ended----------------//
 	
 	//-------------Application-Deleting-------------//
-	ARC_CORE_INFO("----Deleting-Application----");
+	ARC_CORE_INFO("----Destroying-Application-[]----");
 	delete App;
 	ARC_CORE_INFO("----Application-Destroyed-Successfully----");
 	//--------------Application-Deleted-------------//
