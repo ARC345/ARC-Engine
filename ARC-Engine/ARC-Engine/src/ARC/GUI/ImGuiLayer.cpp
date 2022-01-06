@@ -64,7 +64,7 @@ namespace ARC {
 	void CImGuiLayer::End()
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(ARC::Core::CApplication::Get().GetWindow().GetWidth(), ARC::Core::CApplication::Get().GetWindow().GetHeight());
+		io.DisplaySize = ImVec2((float)ARC::Core::CApplication::Get().GetWindow().GetWidth(), (float)ARC::Core::CApplication::Get().GetWindow().GetHeight());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -81,6 +81,6 @@ namespace ARC {
 	void CImGuiLayer::OnGuiRender()
 	{
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		//ImGui::ShowDemoWindow(&show);
 	}
 }

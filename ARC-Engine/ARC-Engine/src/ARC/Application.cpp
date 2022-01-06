@@ -6,21 +6,32 @@
 #include "Window.h"
 #include "glad\glad.h"
 #include "Input\Input.h"
+#include "Renderer\Shader.h"
+#include "Buffer\Buffer.h"
+#include "Renderer\VertexArray.h"
+#include "Renderer\Renderer.h"
+#include "GUI\ImGuiLayer.h"
 
 namespace ARC
 {
 	namespace Core
 	{
-		CApplication* CApplication::s_instance=nullptr;
+		CApplication* CApplication::s_Instance=nullptr;
 		
-		CApplication::CApplication() : m_bRunning(1u)
+		CApplication::CApplication() :
+			m_bRunning(1u)
 		{
-			ARC_CORE_ASSERT(!s_instance, "Application already exists")
-			s_instance= this;
+			ARC_CORE_ASSERT(!s_Instance, "Application already exists")
+			ARC_CORE_INFO("{0}", &CApplication::OnEvent);
+
+			s_Instance= this;
+
 			m_Window = std::unique_ptr<CWindow>(CWindow::Create());
+			
 			m_ImGuiLayer = new CImGuiLayer();
 			PushOverlay(m_ImGuiLayer);
-			m_Window->SetEventCallback(BIND_FUNC(&CApplication::OnEvent));
+			
+			m_Window->SetEventCallback(BIND_FN(&CApplication::OnEvent));
 		}
 
 		CApplication::~CApplication() {}
@@ -29,9 +40,6 @@ namespace ARC
 		{
 			while (m_bRunning)
 			{
-				glClearColor(1, 0, 1, 1);
-				glClear(GL_COLOR_BUFFER_BIT);
-
 				for (CLayer* layer : m_LayerStack)
 					layer->OnUpdate();
 					
@@ -46,7 +54,7 @@ namespace ARC
 		void CApplication::OnEvent(CEvent& _e)
 		{
 			CEventDispatcher dispatcher(_e);
-			dispatcher.Dispatch<CWindowCloseEvent>(BIND_FUNC(&CApplication::OnWindowClose));
+			dispatcher.Dispatch<CWindowCloseEvent>(BIND_FN(&CApplication::OnWindowClose));
 
 			for (auto it = m_LayerStack.end(); it!= m_LayerStack.begin();)
 			{
