@@ -1,12 +1,12 @@
 #include "arc_pch.h"
 #include "ImGuiLayer.h"
 #include "GLFW/glfw3.h"
-#include "../Application.h"
-#include "../Window.h"
-#include "../Events/Event.h"
-#include "../Events/MouseEvent.h"
-#include "../Events/KeyEvent.h"
-#include "../Events/ApplicationEvent.h"
+#include "ARC/Core/Application.h"
+#include "ARC/Core/Window.h"
+#include "ARC/Events/Event.h"
+#include "ARC/Events/MouseEvent.h"
+#include "ARC/Events/KeyEvent.h"
+#include "ARC/Events/ApplicationEvent.h"
 #include "glad/glad.h"
 
 #define IMGUI_IMPL_API

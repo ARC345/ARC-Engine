@@ -2,7 +2,7 @@
 
 #include "Core.h"
 
-#include "Layers\LayerStack.h"
+#include "ARC/Layers/LayerStack.h"
 
 #include <string>
 #include <memory>
@@ -33,10 +33,14 @@ namespace ARC{
 			inline static CApplication& Get() { return *s_Instance; }
 			inline virtual std::string GetAppName() =0; 
 			inline class std::string GetEngineName() {return "ARC-Engine";}; 
+			inline float GetDeltaTime() const { return m_DeltaTime; }
 		private:
 			bool OnWindowClose(CWindowCloseEvent& _e);
 		
 		private:
+		
+			float m_DeltaTime;
+			float m_LastFrameTime;
 			std::unique_ptr<CWindow> m_Window;
 			CImGuiLayer* m_ImGuiLayer;
 			unsigned int m_bRunning : 1;

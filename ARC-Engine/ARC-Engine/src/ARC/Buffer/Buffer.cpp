@@ -2,6 +2,7 @@
 #include "Buffer.h"
 #include "..\Renderer\Renderer.h"
 #include "Platform\OpenGl\OpenGLBuffer.h"
+#include "..\Core\Core.h"
 
 namespace ARC {
 

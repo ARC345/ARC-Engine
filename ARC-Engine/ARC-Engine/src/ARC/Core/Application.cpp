@@ -1,16 +1,16 @@
 #include "arc_pch.h"
 #include "Application.h"
-#include "Types\vector.h"
-#include "Log.h"
-#include "Events\ApplicationEvent.h"
+#include "ARC/Types/vector.h"
+#include "ARC/Events/ApplicationEvent.h"
 #include "Window.h"
 #include "glad\glad.h"
-#include "Input\Input.h"
-#include "Renderer\Shader.h"
-#include "Buffer\Buffer.h"
-#include "Renderer\VertexArray.h"
-#include "Renderer\Renderer.h"
-#include "GUI\ImGuiLayer.h"
+#include "ARC/Input\Input.h"
+#include "ARC/Renderer/Shader.h"
+#include "ARC/Buffer/Buffer.h"
+#include "ARC/Renderer/VertexArray.h"
+#include "ARC/Renderer/Renderer.h"
+#include "ARC/GUI/ImGuiLayer.h"
+#include "GLFW\glfw3.h"
 
 namespace ARC
 {
@@ -40,8 +40,12 @@ namespace ARC
 		{
 			while (m_bRunning)
 			{
+				//@TEMP
+				float time = (float)glfwGetTime();
+				m_DeltaTime = time - m_LastFrameTime;
+				m_LastFrameTime = time;
 				for (CLayer* layer : m_LayerStack)
-					layer->OnUpdate();
+					layer->OnUpdate(m_DeltaTime);
 					
 				m_ImGuiLayer->Begin();
 				for (CLayer* layer : m_LayerStack)

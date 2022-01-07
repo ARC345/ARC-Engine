@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../Core.h"
+#include "ARC/Core/Core.h"
 
-#include "../Helpers/Enum.h"
-#include "../Helpers/Macros.h"
+#include "ARC/Helpers/Enum.h"
+#include "ARC/Helpers/Macros.h"
 
 #include "PCH/arc_pch.h"
-#include "../Helpers/Helpers.h"
+#include "ARC/Helpers/Helpers.h"
 #include <spdlog/fmt/ostr.h>
 
 namespace ARC {

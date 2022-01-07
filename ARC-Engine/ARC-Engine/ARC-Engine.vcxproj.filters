@@ -1317,16 +1317,16 @@
     <ClInclude Include="src\ARC.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Application.h">
+    <ClInclude Include="src\ARC\Core\Application.h">
       <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Buffer\Buffer.h">
       <Filter>src\ARC\Buffer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Core.h">
+    <ClInclude Include="src\ARC\Core\Core.h">
       <Filter>src\ARC</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\EntryPoint.h">
+    <ClInclude Include="src\ARC\Core\EntryPoint.h">
       <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Events\ApplicationEvent.h">
@@ -1374,7 +1374,7 @@
     <ClInclude Include="src\ARC\Layers\LayerStack.h">
       <Filter>src\ARC\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Log.h">
+    <ClInclude Include="src\ARC\Core\Log.h">
       <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Objects\CameraBase.h">
@@ -1407,7 +1407,7 @@
     <ClInclude Include="src\ARC\Types\Vector.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Window.h">
+    <ClInclude Include="src\ARC\Core\Window.h">
       <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\PCH\arc_pch.h">
@@ -1428,9 +1428,15 @@
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Objects\Primitive2D.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Objects\Object.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ARC\Application.cpp">
+    <ClCompile Include="src\ARC\Core\Application.cpp">
       <Filter>src\ARC</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Buffer\Buffer.cpp">
@@ -1454,7 +1460,7 @@
     <ClCompile Include="src\ARC\Layers\LayerStack.cpp">
       <Filter>src\ARC\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\Log.cpp">
+    <ClCompile Include="src\ARC\Core\Log.cpp">
       <Filter>src\ARC</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp">
@@ -1492,6 +1498,12 @@
     </ClCompile>
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Objects\Object.cpp">
+      <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Objects\Primitive2D.cpp">
+      <Filter>src\ARC\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
 #include "arc_pch.h"
 #include "WindowsInput.h"
-#include "ARC\Application.h"
-#include "GLFW\glfw3.h"
-#include "ARC\Window.h"
+#include "ARC/Core/Application.h"
+#include "GLFW/glfw3.h"
+#include "ARC/Core/Window.h"
 
 namespace ARC {
 	CInput* CInput::s_Instance = new CWindowsInput();
