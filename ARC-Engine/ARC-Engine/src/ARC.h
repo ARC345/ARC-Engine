@@ -4,8 +4,8 @@
 
 #include <stdio.h> // @todo replace with logging lib
 
-#include "ARC/Application.h"
-#include "ARC/Log.h"
+#include "ARC/Core/Application.h"
+#include "ARC/Core/Log.h"
 
 #include "ARC/Layers/Layer.h"
 #include "ARC/GUI/ImGuiLayer.h"
@@ -21,8 +21,7 @@
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Shader.h"
 
-#include "ARC/Camera/CameraBase.h"
-
+#include "ARC/Objects/CameraBase.h"
 //--------EntryPoint-----------------
-#include "ARC/EntryPoint.h"
+#include "ARC/Core/EntryPoint.h"
 //-----------------------------------

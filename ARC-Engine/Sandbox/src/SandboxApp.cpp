@@ -8,6 +8,8 @@
 #include "ARC\Types\TybeBase.h"
 #include "ARC\Helpers\Macros.h"
 #include "ARC\Events\KeyEvent.h"
+#include "glm\glm\ext\matrix_transform.hpp"
+#include "glm\glm\ext\matrix_float4x4.hpp"
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
 {
@@ -54,6 +56,7 @@ CExampleLayer::CExampleLayer() :
 					layout(location = 1) in vec4 a_Colour;
 
 					uniform mat4 u_ViewProjection;
+					uniform mat4 u_Transform;
 					
 					out vec3 v_Position;
 					out vec4 v_Colour;
@@ -62,7 +65,7 @@ CExampleLayer::CExampleLayer() :
 					{
 						v_Position = a_Position;
 						v_Colour = a_Colour;
-						gl_Position = u_ViewProjection * vec4(a_Position, 1.f);
+						gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
 					}			
 				)";
 		const std::string triangle_fragment_source = R"(
@@ -111,13 +114,14 @@ CExampleLayer::CExampleLayer() :
 				layout(location = 0) in vec3 a_Position;
 				
 				uniform mat4 u_ViewProjection;
+				uniform mat4 u_Transform;
 
 				out vec3 v_Position;
 
 				void main()
 				{
 					v_Position = a_Position;
-					gl_Position = u_ViewProjection * vec4(a_Position, 1.f);
+					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
 				}			
 			)";
 	const std::string square_fragment_source = R"(
@@ -137,28 +141,45 @@ CExampleLayer::CExampleLayer() :
 
 }
 
-void CExampleLayer::OnUpdate()
+void CExampleLayer::OnUpdate(float _DeltaTime)
 {
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_LEFT))
-		m_Camera.Position.x -= CamMoveSpeed;
+		m_Camera.Position.x -= CamMoveSpeed*_DeltaTime;
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_RIGHT))
-		m_Camera.Position.x += CamMoveSpeed;
+		m_Camera.Position.x += CamMoveSpeed*_DeltaTime;
 
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_UP))
-		m_Camera.Position.y += CamMoveSpeed;
+		m_Camera.Position.y += CamMoveSpeed*_DeltaTime;
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_DOWN))
-		m_Camera.Position.y -= CamMoveSpeed;
+		m_Camera.Position.y -= CamMoveSpeed*_DeltaTime;
+
+	if (ARC::CInput::IsKeyPressed(ARC_KEY_J))
+		m_Camera.Rotation += CamRotSpeed*_DeltaTime;
+	if (ARC::CInput::IsKeyPressed(ARC_KEY_L))
+		m_Camera.Rotation -= CamRotSpeed*_DeltaTime;
 
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
-		m_Camera.Rotation += CamRotSpeed;
+		SQ_Data.Position.x -= CamMoveSpeed * _DeltaTime;
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_D))
-		m_Camera.Rotation -= CamRotSpeed;
+		SQ_Data.Position.x += CamMoveSpeed * _DeltaTime;
+		
+	if (ARC::CInput::IsKeyPressed(ARC_KEY_W))
+		SQ_Data.Position.y += CamMoveSpeed * _DeltaTime;
+	if (ARC::CInput::IsKeyPressed(ARC_KEY_S))
+		SQ_Data.Position.y -= CamMoveSpeed * _DeltaTime;
 
 	ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 	ARC::CRenderCommand::Clear();
 
 	ARC::CRenderer::BeginScene(m_Camera);
-	ARC::CRenderer::Submit(m_SquareShader, m_SquareVertexArray);
+
+	for (size_t i = 0; i < 5; i++)
+	{
+		glm::vec3 pos = i(0.1f)
+	}
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), SQ_Data.Position);
+	ARC::CRenderer::Submit(m_SquareShader, m_SquareVertexArray, transform);
 	ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
 	ARC::CRenderer::EndScene();
 
@@ -182,7 +203,9 @@ void CExampleLayer::OnGuiRender()
 	if (ImGui::TreeNode("Camera"))
 	{
 		ImGui::DragFloat3("CamLocation", &GetCam().Position[0]);
+		ImGui::DragFloat("CamMoveSpeed", &CamMoveSpeed);
 		ImGui::DragFloat("CamRotation", &GetCam().Rotation, 1.0f, 0, 360);
+		ImGui::DragFloat("CamRotSpeed", &CamRotSpeed);
 		ImGui::TreePop();
 	}
 	ImGui::End();

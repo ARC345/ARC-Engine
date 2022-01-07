@@ -1,5 +1,5 @@
 #pragma once
-#include "Helpers/DllHelpers_Macros.h"
+#include "ARC/Helpers/DllHelpers_Macros.h"
 
 #ifdef ARC_DEBUG
 	#define ARC_ENABLE_ASSERTS

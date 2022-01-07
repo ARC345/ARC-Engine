@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
-#include "ARC\Application.h"
-#include "ARC\Layers\Layer.h"
+#include "ARC/Core/Application.h"
+#include "ARC/Layers/Layer.h"
+#include "ARC/Objects/Primitive2D.h"
 
 namespace ARC { class CKeyPressedEvent; }
 
@@ -17,7 +18,7 @@ class CExampleLayer : public ARC::CLayer
 {
 public:
 	CExampleLayer(); 
-	void OnUpdate() override;
+	void OnUpdate(float _DeltaTime) override;
 	void OnEvent(ARC::CEvent& _event) override;
 
 	bool OnKeyPressedEvent(ARC::CKeyPressedEvent& _Event);
@@ -27,8 +28,11 @@ public:
 	inline ARC::COrthographicCameraBase& GetCam() { return m_Camera; }
 
 public:
-	float CamMoveSpeed = 0.05f;
-	float CamRotSpeed = 0.5f;
+	float CamMoveSpeed = 10.f;
+	float CamRotSpeed = 180.f;
+
+	ARC::CPrimitive2D SQ_Data;
+
 private:
 	std::shared_ptr<ARC::CShader> m_TriangleShader;
 	std::shared_ptr<ARC::CVertexArray> m_TriangleVertexArray;
@@ -37,7 +41,6 @@ private:
 	std::shared_ptr<ARC::CVertexArray> m_SquareVertexArray;
 
 	ARC::COrthographicCameraBase m_Camera;
-
 };
 
 class CSandbox : public ARC::Core::CApplication

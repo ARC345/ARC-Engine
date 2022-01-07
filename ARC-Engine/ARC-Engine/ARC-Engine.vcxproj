@@ -143,6 +143,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\ARC\Objects\Object.h" />
     <ClInclude Include="out\glm\glm\common.hpp" />
     <ClInclude Include="out\glm\glm\detail\_features.hpp" />
     <ClInclude Include="out\glm\glm\detail\_fixes.hpp" />
@@ -558,11 +559,12 @@
     <ClInclude Include="out\glm\glm\vec3.hpp" />
     <ClInclude Include="out\glm\glm\vec4.hpp" />
     <ClInclude Include="out\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="src\ARC\Objects\Primitive2D.h" />
     <ClInclude Include="src\ARC.h" />
-    <ClInclude Include="src\ARC\Application.h" />
+    <ClInclude Include="src\ARC\Core\Application.h" />
     <ClInclude Include="src\ARC\Buffer\Buffer.h" />
-    <ClInclude Include="src\ARC\Core.h" />
-    <ClInclude Include="src\ARC\EntryPoint.h" />
+    <ClInclude Include="src\ARC\Core\Core.h" />
+    <ClInclude Include="src\ARC\Core\EntryPoint.h" />
     <ClInclude Include="src\ARC\Events\ApplicationEvent.h" />
     <ClInclude Include="src\ARC\Events\Event.h" />
     <ClInclude Include="src\ARC\Events\KeyEvent.h" />
@@ -578,7 +580,7 @@
     <ClInclude Include="src\ARC\Interfaces\Bindable.h" />
     <ClInclude Include="src\ARC\Layers\Layer.h" />
     <ClInclude Include="src\ARC\Layers\LayerStack.h" />
-    <ClInclude Include="src\ARC\Log.h" />
+    <ClInclude Include="src\ARC\Core\Log.h" />
     <ClInclude Include="src\ARC\Objects\CameraBase.h" />
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\ARC\Renderer\RenderCommand.h" />
@@ -589,7 +591,7 @@
     <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
-    <ClInclude Include="src\ARC\Window.h" />
+    <ClInclude Include="src\ARC\Core\Window.h" />
     <ClInclude Include="src\PCH\arc_pch.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLContext.h" />
@@ -598,7 +600,9 @@
     <ClInclude Include="src\Platform\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ARC\Application.cpp" />
+    <ClCompile Include="src\ARC\Objects\Object.cpp" />
+    <ClCompile Include="src\ARC\Objects\Primitive2D.cpp" />
+    <ClCompile Include="src\ARC\Core\Application.cpp" />
     <ClCompile Include="src\ARC\Buffer\Buffer.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiBuild.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
@@ -606,7 +610,7 @@
     <ClCompile Include="src\ARC\Input\WindowsInput.cpp" />
     <ClCompile Include="src\ARC\Layers\Layer.cpp" />
     <ClCompile Include="src\ARC\Layers\LayerStack.cpp" />
-    <ClCompile Include="src\ARC\Log.cpp" />
+    <ClCompile Include="src\ARC\Core\Log.cpp" />
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp" />
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\ARC\Renderer\Renderer.cpp" />

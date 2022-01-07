@@ -16,5 +16,5 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "ARC\Helpers/Helpers.h"
-#include "ARC\Log.h"
+#include "ARC/Helpers/Helpers.h"
+#include "ARC/Core/Log.h"

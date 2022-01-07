@@ -12,7 +12,7 @@ namespace ARC {
 
 		virtual void OnAttach(){}
 		virtual void OnDetach(){}
-		virtual void OnUpdate(){}
+		virtual void OnUpdate(float _DeltaTime){}
 		virtual void OnGuiRender(){}
 		virtual void OnEvent(CEvent& _event){}
 

@@ -19,10 +19,11 @@ namespace ARC {
 
 	}
 
-	void CRenderer::Submit(const std::shared_ptr<CShader>& _Shader, const std::shared_ptr<CVertexArray>& _VertexArray)
+	void CRenderer::Submit(const std::shared_ptr<CShader>& _Shader, const std::shared_ptr<CVertexArray>& _VertexArray, const glm::mat4& _Transform)
 	{
 		_Shader->Bind();
 		_Shader->UploadUniform4Mat("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
+		_Shader->UploadUniform4Mat("u_Transform", _Transform);
 		_VertexArray->Bind();
 		CRenderCommand::DrawIndexed(_VertexArray);
 	}

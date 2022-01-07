@@ -1,15 +1,9 @@
 #pragma once
 
+#include "Primitive2D.h"
 #include"..\..\..\out\glm\glm\glm.hpp"
 
 namespace ARC {
-	class CPrimitive2D
-	{
-	public:
-		glm::vec3 Position = { 0.0f, 0.0f, 0.0f };
-		float Rotation = 0.0f;
-	};
-
 	class COrthographicCameraBase : public CPrimitive2D
 	{
 	public:

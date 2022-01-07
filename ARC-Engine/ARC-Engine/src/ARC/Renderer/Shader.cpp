@@ -2,6 +2,7 @@
 #include "glad\glad.h"
 #include "Shader.h"
 #include "glm\gtc\type_ptr.inl"
+#include "ARC\Core\Core.h"
 
 namespace ARC {
 	CShader::CShader(const std::string& _VertexSrc, const std::string& _FragmentSrc)

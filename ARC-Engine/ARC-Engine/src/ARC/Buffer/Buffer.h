@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "..\Core\Core.h"
 
 namespace ARC {
 	enum class EShaderDataType : uint8_t
@@ -26,7 +27,7 @@ namespace ARC {
 				case EShaderDataType::Bool:		return 1u;
 			}
 
-			ARC_CORE_ASSERT(false, "UnknownShaderDataType")
+			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
 			return 0;
 		}
 		static uint32_t GetComponentCount(EShaderDataType _Type)
@@ -46,7 +47,7 @@ namespace ARC {
 				case EShaderDataType::Bool:		return 1u;
 			}
 
-			ARC_CORE_ASSERT(false, "UnknownShaderDataType")
+			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
 			return 0;
 		}
 	}

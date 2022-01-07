@@ -21,7 +21,7 @@ namespace ARC {
 			case EShaderDataType::Bool:		return GL_BOOL;
 			}
 
-			ARC_CORE_ASSERT(false, "UnknownShaderDataType")
+			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
 				return 0;
 		};
 	}
