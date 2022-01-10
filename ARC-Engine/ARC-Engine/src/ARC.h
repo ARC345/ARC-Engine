@@ -20,8 +20,10 @@
 
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Shader.h"
+#include "ARC/Renderer/Texture.h"
 
 #include "ARC/Objects/CameraBase.h"
+
 //--------EntryPoint-----------------
 #include "ARC/Core/EntryPoint.h"
 //-----------------------------------

@@ -22,6 +22,9 @@
     <Filter Include="out\glm\glm\gtx">
       <UniqueIdentifier>{9D7C76BF-0908-E483-1219-67787E234084}</UniqueIdentifier>
     </Filter>
+    <Filter Include="out\stb_image">
+      <UniqueIdentifier>{77F32621-E3B3-A257-ACEE-EBD4186EE733}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
@@ -30,6 +33,9 @@
     </Filter>
     <Filter Include="src\ARC\Buffer">
       <UniqueIdentifier>{7BC0DE5C-678E-D262-5022-43893C8FAEC7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ARC\Core">
+      <UniqueIdentifier>{6A96CEF0-56F9-5D95-FF7E-964BEBC02918}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\ARC\Events">
       <UniqueIdentifier>{76EAEF63-62B8-E369-4B4C-549037B9BFCE}</UniqueIdentifier>
@@ -1314,20 +1320,29 @@
     <ClInclude Include="out\glm\glm\vector_relational.hpp">
       <Filter>out\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="out\stb_image\stb_image.h">
+      <Filter>out\stb_image</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ARC\Core\Application.h">
-      <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Buffer\Buffer.h">
       <Filter>src\ARC\Buffer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Core\Application.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Core\Core.h">
-      <Filter>src\ARC</Filter>
+      <Filter>src\ARC\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Core\EntryPoint.h">
-      <Filter>src\ARC</Filter>
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Core\Log.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Core\Window.h">
+      <Filter>src\ARC\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Events\ApplicationEvent.h">
       <Filter>src\ARC\Events</Filter>
@@ -1365,7 +1380,7 @@
     <ClInclude Include="src\ARC\Input\WindowsInput.h">
       <Filter>src\ARC\Input</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Interfaces\Bindable.h">
+    <ClInclude Include="src\ARC\Interfaces\Area2D.h">
       <Filter>src\ARC\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Layers\Layer.h">
@@ -1374,11 +1389,17 @@
     <ClInclude Include="src\ARC\Layers\LayerStack.h">
       <Filter>src\ARC\Layers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Core\Log.h">
-      <Filter>src\ARC</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Objects\CameraBase.h">
       <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Objects\Object.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Objects\Primitive2D.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\Color.h">
+      <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h">
       <Filter>src\ARC\Renderer</Filter>
@@ -1395,10 +1416,16 @@
     <ClInclude Include="src\ARC\Renderer\Shader.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\Texture.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Renderer\VertexArray.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\Array.h">
+      <Filter>src\ARC\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Types\Pointer.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\TybeBase.h">
@@ -1406,9 +1433,6 @@
     </ClInclude>
     <ClInclude Include="src\ARC\Types\Vector.h">
       <Filter>src\ARC\Types</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ARC\Core\Window.h">
-      <Filter>src\ARC</Filter>
     </ClInclude>
     <ClInclude Include="src\PCH\arc_pch.h">
       <Filter>src\PCH</Filter>
@@ -1422,25 +1446,31 @@
     <ClInclude Include="src\Platform\OpenGl\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGl</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGl\OpenGLShader.h">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGl\OpenGLTexture.h">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGl\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGl</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Objects\Primitive2D.h">
-      <Filter>src\ARC\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ARC\Objects\Object.h">
-      <Filter>src\ARC\Objects</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ARC\Core\Application.cpp">
-      <Filter>src\ARC</Filter>
+    <ClCompile Include="out\stb_image\stb_image.cpp">
+      <Filter>out\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Buffer\Buffer.cpp">
       <Filter>src\ARC\Buffer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Core\Application.cpp">
+      <Filter>src\ARC\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Core\Log.cpp">
+      <Filter>src\ARC\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\GUI\ImGuiBuild.cpp">
       <Filter>src\ARC\GUI</Filter>
@@ -1460,10 +1490,13 @@
     <ClCompile Include="src\ARC\Layers\LayerStack.cpp">
       <Filter>src\ARC\Layers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\Core\Log.cpp">
-      <Filter>src\ARC</Filter>
-    </ClCompile>
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp">
+      <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Objects\Object.cpp">
+      <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Objects\Primitive2D.cpp">
       <Filter>src\ARC\Objects</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp">
@@ -1476,6 +1509,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Shader.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Texture.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\VertexArray.cpp">
@@ -1493,17 +1529,17 @@
     <ClCompile Include="src\Platform\OpenGl\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGl</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGl\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGl\OpenGLTexture.cpp">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGl\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGl</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Objects\Object.cpp">
-      <Filter>src\ARC\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Objects\Primitive2D.cpp">
-      <Filter>src\ARC\Objects</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

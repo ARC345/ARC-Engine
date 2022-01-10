@@ -36,7 +36,7 @@ namespace ARC {
 
 	}
 	
-	void COpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<CVertexBuffer>& _VertexBuffer)
+	void COpenGLVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
 	{
 		Bind();
 		_VertexBuffer->Bind();
@@ -55,7 +55,7 @@ namespace ARC {
 		m_VertexBuffers.push_back(_VertexBuffer);
 	}
 
-	void COpenGLVertexArray::SetIndexBuffer(const std::shared_ptr<CIndexBuffer>& _IndexBuffer)
+	void COpenGLVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
 	{
 		glBindVertexArray(m_RendererId);
 		_IndexBuffer->Bind();
@@ -63,12 +63,12 @@ namespace ARC {
 		m_IndexBuffer = _IndexBuffer;
 	}
 
-	const std::vector<std::shared_ptr<CVertexBuffer>>& COpenGLVertexArray::GetVertexBuffers() const
+	const std::vector<TRef<CVertexBuffer>>& COpenGLVertexArray::GetVertexBuffers() const
 	{
 		return m_VertexBuffers;
 	}
 
-	const std::shared_ptr<CIndexBuffer>& COpenGLVertexArray::GetIndexBuffer() const
+	const TRef<CIndexBuffer>& COpenGLVertexArray::GetIndexBuffer() const
 	{
 		return m_IndexBuffer;
 	}

@@ -15,7 +15,7 @@ namespace ARC {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void COpenGLRendererAPI::DrawIndexed(const std::shared_ptr<CVertexArray>& _VertexArray)
+	void COpenGLRendererAPI::DrawIndexed(const TRef<CVertexArray>& _VertexArray)
 	{
 		glDrawElements(GL_TRIANGLES, _VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}

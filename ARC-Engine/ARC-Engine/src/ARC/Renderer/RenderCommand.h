@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RendererAPI.h"
+#include "ARC\Types\Pointer.h"
 
 namespace ARC {
 	class CRenderCommand
@@ -13,7 +14,7 @@ namespace ARC {
 		inline static void Clear() {
 			s_RendererAPI->Clear();
 		};
-		inline static void DrawIndexed(const std::shared_ptr<CVertexArray>& _VertexArray) {
+		inline static void DrawIndexed(const TRef<CVertexArray>& _VertexArray) {
 			s_RendererAPI->DrawIndexed(_VertexArray);
 		}
 	private:

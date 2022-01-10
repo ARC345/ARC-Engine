@@ -10,6 +10,10 @@
 #include "ARC\Events\KeyEvent.h"
 #include "glm\glm\ext\matrix_transform.hpp"
 #include "glm\glm\ext\matrix_float4x4.hpp"
+#include "ARC\Renderer\Color.h"
+#include "Platform\OpenGl\OpenGLShader.h"
+#include "glm\glm\gtc\type_ptr.inl"
+#include "ARC\Renderer\Texture.h"
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
 {
@@ -21,7 +25,6 @@ CExampleLayer::CExampleLayer() :
 	ARC::CLayer("Example"),
 	m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
 {
-
 	//-------------------------------+[Code for triangle]+-------------------------------//
 	{
 		float triangle_verts[3 * 7] = {
@@ -30,7 +33,7 @@ CExampleLayer::CExampleLayer() :
 			 0.0f,  0.5f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
-		std::shared_ptr<ARC::CVertexBuffer> triangle_vertex_buffer;
+		ARC::TRef<ARC::CVertexBuffer> triangle_vertex_buffer;
 		triangle_vertex_buffer.reset(ARC::CVertexBuffer::Create(triangle_verts, sizeof(triangle_verts)));
 		ARC::CBufferLayout triangle_layout = {
 			{ ARC::EShaderDataType::Float3, "a_Position" },
@@ -45,7 +48,7 @@ CExampleLayer::CExampleLayer() :
 			0,1,2
 		};
 
-		std::shared_ptr<ARC::CIndexBuffer> triangle_index_buffer;
+		ARC::TRef<ARC::CIndexBuffer> triangle_index_buffer;
 		triangle_index_buffer.reset(ARC::CIndexBuffer::Create(triangle_indices, sizeof(triangle_indices) / sizeof(uint32_t)));
 		m_TriangleVertexArray->SetIndexBuffer(triangle_index_buffer);
 
@@ -80,35 +83,38 @@ CExampleLayer::CExampleLayer() :
 						o_Colour = v_Colour;
 					}			
 				)";
-		m_TriangleShader.reset(new ARC::CShader(triangle_vertex_source, triangle_fragment_source));
+		m_TriangleShader.reset(ARC::CShader::Create(triangle_vertex_source, triangle_fragment_source));
 
 	}
 	//-------------------------------~[Code for triangle]~-------------------------------//
 	//--------------------------------+[Code for square]+--------------------------------//
 	m_SquareVertexArray.reset(ARC::CVertexArray::Create());
 
-	float square_verts[4 * 3] = {
-		-0.75f, -0.75f, 0.0f,
-		 0.75f, -0.75f, 0.0f,
-		 0.75f,  0.75f, 0.0f,
-		-0.75f,  0.75f, 0.0f
+	float square_verts[5 * 4] = {
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 	};
 
-	std::shared_ptr<ARC::CVertexBuffer> square_vertex_buffer;
+	ARC::TRef<ARC::CVertexBuffer> square_vertex_buffer;
 	square_vertex_buffer.reset(ARC::CVertexBuffer::Create(square_verts, sizeof(square_verts)));
 
-	ARC::CBufferLayout square_layout = { { ARC::EShaderDataType::Float3, "a_Position" } };
+	ARC::CBufferLayout square_layout = { 
+		{ ARC::EShaderDataType::Float3, "a_Position" },
+		{ ARC::EShaderDataType::Float2, "a_TexCoord" }
+	};
 	square_vertex_buffer->SetLayout(square_layout);
 
 	m_SquareVertexArray->AddVertexBuffer(square_vertex_buffer);
 
 	unsigned int square_indices[] = { 0, 1, 2, 2, 3, 0 };
 
-	std::shared_ptr<ARC::CIndexBuffer> square_index_buffer;
+	ARC::TRef<ARC::CIndexBuffer> square_index_buffer;
 	square_index_buffer.reset(ARC::CIndexBuffer::Create(square_indices, sizeof(square_indices) / sizeof(uint32_t)));
 	m_SquareVertexArray->SetIndexBuffer(square_index_buffer);
 
-	const std::string square_vertex_source = R"(
+	const std::string flat_color_vertex_source = R"(
 				#version 330 core
 
 				layout(location = 0) in vec3 a_Position;
@@ -124,21 +130,62 @@ CExampleLayer::CExampleLayer() :
 					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
 				}			
 			)";
-	const std::string square_fragment_source = R"(
+	const std::string flat_color_fragment_source = R"(
 				#version 330 core
 
-				layout(location = 0) out vec4 o_Colour;
+				layout(location = 0) out vec4 o_Color;
 
 				in vec3 v_Position;
+				
+				uniform vec4 u_Color;
+
 				void main()
 				{
-					o_Colour = vec4(0.3, 0.3, 01, 1.0);
+					o_Color = u_Color;
 				}			
 			)";
 
-	m_SquareShader.reset(new ARC::CShader(square_vertex_source, square_fragment_source));
+	m_FlatColorShader.reset(ARC::CShader::Create(flat_color_vertex_source, flat_color_fragment_source));
 	//--------------------------------~[Code for square]~--------------------------------//
+	//----------------------------+[Code for Texture Shader]+----------------------------//
+	const std::string texture_vertex_source = R"(
+				#version 330 core
 
+				layout(location = 0) in vec3 a_Position;
+				layout(location = 1) in vec2 a_TexCoord;
+				
+				uniform mat4 u_ViewProjection;
+				uniform mat4 u_Transform;
+
+				out vec2 v_TexCoord;
+
+				void main()
+				{
+					v_TexCoord = a_TexCoord;
+					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
+				}			
+			)";
+	const std::string texture_fragment_source = R"(
+				#version 330 core
+
+				layout(location = 0) out vec4 o_Color;
+
+				uniform sampler2D u_Texture;
+
+				in vec2 v_TexCoord;
+
+				void main()
+				{
+					o_Color = texture(u_Texture, v_TexCoord);
+				}			
+			)";
+
+	m_TextureShader.reset(ARC::CShader::Create(texture_vertex_source, texture_fragment_source));
+	//----------------------------~[Code for Texture Shader]~----------------------------//
+
+	m_Texture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_TextureShader)->Bind();
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_TextureShader)->UploadUniform<int>("u_Texture", 0);
 }
 
 void CExampleLayer::OnUpdate(float _DeltaTime)
@@ -159,28 +206,36 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 		m_Camera.Rotation -= CamRotSpeed*_DeltaTime;
 
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
-		SQ_Data.Position.x -= CamMoveSpeed * _DeltaTime;
+		SQ_Data.Position.x -= SQ_MoveSpeed * _DeltaTime;
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_D))
-		SQ_Data.Position.x += CamMoveSpeed * _DeltaTime;
+		SQ_Data.Position.x += SQ_MoveSpeed * _DeltaTime;
 		
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_W))
-		SQ_Data.Position.y += CamMoveSpeed * _DeltaTime;
+		SQ_Data.Position.y += SQ_MoveSpeed * _DeltaTime;
 	if (ARC::CInput::IsKeyPressed(ARC_KEY_S))
-		SQ_Data.Position.y -= CamMoveSpeed * _DeltaTime;
+		SQ_Data.Position.y -= SQ_MoveSpeed * _DeltaTime;
 
 	ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 	ARC::CRenderCommand::Clear();
 
 	ARC::CRenderer::BeginScene(m_Camera);
+	SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
 
-	for (size_t i = 0; i < 5; i++)
-	{
-		glm::vec3 pos = i(0.1f)
-	}
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->Bind();
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), SQ_Data.Position);
-	ARC::CRenderer::Submit(m_SquareShader, m_SquareVertexArray, transform);
-	ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
+	for (size_t x = 0; x < 20; x++)
+		for (size_t y = 0; y < 20; y++)
+		{
+			glm::vec3 pos = { x * 0.11f, y * 0.11f, 0.f };
+			pos += SQ_Data.Position;
+			glm::mat4 transform = glm::scale(glm::translate(glm::mat4(1.0f), pos), SQ_Data.Scale);
+			ARC::CRenderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+		}
+
+	m_Texture->Bind();
+	ARC::CRenderer::Submit(m_TextureShader, m_SquareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+	//ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
 	ARC::CRenderer::EndScene();
 
 	GetCam().RecalculateViewProjectionMatrix();
@@ -199,13 +254,18 @@ bool CExampleLayer::OnKeyPressedEvent(ARC::CKeyPressedEvent& _Event)
 
 void CExampleLayer::OnGuiRender()
 {
-	ImGui::Begin("Test");
+	ImGui::Begin("Sandbox");
 	if (ImGui::TreeNode("Camera"))
 	{
 		ImGui::DragFloat3("CamLocation", &GetCam().Position[0]);
 		ImGui::DragFloat("CamMoveSpeed", &CamMoveSpeed);
 		ImGui::DragFloat("CamRotation", &GetCam().Rotation, 1.0f, 0, 360);
 		ImGui::DragFloat("CamRotSpeed", &CamRotSpeed);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNode("Squares"))
+	{
+		ImGui::ColorEdit4("SQ_Colour", glm::value_ptr(SQ_Colour));
 		ImGui::TreePop();
 	}
 	ImGui::End();

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "ARC\Helpers\DllHelpers_Macros.h"
 
 #define ARC_CLASS(x)\
 		public:\
@@ -9,11 +10,6 @@ namespace ARC
 {
 	namespace Base
 	{
-		class ARC_API CObjectBase {
-			ARC_CLASS(CObjectBase);
-		public:
-			CObjectBase(){};
-		};
 		struct ARC_API TTypeBase
 		{
 		public:

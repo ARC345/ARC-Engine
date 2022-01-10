@@ -80,7 +80,7 @@ namespace ARC {
 
 	void CImGuiLayer::OnGuiRender()
 	{
-		static bool show = true;
+		//static bool show = true;
 		//ImGui::ShowDemoWindow(&show);
 	}
 }

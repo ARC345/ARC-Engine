@@ -1,20 +1,15 @@
 #pragma once
-
-#include "../../../out/glm/glm/glm.hpp"
+#include <string>
 
 namespace ARC {
 	class CShader
 	{
 	public:
-		CShader(const std::string& _VertexSrc, const std::string& _FragmentSrc);
-		~CShader();
+		virtual ~CShader() = default;
 
-		void Bind();
-		void UnBind();
+		virtual void Bind() const = 0;
+		virtual void UnBind() const = 0;
 
-		void UploadUniform4Mat(const std::string& _Name, const glm::mat4& _Matrix);
-
-	private:
-		uint32_t m_RendererID;
+		static CShader* Create(const std::string& _VertexSrc, const std::string& _FragmentSrc);
 	};
 }
