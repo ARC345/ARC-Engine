@@ -20,12 +20,12 @@ namespace ARC {
 		return nullptr;
 	}
 
-	void CVertexArray::AddVertexBuffer(const std::shared_ptr<CVertexBuffer>& _VertexBuffer)
+	void CVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
 	{
 
 	}
 
-	void CVertexArray::SetIndexBuffer(const std::shared_ptr<CIndexBuffer>& _IndexBuffer)
+	void CVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
 	{
 
 	}

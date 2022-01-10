@@ -16,5 +16,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "ARC/Types/Pointer.h"
+#include "ARC/Types/Vector.h"
+
 #include "ARC/Helpers/Helpers.h"
 #include "ARC/Core/Log.h"

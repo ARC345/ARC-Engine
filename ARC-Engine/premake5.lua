@@ -15,6 +15,7 @@ IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
 IncludeDir["glm"] = "ARC-Engine/out/glm"
+IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
 
 group "Dependencies"
 	include "ARC-Engine/out/GLFW"
@@ -38,6 +39,8 @@ project "ARC-Engine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/out/stb_image/**.cpp",
+		"%{prj.name}/out/stb_image/**.h",
 		"%{prj.name}/out/glm/glm/**.hpp",
 		"%{prj.name}/out/glm/glm/**.inl"
 	}
@@ -49,7 +52,8 @@ project "ARC-Engine"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links

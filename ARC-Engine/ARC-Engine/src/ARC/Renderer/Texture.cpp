@@ -1,10 +1,12 @@
 #include "arc_pch.h"
+#include "Texture.h"
 #include "Renderer.h"
-#include "Platform\OpenGl\OpenGLShader.h"
+#include "Platform\OpenGl\OpenGLTexture.h"
 #include "ARC\Core\Core.h"
 
 namespace ARC {
-	CShader* CShader::Create(const std::string& _VertexSrc, const std::string& _FragmentSrc)
+
+	TRef<CTexture2D> CTexture2D::Create(const std::string& _Path)
 	{
 		switch (CRenderer::GetCurrentAPI())
 		{
@@ -12,7 +14,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
 			return nullptr;
 		case CRendererAPI::ERendererAPI::OpenGL:
-			return new COpenGLShader(_VertexSrc, _FragmentSrc);
+			return std::make_shared<COpenGLTexture2D>(_Path);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
