@@ -14,7 +14,7 @@ namespace ARC {
 		private:
 			std::pair<uint32_t, uint32_t> Load(const std::string& _Path);
 		private:
-			unsigned char* m_data;
+			unsigned char* m_Data;
 			std::string m_Path;
 			uint32_t m_RendererID;
 	};

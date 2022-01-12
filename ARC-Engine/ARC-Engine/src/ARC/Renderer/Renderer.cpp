@@ -9,6 +9,11 @@
 namespace ARC {
 	CRenderer::SSceneData* CRenderer::m_SceneData = new CRenderer::SSceneData;
 
+	void CRenderer::Init()
+	{
+		CRenderCommand::Init();
+	}
+
 	void CRenderer::BeginScene(COrthographicCameraBase& _Cam)
 	{
 		// Submit View Projection Matrix

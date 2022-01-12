@@ -5,6 +5,12 @@
 
 namespace ARC {
 
+	void COpenGLRendererAPI::Init()
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	void COpenGLRendererAPI::SetClearColour(const glm::vec4 _Colour)
 	{
 		glClearColor(_Colour.r, _Colour.g, _Colour.b, _Colour.a);

@@ -10,6 +10,8 @@ namespace ARC { class COrthographicCameraBase; }
 namespace ARC {
 	class CRenderer {
 	public:
+		static void Init();
+
 		static void BeginScene(COrthographicCameraBase& _Cam);
 		static void EndScene();
 

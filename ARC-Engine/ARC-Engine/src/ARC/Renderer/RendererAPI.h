@@ -14,6 +14,8 @@ namespace ARC {
 			OpenGL = 1
 		};
 	public:
+		virtual void Init() = 0;
+
 		virtual void SetClearColour(const glm::vec4 _Colour) = 0;
 		virtual void Clear() = 0;
 
