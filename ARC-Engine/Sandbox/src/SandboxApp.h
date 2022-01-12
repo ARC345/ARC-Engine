@@ -40,13 +40,14 @@ public:
 	ARC::CPrimitive2D SQ_Data;
 
 private:
+	ARC::CShaderLibrary m_ShaderLibrary;
+
 	ARC::TRef<ARC::CShader> m_TriangleShader;
 	ARC::TRef<ARC::CVertexArray> m_TriangleVertexArray;
 	
-	ARC::TRef<ARC::CShader> m_TextureShader;
-	ARC::TRef<ARC::CShader> m_FlatColorShader;
 	ARC::TRef<ARC::CVertexArray> m_SquareVertexArray;
 	ARC::TRef<ARC::CTexture2D> m_Texture;
+	ARC::TRef<ARC::CTexture2D> m_TestTexture;
 
 	ARC::COrthographicCameraBase m_Camera;
 };

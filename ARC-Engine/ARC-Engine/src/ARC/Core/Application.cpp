@@ -28,6 +28,8 @@ namespace ARC
 
 			m_Window = std::unique_ptr<CWindow>(CWindow::Create());
 			
+			CRenderer::Init();
+
 			m_ImGuiLayer = new CImGuiLayer();
 			PushOverlay(m_ImGuiLayer);
 			

@@ -52,39 +52,7 @@ CExampleLayer::CExampleLayer() :
 		triangle_index_buffer.reset(ARC::CIndexBuffer::Create(triangle_indices, sizeof(triangle_indices) / sizeof(uint32_t)));
 		m_TriangleVertexArray->SetIndexBuffer(triangle_index_buffer);
 
-		const std::string triangle_vertex_source = R"(
-					#version 330 core
-
-					layout(location = 0) in vec3 a_Position;
-					layout(location = 1) in vec4 a_Colour;
-
-					uniform mat4 u_ViewProjection;
-					uniform mat4 u_Transform;
-					
-					out vec3 v_Position;
-					out vec4 v_Colour;
-
-					void main()
-					{
-						v_Position = a_Position;
-						v_Colour = a_Colour;
-						gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
-					}			
-				)";
-		const std::string triangle_fragment_source = R"(
-					#version 330 core
-
-					layout(location = 0) out vec4 o_Colour;
-					in vec3 v_Position;
-					in vec4 v_Colour;
-					void main()
-					{
-						o_Colour = vec4((v_Position+1)*0.5, 1.0);
-						o_Colour = v_Colour;
-					}			
-				)";
-		m_TriangleShader.reset(ARC::CShader::Create(triangle_vertex_source, triangle_fragment_source));
-
+		//m_TriangleShader = ARC::CShader::Create();
 	}
 	//-------------------------------~[Code for triangle]~-------------------------------//
 	//--------------------------------+[Code for square]+--------------------------------//
@@ -113,7 +81,8 @@ CExampleLayer::CExampleLayer() :
 	ARC::TRef<ARC::CIndexBuffer> square_index_buffer;
 	square_index_buffer.reset(ARC::CIndexBuffer::Create(square_indices, sizeof(square_indices) / sizeof(uint32_t)));
 	m_SquareVertexArray->SetIndexBuffer(square_index_buffer);
-
+	//--------------------------------~[Code for square]~--------------------------------//
+	//---------------------------+[Code for FlatColor Shader]+---------------------------//
 	const std::string flat_color_vertex_source = R"(
 				#version 330 core
 
@@ -144,48 +113,17 @@ CExampleLayer::CExampleLayer() :
 					o_Color = u_Color;
 				}			
 			)";
-
-	m_FlatColorShader.reset(ARC::CShader::Create(flat_color_vertex_source, flat_color_fragment_source));
-	//--------------------------------~[Code for square]~--------------------------------//
+	auto flatColorShader = m_ShaderLibrary.Load("FlatColorShader", flat_color_vertex_source, flat_color_fragment_source);
+	//---------------------------~[Code for FlatColor Shader]~---------------------------//
 	//----------------------------+[Code for Texture Shader]+----------------------------//
-	const std::string texture_vertex_source = R"(
-				#version 330 core
-
-				layout(location = 0) in vec3 a_Position;
-				layout(location = 1) in vec2 a_TexCoord;
-				
-				uniform mat4 u_ViewProjection;
-				uniform mat4 u_Transform;
-
-				out vec2 v_TexCoord;
-
-				void main()
-				{
-					v_TexCoord = a_TexCoord;
-					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.f);
-				}			
-			)";
-	const std::string texture_fragment_source = R"(
-				#version 330 core
-
-				layout(location = 0) out vec4 o_Color;
-
-				uniform sampler2D u_Texture;
-
-				in vec2 v_TexCoord;
-
-				void main()
-				{
-					o_Color = texture(u_Texture, v_TexCoord);
-				}			
-			)";
-
-	m_TextureShader.reset(ARC::CShader::Create(texture_vertex_source, texture_fragment_source));
+	auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 	//----------------------------~[Code for Texture Shader]~----------------------------//
 
 	m_Texture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_TextureShader)->Bind();
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_TextureShader)->UploadUniform<int>("u_Texture", 0);
+	m_TestTexture = ARC::CTexture2D::Create("assets/textures/ChernoLogo.png");
+
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(textureShader)->Bind();
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(textureShader)->UploadUniform<int>("u_Texture", 0);
 }
 
 void CExampleLayer::OnUpdate(float _DeltaTime)
@@ -221,8 +159,8 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 	ARC::CRenderer::BeginScene(m_Camera);
 	SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
 
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->Bind();
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_ShaderLibrary.GetShader("FlatColorShader"))->Bind();
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_ShaderLibrary.GetShader("FlatColorShader"))->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
 
 	for (size_t x = 0; x < 20; x++)
 		for (size_t y = 0; y < 20; y++)
@@ -230,11 +168,15 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 			glm::vec3 pos = { x * 0.11f, y * 0.11f, 0.f };
 			pos += SQ_Data.Position;
 			glm::mat4 transform = glm::scale(glm::translate(glm::mat4(1.0f), pos), SQ_Data.Scale);
-			ARC::CRenderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+			ARC::CRenderer::Submit(m_ShaderLibrary.GetShader("FlatColorShader"), m_SquareVertexArray, transform);
 		}
 
 	m_Texture->Bind();
-	ARC::CRenderer::Submit(m_TextureShader, m_SquareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+	ARC::CRenderer::Submit(m_ShaderLibrary.GetShader("Texture"), m_SquareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+	m_TestTexture->Bind();
+	ARC::CRenderer::Submit(m_ShaderLibrary.GetShader("Texture"), m_SquareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
 	//ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
 	ARC::CRenderer::EndScene();
 
