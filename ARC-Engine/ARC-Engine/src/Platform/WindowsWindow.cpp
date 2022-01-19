@@ -71,7 +71,7 @@ namespace ARC{
 		SetVSync(true);
 
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* _window, int _width, int _height){
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			Data.Width = _width;
 			Data.Height = _height;
 
@@ -79,12 +79,12 @@ namespace ARC{
 			Data.EventCallback(event);
 		});
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* _window){
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			CWindowCloseEvent event;
 			Data.EventCallback(event);
 		});
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods){
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			switch (_action)
 			{
 			case GLFW_PRESS: {
@@ -105,12 +105,12 @@ namespace ARC{
 			}
 		});
 		glfwSetCharCallback(m_Window, [](GLFWwindow* _window, uint _keycode) {
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			CKeyTypedEvent _event(_keycode);
 			Data.EventCallback(_event);
 			});
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* _window, int _button, int _action, int _mods) {
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			switch (_action)
 			{
 			case GLFW_PRESS: {
@@ -126,12 +126,12 @@ namespace ARC{
 			}
 		});
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* _window, double _xoffset, double _yoffset) {
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			CMouseScrolledEvent event((float)_xoffset, (float)_yoffset);
 			Data.EventCallback(event);
 		});
  		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* _window, double _xpos, double _ypos) {
-			WindowData& Data = *(WindowData*)glfwGetWindowUserPointer(_window);
+			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			CMouseMovedEvent _event((float)_xpos, (float)_ypos);
 			Data.EventCallback(_event);
 		});

@@ -39,8 +39,7 @@ namespace ARC {
 	{
 		auto window = static_cast<GLFWwindow*>(Core::CApplication::Get().GetWindow().GetNativeWindow());
 		TVec2<double> mousexy;
-		glfwGetCursorPos(window, &mousexy[0], &mousexy[1]);
-		return TVec2<>((float)mousexy.x(), (float)mousexy.y());
+		return TVec2<>((float)mousexy.x, (float)mousexy.y);
 	}
 
 	int CWindowsInput::GetKeyImpl(int _keycode)

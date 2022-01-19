@@ -23,7 +23,7 @@ ARC::Core::CApplication* ARC::Core::CreateApplication()
 //-------------------[Layer]----------------------//
 CExampleLayer::CExampleLayer() : 
 	ARC::CLayer("Example"),
-	m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+	m_CameraController(1280.f / 780.f, true)
 {
 	//-------------------------------+[Code for triangle]+-------------------------------//
 	{
@@ -113,7 +113,8 @@ CExampleLayer::CExampleLayer() :
 					o_Color = u_Color;
 				}			
 			)";
-	auto flatColorShader = m_ShaderLibrary.Load("FlatColorShader", flat_color_vertex_source, flat_color_fragment_source);
+	m_FlatColorShader = ARC::CShader::Create("FlatColorShader", flat_color_vertex_source, flat_color_fragment_source);
+
 	//---------------------------~[Code for FlatColor Shader]~---------------------------//
 	//----------------------------+[Code for Texture Shader]+----------------------------//
 	auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
@@ -128,39 +129,16 @@ CExampleLayer::CExampleLayer() :
 
 void CExampleLayer::OnUpdate(float _DeltaTime)
 {
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_LEFT))
-		m_Camera.Position.x -= CamMoveSpeed*_DeltaTime;
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_RIGHT))
-		m_Camera.Position.x += CamMoveSpeed*_DeltaTime;
-
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_UP))
-		m_Camera.Position.y += CamMoveSpeed*_DeltaTime;
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_DOWN))
-		m_Camera.Position.y -= CamMoveSpeed*_DeltaTime;
-
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_J))
-		m_Camera.Rotation += CamRotSpeed*_DeltaTime;
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_L))
-		m_Camera.Rotation -= CamRotSpeed*_DeltaTime;
-
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
-		SQ_Data.Position.x -= SQ_MoveSpeed * _DeltaTime;
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_D))
-		SQ_Data.Position.x += SQ_MoveSpeed * _DeltaTime;
-		
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_W))
-		SQ_Data.Position.y += SQ_MoveSpeed * _DeltaTime;
-	if (ARC::CInput::IsKeyPressed(ARC_KEY_S))
-		SQ_Data.Position.y -= SQ_MoveSpeed * _DeltaTime;
+	m_CameraController.OnUpdate(_DeltaTime);
 
 	ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 	ARC::CRenderCommand::Clear();
 
-	ARC::CRenderer::BeginScene(m_Camera);
+	ARC::CRenderer::BeginScene(m_CameraController.GetCamera());
 	SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
 
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_ShaderLibrary.GetShader("FlatColorShader"))->Bind();
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_ShaderLibrary.GetShader("FlatColorShader"))->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->Bind();
+	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
 
 	for (size_t x = 0; x < 20; x++)
 		for (size_t y = 0; y < 20; y++)
@@ -168,7 +146,7 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 			glm::vec3 pos = { x * 0.11f, y * 0.11f, 0.f };
 			pos += SQ_Data.Position;
 			glm::mat4 transform = glm::scale(glm::translate(glm::mat4(1.0f), pos), SQ_Data.Scale);
-			ARC::CRenderer::Submit(m_ShaderLibrary.GetShader("FlatColorShader"), m_SquareVertexArray, transform);
+			ARC::CRenderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
 		}
 
 	m_Texture->Bind();
@@ -185,8 +163,7 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 
 void CExampleLayer::OnEvent(ARC::CEvent& _Event)
 {
-	ARC::CEventDispatcher dispatcher(_Event);
-	dispatcher.Dispatch<ARC::CKeyPressedEvent>(BIND_FN(&CExampleLayer::OnKeyPressedEvent));
+	m_CameraController.OnEvent(_Event);
 }
 
 bool CExampleLayer::OnKeyPressedEvent(ARC::CKeyPressedEvent& _Event)
@@ -198,11 +175,11 @@ void CExampleLayer::OnGuiRender()
 {
 	ImGui::Begin("Sandbox");
 	if (ImGui::TreeNode("Camera"))
-	{
-		ImGui::DragFloat3("CamLocation", &GetCam().Position[0]);
-		ImGui::DragFloat("CamMoveSpeed", &CamMoveSpeed);
-		ImGui::DragFloat("CamRotation", &GetCam().Rotation, 1.0f, 0, 360);
-		ImGui::DragFloat("CamRotSpeed", &CamRotSpeed);
+ 	{
+// 		ImGui::DragFloat3("CamLocation", &GetCam().Position[0]);
+// 		ImGui::DragFloat("CamMoveSpeed", &CamMoveSpeed);
+// 		ImGui::DragFloat("CamRotation", &GetCam().Rotation, 1.0f, 0, 360);
+// 		ImGui::DragFloat("CamRotSpeed", &CamRotSpeed);
 		ImGui::TreePop();
 	}
 	if (ImGui::TreeNode("Squares"))

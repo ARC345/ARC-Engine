@@ -143,6 +143,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
     <ClInclude Include="out\glm\glm\common.hpp" />
     <ClInclude Include="out\glm\glm\detail\_features.hpp" />
     <ClInclude Include="out\glm\glm\detail\_fixes.hpp" />
@@ -593,6 +594,7 @@
     <ClInclude Include="src\ARC\Renderer\Texture.h" />
     <ClInclude Include="src\ARC\Renderer\VertexArray.h" />
     <ClInclude Include="src\ARC\Types\Array.h" />
+    <ClInclude Include="src\ARC\Types\Math.h" />
     <ClInclude Include="src\ARC\Types\Pointer.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
@@ -606,6 +608,7 @@
     <ClInclude Include="src\Platform\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
     <ClCompile Include="out\stb_image\stb_image.cpp" />
     <ClCompile Include="src\ARC\Buffer\Buffer.cpp" />
     <ClCompile Include="src\ARC\Core\Application.cpp" />
@@ -625,6 +628,7 @@
     <ClCompile Include="src\ARC\Renderer\Shader.cpp" />
     <ClCompile Include="src\ARC\Renderer\Texture.cpp" />
     <ClCompile Include="src\ARC\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\ARC\Types\Vector.cpp" />
     <ClCompile Include="src\PCH\arc_pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

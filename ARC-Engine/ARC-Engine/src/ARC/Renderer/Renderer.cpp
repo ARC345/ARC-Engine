@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "VertexArray.h"
 #include "Platform\OpenGl\OpenGLShader.h"
+#include "ARC\Types\vector.h"
 
 namespace ARC {
 	CRenderer::SSceneData* CRenderer::m_SceneData = new CRenderer::SSceneData;

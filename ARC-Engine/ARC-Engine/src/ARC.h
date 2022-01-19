@@ -23,6 +23,7 @@
 #include "ARC/Renderer/Texture.h"
 
 #include "ARC/Objects/CameraBase.h"
+#include "ARC/Objects/OrthographicCameraController.h"
 
 //--------EntryPoint-----------------
 #include "ARC/Core/EntryPoint.h"

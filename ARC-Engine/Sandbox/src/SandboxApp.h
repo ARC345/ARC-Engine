@@ -2,13 +2,13 @@
 #include <string>
 #include "ARC/Core/Application.h"
 #include "ARC/Layers/Layer.h"
+#include "ARC/Objects/OrthographicCameraController.h"
 #include "ARC/Objects/Primitive2D.h"
 #include "ARC/Renderer/Color.h"
 
 namespace ARC { class CTexture2D; }
 namespace ARC { class CKeyPressedEvent; }
 namespace ARC { class CEvent; }
-namespace ARC { class COrthographicCameraBase; }
 namespace ARC { class CVertexArray; }
 namespace ARC { class CIndexBuffer; }
 namespace ARC { class CVertexBuffer; }
@@ -26,12 +26,9 @@ public:
 
 	void OnGuiRender() override;
 
-	inline ARC::COrthographicCameraBase& GetCam() { return m_Camera; }
+	inline ARC::COrthographicCameraBase& GetCam() { return m_CameraController.GetCamera(); }
 
 public:
-	float CamMoveSpeed = 10.f;
-	float CamRotSpeed = 180.f;
-	
 	float SQ_MoveSpeed = 3.f;
 	float SQ_RotSpeed = 180.f;
 
@@ -45,11 +42,12 @@ private:
 	ARC::TRef<ARC::CShader> m_TriangleShader;
 	ARC::TRef<ARC::CVertexArray> m_TriangleVertexArray;
 	
+	ARC::TRef<ARC::CShader> m_FlatColorShader;
 	ARC::TRef<ARC::CVertexArray> m_SquareVertexArray;
 	ARC::TRef<ARC::CTexture2D> m_Texture;
 	ARC::TRef<ARC::CTexture2D> m_TestTexture;
 
-	ARC::COrthographicCameraBase m_Camera;
+	ARC::COrthographicCameraController m_CameraController;
 };
 
 class CSandbox : public ARC::Core::CApplication

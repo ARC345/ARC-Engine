@@ -1458,6 +1458,8 @@
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
+    <ClInclude Include="src\ARC\Types\Math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp">
@@ -1541,5 +1543,7 @@
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
+    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\ARC\Types\Vector.cpp" />
   </ItemGroup>
 </Project>

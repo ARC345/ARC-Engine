@@ -8,8 +8,11 @@ namespace ARC {
 	{
 	public:
 		COrthographicCameraBase(float _Left, float _Right, float _Bottom, float _Top);
+		void SetProjection(float _Left, float _Right, float _Bottom, float _Top);
 		
-		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; };
+		inline const glm::mat4& GetViewProjectionMatrix() const { return ViewProjectionMatrix(); };
+		inline const glm::mat4& ViewMatrix() const { return m_ViewMatrix; }
+		inline const glm::mat4& ViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 		void RecalculateViewProjectionMatrix();
 
 	private:

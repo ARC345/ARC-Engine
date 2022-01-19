@@ -27,4 +27,6 @@ namespace ARC {
 
 		static SSceneData* m_SceneData;
 	};
+
+	
 }

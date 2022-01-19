@@ -15,12 +15,12 @@ using ulong = unsigned long;
 namespace ARC {
 	namespace HPR {
 		namespace Convert {
-			template<typename T> inline T SecondsToMilliSeconds(T _Time) { return _Time * 1000; }
-			template<typename T> inline T MilliSecondsToSeconds(T _Time) { return _Time / 1000; }
+			template<typename T> [[nodiscard]] inline T SecondsToMilliSeconds(T _Time) { return _Time * 1000; }
+			template<typename T> [[nodiscard]] inline T MilliSecondsToSeconds(T _Time) { return _Time / 1000; }
 		}
 		namespace IO {
-			std::string ReadFile(const std::string& _Path);
-			std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);
+			[[nodiscard]] std::string ReadFile(const std::string& _Path);
+			[[nodiscard]] std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);
 		}
 		namespace BIT {
 	// 	template<typename T>

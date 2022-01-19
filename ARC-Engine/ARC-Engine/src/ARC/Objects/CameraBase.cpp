@@ -8,7 +8,13 @@ namespace ARC {
 		m_ProjectionMatrix(glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f)),
 		m_ViewMatrix(1.0f)
 	{
-		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+		m_ViewProjectionMatrix = m_ProjectionMatrix * ViewMatrix();
+	}
+
+	void COrthographicCameraBase::SetProjection(float _Left, float _Right, float _Bottom, float _Top)
+	{
+		m_ProjectionMatrix = glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f);
+		m_ViewProjectionMatrix = m_ProjectionMatrix * ViewMatrix();
 	}
 
 	void COrthographicCameraBase::RecalculateViewProjectionMatrix()
@@ -17,6 +23,6 @@ namespace ARC {
 			glm::rotate(glm::mat4(1.0f), glm::radians(Rotation), glm::vec3(0, 0, 1));
 
 		m_ViewMatrix = glm::inverse(transform);
-		m_ViewProjectionMatrix = m_ProjectionMatrix * m_ViewMatrix;
+		m_ViewProjectionMatrix = m_ProjectionMatrix * ViewMatrix();
 	}		
 }
