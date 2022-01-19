@@ -11,9 +11,9 @@ namespace ARC {
 		CWindowResizeEvent(int p_DimentionsX, int p_DimentionsY) :
 			m_Dimentions(TVec2<int>(p_DimentionsX, p_DimentionsY)) {}
 
-		inline TVec2<int> GetXY() const { return m_Dimentions; };
-		inline int GetX() const { return GetXY().x(); };
-		inline int GetY() const { return GetXY().y(); };
+		inline TVec2<int> GetDimentions() const { return m_Dimentions; };
+		inline int GetX() const { return GetDimentions().x; };
+		inline int GetY() const { return GetDimentions().y; };
 
 		virtual std::string ToString() const override {
 			std::stringstream ss;

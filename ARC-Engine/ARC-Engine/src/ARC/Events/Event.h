@@ -79,12 +79,12 @@ namespace ARC {
 	public:
 		CEventDispatcher(CEvent& p_Event) : m_Event(p_Event) {}
 
-		template<typename T>
-		bool Dispatch(EventFn<T> p_Func)
+		template<typename T, typename F>
+		bool Dispatch(const F& _Func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.bHandled = p_Func(*(T*)&m_Event);
+				m_Event.bHandled = _Func(static_cast<T&>(m_Event));
 				return true;
 			}
 			return false;

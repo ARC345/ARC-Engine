@@ -36,6 +36,7 @@ namespace ARC{
 			inline float GetDeltaTime() const { return m_DeltaTime; }
 		private:
 			bool OnWindowClose(CWindowCloseEvent& _e);
+			bool OnWindowResize(CWindowResizeEvent& _e);
 		
 		private:
 		

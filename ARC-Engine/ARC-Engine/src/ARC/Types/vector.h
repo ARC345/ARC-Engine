@@ -4,6 +4,7 @@
 #include <type_traits>
 #include "../Helpers/Helpers.h"
 #include <string>
+#include "Math.h"
 
 namespace ARC
 {
@@ -27,6 +28,7 @@ namespace ARC
 	template <size_t N, typename T>
 	class ARC_API TVecX : public Base::TVec_Base
 	{
+		
 	public:
 		TVecX() : m_Data() {};
 		TVecX(const TVecX<N, T>& x)
@@ -41,6 +43,7 @@ namespace ARC
 				m_Data[a]=x[a];
 			};
 		};
+
 		TVecX(T Data[N])
 			: m_Data(Data)
 		{}
@@ -53,8 +56,45 @@ namespace ARC
 			return m_Data[x];
 		};
 
-		__forceinline T* Data() {return m_Data;}
-		__forceinline const T* Data() const {return m_Data;}
+		constexpr TVecX<N, T> operator+(const TVecX<N, T>& x)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] + x.Data()[i];
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator-(const TVecX<N, T>& x)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] - x.Data()[i];
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator*(const TVecX<N, T>& x)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] - x.Data()[i];
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator/(const TVecX<N, T>& x)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] / x.Data()[i];
+			}
+			return rval;
+		}
+
+		inline T* Data() { return m_Data; }
+		inline const T* Data() const { return m_Data; }
 
 		virtual constexpr size_t GetSize() const { return N; }
 		friend std::ostream& operator<< <>(std::ostream& os, const TVecX<N,T>& e);
@@ -62,7 +102,6 @@ namespace ARC
 	private:
 		T m_Data[N];
 		size_t m_Size = N;
-
 	};
 
 	template <typename T = float>
@@ -71,15 +110,33 @@ namespace ARC
 	public:
 		using Super = TVecX<2, T>;
 
-		TVec2() {}
-		TVec2(const T& tx, const T& ty)
+		TVec2() :
+			r(Data()[0]), g(Data()[1]),
+			x(Data()[0]), y(Data()[1])
+		{}
+		TVec2(const T& tx, const T& ty) :
+			r(Data()[0]), g(Data()[1]),
+			x(Data()[0]), y(Data()[1])
 		{
 			this->Set(tx, ty);
 		}
-		T& x() { return Data()[0]; };
-		T& y() { return Data()[1]; };
 
-		inline void Set(const T& tx, const T& ty) { x() = tx; y() = ty; };
+		T& r, & g;
+		T& x, & y;
+
+		[[nodiscard]] static inline constexpr float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqrt(Math::DistSqr(_1, _2));
+		}
+		
+		[[nodiscard]] static inline constexpr float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y);
+		}
+
+		inline void Set(const T& tx, const T& ty) { x = tx; y = ty; };
+
+	public:
+		inline static TVec2 ZeroVector = {0, 0};
+	private:
 	};
 
 	template <typename T = float>
@@ -88,15 +145,27 @@ namespace ARC
 	public:
 		using Super = TVecX<3, T>;
 
-		TVec3(){}
-		TVec3(const T& tx, const T& ty, const T& tz)
+		TVec3() :
+			r(Data()[0]), g(Data()[1]), b(Data()[2]),
+			x(Data()[0]), y(Data()[1]), z(Data()[2])
+		{}
+		TVec3(const T& tx, const T& ty, const T& tz) :
+			r(Data()[0]), g(Data()[1]), b(Data()[2]),
+			x(Data()[0]), y(Data()[1]), z(Data()[2])
 		{
 			this->Set(tx, ty, tz);
 		}
 
-		T* x = &Data()[0];
-		T* y = &Data()[1];
-		T* z = &Data()[2];
+		T& r, & g, & b;
+		T& x, & y, & z;
+
+		SM_MATH_FUNC float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqrt(Math::DistSqr(_1, _2));
+		}
+
+		SM_MATH_FUNC float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z);
+		}
 
 		inline void Set(const T& tx, const T& ty, const T& tz) { *x = tx; *y = ty; *z = tz;};
 	};
@@ -107,22 +176,18 @@ namespace ARC
 		using Super = TVecX<4, T>;
 		
 		TVec4() {}
-		TVec4(const T& tw, const T& tx, const T& ty, const T& tz)
+		TVec4(const T& tw, const T& tx, const T& ty, const T& tz) :
+			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(m_Data[3])
+			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(m_Data[3])
 		{
 			this->Set(tw, tx, ty, tz);
 		}
 
-		T& w() const { return Data()[0]; };
-		T& x() const { return Data()[1]; };
-		T& y() const { return Data()[2]; };
-		T& z() const { return Data()[3]; };
-		
-		T& r() const { return w(); };
-		T& g() const { return x(); };
-		T& b() const { return y(); };
-		T& a() const { return z(); };
+		T& r, & g, & b, & a;
+		T& x, & y, & z, & w; 
 
-		inline void Set(const T& tw, const T& tx, const T& ty, const T& tz) { w()=tw, x() = tx; y() = ty; z() = tz;};
+		inline void Set(const T& tx, const T& ty, const T& tz, const T& tw) {
+			x = tx; y = ty; z = tz;  w = tw;
+		};
 	};
-
 };

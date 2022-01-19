@@ -61,6 +61,7 @@ namespace ARC
 		{
 			CEventDispatcher dispatcher(_e);
 			dispatcher.Dispatch<CWindowCloseEvent>(BIND_FN(&CApplication::OnWindowClose));
+			dispatcher.Dispatch<CWindowResizeEvent>(BIND_FN(&CApplication::OnWindowResize));
 
 			for (auto it = m_LayerStack.end(); it!= m_LayerStack.begin();)
 			{
@@ -79,10 +80,16 @@ namespace ARC
 			m_LayerStack.PushOverlay(_overlay);
 			_overlay->OnAttach();
 		}
+
 		bool CApplication::OnWindowClose(CWindowCloseEvent& _e)
 		{
 			m_bRunning = false;
 			return true;
+		}
+		bool CApplication::OnWindowResize(CWindowResizeEvent& _e)
+		{
+			if(_e.GetDimentions() == {0, 0})
+			return false;
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace ARC{
 		private:
 			GLFWwindow* m_Window;
 			CGraphicsContext* m_Context;
-			struct WindowData
+			struct SWindowData
 			{
 				std::string Title;
 				unsigned int Width, Height;
@@ -45,7 +45,7 @@ namespace ARC{
 
 				EventCallbackFn EventCallback; 
 			};
-			WindowData m_Data;
+			SWindowData m_Data;
 
 		/*---------------------------------*/
 	};
