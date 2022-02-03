@@ -16,6 +16,21 @@ namespace ARC {
 
 		static TRef<CShader> Create(const std::string& _Name, const std::string& _VertexSrc, const std::string& _FragmentSrc);
 		static TRef<CShader> Create(const std::string& _Path);
+
+		template<typename T>
+		inline void Set(const std::string& _Name, const T& _Value);
+
+	protected:
+		virtual void SetInt(const std::string& _Name, const int* _Value) = 0;
+		virtual void SetInt2(const std::string& _Name, const int* _Value) = 0;
+		virtual void SetInt3(const std::string& _Name, const int* _Value) = 0;
+		virtual void SetInt4(const std::string& _Name, const int* _Value) = 0;
+		virtual void SetMat3(const std::string& _Name, const float* _Value) = 0;
+		virtual void SetMat4(const std::string& _Name, const float* _Value) = 0;
+		virtual void SetFloat(const std::string& _Name, const float* _Value) = 0;
+		virtual void SetFloat2(const std::string& _Name, const float* _Value) = 0;
+		virtual void SetFloat3(const std::string& _Name, const float* _Value) = 0;
+		virtual void SetFloat4(const std::string& _Name, const float* _Value) = 0;
 	};
 
 	class CShaderLibrary

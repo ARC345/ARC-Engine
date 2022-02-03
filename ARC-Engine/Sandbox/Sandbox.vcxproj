@@ -80,7 +80,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out\glm;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -97,7 +97,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out\glm;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -118,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ARC-Engine\src;..\ARC-Engine\out\spdlog\include;..\ARC-Engine\out\glm;..\ARC-Engine\out;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -134,9 +134,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Sandbox2D.h" />
     <ClInclude Include="src\SandboxApp.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
   <ItemGroup>

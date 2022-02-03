@@ -31,9 +31,6 @@
     <Filter Include="src\ARC">
       <UniqueIdentifier>{D25E2FA9-3E3E-AE44-4756-391BB3B414A6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ARC\Buffer">
-      <UniqueIdentifier>{7BC0DE5C-678E-D262-5022-43893C8FAEC7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\ARC\Core">
       <UniqueIdentifier>{6A96CEF0-56F9-5D95-FF7E-964BEBC02918}</UniqueIdentifier>
     </Filter>
@@ -51,9 +48,6 @@
     </Filter>
     <Filter Include="src\ARC\Interfaces">
       <UniqueIdentifier>{E59B23E0-D17F-E435-3AE0-DE8826E3CEB7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\ARC\Layers">
-      <UniqueIdentifier>{51D5D272-3DA3-C678-2637-379F12A4A2DD}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\ARC\Objects">
       <UniqueIdentifier>{8BAF61B5-F73A-CF79-004C-526E6C562B7A}</UniqueIdentifier>
@@ -1326,9 +1320,6 @@
     <ClInclude Include="src\ARC.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Buffer\Buffer.h">
-      <Filter>src\ARC\Buffer</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Core\Application.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
@@ -1383,25 +1374,31 @@
     <ClInclude Include="src\ARC\Interfaces\Area2D.h">
       <Filter>src\ARC\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Layers\Layer.h">
-      <Filter>src\ARC\Layers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ARC\Layers\LayerStack.h">
-      <Filter>src\ARC\Layers</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Objects\CameraBase.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Objects\Object.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Objects\Primitive2D.h">
       <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\Buffer.h">
+      <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\Color.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\Layer.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\LayerStack.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\RenderCommand.h">
@@ -1423,6 +1420,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\Array.h">
+      <Filter>src\ARC\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Types\Math.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\Pointer.h">
@@ -1458,15 +1458,13 @@
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
-    <ClInclude Include="src\ARC\Types\Math.h" />
+    <ClInclude Include="src\ARC\Renderer\Renderer2D.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp">
       <Filter>out\stb_image</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Buffer\Buffer.cpp">
-      <Filter>src\ARC\Buffer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Core\Application.cpp">
       <Filter>src\ARC\Core</Filter>
@@ -1486,20 +1484,26 @@
     <ClCompile Include="src\ARC\Input\WindowsInput.cpp">
       <Filter>src\ARC\Input</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\Layers\Layer.cpp">
-      <Filter>src\ARC\Layers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Layers\LayerStack.cpp">
-      <Filter>src\ARC\Layers</Filter>
-    </ClCompile>
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp">
       <Filter>src\ARC\Objects</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Objects\Object.cpp">
       <Filter>src\ARC\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp">
+      <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp">
       <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Buffer.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Layer.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\LayerStack.cpp">
+      <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp">
       <Filter>src\ARC\Renderer</Filter>
@@ -1518,6 +1522,9 @@
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\VertexArray.cpp">
       <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Types\Vector.cpp">
+      <Filter>src\ARC\Types</Filter>
     </ClCompile>
     <ClCompile Include="src\PCH\arc_pch.cpp">
       <Filter>src\PCH</Filter>
@@ -1543,7 +1550,11 @@
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
-    <ClCompile Include="src\ARC\Types\Vector.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Color.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -76,7 +76,6 @@ project "ARC-Engine"
 
 		defines
 		{
-			"ARC_PLATFORM_WINDOWS",
 			"ARC_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
 			"_CRT_SECURE_NO_WARNINGS"
@@ -115,6 +114,7 @@ project "Sandbox"
 	{
 		"ARC-Engine/src",
 		"ARC-Engine/out/spdlog/include",
+		"%{IncludeDir.glm}",
 		"ARC-Engine/out"
 	}
 

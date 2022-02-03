@@ -1,12 +1,13 @@
 #pragma once
-#include "ARC\Objects\CameraBase.h"
+#include "ARC/Objects/CameraBase.h"
+#include "Object.h"
 
 namespace ARC { class CMouseScrolledEvent; }
 namespace ARC { class CWindowResizeEvent; }
 namespace ARC { class CEvent; }
 
 namespace ARC {
-	class COrthographicCameraController
+	class COrthographicCameraController : public CObject
 	{
 		public:
 			COrthographicCameraController(float _AspectRatio, bool _bCanRotate);
@@ -16,7 +17,9 @@ namespace ARC {
 
 			COrthographicCameraBase& GetCamera() { return m_Camera; }
 			const COrthographicCameraBase& GetCamera() const { return m_Camera; }
-		private:
+			inline float GetZoomLevel() const { return m_ZoomLevel; }
+			inline void SetZoomLevel(float _val) { m_ZoomLevel = _val; }
+	private:
 			bool OnMouseScrolledEvent(CMouseScrolledEvent& _Event);
 			bool OnWindowResized(CWindowResizeEvent& _Event);
 		private:

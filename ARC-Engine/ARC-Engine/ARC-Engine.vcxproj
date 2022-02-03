@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;out\glm;out\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -98,7 +98,7 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;out\glm;out\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -123,7 +123,7 @@
       <PrecompiledHeaderFile>arc_pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-      <PreprocessorDefinitions>ARC_PLATFORM_WINDOWS;ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARC_BUILD_DLL;GLFW_INCLUDE_NONE;_CRT_SECURE_NO_WARNINGS;ARC_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;out\spdlog\include;out\GLFW\include;out\GLAD\include;out\imgui;out\glm;out\stb_image;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -143,7 +143,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
     <ClInclude Include="out\glm\glm\common.hpp" />
     <ClInclude Include="out\glm\glm\detail\_features.hpp" />
     <ClInclude Include="out\glm\glm\detail\_fixes.hpp" />
@@ -560,8 +559,8 @@
     <ClInclude Include="out\glm\glm\vec4.hpp" />
     <ClInclude Include="out\glm\glm\vector_relational.hpp" />
     <ClInclude Include="out\stb_image\stb_image.h" />
+    <ClInclude Include="src\ARC\Renderer\Renderer2D.h" />
     <ClInclude Include="src\ARC.h" />
-    <ClInclude Include="src\ARC\Buffer\Buffer.h" />
     <ClInclude Include="src\ARC\Core\Application.h" />
     <ClInclude Include="src\ARC\Core\Core.h" />
     <ClInclude Include="src\ARC\Core\EntryPoint.h" />
@@ -580,13 +579,15 @@
     <ClInclude Include="src\ARC\Input\KeyCodes.h" />
     <ClInclude Include="src\ARC\Input\WindowsInput.h" />
     <ClInclude Include="src\ARC\Interfaces\Area2D.h" />
-    <ClInclude Include="src\ARC\Layers\Layer.h" />
-    <ClInclude Include="src\ARC\Layers\LayerStack.h" />
     <ClInclude Include="src\ARC\Objects\CameraBase.h" />
     <ClInclude Include="src\ARC\Objects\Object.h" />
+    <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
     <ClInclude Include="src\ARC\Objects\Primitive2D.h" />
+    <ClInclude Include="src\ARC\Renderer\Buffer.h" />
     <ClInclude Include="src\ARC\Renderer\Color.h" />
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\ARC\Renderer\Layer.h" />
+    <ClInclude Include="src\ARC\Renderer\LayerStack.h" />
     <ClInclude Include="src\ARC\Renderer\RenderCommand.h" />
     <ClInclude Include="src\ARC\Renderer\Renderer.h" />
     <ClInclude Include="src\ARC\Renderer\RendererAPI.h" />
@@ -608,20 +609,22 @@
     <ClInclude Include="src\Platform\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
     <ClCompile Include="out\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\ARC\Buffer\Buffer.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Color.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\ARC\Core\Application.cpp" />
     <ClCompile Include="src\ARC\Core\Log.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiBuild.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\ARC\Helpers\Helpers.cpp" />
     <ClCompile Include="src\ARC\Input\WindowsInput.cpp" />
-    <ClCompile Include="src\ARC\Layers\Layer.cpp" />
-    <ClCompile Include="src\ARC\Layers\LayerStack.cpp" />
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp" />
     <ClCompile Include="src\ARC\Objects\Object.cpp" />
+    <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Layer.cpp" />
+    <ClCompile Include="src\ARC\Renderer\LayerStack.cpp" />
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\ARC\Renderer\Renderer.cpp" />
     <ClCompile Include="src\ARC\Renderer\RendererAPI.cpp" />

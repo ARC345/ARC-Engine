@@ -9,7 +9,10 @@ namespace ARC {
 
 	LayerStack::~LayerStack()
 	{
-		for(CLayer* layer : m_Layers) delete layer;
+		for(CLayer* layer : m_Layers){
+			layer->OnDetach();
+			delete layer;
+		}
 	}
 
 	void LayerStack::PushLayer(CLayer* _layer)

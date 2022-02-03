@@ -2,10 +2,9 @@
 #include "ARC\Core\Core.h"
 #include "OpenGLShader.h"
 #include "glad\glad.h"
-#include "glm\gtc\type_ptr.inl"
 #include "ARC\Core\Log.h"
-#include "glm\gtx\compatibility.hpp"
 #include "ARC\Helpers\Helpers.h"
+#include "ARC\Renderer\Color.h"
 
 namespace ARC {
 	std::string COpenGLShader::s_Seperator = "#type";
@@ -41,12 +40,6 @@ namespace ARC {
 	void COpenGLShader::UnBind() const
 	{
 		glUseProgram(0);
-	}
-
-	template<typename T>
-	void COpenGLShader::UploadUniform(const std::string& _Name, const T& _Value)
-	{
-		ARC_CORE_WARN("Uploading {0} to OpenGLShaders is currently not supported", typeid(T).name());
 	}
 
 	unsigned int COpenGLShader::ShaderTypeFromString(std::string& _Type)
@@ -87,6 +80,7 @@ namespace ARC {
 			std::string type = _Source.substr(begin, eol - begin);
 			
 			size_t nextLinePos = _Source.find_first_not_of("\r\n", eol);
+			ARC_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
 			pos = _Source.find(s_Seperator, nextLinePos);
 			shaderSources[ShaderTypeFromString(type)] = _Source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? _Source.size() - 1 : nextLinePos));
 		}
@@ -175,50 +169,68 @@ namespace ARC {
 
 		// Always detach shaders after a successful link.
 		for (auto& shaderHandle : shaderHandles)
+		{	
 			glDetachShader(program, shaderHandle);
-
+			glDeleteShader(shaderHandle);
+		}
 	}
 
-	template<>
-	void COpenGLShader::UploadUniform<glm::vec4>(const std::string& _Name, const glm::vec4& _Value)
+	void COpenGLShader::SetMat4(const std::string& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniform4fv(location, 1, glm::value_ptr(_Value));		
+		glUniformMatrix4fv(location, 1, GL_FALSE, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<glm::mat4>(const std::string& _Name, const glm::mat4& _Value)
+
+	void COpenGLShader::SetMat3(const std::string& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(_Value));		
+		glUniformMatrix3fv(location, 1, GL_FALSE, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<glm::mat3>(const std::string& _Name, const glm::mat3& _Value)
+
+	void COpenGLShader::SetInt(const std::string& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(_Value));		
+		glUniform1iv(location, 1, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<float>(const std::string& _Name, const float& _Value)
+
+	void COpenGLShader::SetInt2(const std::string& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniform1f(location, _Value);		
+		glUniform2iv(location, 1, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<glm::float2>(const std::string& _Name, const glm::float2& _Value)
+
+	void COpenGLShader::SetInt3(const std::string& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniform2fv(location, 1, glm::value_ptr(_Value));		
+		glUniform3iv(location, 1, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<glm::float3>(const std::string& _Name, const glm::float3& _Value)
+
+	void COpenGLShader::SetInt4(const std::string& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniform3fv(location, 1, glm::value_ptr(_Value));		
+		glUniform4iv(location, 1, _Value);
 	}
-	template<>
-	void COpenGLShader::UploadUniform<int>(const std::string& _Name, const int& _Value)
+	void COpenGLShader::SetFloat(const std::string& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
-		glUniform1i(location, _Value);		
+		glUniform1fv(location, 1, _Value);
+	}
+
+	void COpenGLShader::SetFloat2(const std::string& _Name, const float* _Value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		glUniform2fv(location, 1, _Value);
+	}
+
+	void COpenGLShader::SetFloat3(const std::string& _Name, const float* _Value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		glUniform3fv(location, 1, _Value);
+	}
+
+	void COpenGLShader::SetFloat4(const std::string& _Name, const float* _Value)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		glUniform4fv(location, 1, _Value);
 	}
 }

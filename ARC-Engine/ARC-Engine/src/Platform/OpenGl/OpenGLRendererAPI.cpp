@@ -9,6 +9,13 @@ namespace ARC {
 	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	void COpenGLRendererAPI::SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions)
+	{
+		glViewport(_BottemLeftCoord.x, _BottemLeftCoord.y, _Dimentions.x, _Dimentions.y);
 	}
 
 	void COpenGLRendererAPI::SetClearColour(const glm::vec4 _Colour)

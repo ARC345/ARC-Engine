@@ -1,5 +1,5 @@
 #pragma once
-#include "ARC\Buffer\Buffer.h"
+#include "ARC\Renderer\Buffer.h"
 
 namespace ARC {
 	class COpenGLVertexBuffer : public CVertexBuffer

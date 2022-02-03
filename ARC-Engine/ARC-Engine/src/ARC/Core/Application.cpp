@@ -6,7 +6,7 @@
 #include "glad\glad.h"
 #include "ARC/Input\Input.h"
 #include "ARC/Renderer/Shader.h"
-#include "ARC/Buffer/Buffer.h"
+#include "ARC/Renderer/Buffer.h"
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Renderer.h"
 #include "ARC/GUI/ImGuiLayer.h"
@@ -46,9 +46,11 @@ namespace ARC
 				float time = (float)glfwGetTime();
 				m_DeltaTime = time - m_LastFrameTime;
 				m_LastFrameTime = time;
-				for (CLayer* layer : m_LayerStack)
-					layer->OnUpdate(m_DeltaTime);
-					
+
+				if(!m_bMinimized) {
+					for (CLayer* layer : m_LayerStack)
+						layer->OnUpdate(m_DeltaTime);
+				}
 				m_ImGuiLayer->Begin();
 				for (CLayer* layer : m_LayerStack)
 					layer->OnGuiRender();
@@ -88,7 +90,12 @@ namespace ARC
 		}
 		bool CApplication::OnWindowResize(CWindowResizeEvent& _e)
 		{
-			if(_e.GetDimentions() == {0, 0})
+			if(_e.GetX() == 0 || _e.GetY() == 0){
+				m_bMinimized = true;
+				return false;
+			}
+			m_bMinimized = false;
+			CRenderer::OnWindowResize(TVec2<uint32_t>(_e.GetX(), _e.GetY()));
 			return false;
 		}
 	}
