@@ -14,6 +14,7 @@
 #include "Platform\OpenGl\OpenGLShader.h"
 #include "glm\glm\gtc\type_ptr.inl"
 #include "ARC\Renderer\Texture.h"
+#include "Sandbox2D.h"
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
 {
@@ -34,14 +35,14 @@ CExampleLayer::CExampleLayer() :
 		};
 
 		ARC::TRef<ARC::CVertexBuffer> triangle_vertex_buffer;
-		triangle_vertex_buffer.reset(ARC::CVertexBuffer::Create(triangle_verts, sizeof(triangle_verts)));
+		triangle_vertex_buffer = ARC::CVertexBuffer::Create(triangle_verts, sizeof(triangle_verts));
 		ARC::CBufferLayout triangle_layout = {
 			{ ARC::EShaderDataType::Float3, "a_Position" },
 			{ ARC::EShaderDataType::Float4, "a_Colour" }
 		};
 		triangle_vertex_buffer->SetLayout(triangle_layout);
 
-		m_TriangleVertexArray.reset(ARC::CVertexArray::Create());
+		m_TriangleVertexArray = ARC::CVertexArray::Create();
 		m_TriangleVertexArray->AddVertexBuffer(triangle_vertex_buffer);
 
 		unsigned int triangle_indices[] = {
@@ -49,14 +50,14 @@ CExampleLayer::CExampleLayer() :
 		};
 
 		ARC::TRef<ARC::CIndexBuffer> triangle_index_buffer;
-		triangle_index_buffer.reset(ARC::CIndexBuffer::Create(triangle_indices, sizeof(triangle_indices) / sizeof(uint32_t)));
+		triangle_index_buffer = ARC::CIndexBuffer::Create(triangle_indices, sizeof(triangle_indices) / sizeof(uint32_t));
 		m_TriangleVertexArray->SetIndexBuffer(triangle_index_buffer);
 
 		//m_TriangleShader = ARC::CShader::Create();
 	}
 	//-------------------------------~[Code for triangle]~-------------------------------//
 	//--------------------------------+[Code for square]+--------------------------------//
-	m_SquareVertexArray.reset(ARC::CVertexArray::Create());
+	m_SquareVertexArray = ARC::CVertexArray::Create();
 
 	float square_verts[5 * 4] = {
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -66,7 +67,7 @@ CExampleLayer::CExampleLayer() :
 	};
 
 	ARC::TRef<ARC::CVertexBuffer> square_vertex_buffer;
-	square_vertex_buffer.reset(ARC::CVertexBuffer::Create(square_verts, sizeof(square_verts)));
+	square_vertex_buffer = ARC::CVertexBuffer::Create(square_verts, sizeof(square_verts));
 
 	ARC::CBufferLayout square_layout = { 
 		{ ARC::EShaderDataType::Float3, "a_Position" },
@@ -79,7 +80,7 @@ CExampleLayer::CExampleLayer() :
 	unsigned int square_indices[] = { 0, 1, 2, 2, 3, 0 };
 
 	ARC::TRef<ARC::CIndexBuffer> square_index_buffer;
-	square_index_buffer.reset(ARC::CIndexBuffer::Create(square_indices, sizeof(square_indices) / sizeof(uint32_t)));
+	square_index_buffer = ARC::CIndexBuffer::Create(square_indices, sizeof(square_indices) / sizeof(uint32_t));
 	m_SquareVertexArray->SetIndexBuffer(square_index_buffer);
 	//--------------------------------~[Code for square]~--------------------------------//
 	//---------------------------+[Code for FlatColor Shader]+---------------------------//
@@ -123,8 +124,8 @@ CExampleLayer::CExampleLayer() :
 	m_Texture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
 	m_TestTexture = ARC::CTexture2D::Create("assets/textures/ChernoLogo.png");
 
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(textureShader)->Bind();
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(textureShader)->UploadUniform<int>("u_Texture", 0);
+	textureShader->Bind();
+	textureShader->Set<int>("u_Texture", 0);
 }
 
 void CExampleLayer::OnUpdate(float _DeltaTime)
@@ -137,8 +138,8 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 	ARC::CRenderer::BeginScene(m_CameraController.GetCamera());
 	SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
 
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->Bind();
-	std::dynamic_pointer_cast<ARC::COpenGLShader>(m_FlatColorShader)->UploadUniform<glm::vec4>("u_Color", SQ_Colour);
+	m_FlatColorShader->Bind();
+	m_FlatColorShader->Set<ARC::CColor>("u_Color", SQ_Colour);
 
 	for (size_t x = 0; x < 20; x++)
 		for (size_t y = 0; y < 20; y++)
@@ -184,7 +185,7 @@ void CExampleLayer::OnGuiRender()
 	}
 	if (ImGui::TreeNode("Squares"))
 	{
-		ImGui::ColorEdit4("SQ_Colour", glm::value_ptr(SQ_Colour));
+		ImGui::ColorEdit4("SQ_Colour", SQ_Colour.Data());
 		ImGui::TreePop();
 	}
 	ImGui::End();
@@ -193,5 +194,5 @@ void CExampleLayer::OnGuiRender()
 //-------------------[Layer]----------------------//
 CSandbox::CSandbox()
 {
-	PushLayer(new CExampleLayer());
+	PushLayer(new CSandbox2D());
 }

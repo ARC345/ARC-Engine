@@ -1,7 +1,7 @@
 #include "arc_pch.h"
 #include "OpenGLVertexArray.h"
 #include "glad\glad.h"
-#include "..\..\ARC\Buffer\Buffer.h"
+#include "ARC\Renderer\Buffer.h"
 
 namespace ARC {
 	namespace HPR {

@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 
-#include "../../../out/glm/glm/glm.hpp"
+#include "glm/glm.hpp"
 namespace ARC {
 	class COpenGLShader :
 		public CShader
@@ -18,9 +18,6 @@ namespace ARC {
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
-		template<typename T>
-		void UploadUniform(const std::string& _Name, const T& _Value);
-
 		virtual inline const std::string& GetName() const override { return m_Name; };
 
 	private:
@@ -33,5 +30,16 @@ namespace ARC {
 		static std::string s_Seperator;
 		std::string m_Name;
 		uint32_t m_RendererID;
+	protected:
+		virtual void SetInt(const std::string& _Name, const int* _Value) override;
+		virtual void SetInt2(const std::string& _Name, const int* _Value) override;
+		virtual void SetInt3(const std::string& _Name, const int* _Value) override;
+		virtual void SetInt4(const std::string& _Name, const int* _Value) override;
+		virtual void SetMat4(const std::string& _Name, const float* _Value) override;
+		virtual void SetMat3(const std::string& _Name, const float* _Value) override;
+		virtual void SetFloat(const std::string& _Name, const float* _Value) override;
+		virtual void SetFloat2(const std::string& _Name, const float* _Value) override;
+		virtual void SetFloat3(const std::string& _Name, const  float*  _Value) override;
+		virtual void SetFloat4(const std::string& _Name, const  float* _Value) override;
 	};
 }

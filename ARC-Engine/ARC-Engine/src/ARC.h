@@ -7,7 +7,7 @@
 #include "ARC/Core/Application.h"
 #include "ARC/Core/Log.h"
 
-#include "ARC/Layers/Layer.h"
+#include "ARC/Renderer/Layer.h"
 #include "ARC/GUI/ImGuiLayer.h"
 
 #include "ARC/Input/Input.h"
@@ -16,6 +16,7 @@
 #include "ARC/Renderer/GraphicsContext.h"
 #include "ARC/Renderer/RenderCommand.h"
 #include "ARC/Renderer/RendererAPI.h"
+#include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Renderer/Renderer.h"
 
 #include "ARC/Renderer/VertexArray.h"
@@ -24,7 +25,3 @@
 
 #include "ARC/Objects/CameraBase.h"
 #include "ARC/Objects/OrthographicCameraController.h"
-
-//--------EntryPoint-----------------
-#include "ARC/Core/EntryPoint.h"
-//-----------------------------------

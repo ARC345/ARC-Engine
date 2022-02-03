@@ -9,6 +9,13 @@ ARC-Engine/_int/
 # Prerequisites
 *.d
 
+#visual studio
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user 
+
 # Compiled Object files
 *.slo
 *.lo

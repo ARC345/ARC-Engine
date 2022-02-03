@@ -11,7 +11,7 @@ namespace ARC {
 	class CRenderer {
 	public:
 		static void Init();
-
+		static void OnWindowResize(TVec2<uint32_t> _Dimentions);
 		static void BeginScene(COrthographicCameraBase& _Cam);
 		static void EndScene();
 

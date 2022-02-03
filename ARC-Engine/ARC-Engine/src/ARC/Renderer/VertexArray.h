@@ -1,5 +1,5 @@
 #pragma once
-#include "..\Buffer\Buffer.h"
+#include "ARC\Renderer\Buffer.h"
 #include <memory>
 
 namespace ARC {
@@ -7,7 +7,7 @@ namespace ARC {
 	{
 	public:
 		virtual ~CVertexArray() {};
-		static CVertexArray* Create();
+		static TRef<CVertexArray> Create();
 
 		virtual void AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer) = 0;
 		virtual void SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer) = 0;

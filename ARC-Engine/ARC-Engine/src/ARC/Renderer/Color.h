@@ -1,13 +1,17 @@
 #pragma once
 
-#include "../../../out/glm/glm/glm.hpp"
+#include "ARC/Types/vector.h"
 
 namespace ARC {
-	class CColor
+	class CColor : public TVec4<>
 	{
 	public:
-		constexpr static glm::vec4 Red = { 1.0f, 0.0f, 0.0f, 1.0f};
-		constexpr static glm::vec4 Green = { 0.0f, 1.0f, 0.0f, 1.0f};
-		constexpr static glm::vec4 Blue = { 0.0f, 0.0f, 1.0f, 1.0f};
+		CColor() : TVec4<>(TVec4<>::ZeroVector) {}
+		CColor(TVec4<> _) : TVec4<>(_) {};
+		CColor(float _r, float _g, float _b, float _a) : TVec4<>(_r, _g, _b, _a) {};
+
+		static CColor Red;
+		static CColor Green;
+		static CColor Blue;
 	};
 }

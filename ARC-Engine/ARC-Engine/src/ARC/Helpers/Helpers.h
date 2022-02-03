@@ -15,8 +15,8 @@ using ulong = unsigned long;
 namespace ARC {
 	namespace HPR {
 		namespace Convert {
-			template<typename T> [[nodiscard]] inline T SecondsToMilliSeconds(T _Time) { return _Time * 1000; }
-			template<typename T> [[nodiscard]] inline T MilliSecondsToSeconds(T _Time) { return _Time / 1000; }
+			template<typename T> [[nodiscard]] inline constexpr T SecondsToMilliSeconds(T _Time) { return _Time * 1000; }
+			template<typename T> [[nodiscard]] inline constexpr T MilliSecondsToSeconds(T _Time) { return _Time / 1000; }
 		}
 		namespace IO {
 			[[nodiscard]] std::string ReadFile(const std::string& _Path);

@@ -1,7 +1,6 @@
 #pragma once
 #include "Object.h"
-
-#include"..\..\..\out\glm\glm\glm.hpp"
+#include"glm\glm.hpp"
 
 namespace ARC {
 	class CPrimitive2D :

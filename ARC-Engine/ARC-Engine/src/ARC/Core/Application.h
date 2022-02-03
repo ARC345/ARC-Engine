@@ -2,15 +2,17 @@
 
 #include "Core.h"
 
-#include "ARC/Layers/LayerStack.h"
+#include "ARC/Renderer/LayerStack.h"
 
 #include <string>
 #include <memory>
+
 
 namespace ARC { class CLayer; }
 namespace ARC { class CImGuiLayer; }
 
 namespace ARC { class CWindowCloseEvent; }
+namespace ARC { class CWindowResizeEvent; }
 namespace ARC { class CEvent; }
 
 namespace ARC{
@@ -44,7 +46,8 @@ namespace ARC{
 			float m_LastFrameTime;
 			std::unique_ptr<CWindow> m_Window;
 			CImGuiLayer* m_ImGuiLayer;
-			unsigned int m_bRunning : 1;
+			uint8_t m_bRunning : 1;
+			uint8_t m_bMinimized: 1;
 			LayerStack m_LayerStack;
 			static CApplication* s_Instance;
 		};

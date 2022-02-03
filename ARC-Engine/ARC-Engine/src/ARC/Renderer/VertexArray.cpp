@@ -5,7 +5,7 @@
 
 namespace ARC {
 
-	CVertexArray* CVertexArray::Create()
+	TRef<CVertexArray> CVertexArray::Create()
 	{
 		switch (CRenderer::GetCurrentAPI())
 		{
@@ -13,7 +13,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
 			return nullptr;
 		case CRendererAPI::ERendererAPI::OpenGL:
-			return new COpenGLVertexArray();
+			return std::make_shared<COpenGLVertexArray>();
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

@@ -11,6 +11,9 @@ namespace ARC {
 			s_RendererAPI->Init();
 		};
 
+		inline static void SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions) {
+			s_RendererAPI->SetViewport(_BottemLeftCoord, _Dimentions);
+		}
 		inline static void SetClearColour(const glm::vec4 _Colour) {
 			s_RendererAPI->SetClearColour(_Colour);
 		};

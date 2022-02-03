@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include "ARC/Core/Application.h"
-#include "ARC/Layers/Layer.h"
+#include "ARC/Renderer/Layer.h"
 #include "ARC/Objects/OrthographicCameraController.h"
 #include "ARC/Objects/Primitive2D.h"
 #include "ARC/Renderer/Color.h"
@@ -19,12 +19,12 @@ class CExampleLayer : public ARC::CLayer
 {
 public:
 	CExampleLayer(); 
-	void OnUpdate(float _DeltaTime) override;
-	void OnEvent(ARC::CEvent& _event) override;
+	virtual void OnUpdate(float _DeltaTime) override;
+	virtual void OnEvent(ARC::CEvent& _event) override;
 
 	bool OnKeyPressedEvent(ARC::CKeyPressedEvent& _Event);
 
-	void OnGuiRender() override;
+	virtual void OnGuiRender() override;
 
 	inline ARC::COrthographicCameraBase& GetCam() { return m_CameraController.GetCamera(); }
 
@@ -32,7 +32,7 @@ public:
 	float SQ_MoveSpeed = 3.f;
 	float SQ_RotSpeed = 180.f;
 
-	glm::vec4 SQ_Colour = ARC::CColor::Red;
+	ARC::CColor SQ_Colour = ARC::CColor::Red;
 
 	ARC::CPrimitive2D SQ_Data;
 

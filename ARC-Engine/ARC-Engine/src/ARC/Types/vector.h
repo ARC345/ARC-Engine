@@ -56,6 +56,14 @@ namespace ARC
 			return m_Data[x];
 		};
 
+		constexpr bool operator==(const TVecX<N, T>& x)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				if (this->Data()[i] != x.Data()[i]) return false;
+			}
+			return true;
+		}
 		constexpr TVecX<N, T> operator+(const TVecX<N, T>& x)
 		{
 			TVecX<N, T> rval;
@@ -96,12 +104,16 @@ namespace ARC
 		inline T* Data() { return m_Data; }
 		inline const T* Data() const { return m_Data; }
 
+		T* begin() { return &m_Data[0]; }
+		T* end() { return &m_Data[GetSize()]; }
+
 		virtual constexpr size_t GetSize() const { return N; }
 		friend std::ostream& operator<< <>(std::ostream& os, const TVecX<N,T>& e);
 
+	public:
+		
 	private:
 		T m_Data[N];
-		size_t m_Size = N;
 	};
 
 	template <typename T = float>
@@ -135,7 +147,7 @@ namespace ARC
 		inline void Set(const T& tx, const T& ty) { x = tx; y = ty; };
 
 	public:
-		inline static TVec2 ZeroVector = {0, 0};
+		static TVec2<T> ZeroVector;
 	private:
 	};
 
@@ -159,15 +171,19 @@ namespace ARC
 		T& r, & g, & b;
 		T& x, & y, & z;
 
-		SM_MATH_FUNC float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
+		[[nodiscard]] inline constexpr float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
 			return Math::Sqrt(Math::DistSqr(_1, _2));
 		}
 
-		SM_MATH_FUNC float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
+		[[nodiscard]] inline constexpr float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
 			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z);
 		}
 
 		inline void Set(const T& tx, const T& ty, const T& tz) { *x = tx; *y = ty; *z = tz;};
+
+	public:
+		static TVec3<T> ZeroVector;
+
 	};
 	template <typename T = float>
 	class ARC_API TVec4 : public TVecX<4, T>
@@ -177,8 +193,8 @@ namespace ARC
 		
 		TVec4() {}
 		TVec4(const T& tw, const T& tx, const T& ty, const T& tz) :
-			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(m_Data[3])
-			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(m_Data[3])
+			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(Data()[3]),
+			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(Data()[3])
 		{
 			this->Set(tw, tx, ty, tz);
 		}
@@ -189,5 +205,13 @@ namespace ARC
 		inline void Set(const T& tx, const T& ty, const T& tz, const T& tw) {
 			x = tx; y = ty; z = tz;  w = tw;
 		};
+
+	public:
+		static TVec4<T> ZeroVector;
 	};
+
+	template<typename T> TVec2<T> TVec2<T>::ZeroVector = {0, 0};
+	template<typename T> TVec3<T> TVec3<T>::ZeroVector = {0, 0, 0};
+	template<typename T> TVec4<T> TVec4<T>::ZeroVector = {0, 0, 0, 0};
+
 };
