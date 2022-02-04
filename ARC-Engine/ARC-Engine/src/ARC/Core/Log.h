@@ -1,7 +1,7 @@
 #pragma once
 #include "spdlog/spdlog.h"
 #include "ARC/Helpers/helpers.h"
-#include "ARC/Helpers/DllHelpers_Macros.h"
+#include "Macros.h"
 
 namespace ARC
 {

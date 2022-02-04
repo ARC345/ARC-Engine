@@ -559,7 +559,6 @@
     <ClInclude Include="out\glm\glm\vec4.hpp" />
     <ClInclude Include="out\glm\glm\vector_relational.hpp" />
     <ClInclude Include="out\stb_image\stb_image.h" />
-    <ClInclude Include="src\ARC\Renderer\Renderer2D.h" />
     <ClInclude Include="src\ARC.h" />
     <ClInclude Include="src\ARC\Core\Application.h" />
     <ClInclude Include="src\ARC\Core\Core.h" />
@@ -571,10 +570,9 @@
     <ClInclude Include="src\ARC\Events\KeyEvent.h" />
     <ClInclude Include="src\ARC\Events\MouseEvent.h" />
     <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
-    <ClInclude Include="src\ARC\Helpers\DllHelpers_Macros.h" />
+    <ClInclude Include="src\ARC\Core\Macros.h" />
     <ClInclude Include="src\ARC\Helpers\Enum.h" />
     <ClInclude Include="src\ARC\Helpers\Helpers.h" />
-    <ClInclude Include="src\ARC\Helpers\Macros.h" />
     <ClInclude Include="src\ARC\Input\Input.h" />
     <ClInclude Include="src\ARC\Input\KeyCodes.h" />
     <ClInclude Include="src\ARC\Input\WindowsInput.h" />
@@ -583,6 +581,7 @@
     <ClInclude Include="src\ARC\Objects\Object.h" />
     <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
     <ClInclude Include="src\ARC\Objects\Primitive2D.h" />
+    <ClInclude Include="src\ARC\Profiling\Timer.h" />
     <ClInclude Include="src\ARC\Renderer\Buffer.h" />
     <ClInclude Include="src\ARC\Renderer\Color.h" />
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h" />
@@ -590,6 +589,7 @@
     <ClInclude Include="src\ARC\Renderer\LayerStack.h" />
     <ClInclude Include="src\ARC\Renderer\RenderCommand.h" />
     <ClInclude Include="src\ARC\Renderer\Renderer.h" />
+    <ClInclude Include="src\ARC\Renderer\Renderer2D.h" />
     <ClInclude Include="src\ARC\Renderer\RendererAPI.h" />
     <ClInclude Include="src\ARC\Renderer\Shader.h" />
     <ClInclude Include="src\ARC\Renderer\Texture.h" />
@@ -610,8 +610,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp" />
-    <ClCompile Include="src\ARC\Renderer\Color.cpp" />
-    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\ARC\Core\Application.cpp" />
     <ClCompile Include="src\ARC\Core\Log.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiBuild.cpp" />
@@ -623,10 +621,12 @@
     <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Color.cpp" />
     <ClCompile Include="src\ARC\Renderer\Layer.cpp" />
     <ClCompile Include="src\ARC\Renderer\LayerStack.cpp" />
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp" />
     <ClCompile Include="src\ARC\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\ARC\Renderer\Shader.cpp" />
     <ClCompile Include="src\ARC\Renderer\Texture.cpp" />

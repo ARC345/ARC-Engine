@@ -21,10 +21,12 @@ void main()
 layout(location = 0) out vec4 o_Color;
 
 uniform sampler2D u_Texture;
+uniform vec2 u_TextureScaling = vec2(1.f, 1.f);
+uniform vec4 u_Color;
 
 in vec2 v_TexCoord;
 
 void main()
 {
-	o_Color = texture(u_Texture, v_TexCoord*10);
+	o_Color = texture(u_Texture, v_TexCoord * u_TextureScaling) * u_Color;
 }	

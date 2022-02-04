@@ -10,3 +10,6 @@
 [submodule "ARC-Engine/ARC-Engine/out/glm"]
 	path = ARC-Engine/ARC-Engine/out/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "ARC-Engine/ARC-Engine/src/ARC/Profiling"]
+	path = ARC-Engine/ARC-Engine/src/ARC/Profiling
+	url = https://gist.github.com/75b8b46af8c0d3e5060185b951b5e42a.git
