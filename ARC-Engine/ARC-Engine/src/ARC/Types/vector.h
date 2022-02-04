@@ -5,6 +5,8 @@
 #include "../Helpers/Helpers.h"
 #include <string>
 #include "Math.h"
+#include <initializer_list>
+#include "ARC/Core/Macros.h"
 
 namespace ARC
 {
@@ -47,6 +49,7 @@ namespace ARC
 		TVecX(T Data[N])
 			: m_Data(Data)
 		{}
+
 		T& operator[](size_t x)
 		{
 			return m_Data[x];

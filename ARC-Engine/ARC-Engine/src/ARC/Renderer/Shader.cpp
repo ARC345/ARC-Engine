@@ -6,7 +6,6 @@
 
 #include "glm\gtc\type_ptr.inl"
 #include "glm\gtx\compatibility.hpp"
-#include "ValuePtr.inl"
 
 namespace ARC {
 	TRef<CShader> CShader::Create(const std::string& _Name, const std::string& _VertexSrc, const std::string& _FragmentSrc)
@@ -17,7 +16,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
 			return nullptr;
 		case CRendererAPI::ERendererAPI::OpenGL:
-			return std::make_shared<COpenGLShader>(_Name, _VertexSrc, _FragmentSrc);
+			return CreateRef<COpenGLShader>(_Name, _VertexSrc, _FragmentSrc);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
@@ -32,7 +31,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
 			return nullptr;
 		case CRendererAPI::ERendererAPI::OpenGL:
-			return std::make_shared<COpenGLShader>(_Path);
+			return CreateRef<COpenGLShader>(_Path);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

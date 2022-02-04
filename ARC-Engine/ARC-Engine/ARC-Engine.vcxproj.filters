@@ -52,6 +52,9 @@
     <Filter Include="src\ARC\Objects">
       <UniqueIdentifier>{8BAF61B5-F73A-CF79-004C-526E6C562B7A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\ARC\Profiling">
+      <UniqueIdentifier>{CBE9C550-3700-C4E6-8077-4F08ECCC946E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\ARC\Renderer">
       <UniqueIdentifier>{B86E8F16-A467-AE68-CD99-93EDB9F18D74}</UniqueIdentifier>
     </Filter>
@@ -1350,16 +1353,10 @@
     <ClInclude Include="src\ARC\GUI\ImGuiLayer.h">
       <Filter>src\ARC\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Helpers\DllHelpers_Macros.h">
-      <Filter>src\ARC\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Helpers\Enum.h">
       <Filter>src\ARC\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Helpers\Helpers.h">
-      <Filter>src\ARC\Helpers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ARC\Helpers\Macros.h">
       <Filter>src\ARC\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Input\Input.h">
@@ -1386,6 +1383,9 @@
     <ClInclude Include="src\ARC\Objects\Primitive2D.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Profiling\Timer.h">
+      <Filter>src\ARC\Profiling</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Renderer\Buffer.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
@@ -1405,6 +1405,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\Renderer.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\Renderer2D.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\RendererAPI.h">
@@ -1458,8 +1461,8 @@
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Renderer\Renderer2D.h">
-      <Filter>src\ARC\Renderer</Filter>
+    <ClInclude Include="src\ARC\Core\Macros.h">
+      <Filter>src\ARC\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1499,6 +1502,9 @@
     <ClCompile Include="src\ARC\Renderer\Buffer.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Color.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Layer.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
@@ -1509,6 +1515,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Renderer.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\RendererAPI.cpp">
@@ -1549,12 +1558,6 @@
     </ClCompile>
     <ClCompile Include="src\Platform\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Renderer\Color.cpp">
-      <Filter>src\ARC\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp">
-      <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

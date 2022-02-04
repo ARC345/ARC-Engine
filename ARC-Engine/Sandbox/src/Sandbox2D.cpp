@@ -32,24 +32,32 @@ void CSandbox2D::OnAttach()
 
 void CSandbox2D::OnDetach()
 {
-
+	ARC::CInstrumentor::Get().EndSession();
 }
 
 void CSandbox2D::OnUpdate(float _DeltaTime)
 {
-	m_CameraController.OnUpdate(_DeltaTime);
+	ARC_PROFILE_FUNCTION();
+	{
+		ARC_PROFILE_SCOPE("Stuff");
+		m_CameraController.OnUpdate(_DeltaTime);
 
-	ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
-	ARC::CRenderCommand::Clear();
+		ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
+		ARC::CRenderCommand::Clear();
+	}
+	
+	{
+		ARC_PROFILE_SCOPE("Stuff2");
 
-	ARC::CRenderer2D::BeginScene(m_CameraController.GetCamera());
+		ARC::CRenderer2D::BeginScene(m_CameraController.GetCamera());
 
-	//ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
-	ARC::CRenderer2D::DrawQuad({0.0f, 0.0f}, -10.0f, {1.0f, 15.0f}, 1, ARC::CColor::Blue);
-	ARC::CRenderer2D::DrawQuad({0.0f, 0.0f}, 0, {10.0f, 10.f}, 0, m_CheckerboardTexture);
-	ARC::CRenderer2D::EndScene();
+		//ARC::CRenderer::Submit(m_TriangleShader, m_TriangleVertexArray);
+		ARC::CRenderer2D::DrawQuad({ 0.0f, 0.0f }, -10.0f, { 1.0f, 15.0f }, 1, ARC::CColor::Blue);
+		ARC::CRenderer2D::DrawQuad({ 0.0f, 0.0f }, 0, { 10.0f, 10.f }, 0, ARC::CColor::Red, m_CheckerboardTexture);
+		ARC::CRenderer2D::EndScene();
 
-	m_CameraController.GetCamera().RecalculateViewProjectionMatrix();
+		m_CameraController.GetCamera().RecalculateViewProjectionMatrix();
+	}
 }
 
 void CSandbox2D::OnEvent(ARC::CEvent& _Event)

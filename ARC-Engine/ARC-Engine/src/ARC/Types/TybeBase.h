@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "ARC\Helpers\DllHelpers_Macros.h"
+#include "ARC\Core\Macros.h"
 
 #define ARC_CLASS(x)\
 		public:\
