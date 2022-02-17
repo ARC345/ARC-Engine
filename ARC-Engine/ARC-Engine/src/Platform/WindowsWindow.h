@@ -17,6 +17,8 @@ namespace ARC{
 
 			inline unsigned int GetWidth() const override { return m_Data.Width; }
 			inline unsigned int GetHeight() const override { return m_Data.Height; }
+			inline void SetWidth(unsigned int _) override {m_Data.Width = _; };
+			inline void SetHeight(unsigned int _) override { m_Data.Height = _; };
 
 			inline void SetEventCallback(const EventCallbackFn& _callback) override { m_Data.EventCallback = _callback; }
 
@@ -25,7 +27,7 @@ namespace ARC{
 
 			virtual void* GetNativeWindow() const override;
 
-		protected:
+	 protected:
 		private:
 			virtual void Init(const SWindowProps& _props);
 			virtual void Shutdown();

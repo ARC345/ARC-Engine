@@ -13,6 +13,8 @@ namespace ARC {
 
 	void CRenderer::Init()
 	{
+		ARC_PROFILE_FUNCTION();
+
 		CRenderCommand::Init();
 		CRenderer2D::Init();
 	}

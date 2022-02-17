@@ -11,6 +11,9 @@
 #include "ARC/Renderer/Renderer.h"
 #include "ARC/GUI/ImGuiLayer.h"
 #include "GLFW\glfw3.h"
+#include "Macros.h"
+#include "ARC/Profiling/Timer.h"
+#include "../Helpers/Math.h"
 
 namespace ARC
 {
@@ -21,8 +24,11 @@ namespace ARC
 		CApplication::CApplication() :
 			m_bRunning(1u)
 		{
+			ARC_PROFILE_FUNCTION();
+
 			ARC_CORE_ASSERT(!s_Instance, "Application already exists")
 			ARC_CORE_INFO("{0}", &CApplication::OnEvent);
+			ARC_CORE_INFO("{0}", ARC::Math::Conv<long double, Day, Minute>(1));
 
 			s_Instance= this;
 
@@ -40,6 +46,7 @@ namespace ARC
 
 		void CApplication::Run()
 		{
+			ARC_PROFILE_FUNCTION();
 			while (m_bRunning)
 			{
 				//@TEMP
@@ -95,6 +102,8 @@ namespace ARC
 				return false;
 			}
 			m_bMinimized = false;
+			GetWindow().SetWidth(_e.GetX());
+			GetWindow().SetHeight(_e.GetY());
 			CRenderer::OnWindowResize(TVec2<uint32_t>(_e.GetX(), _e.GetY()));
 			return false;
 		}

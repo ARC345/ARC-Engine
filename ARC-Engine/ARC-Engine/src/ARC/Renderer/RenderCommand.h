@@ -20,8 +20,10 @@ namespace ARC {
 		inline static void Clear() {
 			s_RendererAPI->Clear();
 		};
-		inline static void DrawIndexed(const TRef<CVertexArray>& _VertexArray) {
-			s_RendererAPI->DrawIndexed(_VertexArray);
+
+		// Draw All if _Count = 0
+		inline static void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count = 0) {
+			s_RendererAPI->DrawIndexed(_VertexArray, _Count);
 		}
 	private:
 		static CRendererAPI* s_RendererAPI;

@@ -9,6 +9,8 @@
 #include <utility>
 #include <algorithm>
 #include <functional>
+#include <random>
+#include <cmath>
 
 #include <string>
 #include <sstream>
@@ -22,3 +24,6 @@
 
 #include "ARC/Helpers/Helpers.h"
 #include "ARC/Core/Log.h"
+#include "ARC/Core/Macros.h"
+
+#include "ARC/Profiling/Timer.h"

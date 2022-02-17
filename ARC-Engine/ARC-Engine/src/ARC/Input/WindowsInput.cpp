@@ -35,11 +35,12 @@ namespace ARC {
 		return (float)mousey;
 	}
 
-	TVec2<> CWindowsInput::GetMouseXYImpl() const
+	FVec2 CWindowsInput::GetMouseXYImpl() const
 	{
 		auto window = static_cast<GLFWwindow*>(Core::CApplication::Get().GetWindow().GetNativeWindow());
 		TVec2<double> mousexy;
-		return TVec2<>((float)mousexy.x, (float)mousexy.y);
+		glfwGetCursorPos(window, &mousexy.x(), &mousexy.y());
+		return FVec2((float)mousexy.x(), (float)mousexy.y());
 	}
 
 	int CWindowsInput::GetKeyImpl(int _keycode)

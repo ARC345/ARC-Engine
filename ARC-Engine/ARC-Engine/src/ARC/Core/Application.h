@@ -6,7 +6,7 @@
 
 #include <string>
 #include <memory>
-
+#include "../Types/vector.h"
 
 namespace ARC { class CLayer; }
 namespace ARC { class CImGuiLayer; }
@@ -29,7 +29,7 @@ namespace ARC{
 
 			void PushLayer(CLayer* _layer);
 			void PushOverlay(CLayer* _overlay);
-			
+
 			inline CWindow& GetWindow() const { return *m_Window; }
 
 			inline static CApplication& Get() { return *s_Instance; }
@@ -43,7 +43,7 @@ namespace ARC{
 		private:
 		
 			float m_DeltaTime;
-			float m_LastFrameTime;
+			float m_LastFrameTime = 0;
 			std::unique_ptr<CWindow> m_Window;
 			CImGuiLayer* m_ImGuiLayer;
 			uint8_t m_bRunning : 1;

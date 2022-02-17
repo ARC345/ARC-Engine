@@ -5,6 +5,11 @@
 #include "ARC\Core\Core.h"
 
 namespace ARC {
+	namespace HPR {
+		std::mt19937 Random::s_RandomEngine;
+		std::uniform_int_distribution<std::mt19937::result_type> Random::s_Distribution;
+	}
+
 	std::string HPR::IO::ReadFile(const std::string& _Path)
 	{
 		std::ifstream is(_Path, std::ios::in | std::ios::binary);

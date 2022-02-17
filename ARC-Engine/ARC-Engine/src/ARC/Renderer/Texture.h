@@ -1,5 +1,6 @@
 #pragma once
-#include "ARC\Interfaces\Area2D.h"
+#include <string>
+#include "..\Types\vector.h"
 
 namespace ARC {
 	class CTexture
@@ -14,10 +15,11 @@ namespace ARC {
 	{
 		public:
 			static TRef<CTexture2D> Create(const TVec2<uint32_t> _Dimentions);
-			static TRef<CTexture2D> Create(const std::string& _Path);
+			static TRef<CTexture2D> Create(const std::string& _Path, bool bManualClear = false);
 
 			virtual void SetData(void*, uint32_t _Size) = 0;
-			
+			virtual void ClearData() = 0;
+			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) = 0;
 		protected:
 			inline CTexture2D(TVec2<uint32_t> _Dimentions) : Dimensions(_Dimentions) {}
 		public:

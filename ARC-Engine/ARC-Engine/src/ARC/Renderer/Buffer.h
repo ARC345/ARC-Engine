@@ -108,9 +108,12 @@ namespace ARC {
 	public:
 		virtual ~CVertexBuffer() {};
 		static TRef<CVertexBuffer> Create(float* _Vertices, uint32_t _Size);
+		static TRef<CVertexBuffer> Create(uint32_t _Size);
 
 		virtual void SetLayout(const CBufferLayout& _Layout) = 0;
 		virtual const CBufferLayout& GetLayout() const = 0;
+		
+		virtual void SetData(const void* _Data, uint32_t _Size) = 0;
 
 		virtual void Bind() const = 0;
 		virtual void UnBind() const = 0;

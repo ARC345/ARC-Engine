@@ -22,7 +22,9 @@ namespace ARC {
 
 		virtual unsigned int GetWidth() const = 0;
 		virtual unsigned int GetHeight() const = 0;
-
+		virtual void SetWidth(unsigned int _) = 0;
+		virtual void SetHeight(unsigned int _) = 0;
+		
 		virtual void SetEventCallback(const EventCallbackFn& _callback) = 0;
 		virtual void SetVSync(bool _bEnabled) = 0;
 		virtual bool IsVSync() const = 0;

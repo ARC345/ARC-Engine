@@ -2,9 +2,7 @@
 
 #include "TybeBase.h"
 #include <type_traits>
-#include "../Helpers/Helpers.h"
 #include <string>
-#include "Math.h"
 #include <initializer_list>
 #include "ARC/Core/Macros.h"
 
@@ -30,7 +28,8 @@ namespace ARC
 	template <size_t N, typename T>
 	class ARC_API TVecX : public Base::TVec_Base
 	{
-		
+
+
 	public:
 		TVecX() : m_Data() {};
 		TVecX(const TVecX<N, T>& x)
@@ -43,6 +42,13 @@ namespace ARC
 			for (uint a=0;a<=N;a++ )
 			{
 				m_Data[a]=x[a];
+			};
+		};
+		TVecX(const T x)
+		{
+			for (uint a=0;a<=N;a++ )
+			{
+				m_Data[a]=x;
 			};
 		};
 
@@ -59,47 +65,141 @@ namespace ARC
 			return m_Data[x];
 		};
 
-		constexpr bool operator==(const TVecX<N, T>& x)
+		constexpr bool operator==(const TVecX<N, T>& _)
 		{
 			for (size_t i = 0; i < N; i++)
 			{
-				if (this->Data()[i] != x.Data()[i]) return false;
+				if (this->Data()[i] != _.Data()[i]) return false;
 			}
 			return true;
 		}
-		constexpr TVecX<N, T> operator+(const TVecX<N, T>& x)
+
+		constexpr void operator+=(const TVecX<N, T>& _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] += _.Data()[i];
+			}
+		}
+		constexpr void operator-=(const TVecX<N, T>& _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] -= _.Data()[i];
+			}
+		}
+		constexpr void operator*=(const TVecX<N, T>& _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] *= _.Data()[i];
+			}
+		}
+		constexpr void operator/=(const TVecX<N, T>& _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] /= _.Data()[i];
+			}
+		}
+		constexpr TVecX<N, T> operator+(const TVecX<N, T>& _)
 		{
 			TVecX<N, T> rval;
 			for (size_t i = 0; i < N; i++)
 			{
-				rval[i] = this->Data()[i] + x.Data()[i];
+				rval[i] = this->Data()[i] + _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator-(const TVecX<N, T>& x)
+		constexpr TVecX<N, T> operator-(const TVecX<N, T>& _)
 		{
 			TVecX<N, T> rval;
 			for (size_t i = 0; i < N; i++)
 			{
-				rval[i] = this->Data()[i] - x.Data()[i];
+				rval[i] = this->Data()[i] - _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator*(const TVecX<N, T>& x)
+		constexpr TVecX<N, T> operator*(const TVecX<N, T>& _)
 		{
 			TVecX<N, T> rval;
 			for (size_t i = 0; i < N; i++)
 			{
-				rval[i] = this->Data()[i] - x.Data()[i];
+				rval[i] = this->Data()[i] - _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator/(const TVecX<N, T>& x)
+		constexpr TVecX<N, T> operator/(const TVecX<N, T>& _)
 		{
 			TVecX<N, T> rval;
 			for (size_t i = 0; i < N; i++)
 			{
-				rval[i] = this->Data()[i] / x.Data()[i];
+				rval[i] = this->Data()[i] / _.Data()[i];
+			}
+			return rval;
+		}
+		
+		constexpr void operator+=(const T _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] += _;
+			}
+		}
+		constexpr void operator-=(const T _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] -= _;
+			}
+		}
+		constexpr void operator*=(const T _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] *= _;
+			}
+		}
+		constexpr void operator/=(const T _)
+		{
+			for (size_t i = 0; i < N; i++)
+			{
+				this->Data()[i] /= _;
+			}
+		}
+		constexpr TVecX<N, T> operator+(const T x)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] + x;
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator-(const T _)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] - _;
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator*(const T _)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] * _;
+			}
+			return rval;
+		}
+		constexpr TVecX<N, T> operator/(const T i)
+		{
+			TVecX<N, T> rval;
+			for (size_t i = 0; i < N; i++)
+			{
+				rval[i] = this->Data()[i] / i;
 			}
 			return rval;
 		}
@@ -125,30 +225,54 @@ namespace ARC
 	public:
 		using Super = TVecX<2, T>;
 
-		TVec2() :
-			r(Data()[0]), g(Data()[1]),
-			x(Data()[0]), y(Data()[1])
-		{}
-		TVec2(const T& tx, const T& ty) :
-			r(Data()[0]), g(Data()[1]),
-			x(Data()[0]), y(Data()[1])
-		{
-			this->Set(tx, ty);
-		}
+		TVec2()	{}
+		TVec2(const T& tx, const T& ty) { this->Set(tx, ty); }
+		TVec2(const T _) { this->Set(_, _); }
 
-		T& r, & g;
-		T& x, & y;
-
-		[[nodiscard]] static inline constexpr float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
-			return Math::Sqrt(Math::DistSqr(_1, _2));
-		}
+		inline T& x() { return Data()[0]; }
+		inline T& y() { return Data()[1]; }
 		
-		[[nodiscard]] static inline constexpr float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
-			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y);
+		inline const T& x() const { return Data()[0]; }
+		inline const T& y() const { return Data()[1]; }
+
+		constexpr TVec2<T> operator+(const TVec2<T>& _) const { return { x() + _.x(), y() + _.y() }; }
+		constexpr TVec2<T> operator-(const TVec2<T>& _) const { return { x() - _.x(), y() - _.y() }; }
+		constexpr TVec2<T> operator/(const TVec2<T>& _) const { return { x() / _.x(), y() / _.y() }; }
+		constexpr TVec2<T> operator*(const TVec2<T>& _) const { return { x() * _.x(), y() * _.y() }; }
+		constexpr TVec2<T> operator+(const T _) const { return { x() + _, y() +_};	}
+		constexpr TVec2<T> operator-(const T _) const { return { x() - _, y() -_};	}
+		constexpr TVec2<T> operator/(const T _) const { return { x() / _, y() /_};	}
+		constexpr TVec2<T> operator*(const T _) const { return { x() * _, y() *_};	}
+
+		#define VM_FUNC [[nodiscard]] inline constexpr
+
+		VM_FUNC static TVec2<T> SinCos(const float _1) { return Math::Sin(_1), Math::Cos(_1); }
+		VM_FUNC static TVec2<T> CosSin(const float _1) { return Math::Cos(_1), Math::Sin(_1); }
+
+		VM_FUNC static float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqr(_1.x() - _2.x()) + Math::Sqr(_1.y() - _2.y());
+		}
+		VM_FUNC static float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
+			return Math::Sqrt(DistSqr(_1, _2));
+		}
+		VM_FUNC static bool AlmostEqual(const TVec2<T>& _1, const TVec2<T>& _2, double _Tollerance)
+		{
+			return Math::Abs((_1 - _2).x()) <= _Tollerance && Math::Abs((_1 - _2).y()) <= _Tollerance;
+		}
+		VM_FUNC float Length() {
+			return Dist(*this, ZeroVector);
+		}
+		VM_FUNC static T Min(const TVec2<T>& _1) {
+			return Math::Min(_1.x(), _1.y());
+		}
+		VM_FUNC static T Max(const TVec2<T>& _1) {
+			return Math::Max(_1.x(), _1.y());
 		}
 
-		inline void Set(const T& tx, const T& ty) { x = tx; y = ty; };
+		#undef VM_FUNC
 
+		inline void Set(const T& tx, const T& ty) { Data()[0] = tx; Data()[1] = ty; };
+		inline void Set(const TVec2<T> _xy) { x = _xy.x; y = _xy.y; };
 	public:
 		static TVec2<T> ZeroVector;
 	private:
@@ -183,7 +307,10 @@ namespace ARC
 		}
 
 		inline void Set(const T& tx, const T& ty, const T& tz) { *x = tx; *y = ty; *z = tz;};
-
+		TVec3<T>& operator=(TVec3<T> const& _) {
+			this->Set(_.x, _.y, _.z);
+			return *this;
+		};
 	public:
 		static TVec3<T> ZeroVector;
 
@@ -194,7 +321,15 @@ namespace ARC
 	public:
 		using Super = TVecX<4, T>;
 		
-		TVec4() {}
+		TVec4() :
+			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(Data()[3]),
+			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(Data()[3]) {}
+		TVec4(const TVec4<T>& _) :
+			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(Data()[3]),
+			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(Data()[3])
+		{
+			this->Set(_.x, _.y, _.z, _.w);
+		}
 		TVec4(const T& tw, const T& tx, const T& ty, const T& tz) :
 			r(Data()[0]), g(Data()[1]), b(Data()[2]), a(Data()[3]),
 			x(Data()[0]), y(Data()[1]), z(Data()[2]), w(Data()[3])
@@ -209,6 +344,10 @@ namespace ARC
 			x = tx; y = ty; z = tz;  w = tw;
 		};
 
+		TVec4<T>& operator=(TVec4<T> const& _) {
+			this->Set(_.x, _.y, _.z, _.w);
+			return *this;
+		};
 	public:
 		static TVec4<T> ZeroVector;
 	};
@@ -217,4 +356,7 @@ namespace ARC
 	template<typename T> TVec3<T> TVec3<T>::ZeroVector = {0, 0, 0};
 	template<typename T> TVec4<T> TVec4<T>::ZeroVector = {0, 0, 0, 0};
 
+	using FVec2 = TVec2<float>;
+	using FVec3 = TVec3<float>;
+	using FVec4 = TVec4<float>;
 };

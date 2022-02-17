@@ -6,7 +6,7 @@ namespace ARC {
 	class ARC_API CMouseMovedEvent : public CEvent
 	{
 	public:
-		CMouseMovedEvent(TVec2<float> p_MouseXY) :
+		CMouseMovedEvent(FVec2 p_MouseXY) :
 			m_MouseXY(p_MouseXY) {}
 		CMouseMovedEvent(float p_MouseX, float p_MouseY) :
 			m_MouseXY(TVec2<float>(p_MouseX, p_MouseY)) {

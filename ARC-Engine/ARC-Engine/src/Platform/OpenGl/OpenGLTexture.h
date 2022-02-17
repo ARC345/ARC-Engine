@@ -8,13 +8,17 @@ namespace ARC {
 	{
 		public:
 			COpenGLTexture2D(const TVec2<uint32_t>& _Dimentions);
-			COpenGLTexture2D(const std::string& _Path);
+			COpenGLTexture2D(const std::string& _Path, bool bManualClear = false);
 			virtual ~COpenGLTexture2D() override;
 
 			virtual void SetData(void* _Data, uint32_t _Size) override;
 
 			virtual void Bind(uint32_t _Slot = 0) const override;
-		private:
+			virtual void ClearData() override;
+
+			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) override;
+
+	private:
 			TVec2<uint32_t> Load(const TVec2<uint32_t>& _Dimentions);
 			TVec2<uint32_t> Load(const std::string& _Path);
 		private:
@@ -22,7 +26,6 @@ namespace ARC {
 
 			unsigned int m_InternalFormat; //GLenum 
 			unsigned int m_DataFormat; //GLenum 
-
 			unsigned char* m_Data;
 			std::string m_Path;
 			uint32_t m_RendererID;

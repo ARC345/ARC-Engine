@@ -8,6 +8,7 @@
 
 #include "glad\glad.h"
 #include "OpenGl\OpenGLContext.h"
+#include "ARC/Core/Macros.h"
 
 namespace ARC{ 
 	static bool s_bGLFWInitialized = false;
@@ -17,6 +18,7 @@ namespace ARC{
 	};
 	CWindowsWindow::CWindowsWindow(const SWindowProps& _props)
 	{
+		ARC_PROFILE_FUNCTION();
 		Init(_props);
 	}
 
@@ -49,6 +51,7 @@ namespace ARC{
 
 	void CWindowsWindow::Init(const SWindowProps& _props)
 	{
+		ARC_PROFILE_FUNCTION();
 		m_Data.Title = _props.Title;
 		m_Data.Width = _props.Width;
 		m_Data.Height = _props.Height;

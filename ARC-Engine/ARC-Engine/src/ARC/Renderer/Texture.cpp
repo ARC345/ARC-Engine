@@ -6,7 +6,7 @@
 
 namespace ARC {
 
-	TRef<CTexture2D> CTexture2D::Create(const std::string& _Path)
+	TRef<CTexture2D> CTexture2D::Create(const std::string& _Path, bool bManualClear)
 	{
 		switch (CRenderer::GetCurrentAPI())
 		{
@@ -14,7 +14,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
 			return nullptr;
 		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLTexture2D>(_Path);
+			return CreateRef<COpenGLTexture2D>(_Path, bManualClear);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

@@ -5,12 +5,12 @@
 #include "glad\glad.h"
 
 namespace ARC {
-	COpenGLTexture2D::COpenGLTexture2D(const std::string& _Path) : 
+	COpenGLTexture2D::COpenGLTexture2D(const std::string& _Path, bool bManualClear) : 
 		CTexture2D(Load(_Path))
 	{
-		if (m_Data)
+		if (!bManualClear)
 		{
-			stbi_image_free(m_Data);
+			ClearData();
 		}
 	}
 
@@ -27,8 +27,8 @@ namespace ARC {
 
 	void COpenGLTexture2D::SetData(void* _Data, uint32_t _Size)
 	{
-		ARC_CORE_ASSERT(_Size == Dimensions.x * Dimensions.y * m_BytesPerPixel, "Data must be entire texture");
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, Dimensions.x, Dimensions.y, m_DataFormat, GL_UNSIGNED_BYTE, _Data);
+		ARC_CORE_ASSERT(_Size == Dimensions.x() * Dimensions.y() * m_BytesPerPixel, "Data must be entire texture");
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, Dimensions.x(), Dimensions.y(), m_DataFormat, GL_UNSIGNED_BYTE, _Data);
 	}
 
 	void COpenGLTexture2D::Bind(uint32_t _Slot /*= 0*/) const
@@ -36,9 +36,29 @@ namespace ARC {
 		glBindTextureUnit(_Slot, m_RendererID);
 	}
 
+	void COpenGLTexture2D::ClearData()
+	{
+		if (m_Data)
+		{
+			stbi_image_free(m_Data);
+		}
+	}
+
+	TVec4<unsigned char> COpenGLTexture2D::GetPixelColor(TVec2<uint32_t> xy)
+	{
+		TVec4<unsigned char> rval;
+		const stbi_uc* p = m_Data + (4 * (xy.y() * Dimensions.x() + xy.x()));
+		rval.r = p[0];
+		rval.g = p[1];
+		rval.b = p[2];
+		rval.a = p[3];
+		return rval;
+	}
+
 	TVec2<uint32_t> COpenGLTexture2D::Load(const std::string& _Path)
 	{
-		int width, height, channels;
+		ARC_PROFILE_FUNCTION();
+		int channels, width, height;
 		stbi_set_flip_vertically_on_load(1);
 		m_Data = stbi_load(_Path.c_str(), &width, &height, &channels, 0);
 		ARC_CORE_ASSERT(m_Data, "Error loading texture from file");
@@ -79,18 +99,18 @@ namespace ARC {
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, width, height, m_DataFormat, GL_UNSIGNED_BYTE, m_Data);
-
 		return TVec2<uint32_t>(width, height);
 	}
 
 	TVec2<uint32_t> COpenGLTexture2D::Load(const TVec2<uint32_t>& _Dimentions)
 	{
+		ARC_PROFILE_FUNCTION();
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
 		m_BytesPerPixel = 4;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, _Dimentions.x, _Dimentions.y);
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, _Dimentions.x(), _Dimentions.y());
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

@@ -128,11 +128,6 @@ project "Sandbox"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines
-		{
-			"ARC_PLATFORM_WINDOWS",
-		}
-
 	filter "configurations:Debug"
 		defines "ARC_DEBUG"
 		runtime "Debug"

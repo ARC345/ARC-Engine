@@ -6,6 +6,7 @@ namespace ARC {
 	{
 	public:
 		COpenGLVertexBuffer(float* _Vertices, uint32_t _Size);
+		COpenGLVertexBuffer(uint32_t _Size);
 		virtual ~COpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -13,6 +14,8 @@ namespace ARC {
 
 		virtual void SetLayout(const CBufferLayout& _Layout) override { m_Layout = _Layout; }
 		virtual const CBufferLayout& GetLayout() const override { return m_Layout; }
+
+		virtual void SetData(const void* _Data, uint32_t _Size) override;
 
 	private:
 		uint32_t m_Renderer_id;

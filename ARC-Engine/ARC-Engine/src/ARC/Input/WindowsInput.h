@@ -9,7 +9,7 @@ namespace ARC{
 		virtual float GetMouseXImpl() const override;
 		virtual float GetMouseYImpl() const override;
 
-		TVec2<> GetMouseXYImpl() const override;
+		FVec2 GetMouseXYImpl() const override;
 
 		virtual int GetKeyImpl(int _keycode) override;
 

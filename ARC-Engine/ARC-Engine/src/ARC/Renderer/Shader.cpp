@@ -52,6 +52,7 @@ namespace ARC {
 
 	TRef<CShader> CShaderLibrary::Load(const std::string& _Path, const std::string& _Name /*= ""*/)
 	{
+		ARC_PROFILE_FUNCTION();
 		auto shader = CShader::Create(_Path);
 		if(_Name == "") Add(shader);
 		else Add(_Name, shader);
@@ -86,7 +87,7 @@ namespace ARC {
 		SetFloat3(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<TVec2<>>(const std::string& _Name, const TVec2<>& _Value)
+	void CShader::Set<FVec2>(const std::string& _Name, const FVec2& _Value)
 	{
 		SetFloat2(_Name, _Value.Data());
 	}

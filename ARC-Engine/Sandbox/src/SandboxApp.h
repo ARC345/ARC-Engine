@@ -34,8 +34,6 @@ public:
 
 	ARC::CColor SQ_Colour = ARC::CColor::Red;
 
-	ARC::CPrimitive2D SQ_Data;
-
 private:
 	ARC::CShaderLibrary m_ShaderLibrary;
 
