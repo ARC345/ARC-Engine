@@ -57,7 +57,7 @@ namespace ARC {
 
 	void COpenGLVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
 	{
-		glBindVertexArray(m_RendererId);
+		Bind();
 		_IndexBuffer->Bind();
 
 		m_IndexBuffer = _IndexBuffer;

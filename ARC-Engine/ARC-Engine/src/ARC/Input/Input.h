@@ -11,14 +11,14 @@ namespace ARC {
 		inline static int GetKey(int _keycode) { return s_Instance->GetKeyImpl(_keycode); }
 		inline static float GetMouseX() { return s_Instance->GetMouseXImpl(); }
 		inline static float GetMouseY() { return s_Instance->GetMouseYImpl(); }
-		inline static TVec2<> GetMouseXY() { return s_Instance->GetMouseXYImpl(); }
+		inline static FVec2 GetMouseXY() { return s_Instance->GetMouseXYImpl(); }
 	protected:
 		virtual bool IsKeyPressedImpl(int _keycode) const = 0;
 		virtual bool IsMouseButtonPressedImpl(int _button) const = 0;
 		virtual int GetKeyImpl(int _keycode) = 0;
 		virtual float GetMouseXImpl()  const = 0;
 		virtual float GetMouseYImpl()  const = 0;
-		virtual TVec2<> GetMouseXYImpl()  const = 0;
+		virtual FVec2 GetMouseXYImpl()  const = 0;
 	private:
 		static CInput* s_Instance;
 	};

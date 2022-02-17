@@ -12,8 +12,8 @@ namespace ARC {
 			m_Dimentions(TVec2<int>(p_DimentionsX, p_DimentionsY)) {}
 
 		inline TVec2<int> GetDimentions() const { return m_Dimentions; };
-		inline int GetX() const { return GetDimentions().x; };
-		inline int GetY() const { return GetDimentions().y; };
+		inline int GetX() const { return GetDimentions().x(); };
+		inline int GetY() const { return GetDimentions().y(); };
 
 		virtual std::string ToString() const override {
 			std::stringstream ss;

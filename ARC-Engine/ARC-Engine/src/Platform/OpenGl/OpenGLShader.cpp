@@ -69,6 +69,7 @@ namespace ARC {
 
 	std::unordered_map<GLenum, std::string> COpenGLShader::PreProcess(const std::string& _Source)
 	{
+		ARC_PROFILE_FUNCTION();
 		std::unordered_map<GLenum, std::string> shaderSources;
 		size_t pos = _Source.find(s_Seperator.c_str(), 0);
 
@@ -90,6 +91,7 @@ namespace ARC {
 
 	void COpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& _ShaderSources)
 	{
+		ARC_PROFILE_FUNCTION();
 		// Get a program object.
 		GLuint program = glCreateProgram();
 

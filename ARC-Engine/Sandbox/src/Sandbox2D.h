@@ -3,7 +3,6 @@
 #include "ARC/Renderer/Layer.h"
 #include "ARC/Objects/OrthographicCameraController.h"
 #include "ARC/Objects/Primitive2D.h"
-#include "ARC/Renderer/Color.h"
 
 namespace ARC { class CTexture2D; }
 
@@ -26,6 +25,7 @@ public:
 	virtual void OnEvent(ARC::CEvent& _Event) override;
 	virtual void OnGuiRender() override;
 
+	float prev = 0.f;
 protected:
 	ARC::TRef<ARC::CShader> m_Shader;
 	ARC::TRef<ARC::CVertexArray> m_VertexArray;

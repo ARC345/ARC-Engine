@@ -19,8 +19,7 @@ namespace ARC {
 		virtual void SetClearColour(const glm::vec4 _Colour) = 0;
 		virtual void Clear() = 0;
 
-		virtual void DrawIndexed(const TRef<CVertexArray>& _VertexArray) = 0;
-	
+		virtual void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) = 0;
 		inline static ERendererAPI GetAPI() { return s_API; };
 	private:
 		static ERendererAPI s_API;

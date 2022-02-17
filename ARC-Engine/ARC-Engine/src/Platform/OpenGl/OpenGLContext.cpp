@@ -12,6 +12,7 @@ namespace ARC {
 	}
 	void COpenGLContext::Init()
 	{
+		ARC_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_WindowHandle);
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);

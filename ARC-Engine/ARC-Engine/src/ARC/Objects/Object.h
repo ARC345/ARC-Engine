@@ -3,5 +3,6 @@
 namespace ARC {
 	class CObject
 	{
+		
 	};
 }

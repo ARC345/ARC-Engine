@@ -4,7 +4,6 @@
 #include "Renderer.h"
 
 namespace ARC {
-
 	TRef<CVertexArray> CVertexArray::Create()
 	{
 		switch (CRenderer::GetCurrentAPI())
@@ -19,25 +18,4 @@ namespace ARC {
 
 		return nullptr;
 	}
-
-	void CVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
-	{
-
-	}
-
-	void CVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
-	{
-
-	}
-
-	void CVertexArray::Bind() const
-	{
-
-	}
-
-	void CVertexArray::UnBind() const
-	{
-
-	}
-
 }

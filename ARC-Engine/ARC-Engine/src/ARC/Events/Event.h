@@ -3,11 +3,11 @@
 #include "ARC/Core/Core.h"
 
 #include "ARC/Helpers/Enum.h"
-#include "ARC/Helpers/Macros.h"
 
 #include "PCH/arc_pch.h"
 #include "ARC/Helpers/Helpers.h"
 #include <spdlog/fmt/ostr.h>
+#include "ARC/Core/Macros.h"
 
 namespace ARC {
 	enum class EEventType

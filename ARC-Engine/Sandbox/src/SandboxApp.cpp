@@ -1,3 +1,6 @@
+//--------EntryPoint-----------------
+#include "ARC/Core/EntryPoint.h"
+//-----------------------------------
 #include <ARC.h>
 #include "ARC\Events\Event.h"
 #include "SandboxApp.h"
@@ -6,7 +9,6 @@
 #include "ARC\Types\vector.h"
 #include "imgui\imgui.h"
 #include "ARC\Types\TybeBase.h"
-#include "ARC\Helpers\Macros.h"
 #include "ARC\Events\KeyEvent.h"
 #include "glm\glm\ext\matrix_transform.hpp"
 #include "glm\glm\ext\matrix_float4x4.hpp"
@@ -14,6 +16,7 @@
 #include "Platform\OpenGl\OpenGLShader.h"
 #include "glm\glm\gtc\type_ptr.inl"
 #include "ARC\Renderer\Texture.h"
+//#include "SpaceWar\SpaceWar.h"
 #include "Sandbox2D.h"
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
@@ -136,19 +139,19 @@ void CExampleLayer::OnUpdate(float _DeltaTime)
 	ARC::CRenderCommand::Clear();
 
 	ARC::CRenderer::BeginScene(m_CameraController.GetCamera());
-	SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
+	//SQ_Data.Scale = {0.1f, 0.1f, 0.1f};
 
 	m_FlatColorShader->Bind();
 	m_FlatColorShader->Set<ARC::CColor>("u_Color", SQ_Colour);
 
-	for (size_t x = 0; x < 20; x++)
-		for (size_t y = 0; y < 20; y++)
-		{
-			glm::vec3 pos = { x * 0.11f, y * 0.11f, 0.f };
-			pos += SQ_Data.Position;
-			glm::mat4 transform = glm::scale(glm::translate(glm::mat4(1.0f), pos), SQ_Data.Scale);
-			ARC::CRenderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
-		}
+	//for (size_t x = 0; x < 20; x++)
+	//	for (size_t y = 0; y < 20; y++)
+	//	{
+	//		glm::vec3 pos = { x * 0.11f, y * 0.11f, 0.f };
+	//		pos += SQ_Data.Position;
+	//		glm::mat4 transform = glm::scale(glm::translate(glm::mat4(1.0f), pos), SQ_Data.Scale);
+	//		ARC::CRenderer::Submit(m_FlatColorShader, m_SquareVertexArray, transform);
+	//	}
 
 	m_Texture->Bind();
 	ARC::CRenderer::Submit(m_ShaderLibrary.GetShader("Texture"), m_SquareVertexArray, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
