@@ -5,18 +5,17 @@
 namespace ARC {
 	//---------------------------[CVertexBuffer]----------------------------//
 	
-	COpenGLVertexBuffer::COpenGLVertexBuffer(float* _Vertices, uint32_t _Size)
-	{
-		glCreateBuffers(1, &m_Renderer_id);
-		Bind();
-		glBufferData(GL_ARRAY_BUFFER, _Size, _Vertices, GL_STATIC_DRAW);
-	}
-
 	COpenGLVertexBuffer::COpenGLVertexBuffer(uint32_t _Size)
 	{
 		glCreateBuffers(1, &m_Renderer_id);
 		Bind();
 		glBufferData(GL_ARRAY_BUFFER, _Size, nullptr, GL_DYNAMIC_DRAW);
+	}
+	COpenGLVertexBuffer::COpenGLVertexBuffer(float* _Vertices, uint32_t _Size)
+	{
+		glCreateBuffers(1, &m_Renderer_id);
+		Bind();
+		glBufferData(GL_ARRAY_BUFFER, _Size, _Vertices, GL_STATIC_DRAW);
 	}
 
 	COpenGLVertexBuffer::~COpenGLVertexBuffer()

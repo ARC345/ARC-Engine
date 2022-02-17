@@ -11,18 +11,18 @@
 #include "Texture.h"
 
 namespace ARC {
-	
-	struct SQuadVertex {
-		FVec2 Position;
-		FVec2 TexCoord;
-		float ZOrder;
-		CColor Color;
+	struct SQuadVertex
+	{
+		glm::vec3 Position;
+		glm::vec4 Color;
+		glm::vec2 TexCoord;
+		// TODO: texid
 	};
 
 	struct SRenderer2DData {
-		const uint32_t MaxQuads = 10000;
-		const uint32_t MaxVertices = MaxQuads * 4;
-		const uint32_t MaxIndices = MaxQuads * 6;
+		static const uint32_t MaxQuads = 10000;
+		static const uint32_t MaxVertices = MaxQuads * 4;
+		static const uint32_t MaxIndices = MaxQuads * 6;
 		TRef<CVertexArray> QuadVertexArray;
 		TRef<CTexture2D> WhiteTexture;
 
@@ -60,23 +60,22 @@ namespace ARC {
 			});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 		s_Data.QuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
-
+		
 		uint32_t* quad_indices = new uint32_t[s_Data.MaxIndices];
-		
-		uint32_t offset=0;
-		for (uint32_t i = 0; i < s_Data.MaxIndices; i+=6)
+
+		uint32_t offset = 0;
+		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
 		{
-			quad_indices[i+0]= offset+0;
-			quad_indices[i+1]= offset+1;
-			quad_indices[i+2]= offset+2;
-			
-			quad_indices[i+3]= offset+2;
-			quad_indices[i+4]= offset+3;
-			quad_indices[i+5]= offset+0;
-			
-			offset+=4;
+			quad_indices[i + 0] = offset + 0;
+			quad_indices[i + 1] = offset + 1;
+			quad_indices[i + 2] = offset + 2;
+
+			quad_indices[i + 3] = offset + 2;
+			quad_indices[i + 4] = offset + 3;
+			quad_indices[i + 5] = offset + 0;
+
+			offset += 4;
 		}
-		
 		TRef<CIndexBuffer> quad_ib = CIndexBuffer::Create(quad_indices, s_Data.MaxIndices);
 		s_Data.QuadVertexArray->SetIndexBuffer(quad_ib);
 		
@@ -110,7 +109,7 @@ namespace ARC {
 	void CRenderer2D::EndScene()
 	{
 		ARC_PROFILE_FUNCTION();
-		uint32_t data_size = (uint8_t*)s_Data.QuadVertexBufferPtr- (uint8_t*)s_Data.QuadVertexBufferBase;
+		auto data_size = uint32_t((uint8_t*)s_Data.QuadVertexBufferPtr- (uint8_t*)s_Data.QuadVertexBufferBase);
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, data_size);
 		
 		Flush();
@@ -127,28 +126,27 @@ namespace ARC {
 		ARC_PROFILE_FUNCTION();
 		//s_Data.FlatColorShader->Bind();
 		//s_Data.FlatColorShader->Set<CColor>("u_Color", _Color);
-		
-		s_Data.QuadVertexBufferPtr->Position = _Position;
-		s_Data.QuadVertexBufferPtr->ZOrder = _ZOrder;
-		s_Data.QuadVertexBufferPtr->Color = _Color;
+		s_Data.QuadVertexBufferPtr->Position = { _Position.x(), _Position.y(), 0.f };
+		//s_Data.QuadVertexBufferPtr->ZOrder = _ZOrder;
+		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.f, 0.f };
 		s_Data.QuadVertexBufferPtr++;
 		
-		s_Data.QuadVertexBufferPtr->Position = { _Position.x() + _Size.x(), _Position.y() };
-		s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
-		s_Data.QuadVertexBufferPtr->Color = _Color;
+		s_Data.QuadVertexBufferPtr->Position = { _Position.x() + _Size.x(), _Position.y(), 0.f };
+		//s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
+		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.f, 0.f };
 		s_Data.QuadVertexBufferPtr++;
 
-		s_Data.QuadVertexBufferPtr->Position = _Position+_Size;
-		s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
-		s_Data.QuadVertexBufferPtr->Color = _Color;
+		s_Data.QuadVertexBufferPtr->Position = { _Position.x() + _Size.x(), _Position.y()+_Size.y(), 0.f };
+		//s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
+		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
 		s_Data.QuadVertexBufferPtr->TexCoord = { 1.f, 1.f };
 		s_Data.QuadVertexBufferPtr++;
 
-		s_Data.QuadVertexBufferPtr->Position = { _Position.x(), _Position.y() + _Size.y() };
-		s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
-		s_Data.QuadVertexBufferPtr->Color = _Color;
+		s_Data.QuadVertexBufferPtr->Position = { _Position.x(), _Position.y() + _Size.y(), 0.f};
+		//s_Data.QuadVertexBufferPtr->ZOrder = 0.f;
+		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
 		s_Data.QuadVertexBufferPtr->TexCoord = { 0.f, 1.f };
 		s_Data.QuadVertexBufferPtr++;
 
