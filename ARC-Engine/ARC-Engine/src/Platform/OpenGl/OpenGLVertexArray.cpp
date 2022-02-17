@@ -33,7 +33,7 @@ namespace ARC {
 
 	COpenGLVertexArray::~COpenGLVertexArray()
 	{
-
+		glDeleteVertexArrays(1, &m_RendererId);
 	}
 	
 	void COpenGLVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
