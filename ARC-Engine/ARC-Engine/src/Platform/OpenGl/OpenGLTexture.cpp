@@ -48,10 +48,10 @@ namespace ARC {
 	{
 		TVec4<unsigned char> rval;
 		const stbi_uc* p = m_Data + (4 * (xy.y() * Dimensions.x() + xy.x()));
-		rval.r = p[0];
-		rval.g = p[1];
-		rval.b = p[2];
-		rval.a = p[3];
+		rval.r() = p[0];
+		rval.g() = p[1];
+		rval.b() = p[2];
+		rval.a() = p[3];
 		return rval;
 	}
 

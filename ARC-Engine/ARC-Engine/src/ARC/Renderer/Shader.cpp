@@ -77,12 +77,12 @@ namespace ARC {
 	}
 
 	template<>
-	void CShader::Set<TVec4<>>(const std::string& _Name, const TVec4<>& _Value)
+	void CShader::Set<FVec4>(const std::string& _Name, const FVec4& _Value)
 	{
 		SetFloat4(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<TVec3<>>(const std::string& _Name, const TVec3<>& _Value)
+	void CShader::Set<FVec3>(const std::string& _Name, const FVec3& _Value)
 	{
 		SetFloat3(_Name, _Value.Data());
 	}
