@@ -24,7 +24,7 @@ CSandbox2D::CSandbox2D() :
 
 void CSandbox2D::OnAttach()
 {
-	ARC::HPR::INI::File inif();
+	CIniFile inif();
 	m_CheckerboardTexture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
 }
 

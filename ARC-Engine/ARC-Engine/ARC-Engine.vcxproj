@@ -89,7 +89,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>inifile-cpp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -114,7 +114,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>inifile-cpp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -139,10 +139,11 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>inifile-cpp.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Ini.h" />
     <ClInclude Include="out\glm\glm\common.hpp" />
     <ClInclude Include="out\glm\glm\detail\_features.hpp" />
     <ClInclude Include="out\glm\glm\detail\_fixes.hpp" />
@@ -565,6 +566,7 @@
     <ClInclude Include="src\ARC\Core\EntryPoint.h" />
     <ClInclude Include="src\ARC\Core\Log.h" />
     <ClInclude Include="src\ARC\Core\Macros.h" />
+    <ClInclude Include="src\ARC\Core\PlatformDetection.h" />
     <ClInclude Include="src\ARC\Core\Window.h" />
     <ClInclude Include="src\ARC\Events\ApplicationEvent.h" />
     <ClInclude Include="src\ARC\Events\Event.h" />
@@ -573,6 +575,7 @@
     <ClInclude Include="src\ARC\GUI\ImGuiLayer.h" />
     <ClInclude Include="src\ARC\Helpers\Enum.h" />
     <ClInclude Include="src\ARC\Helpers\Helpers.h" />
+    <ClInclude Include="src\ARC\Helpers\Math.h" />
     <ClInclude Include="src\ARC\Input\Input.h" />
     <ClInclude Include="src\ARC\Input\KeyCodes.h" />
     <ClInclude Include="src\ARC\Input\WindowsInput.h" />
@@ -595,6 +598,7 @@
     <ClInclude Include="src\ARC\Renderer\VertexArray.h" />
     <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\ARC\Types\Pointer.h" />
+    <ClInclude Include="src\ARC\Types\Transform2D.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
     <ClInclude Include="src\PCH\arc_pch.h" />
@@ -650,6 +654,9 @@
     </ProjectReference>
     <ProjectReference Include="out\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="out\inifile_cpp\inifile_cpp.vcxproj">
+      <Project>{C72C29DA-33E2-A1CF-BCD6-9BA6288B98D3}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
