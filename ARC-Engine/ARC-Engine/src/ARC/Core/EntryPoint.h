@@ -15,7 +15,7 @@ int main(int p_ArgA, char** p_ArgB)
 	printf("Starting-ARC----\n");
 	
 	//-------------------Log-Init-------------------//
-	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::Log::Init", "Logs/CSandBox2D-Log-Init.json");
+	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::Log::Init", "CSandBox2D-Log-Init.json");
 	printf("Initializing-Logger----\n");
 	bool bInitLogger = ARC::CLog::Init();
 	if(!bInitLogger)
