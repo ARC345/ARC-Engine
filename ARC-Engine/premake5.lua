@@ -64,7 +64,7 @@ project "ARC-Engine"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"inifile-cpp",
+		"inifile_cpp",
 		"opengl32.lib"
 	}
 
