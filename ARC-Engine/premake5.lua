@@ -14,6 +14,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
+IncludeDir["inifile_cpp"] = "ARC-Engine/out/inifile_cpp/include"
 IncludeDir["glm"] = "ARC-Engine/out/glm"
 IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
 
@@ -21,6 +22,7 @@ group "Dependencies"
 	include "ARC-Engine/out/GLFW"
 	include "ARC-Engine/out/GLAD"
 	include "ARC-Engine/out/imgui"
+	include "ARC-Engine/out/inifile_cpp"
 group ""
 
 project "ARC-Engine"
@@ -52,6 +54,7 @@ project "ARC-Engine"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.inifile_cpp}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}"
 	}
@@ -61,6 +64,7 @@ project "ARC-Engine"
 		"GLFW",
 		"GLAD",
 		"ImGui",
+		"inifile-cpp",
 		"opengl32.lib"
 	}
 
