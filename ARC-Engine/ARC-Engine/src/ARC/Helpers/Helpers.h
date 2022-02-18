@@ -30,6 +30,10 @@ namespace ARC {
 			[[nodiscard]] std::string ReadFile(const std::string& _Path);
 			[[nodiscard]] std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);
 		}
+		namespace INI {
+			using File = ini::IniFile;
+		}
+
 		namespace QUAD {
 			template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& Trans) { 
 				using namespace Math;
