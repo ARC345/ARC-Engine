@@ -3,8 +3,11 @@
 #include <fstream>
 #include <streambuf>
 #include "ARC\Core\Core.h"
+#include "inicpp.h"
 
 namespace ARC {
+	static std::unordered_map<std::string, std::shared_ptr<ini::IniFile>> IniFiles;
+
 	namespace HPR {
 		std::mt19937 Random::s_RandomEngine;
 		std::uniform_int_distribution<std::mt19937::result_type> Random::s_Distribution;

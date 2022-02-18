@@ -136,16 +136,10 @@
   <ItemGroup>
     <ClInclude Include="src\Sandbox2D.h" />
     <ClInclude Include="src\SandboxApp.h" />
-    <ClInclude Include="src\SpaceWar\Player.h" />
-    <ClInclude Include="src\SpaceWar\Rock.h" />
-    <ClInclude Include="src\SpaceWar\SpaceWar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Sandbox2D.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
-    <ClCompile Include="src\SpaceWar\Player.cpp" />
-    <ClCompile Include="src\SpaceWar\Rock.cpp" />
-    <ClCompile Include="src\SpaceWar\SpaceWar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ARC-Engine\ARC-Engine.vcxproj">
