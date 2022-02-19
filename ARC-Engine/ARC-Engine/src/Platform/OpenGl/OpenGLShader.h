@@ -41,5 +41,9 @@ namespace ARC {
 		virtual void SetFloat2(const std::string& _Name, const float* _Value) override;
 		virtual void SetFloat3(const std::string& _Name, const  float*  _Value) override;
 		virtual void SetFloat4(const std::string& _Name, const  float* _Value) override;
+
+		virtual void SetIntArray(const std::string& _Name, const int* _Values, uint32_t _Count) override;
+		virtual void SetFloatArray(const std::string& _Name, const float* _Values, uint32_t _Count) override;
+
 	};
 }

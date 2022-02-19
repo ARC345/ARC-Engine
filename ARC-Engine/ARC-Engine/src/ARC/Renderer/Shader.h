@@ -19,6 +19,8 @@ namespace ARC {
 
 		template<typename T>
 		inline void Set(const std::string& _Name, const T& _Value);
+		template<typename T>
+		inline void SetArray(const std::string& _Name, const T* _Value, uint32_t _Count);
 
 	protected:
 		virtual void SetInt(const std::string& _Name, const int* _Value) = 0;
@@ -31,6 +33,9 @@ namespace ARC {
 		virtual void SetFloat2(const std::string& _Name, const float* _Value) = 0;
 		virtual void SetFloat3(const std::string& _Name, const float* _Value) = 0;
 		virtual void SetFloat4(const std::string& _Name, const float* _Value) = 0;
+		
+		virtual void SetIntArray(const std::string& _Name, const int* _Values, uint32_t _Count) = 0;
+		virtual void SetFloatArray(const std::string& _Name, const float* _Values, uint32_t _Count) = 0;
 	};
 
 	class CShaderLibrary

@@ -18,6 +18,9 @@ namespace ARC {
 
 			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) override;
 
+			virtual bool operator==(const CTexture& _Tex) const override {
+				return m_RendererID == ((COpenGLTexture2D&)_Tex).m_RendererID;
+			};
 	private:
 			TVec2<uint32_t> Load(const TVec2<uint32_t>& _Dimentions);
 			TVec2<uint32_t> Load(const std::string& _Path);

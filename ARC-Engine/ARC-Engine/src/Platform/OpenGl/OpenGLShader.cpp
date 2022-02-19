@@ -235,4 +235,16 @@ namespace ARC {
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform4fv(location, 1, _Value);
 	}
+
+	void COpenGLShader::SetIntArray(const std::string& _Name, const int* _Values, uint32_t _Count)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		glUniform1iv(location, _Count, _Values);
+	}
+
+	void COpenGLShader::SetFloatArray(const std::string& _Name, const float* _Values, uint32_t _Count)
+	{
+		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		glUniform1fv(location, _Count, _Values);
+	}
 }
