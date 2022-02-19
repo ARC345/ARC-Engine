@@ -9,6 +9,7 @@ namespace ARC {
 			virtual ~CTexture() = default;
 
 			virtual void Bind(uint32_t _Slot = 0) const = 0;
+			virtual bool operator==(const CTexture& _Tex) const = 0;
 	};
 	
 	class CTexture2D : public CTexture
@@ -20,6 +21,7 @@ namespace ARC {
 			virtual void SetData(void*, uint32_t _Size) = 0;
 			virtual void ClearData() = 0;
 			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) = 0;
+
 		protected:
 			inline CTexture2D(TVec2<uint32_t> _Dimentions) : Dimensions(_Dimentions) {}
 		public:

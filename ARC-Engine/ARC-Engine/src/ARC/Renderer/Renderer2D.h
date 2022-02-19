@@ -22,7 +22,7 @@ namespace ARC {
 
 			// Primitives
 			static void DrawQuad(const FVec2 _Position, const float _Rotation = 0.f, const FVec2 _Size = {1.f, 1.f}, float _ZOrder = 0, const CColor _Color = CColor::Red);
-			static void DrawQuad(const FVec2 _Position, const float _Rotation, const FVec2 _Size, float _ZOrder, const FVec2 _TilingFactor, const CColor _Color, const TRef<CTexture2D> _Tex);
+			static void DrawQuad(const FVec2 _Position, const float _Rotation, const FVec2 _Size, float _ZOrder, const FVec2 _TextureScaling, const CColor _Color, const TRef<CTexture2D> _Tex);
 			static void DrawQuad(CPrimitive2D& Quad);
 	};
 }

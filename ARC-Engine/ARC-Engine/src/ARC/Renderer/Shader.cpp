@@ -131,4 +131,21 @@ namespace ARC {
 	{
 		SetInt(_Name, &_Value);
 	}
+
+	template<typename T>
+	void CShader::SetArray(const std::string& _Name, const T* _Value, uint32_t _Count)
+	{
+		ARC_CORE_WARN("Uploading {0} Array to Shader is currently not supported", typeid(T).name());
+	}
+
+	template<>
+	void CShader::SetArray<int>(const std::string& _Name, const int* _Value, uint32_t _Count)
+	{
+		SetIntArray(_Name, _Value, _Count);
+	}
+	template<>
+	void CShader::SetArray<float>(const std::string& _Name, const float* _Value, uint32_t _Count)
+	{
+		SetFloatArray( _Name, _Value, _Count);
+	}
 }

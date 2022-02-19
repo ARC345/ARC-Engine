@@ -65,6 +65,7 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 		//ARC::CRenderer2D::DrawQuad(Quad);
 		ARC::CRenderer2D::DrawQuad({0.f, 1.f}, 0.f, {1.f, 1.f}, 0, ARC::CColor::Red);
 		ARC::CRenderer2D::DrawQuad({0.f, -1.f}, 0.f, {1.f, 1.f}, 0, ARC::CColor::Blue);
+		ARC::CRenderer2D::DrawQuad({1.f, 0.f}, 0.f, {1.f, 1.f}, 0, {1.f, 1.f}, ARC::CColor::White, m_CheckerboardTexture);
 		//
 		//ARC::CRenderer2D::DrawQuad(Quad);
 		//Quad.Transform.Rotation = glm::radians(prev+30);
