@@ -27,6 +27,7 @@ namespace ARC {
 		ImGui::StyleColorsClassic();
 
 		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = "config/imgui.ini";
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;

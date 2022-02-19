@@ -3,8 +3,8 @@ project "GLAD"
 	language "C"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("_int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{

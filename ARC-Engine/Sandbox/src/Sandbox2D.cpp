@@ -14,6 +14,7 @@
 #include "ARC/Renderer/Texture.h"
 #include "ARC/Types/Vector.h"
 #include "ARC\Core\Log.h"
+#include "ARC\Core\Ini.h"
 
 CSandbox2D::CSandbox2D() :
 	CLayer("Sandbox2D"),
@@ -24,6 +25,7 @@ CSandbox2D::CSandbox2D() :
 
 void CSandbox2D::OnAttach()
 {
+	ARC::CIniFile inif;
 	m_CheckerboardTexture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
 }
 
