@@ -1329,6 +1329,9 @@
     <ClInclude Include="src\ARC\Core\EntryPoint.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Core\Ini.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Core\Log.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>

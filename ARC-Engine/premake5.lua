@@ -49,6 +49,7 @@ project "ARC-Engine"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/out/spdlog/include",
+		"%{prj.name}/out/inifile_cpp/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
@@ -114,6 +115,7 @@ project "Sandbox"
 	{
 		"ARC-Engine/src",
 		"ARC-Engine/out/spdlog/include",
+		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
 		"ARC-Engine/out"
 	}
