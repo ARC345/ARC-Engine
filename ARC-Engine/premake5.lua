@@ -14,7 +14,6 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
-IncludeDir["inifile_cpp"] = "ARC-Engine/out/inifile_cpp/include"
 IncludeDir["glm"] = "ARC-Engine/out/glm"
 IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
 
@@ -22,7 +21,6 @@ group "Dependencies"
 	include "ARC-Engine/out/GLFW"
 	include "ARC-Engine/out/GLAD"
 	include "ARC-Engine/out/imgui"
-	include "ARC-Engine/out/inifile_cpp"
 group ""
 
 project "ARC-Engine"
@@ -51,10 +49,10 @@ project "ARC-Engine"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/out/spdlog/include",
+		"%{prj.name}/out/inifile_cpp/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.inifile_cpp}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}"
 	}
@@ -64,7 +62,6 @@ project "ARC-Engine"
 		"GLFW",
 		"GLAD",
 		"ImGui",
-		"inifile_cpp",
 		"opengl32.lib"
 	}
 
@@ -118,6 +115,7 @@ project "Sandbox"
 	{
 		"ARC-Engine/src",
 		"ARC-Engine/out/spdlog/include",
+		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
 		"ARC-Engine/out"
 	}
