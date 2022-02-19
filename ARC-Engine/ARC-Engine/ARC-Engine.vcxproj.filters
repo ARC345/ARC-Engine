@@ -1329,10 +1329,16 @@
     <ClInclude Include="src\ARC\Core\EntryPoint.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Core\Ini.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Core\Log.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Core\Macros.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Core\PlatformDetection.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Core\Window.h">
@@ -1357,6 +1363,9 @@
       <Filter>src\ARC\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Helpers\Helpers.h">
+      <Filter>src\ARC\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Helpers\Math.h">
       <Filter>src\ARC\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Input\Input.h">
@@ -1425,6 +1434,9 @@
     <ClInclude Include="src\ARC\Types\Pointer.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Types\Transform2D.h">
+      <Filter>src\ARC\Types</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Types\TybeBase.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
@@ -1454,9 +1466,6 @@
     </ClInclude>
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Ini.h">
-      <Filter>src\ARC\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
