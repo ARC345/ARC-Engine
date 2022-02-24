@@ -21,13 +21,13 @@ namespace ARC {
 		inline const FVec2& GetScale() const { return Transform.Scale; }
 		inline FVec2 GetScale() { return Transform.Scale; }
 
-		inline const TTransform2D<>& GetTransform() const { return Transform; }
-		inline TTransform2D<> GetTransform() { return Transform; }
+		inline const FTransform2D& GetTransform() const { return Transform; }
+		inline FTransform2D GetTransform() { return Transform; }
 
 	public:
 		FTransform2D Transform;
 		CColor Color = CColor::White;
 		TRef<CTexture2D> Texture = nullptr;
-		FVec2 TilingFactor = {1, 1};
+		FVec2 TextureScaling = {1, 1};
 	};
 }
