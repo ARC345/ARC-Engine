@@ -1428,9 +1428,6 @@
     <ClInclude Include="src\ARC\Renderer\VertexArray.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Types\Array.h">
-      <Filter>src\ARC\Types</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Types\Pointer.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
@@ -1438,6 +1435,9 @@
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\TybeBase.h">
+      <Filter>src\ARC\Types</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Types\array.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Types\Vector.h">

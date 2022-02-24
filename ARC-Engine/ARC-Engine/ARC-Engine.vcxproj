@@ -596,10 +596,10 @@
     <ClInclude Include="src\ARC\Renderer\Shader.h" />
     <ClInclude Include="src\ARC\Renderer\Texture.h" />
     <ClInclude Include="src\ARC\Renderer\VertexArray.h" />
-    <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\ARC\Types\Pointer.h" />
     <ClInclude Include="src\ARC\Types\Transform2D.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
+    <ClInclude Include="src\ARC\Types\array.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
     <ClInclude Include="src\PCH\arc_pch.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLBuffer.h" />

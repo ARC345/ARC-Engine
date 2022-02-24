@@ -16,8 +16,13 @@
 #include "Platform\OpenGl\OpenGLShader.h"
 #include "glm\glm\gtc\type_ptr.inl"
 #include "ARC\Renderer\Texture.h"
-//#include "SpaceWar\SpaceWar.h"
-#include "Sandbox2D.h"
+
+#define SpaceWar
+#if SpaceWar
+	#include "SpaceWar\SpaceWar.h"
+#else
+	#include "Sandbox2D.h"
+#endif
 
 ARC::Core::CApplication* ARC::Core::CreateApplication()
 {
@@ -197,5 +202,9 @@ void CExampleLayer::OnGuiRender()
 //-------------------[Layer]----------------------//
 CSandbox::CSandbox()
 {
-	PushLayer(new CSandbox2D());
+	#ifdef SpaceWar
+		PushLayer(new CSpaceWar());
+	#else
+		PushLayer(new CSandbox2D());
+	#endif
 }
