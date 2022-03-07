@@ -62,10 +62,10 @@ bool CSpaceWar::DetectCollision()
 
 	for (auto& PlayerCC : m_Player->CollisionData)
 	{
-		ARC::FVec2 PCCTop = ARC::Math::LerpF<ARC::FVec2, Linear>(TLPP, TRPP, float(PlayerCC->x()) / 32);
-		ARC::FVec2 PCCBottom = ARC::Math::LerpF<ARC::FVec2, Linear>(BLPP, BRPP, float(PlayerCC->x()) / 32);
+		ARC::FVec2 PCCTop = ARC::Math::InterpF<Linear>(TLPP, TRPP, float(PlayerCC->x()) / 32);
+		ARC::FVec2 PCCBottom = ARC::Math::InterpF<Linear>(BLPP, BRPP, float(PlayerCC->x()) / 32);
 		cachedLocs.push_back(std::make_shared<ARC::FVec2>(
-			ARC::Math::LerpF<ARC::FVec2, Linear>(PCCBottom, PCCTop, float(PlayerCC->y()) / 32)
+			ARC::Math::InterpF<Linear>(PCCBottom, PCCTop, float(PlayerCC->y()) / 32)
 		));
 	}
 	for (auto& rock : m_Rocks)
@@ -81,10 +81,10 @@ bool CSpaceWar::DetectCollision()
 
 			for (auto& RockCC : ARC::CRock::SpriteCollisionData[rock->SpriteIndex])
 			{
-				ARC::FVec2 RCCTop = ARC::Math::LerpF<ARC::FVec2, Linear>(TLRP, TRRP, float(RockCC->x()) / 32);
-				ARC::FVec2 RCCBottom = ARC::Math::LerpF<ARC::FVec2, Linear>(BLRP, BRRP, float(RockCC->x()) / 32);
+				ARC::FVec2 RCCTop = ARC::Math::InterpF<Linear>(TLRP, TRRP, float(RockCC->x()) / 32);
+				ARC::FVec2 RCCBottom = ARC::Math::InterpF<Linear>(BLRP, BRRP, float(RockCC->x()) / 32);
 
-				ARC::FVec2 RCCN = ARC::Math::LerpF<ARC::FVec2, Linear>(RCCBottom, RCCTop, float(RockCC->y()) / 32);
+				ARC::FVec2 RCCN = ARC::Math::InterpF<Linear>(RCCBottom, RCCTop, float(RockCC->y()) / 32);
 
 				for (auto& PlayerCC : cachedLocs)
 				{
@@ -153,6 +153,7 @@ void CSpaceWar::OnUpdate(float _DeltaTime)
 		}
 	}
 	ARC::CRenderer2D::DrawQuad(m_Player->PlayerSprite);
+	m_Player->ParticleSystem.OnRender();
 	for (auto& rock : m_Rocks) {
 		ARC::CRenderer2D::DrawQuad(rock->Sprite);
 	}
@@ -181,6 +182,8 @@ bool CSpaceWar::OnMouseButtonPressed(ARC::CMouseButtonPressedEvent& _e)
 void CSpaceWar::OnGuiRender()
 {
 	ARC_PROFILE_FUNCTION();
+
+
 	switch (GameState)
 	{
 		case EGameState::Play:

@@ -17,8 +17,8 @@
 #include "glm\glm\gtc\type_ptr.inl"
 #include "ARC\Renderer\Texture.h"
 
-#define SpaceWar
-#if SpaceWar
+//#define SpaceWar
+#ifdef SpaceWar
 	#include "SpaceWar\SpaceWar.h"
 #else
 	#include "Sandbox2D.h"

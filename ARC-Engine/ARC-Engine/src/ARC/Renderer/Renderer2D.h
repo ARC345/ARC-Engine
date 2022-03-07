@@ -1,6 +1,7 @@
 #pragma once
 #include "Color.h"
 
+namespace ARC { class CSubTexture2D; }
 namespace ARC { class CPrimitive2D; }
 
 namespace ARC { class COrthographicCameraBase; }
@@ -20,27 +21,27 @@ namespace ARC {
 			
 			static void Flush();
 
-			// Primitives
 			/*
 			*	@param _Position: Center location of quad.
 			*	@param _Rotation: Rotation of quad in radians.
 			*	@param _Size: Size of quad.
 			*	@param _Zorder: Z position of quad.
-			*	@param _Color: Color of quad.
-			*/
-			static void DrawQuad(const FVec2& _Position, const float _Rotation = 0.f, const FVec2& _Size = {1.f, 1.f}, float _ZOrder = 0, const CColor& _Color = CColor::Red);
-
-			/*
-			*	@param _Position: Center location of quad.
-			*	@param _Rotation: Rotation of quad in radians.
-			*	@param _Size: Size of quad.
-			*	@param _Zorder: Z position of quad.
-			*	@param _TextureScaling: Scaling applied to the texture
 			*	@param _Color: Color of quad.
 			*	@param _Texture: Texture of quad.
+			*	@param _TextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const FVec2& _TextureScaling, const CColor& _Color, const TRef<CTexture2D>& _Tex);
-			static void DrawQuad(CPrimitive2D& Quad);
+			static void DrawQuad(const FVec2& _Position, const float _Rotation = 0.f, const FVec2& _Size = { 1.f, 1.f }, float _ZOrder = 0, const CColor& _Color = CColor::White, const TRef<CTexture2D>& _Tex = nullptr, const FVec2& _TextureScaling = {1.f, 1.f});
+			/*
+			*	@param _Position: Center location of quad.
+			*	@param _Rotation: Rotation of quad in radians.
+			*	@param _Size: Size of quad.
+			*	@param _Zorder: Z position of quad.
+			*	@param _Color: Color of quad.
+			*	@param _Texture: Texture of quad.
+			*	@param _TextureScaling: Scaling applied to the texture.
+			*/
+			static void DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color, const TRef<CSubTexture2D>& _Tex, const FVec2& _TextureScaling);
+			static void DrawQuad(const CPrimitive2D& Quad);
 
 			struct SStatistics
 			{

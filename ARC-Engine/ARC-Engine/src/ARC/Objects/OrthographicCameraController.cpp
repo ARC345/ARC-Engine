@@ -47,13 +47,17 @@ namespace ARC {
 		dispatcher.Dispatch<ARC::CWindowResizeEvent>(BIND_FN(&COrthographicCameraController::OnWindowResized));
 	}
 
+	void COrthographicCameraController::CalculateView()
+	{
+		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	}
+
 	bool COrthographicCameraController::OnMouseScrolledEvent(CMouseScrolledEvent& _Event)
 	{
 		ARC_PROFILE_FUNCTION();
 		m_ZoomLevel -= _Event.GetYOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
-		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
-		
+		CalculateView();
 		return false;
 	}
 
@@ -61,7 +65,7 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 		m_AspectRatio = (float)_Event.GetX() / (float)_Event.GetY();
-		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		CalculateView();
 
 		return false;
 	}

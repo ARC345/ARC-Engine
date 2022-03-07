@@ -25,3 +25,5 @@
 
 #include "ARC/Objects/CameraBase.h"
 #include "ARC/Objects/OrthographicCameraController.h"
+
+#include "ARC/Helpers/Math.h"

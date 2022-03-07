@@ -1386,6 +1386,12 @@
     <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Objects\ParticleModifier2D.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Objects\ParticleSystem2D.h">
+      <Filter>src\ARC\Objects</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Objects\Primitive2D.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
@@ -1422,6 +1428,9 @@
     <ClInclude Include="src\ARC\Renderer\Shader.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\SubTexture2D.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Renderer\Texture.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
@@ -1437,10 +1446,10 @@
     <ClInclude Include="src\ARC\Types\TybeBase.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Types\array.h">
+    <ClInclude Include="src\ARC\Types\Vector.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Types\Vector.h">
+    <ClInclude Include="src\ARC\Types\Array.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
     <ClInclude Include="src\PCH\arc_pch.h">
@@ -1467,6 +1476,7 @@
     <ClInclude Include="src\Platform\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Core\GlmHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp">
@@ -1499,6 +1509,9 @@
     <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp">
       <Filter>src\ARC\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="src\ARC\Objects\ParticleSystem2D.cpp">
+      <Filter>src\ARC\Objects</Filter>
+    </ClCompile>
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp">
       <Filter>src\ARC\Objects</Filter>
     </ClCompile>
@@ -1527,6 +1540,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Shader.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\SubTexture2D.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Texture.cpp">
