@@ -73,7 +73,6 @@ namespace ARC
 			}
 			return true;
 		}
-
 		constexpr void operator+=(const TVecX<N, T>& _)
 		{
 			for (size_t i = 0; i < N; i++)
@@ -138,7 +137,6 @@ namespace ARC
 			}
 			return rval;
 		}
-		
 		constexpr void operator+=(const T _)
 		{
 			for (size_t i = 0; i < N; i++)
@@ -272,7 +270,7 @@ namespace ARC
 		#undef VM_FUNC
 
 		inline void Set(const T& tx, const T& ty) { Data()[0] = tx; Data()[1] = ty; };
-		inline void Set(const TVec2<T> _xy) { x = _xy.x; y = _xy.y; };
+		inline void Set(const TVec2<T> _xy) { Data()[0] = _xy.x(); Data()[1] = _xy.y(); };
 	public:
 		static TVec2<T> ZeroVector;
 	private:
@@ -338,6 +336,15 @@ namespace ARC
 		{
 			this->Set(tw, tx, ty, tz);
 		}
+
+		constexpr TVec4<T> operator+(const TVec4<T>& _) const { return { x() + _.x(), y() + _.y(), z() + _.z(), w() + _.w() }; }
+		constexpr TVec4<T> operator-(const TVec4<T>& _) const { return { x() - _.x(), y() - _.y(), z() - _.z(), w() - _.w() }; }
+		constexpr TVec4<T> operator/(const TVec4<T>& _) const { return { x() / _.x(), y() / _.y(), z() / _.z(), w() / _.w() }; }
+		constexpr TVec4<T> operator*(const TVec4<T>& _) const { return { x() * _.x(), y() * _.y(), z() * _.z(), w() * _.w() }; }
+		constexpr TVec4<T> operator-(const T _) const { return { x() - _, y() - _, z() - _, w() - _ }; }
+		constexpr TVec4<T> operator+(const T _) const { return { x() + _, y() + _, z() + _, w() + _ }; }
+		constexpr TVec4<T> operator/(const T _) const { return { x() / _, y() / _, z() / _, w() / _ }; }
+		constexpr TVec4<T> operator*(const T _) const { return { x() * _, y() * _, z() * _, w() * _ }; }
 
 		inline T& x() { return Data()[0]; }
 		inline T& y() { return Data()[1]; }

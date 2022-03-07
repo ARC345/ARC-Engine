@@ -45,6 +45,7 @@ protected:
 	ARC::TRef<ARC::CShader> m_Shader;
 	ARC::TRef<ARC::CVertexArray> m_VertexArray;
 	ARC::TRef<ARC::CPlayer> m_Player;
+	//CParticleSystem2D m_ParticleSystem;
 	std::vector<ARC::TRef<ARC::CRock>> m_Rocks;
 
 	bool m_Blink = true; 

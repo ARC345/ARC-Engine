@@ -563,6 +563,7 @@
     <ClInclude Include="src\ARC\Core\Application.h" />
     <ClInclude Include="src\ARC\Core\Core.h" />
     <ClInclude Include="src\ARC\Core\EntryPoint.h" />
+    <ClInclude Include="src\ARC\Core\GlmHelpers.h" />
     <ClInclude Include="src\ARC\Core\Ini.h" />
     <ClInclude Include="src\ARC\Core\Log.h" />
     <ClInclude Include="src\ARC\Core\Macros.h" />
@@ -582,6 +583,8 @@
     <ClInclude Include="src\ARC\Objects\CameraBase.h" />
     <ClInclude Include="src\ARC\Objects\Object.h" />
     <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
+    <ClInclude Include="src\ARC\Objects\ParticleModifier2D.h" />
+    <ClInclude Include="src\ARC\Objects\ParticleSystem2D.h" />
     <ClInclude Include="src\ARC\Objects\Primitive2D.h" />
     <ClInclude Include="src\ARC\Profiling\Timer.h" />
     <ClInclude Include="src\ARC\Renderer\Buffer.h" />
@@ -594,13 +597,14 @@
     <ClInclude Include="src\ARC\Renderer\Renderer2D.h" />
     <ClInclude Include="src\ARC\Renderer\RendererAPI.h" />
     <ClInclude Include="src\ARC\Renderer\Shader.h" />
+    <ClInclude Include="src\ARC\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\ARC\Renderer\Texture.h" />
     <ClInclude Include="src\ARC\Renderer\VertexArray.h" />
     <ClInclude Include="src\ARC\Types\Pointer.h" />
     <ClInclude Include="src\ARC\Types\Transform2D.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
-    <ClInclude Include="src\ARC\Types\array.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
+    <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\PCH\arc_pch.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLContext.h" />
@@ -621,6 +625,7 @@
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp" />
     <ClCompile Include="src\ARC\Objects\Object.cpp" />
     <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
+    <ClCompile Include="src\ARC\Objects\ParticleSystem2D.cpp" />
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\Buffer.cpp" />
     <ClCompile Include="src\ARC\Renderer\Color.cpp" />
@@ -631,6 +636,7 @@
     <ClCompile Include="src\ARC\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\ARC\Renderer\Shader.cpp" />
+    <ClCompile Include="src\ARC\Renderer\SubTexture2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\Texture.cpp" />
     <ClCompile Include="src\ARC\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\ARC\Types\Vector.cpp" />

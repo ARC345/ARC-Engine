@@ -3,6 +3,7 @@
 #include "ARC\Objects\Primitive2D.h"
 #include <vector>
 #include <memory>
+#include "ARC\Objects\ParticleSystem2D.h"
 
 namespace ARC { class CLayer; }
 
@@ -23,6 +24,7 @@ namespace ARC {
 		void OnUpdate(float _DeltaTime);
 		void OnEvent(ARC::CEvent& _Event);
 		CPrimitive2D PlayerSprite;
+		CParticleSystem2D ParticleSystem;
 		uint8_t bIsAlive : 1;
 		float Speed;
 		// Minimum distance from object for collision to activate

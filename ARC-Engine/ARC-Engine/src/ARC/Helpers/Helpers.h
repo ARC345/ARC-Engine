@@ -26,6 +26,12 @@ enum EQuadCorner {
 
 namespace ARC {
 	namespace HPR {
+
+		template<typename T, typename U> static constexpr size_t GetOffset(U T::* member)
+		{
+			return (char*)&((T*)nullptr->*member) - (char*)nullptr;
+		}
+
 		namespace IO {
 			[[nodiscard]] std::string ReadFile(const std::string& _Path);
 			[[nodiscard]] std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);

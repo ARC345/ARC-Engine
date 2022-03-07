@@ -18,16 +18,33 @@
 #include <algorithm>
 #include "ARC/Helpers/Math.h"
 #include "SpaceWar.h"
+#include "ARC/Objects/ParticleModifier2D.h"
+#include "ARC/Objects/ParticleSystem2D.h"
 
 namespace ARC {
 	CPlayer::CPlayer() :
 		Speed(1)
 	{
-	}
+		ParticleSystem.Defaults.bIsActive = false;
+		ParticleSystem.Defaults.Scale = { 0.05f, 0.05f};
+		ParticleSystem.Defaults.Color = ARC::CColor::Red;
 
+		ParticleSystem.Defaults.Velocity = { 0.f, 2.f };
+		ParticleSystem.Defaults.Life = 0.5f;
+		ParticleSystem.Defaults.ZOrder = 0.1f;
+		ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Life, 0.05f));
+		//ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Color, ARC::CColor(0.1f, 0.1f, 0.1f, 0.f)));
+		//ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Location, ARC::FVec2(0.05, 0.05)));
+		ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Scale, ARC::FVec2(0.02f, 0.02f)));
+		//ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Velocity, ARC::FVec2(0.6f, 1.0f)));
+		ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnUpdate, new ARC::CParticleLifetimeModifier2D(&ARC::CParticle2D::Color, ARC::CColor(1.f, 1.f, 0.f, 1.f)));
+		ParticleSystem.AddParticleModifier(ARC::EVariationApplicationTime::OnUpdate, new ARC::CParticleLifetimeModifier2D<Flip<Quadratic>, ARC::FVec2>(&ARC::CParticle2D::Scale, ARC::FVec2::ZeroVector));
+
+	}
+	
 	void CPlayer::Load()
 	{
-		PlayerSprite.Texture = ARC::CTexture2D::Create("assets/textures/arcShip.png", true);
+		PlayerSprite.Texture = CTexture2D::Create("assets/textures/arcShip.png", true);
 		PlayerSprite.Transform.Location = { 0.1f, 0.1f};
 		PlayerSprite.Transform.Scale = {0.1f, 0.1f};
 		PlayerSprite.Transform.ZOrder = 0.2f;
@@ -63,25 +80,43 @@ namespace ARC {
 		{
 			if (SWL && SWL->GameState == EGameState::Play)
 			{
+				float lerpalpha = 0;
 				Velocity.x() *= 0.97f*_DeltaTime*60.f;
 				Velocity.y() *= 0.97f*_DeltaTime*60.f;
 
-				if (CInput::IsKeyPressed(ARC_KEY_A) || CInput::IsKeyPressed(ARC_KEY_LEFT)) {
-					if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 0;
-					else Velocity.x() = -1;
+				if (CInput::IsKeyPressed(ARC_KEY_A) || CInput::IsKeyPressed(ARC_KEY_W) || CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT) || CInput::IsKeyPressed(ARC_KEY_LEFT) || CInput::IsKeyPressed(ARC_KEY_UP) || CInput::IsKeyPressed(ARC_KEY_DOWN)) {
+					lerpalpha += _DeltaTime;
+					if (CInput::IsKeyPressed(ARC_KEY_A) || CInput::IsKeyPressed(ARC_KEY_LEFT)) {
+						if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 0;
+						else Velocity.x() = -1;
+					}
+					else if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 1;
+					if (CInput::IsKeyPressed(ARC_KEY_W) || CInput::IsKeyPressed(ARC_KEY_UP)) {
+						if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = 0;
+						else Velocity.y() = 1;
+					}
+					else if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = -1;
+
+					FVec2 emissionPoint = { 0.0f, -0.05f };
+					float s = std::sin(PlayerSprite.GetRotation());
+					float c = std::cos(PlayerSprite.GetRotation());
+
+					FVec2 rotated = FVec2(-emissionPoint.y()*s, emissionPoint.y() * c);
+					ParticleSystem.Defaults.Location = PlayerSprite.GetLocation();
+					ParticleSystem.Defaults.Velocity = Math::InterpF<Linear>(ParticleSystem.Defaults.Velocity, (Velocity + rotated)* -1, lerpalpha);
+					ParticleSystem.Emit();
 				}
-				else if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 1;
-				if (CInput::IsKeyPressed(ARC_KEY_W) || CInput::IsKeyPressed(ARC_KEY_UP)) {
-					if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = 0;
-					else Velocity.y() = 1;
+				else {
+					lerpalpha-=_DeltaTime;
+					lerpalpha = std::clamp(lerpalpha, 0.f, 1.f);
 				}
-				else if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = -1;
 
 				PlayerSprite.Transform.Location.x() += Velocity.x() * Speed * _DeltaTime;
 				PlayerSprite.Transform.Location.y() += Velocity.y() * Speed * _DeltaTime;
 
 				PlayerSprite.Transform.Location.x() = std::clamp<float>(PlayerSprite.Transform.Location.x(), -1.6f, 1.6f);
 				PlayerSprite.Transform.Location.y() = std::clamp<float>(PlayerSprite.Transform.Location.y(), -0.94f, 0.94f);
+				ParticleSystem.OnUpdate(_DeltaTime);
 			}
  			const FVec2 mouse_location = CInput::GetMouseXY();
 			auto window_height = Core::CApplication::Get().GetWindow().GetHeight();

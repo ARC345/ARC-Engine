@@ -18,11 +18,48 @@ enum ETimeType : int8_t{
 	Nano = 19
 };
 
+namespace ARC {
+	template<typename T> inline constexpr T Pow(T _, size_t N) { 
+		if (N<=1) return _;
+		return Pow<T>(_*_, N-1);
+	}
+}
 struct LerpingFunction { template<typename T, typename T1> inline constexpr static T Calculate(T _1, T _2, T1 _Alpha) { return 0} };
+
 struct Linear : LerpingFunction { 
 	template<typename T, typename T1> inline constexpr static T Calculate(T _1, T _2, T1 _Alpha) { 
-		return _1 + (_2 - _1) * _Alpha; } 
-	};
+		return _1 + (_2 - _1) * _Alpha; 
+	} 
+};
+	
+template<typename T0>
+struct Flip : LerpingFunction {
+	template<typename T, typename T1> inline constexpr static T Calculate(T _1, T _2, T1 _Alpha) {
+		return T0::Calculate(_1, _2, 1 - _Alpha);
+	}
+};
+template<size_t Exponent>
+struct EaseIn : LerpingFunction {
+	template<typename T, typename T1> inline constexpr static T Calculate(T _1, T _2, T1 _Alpha) {
+		return Linear::Calculate(_1, _2, ARC::Pow(_Alpha, Exponent));
+	}
+};
+template<size_t Exponent>
+struct EaseInOut : LerpingFunction {
+	template<typename T, typename T1> inline constexpr static T Calculate(T _1, T _2, T1 _Alpha) {
+		return Linear::Calculate(_1, _2, Linear::Calculate(
+			EaseIn::Calculate(_1, _2, _Alpha),
+			Flip<EaseIn>::Calculate(_1, _2, _Alpha),
+			_Alpha
+		));
+	}
+};
+
+template<size_t Exponent>
+using EaseOut = Flip<EaseIn<Exponent>>;
+
+using Quadratic = EaseIn<2>;
+using Cubic = EaseIn<3>;
 
 namespace ARC {
 	namespace Math {
@@ -50,6 +87,10 @@ namespace ARC {
 			static_assert(std::is_arithmetic<T>::value);
 			return _1 > _2 ? _1 : _2;
 		}
+		template<typename T> SM_MATH_FUNC T Clamp(T _1, T _Min, T _Max) {
+			static_assert(std::is_arithmetic<T>::value);
+			return Min(Max(_1, _Min), _Max) ;
+		}
 		template<typename T> SM_MATH_FUNC T Abs(T _1) {
 			static_assert(std::is_arithmetic<T>::value);
 			return _1>=0 ? _1 : -_1;
@@ -57,10 +98,10 @@ namespace ARC {
 		/*
 		* @todo Add Curved Lerp Support
 		*/
-		template<typename T, typename TLerpingFunction> SM_MATH_FUNC T LerpF(T _1, T _2, float _Alpha) {
+		template<typename TLerpingFunction, typename T> SM_MATH_FUNC T InterpF(T _1, T _2, float _Alpha) {
 			return TLerpingFunction::Calculate<T, float>(_1, _2, _Alpha);
 		}
-		template<typename T, typename TLerpingFunction> SM_MATH_FUNC T Lerp(T _1, T _2, T _Alpha) {
+		template<typename TLerpingFunction, typename T> SM_MATH_FUNC T Interp(T _1, T _2, T _Alpha) {
 			return TLerpingFunction::Calculate<T, T>(_1, _2, _Alpha);
 		}
 		template<typename T> SM_MATH_FUNC bool IsInRange(T _1, T _Low, T _High) {

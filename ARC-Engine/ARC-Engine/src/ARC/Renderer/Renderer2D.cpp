@@ -9,6 +9,7 @@
 #include "glm\ext\matrix_transform.hpp"
 #include "glm\gtx\rotate_vector.inl"
 #include "Texture.h"
+#include "SubTexture2D.h"
 
 namespace ARC {
 	struct SQuadVertex
@@ -22,7 +23,7 @@ namespace ARC {
 
 	struct SRenderer2DData {
 		//@TODO : Load from ini file
-		static constexpr uint32_t MaxQuads = 20000;
+		static constexpr uint32_t MaxQuads = 1000;
 		static constexpr uint32_t MaxVertices = MaxQuads * 4;
 		static constexpr uint32_t MaxIndices = MaxQuads * 6;
 		static constexpr uint32_t MaxTextureSlots = 32;
@@ -149,14 +150,7 @@ namespace ARC {
 		CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 	}
 
-	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color)
-	{
-		ARC_PROFILE_FUNCTION();
-
-		DrawQuad(_Position, _Rotation, _Size, _ZOrder, {1.f, 1.f}, _Color, nullptr);
-	}
-
-	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const FVec2& _TextureScaling, const CColor& _Color, const TRef<CTexture2D>& _Tex)
+	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -188,44 +182,71 @@ namespace ARC {
 			 	glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
 			 	glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x(), _Size.y(), 1.0f));
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[0];
-		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.f, 0.f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
-		s_Data.QuadVertexBufferPtr++;
+		for (size_t i = 0; i < 4; i++)
+		{
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
+			s_Data.QuadVertexBufferPtr->TexCoord = CTexture2D::TexCoords[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
+			s_Data.QuadVertexBufferPtr++;
+		}
 
-		s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[1];
-		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.f, 0.f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
-		s_Data.QuadVertexBufferPtr++;
+		s_Data.QuadIndexCount += 6;
 
-		s_Data.QuadVertexBufferPtr->Position = transform*s_Data.QuadVertexPositions[2];
-		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
-		s_Data.QuadVertexBufferPtr->TexCoord = { 1.f, 1.f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
-		s_Data.QuadVertexBufferPtr++;
+		++s_Data.Statistics.QuadCount;
+	}
+	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
+	{
+		if (s_Data.QuadIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset();
 
-		s_Data.QuadVertexBufferPtr->Position = transform*s_Data.QuadVertexPositions[3];
-		s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
-		s_Data.QuadVertexBufferPtr->TexCoord = { 0.f, 1.f };
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
-		s_Data.QuadVertexBufferPtr++;
+		float textureIndex = 0.0f;
+
+		if (_SubTex != nullptr)
+		{
+			for (size_t i = 1; i < s_Data.TextureSlotIndex; i++)
+			{
+				if (*s_Data.TextureSlots[i].get() == *_SubTex->GetTexture().get())
+				{
+					textureIndex = (float)i;
+					break;
+				}
+			}
+			if (textureIndex == 0.0f)
+			{
+				textureIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = _SubTex->GetTexture();
+				s_Data.TextureSlotIndex++;
+			}
+		}
+
+		glm::mat4 transform =
+			glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x(), _Position.y(), _ZOrder)) *
+			glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
+			glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x(), _Size.y(), 1.0f));
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
+			s_Data.QuadVertexBufferPtr->TexCoord = _SubTex->GetTexCoords()[i];
+			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
+			s_Data.QuadVertexBufferPtr++;
+		}
 
 		s_Data.QuadIndexCount += 6;
 
 		++s_Data.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(CPrimitive2D& Quad)
+
+	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad)
 	{
 		ARC_PROFILE_FUNCTION();
 
-		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.GetTransform().ZOrder, Quad.TextureScaling, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture);
+		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.GetTransform().ZOrder, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
 	}
 
 	CRenderer2D::SStatistics CRenderer2D::GetStats()
@@ -245,5 +266,4 @@ namespace ARC {
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
 	}
-
 }

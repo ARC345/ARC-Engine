@@ -5,6 +5,7 @@
 #include "ARC\Types\Transform2D.h"
 #include "ARC\Types\Pointer.h"
 
+namespace ARC { class CSubTexture2D; }
 namespace ARC { class CTexture2D; }
 
 namespace ARC {

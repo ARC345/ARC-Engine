@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "..\Types\vector.h"
+#include "glm\ext\vector_float2.hpp"
 
 namespace ARC {
 	class CTexture
@@ -26,5 +27,12 @@ namespace ARC {
 			inline CTexture2D(TVec2<uint32_t> _Dimentions) : Dimensions(_Dimentions) {}
 		public:
 			TVec2<uint32_t> Dimensions;
+
+			static constexpr glm::vec2 TexCoords[] = {
+				{0.f, 0.f},
+				{1.f, 0.f},
+				{1.f, 1.f},
+				{0.f, 1.f}
+			};
 	};
 }
