@@ -3,6 +3,7 @@
 #include "glad\glad.h"
 
 namespace ARC {
+	static constexpr uint32_t MaxFrameBufferSize = 10000;
 
 	COpenGLFrameBuffer::COpenGLFrameBuffer(const SFrameBufferSpecifications& _Specs) :
 		m_Specifications(_Specs)
@@ -61,6 +62,9 @@ namespace ARC {
 
 	void COpenGLFrameBuffer::Resize(const TVec2<uint32_t>& _)
 	{
+		if (m_Specifications.Width==0.f || m_Specifications.Height==0.f || m_Specifications.Height > MaxFrameBufferSize || m_Specifications.Width > MaxFrameBufferSize) 
+			return;
+
 		m_Specifications.Width = _.x;
 		m_Specifications.Height = _.y;
 		Invalidate();
