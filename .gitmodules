@@ -6,7 +6,7 @@
 	url = https://github.com/TheCherno/glfw
 [submodule "ARC-Engine/ARC-Engine/out/imgui"]
 	path = ARC-Engine/ARC-Engine/out/imgui
-	url = https://Github.com/TheCherno/imgui
+	url = https://Github.com/Hellboy434/imgui
 [submodule "ARC-Engine/ARC-Engine/out/glm"]
 	path = ARC-Engine/ARC-Engine/out/glm
 	url = https://github.com/g-truc/glm.git
