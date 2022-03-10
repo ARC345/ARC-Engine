@@ -27,8 +27,8 @@ namespace ARC {
 
 	void COpenGLTexture2D::SetData(void* _Data, uint32_t _Size)
 	{
-		ARC_CORE_ASSERT(_Size == Dimensions.x() * Dimensions.y() * m_BytesPerPixel, "Data must be entire texture");
-		glTextureSubImage2D(m_RendererID, 0, 0, 0, Dimensions.x(), Dimensions.y(), m_DataFormat, GL_UNSIGNED_BYTE, _Data);
+		ARC_CORE_ASSERT(_Size == Dimensions.x * Dimensions.y * m_BytesPerPixel, "Data must be entire texture");
+		glTextureSubImage2D(m_RendererID, 0, 0, 0, Dimensions.x, Dimensions.y, m_DataFormat, GL_UNSIGNED_BYTE, _Data);
 	}
 
 	void COpenGLTexture2D::Bind(uint32_t _Slot /*= 0*/) const
@@ -47,11 +47,11 @@ namespace ARC {
 	TVec4<unsigned char> COpenGLTexture2D::GetPixelColor(TVec2<uint32_t> xy)
 	{
 		TVec4<unsigned char> rval;
-		const stbi_uc* p = m_Data + (4 * (xy.y() * Dimensions.x() + xy.x()));
-		rval.r() = p[0];
-		rval.g() = p[1];
-		rval.b() = p[2];
-		rval.a() = p[3];
+		const stbi_uc* p = m_Data + (4 * (xy.y * Dimensions.x + xy.x));
+		rval.r = p[0];
+		rval.g = p[1];
+		rval.b = p[2];
+		rval.a = p[3];
 		return rval;
 	}
 
@@ -110,7 +110,7 @@ namespace ARC {
 		m_BytesPerPixel = 4;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
-		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, _Dimentions.x(), _Dimentions.y());
+		glTextureStorage2D(m_RendererID, 1, m_InternalFormat, _Dimentions.x, _Dimentions.y);
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

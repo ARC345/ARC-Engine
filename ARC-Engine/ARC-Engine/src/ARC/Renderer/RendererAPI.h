@@ -14,6 +14,8 @@ namespace ARC {
 			OpenGL = 1
 		};
 	public:
+		virtual ~CRendererAPI() = default;
+
 		virtual void Init() = 0;
 		virtual void SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions) = 0;
 		virtual void SetClearColour(const glm::vec4 _Colour) = 0;

@@ -95,8 +95,8 @@ project "ARC-Engine"
 		runtime "Release"
 		optimize "on"
 
-project "Sandbox"
-	location "Sandbox"
+project "ARC-Editor"
+	location "ARC-Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -142,3 +142,50 @@ project "Sandbox"
 		defines "ARC_DIST"
 		runtime "Release"
 		optimize "on"
+		project "Sandbox"
+		location "Sandbox"
+		kind "ConsoleApp"
+		language "C++"
+		cppdialect "C++17"
+		staticruntime "on"
+	
+		targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
+		objdir ("_int/" .. outputdir .. "/%{prj.name}")
+	
+		files
+		{
+			"%{prj.name}/src/**.h",
+			"%{prj.name}/src/**.cpp"
+		}
+	
+		includedirs
+		{
+			"ARC-Engine/src",
+			"ARC-Engine/out/spdlog/include",
+			"ARC-Engine/out/inifile_cpp/include",
+			"%{IncludeDir.glm}",
+			"ARC-Engine/out"
+		}
+	
+		links
+		{
+			"ARC-Engine"
+		}
+	
+		disablewarnings { "26812" }
+	
+		filter "system:windows"
+			systemversion "latest"
+	
+		filter "configurations:Debug"
+			defines "ARC_DEBUG"
+			runtime "Debug"
+			symbols "on"
+		filter "configurations:Release"
+			defines "ARC_RELEASE"
+			runtime "Release"
+			optimize "on"
+		filter "configurations:Dist"
+			defines "ARC_DIST"
+			runtime "Release"
+			optimize "on"

@@ -21,7 +21,7 @@ namespace ARC{
 		class ARC_API CApplication
 		{
 		public:
-			CApplication();
+			CApplication(const std::string& _Name = "ARC-Engine");
 			virtual ~CApplication();
 
 			void Run();
@@ -32,10 +32,15 @@ namespace ARC{
 
 			inline CWindow& GetWindow() const { return *m_Window; }
 
+			void Shutdown();
+			CImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; };
+
 			inline static CApplication& Get() { return *s_Instance; }
 			inline virtual std::string GetAppName() =0; 
-			inline class std::string GetEngineName() {return "ARC-Engine";}; 
+			inline std::string GetEngineName() {return "ARC-Engine";}; 
 			inline float GetDeltaTime() const { return m_DeltaTime; }
+
+
 		private:
 			bool OnWindowClose(CWindowCloseEvent& _e);
 			bool OnWindowResize(CWindowResizeEvent& _e);

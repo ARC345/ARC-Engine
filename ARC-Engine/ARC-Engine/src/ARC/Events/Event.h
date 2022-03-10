@@ -12,37 +12,37 @@
 namespace ARC {
 	enum class EEventType
 	{
-		EET_None = 0,
-		EET_WindowClose,
-		EET_WindowResize,
-		EET_WindowFocus,
-		EET_WindowLostFocus,
-		EET_WindowMoved,
+		None = 0,
+		WindowClose,
+		WindowResize,
+		WindowFocus,
+		WindowLostFocus,
+		WindowMoved,
 
-		EET_AppTick,
-		EET_AppUpdate,
-		EET_AppRender,
+		AppTick,
+		AppUpdate,
+		AppRender,
 
-		EET_KeyPressed,
-		EET_KeyReleased,
-		EET_KeyTyped,
+		KeyPressed,
+		KeyReleased,
+		KeyTyped,
 		
-		EET_MouseButtonPressed,
-		EET_MouseButtonReleased,
-		EET_MouseMoved,
-		EET_MouseScrolled
+		MouseButtonPressed,
+		MouseButtonReleased,
+		MouseMoved,
+		MouseScrolled
 	};
 	enum EEventCategory
 	{
 		None = 0,
-		Application = SBIT(0),
-		Input		= SBIT(1),
-		Keyboard	= SBIT(2),
-		Mouse		= SBIT(3),
-		MouseButton	= SBIT(4)
+		EventCategoryApplication = SBIT(0),
+		EventCategoryInput		= SBIT(1),
+		EventCategoryKeyboard	= SBIT(2),
+		EventCategoryMouse		= SBIT(3),
+		EventCategoryMouseButton	= SBIT(4)
 	};
 	#define EVENT_CLASS_TYPE(type) \
-		static EEventType GetStaticType() {return EEventType::COMBINE2(EET_, type);}\
+		static EEventType GetStaticType() {return COMBINE2(EEventType::, type);}\
 		virtual EEventType GetEventType() const override {return GetStaticType();}\
 		virtual const char* GetName() const override {return #type;}
 
@@ -53,7 +53,8 @@ namespace ARC {
 		friend class CEventDispatcher;
 	public:
 		CEvent() : bHandled(0) {}
-	
+		virtual ~CEvent() = default;
+
 		virtual EEventType GetEventType() const = 0;
 		virtual uint GetCategoryFlags() const = 0;
 

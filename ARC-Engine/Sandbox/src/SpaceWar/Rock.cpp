@@ -21,7 +21,7 @@ namespace ARC {
 			{
 				for (uint8_t y = 0; y < 32; y++)
 				{
-					if (Sprite.Texture->GetPixelColor({x, y}).a() != 0 )
+					if (Sprite.Texture->GetPixelColor({x, y}).a != 0 )
 					{
 						SpriteCollisionData[SpriteIndex].push_back(std::make_shared<TVec2<uint8_t>>(x, y));
 					}
@@ -47,7 +47,7 @@ namespace ARC {
 		Sprite.Transform.Location += Velocity * _DeltaTime;
 		Sprite.Transform.Rotation += RotationVelocity * _DeltaTime;
 
-		if (Sprite.GetLocation().x() >2 || Sprite.GetLocation().y() > 1.5 || Sprite.GetLocation().x() < -2 || Sprite.GetLocation().y() < -1.5) {
+		if (Sprite.GetLocation().x >2 || Sprite.GetLocation().y > 1.5 || Sprite.GetLocation().x < -2 || Sprite.GetLocation().y < -1.5) {
 			CalculateRandomPosition();
 			CalculateRandomVelocity();
 		}
@@ -56,15 +56,15 @@ namespace ARC {
 	void CRock::CalculateRandomVelocity()
 	{
 		if (int(HPR::Random::Float() * 2)) {
-			Velocity.x() = 	HPR::Random::Float(0.2f, 1.f);
+			Velocity.x = 	HPR::Random::Float(0.2f, 1.f);
 		} else {
-			Velocity.x() = 	HPR::Random::Float(-0.2f, -1.f);
+			Velocity.x = 	HPR::Random::Float(-0.2f, -1.f);
 		}
 		
 		if (int(HPR::Random::Float() * 2.f)) {
-			Velocity.y() = 	HPR::Random::Float(0.2f, 1.f);
+			Velocity.y = 	HPR::Random::Float(0.2f, 1.f);
 		} else {
-			Velocity.y() = 	HPR::Random::Float(-0.2f, -1.f);
+			Velocity.y = 	HPR::Random::Float(-0.2f, -1.f);
 		}
 		RotationVelocity = HPR::Random::Float(0.f, 3.f);
 	}
@@ -72,11 +72,11 @@ namespace ARC {
 	void CRock::CalculateRandomPosition()
 	{
 		if (int(HPR::Random::Float()*2)) {
-			Sprite.Transform.Location.x() = HPR::Random::Float(-1.8f, 1.8f);
-			Sprite.Transform.Location.y() = int(HPR::Random::Float() * 2.f) ? -1.25f : 1.25f;
+			Sprite.Transform.Location.x = HPR::Random::Float(-1.8f, 1.8f);
+			Sprite.Transform.Location.y = int(HPR::Random::Float() * 2.f) ? -1.25f : 1.25f;
 		} else {
-			Sprite.Transform.Location.x() = int(HPR::Random::Float() * 2) ? -1.8f : 1.8f;
-			Sprite.Transform.Location.y() = HPR::Random::Float(-1.25f, 1.25f);
+			Sprite.Transform.Location.x = int(HPR::Random::Float() * 2) ? -1.8f : 1.8f;
+			Sprite.Transform.Location.y = HPR::Random::Float(-1.25f, 1.25f);
 		}
 	}
 

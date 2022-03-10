@@ -16,7 +16,7 @@ namespace ARC {
 	std::string HPR::IO::ReadFile(const std::string& _Path)
 	{
 		std::ifstream is(_Path, std::ios::in | std::ios::binary);
-		ARC_CORE_ASSERT(is.is_open(), "Could not find the file: {0}", _Path);
+		ARC_CORE_ASSERT(is.is_open(), "Could not find the file \"{0}\"", _Path.c_str());
 		std::string str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
 		is.close();
 		return str;
