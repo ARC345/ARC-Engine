@@ -19,6 +19,29 @@ namespace ARC {
 	void COrthographicCameraController::OnUpdate(float _DeltaTime)
 	{
 		ARC_PROFILE_FUNCTION();
+
+		if (CInput::IsKeyPressed(ARC_KEY_A))
+		{
+			m_Camera.Position.x -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_Camera.Position.y -= sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+		}
+		else if (CInput::IsKeyPressed(ARC_KEY_D))
+		{
+			m_Camera.Position.x += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_Camera.Position.y += sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+		}
+
+		if (CInput::IsKeyPressed(ARC_KEY_W))
+		{
+			m_Camera.Position.x += -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_Camera.Position.y += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+		}
+		else if (CInput::IsKeyPressed(ARC_KEY_S))
+		{
+			m_Camera.Position.x -= -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed  * _DeltaTime;
+			m_Camera.Position.y -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+		}
+
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
 			m_Camera.Position.x -= m_CamMoveSpeed * _DeltaTime;
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_D))

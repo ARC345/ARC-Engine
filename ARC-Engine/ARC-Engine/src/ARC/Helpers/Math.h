@@ -20,7 +20,8 @@ enum ETimeType : int8_t{
 };
 
 namespace ARC {
-	template<typename T> inline constexpr T Pow(T _, size_t N) { 
+	template<typename T> inline constexpr T Pow(T _, size_t N) {
+		static_assert(std::is_integral<T>::value);
 		if (N<=1) return _;
 		return Pow<T>(_*_, N-1);
 	}

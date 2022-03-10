@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef ARC_PLATFORM_WINDOWS
-	#include <Windows.h>
-#endif
-
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -27,3 +23,6 @@
 #include "ARC/Core/Macros.h"
 
 #include "ARC/Profiling/Timer.h"
+#ifdef ARC_PLATFORM_WINDOWS
+	#include <Windows.h>
+#endif

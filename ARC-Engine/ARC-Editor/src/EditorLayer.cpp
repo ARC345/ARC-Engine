@@ -1,6 +1,10 @@
 ﻿#include "PCH\arc_pch.h"
 #include "EditorLayer.h"
 #include "imgui\imgui.h"
+#include "ARC\Objects\Primitive2D.h"
+#include "ARC\Renderer\Color.h"
+#include "ARC\Renderer\Renderer2D.h"
+#include "ARC\Renderer\RenderCommand.h"
 
 namespace ARC {
 	CEditorLayer::CEditorLayer() :
@@ -15,12 +19,42 @@ namespace ARC {
 		frame_buffer_specs.Width = 1280;
 		frame_buffer_specs.Height = 720;
 		m_FrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
-		m_ViewportSize = {1280.f, 720.f};
+		m_ViewportSize = { 1280.f, 720.f };
 	}
 
 	void CEditorLayer::OnDetach()
 	{
 	}
+
+	void CEditorLayer::OnUpdate(float _DeltaTime)
+	{
+		// test
+		ARC::CRenderer2D::ResetStats();
+		if (m_ViewportHovered && m_ViewportFocused)
+		{
+			m_CameraController.OnUpdate(_DeltaTime);
+		}
+
+		m_FrameBuffer->Bind();
+		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
+		CRenderCommand::Clear();
+
+		CRenderer2D::BeginScene(m_CameraController.GetCamera());
+
+		CPrimitive2D Quad2;
+		Quad2.Transform.Location = { 0.f, 0.f };
+		Quad2.Transform.Rotation = 0;
+		Quad2.Transform.Scale = { 1.f, 1.f };
+		Quad2.Transform.ZOrder = 0.2f;
+		Quad2.Color = CColor::Red;
+
+		CRenderer2D::DrawQuad(Quad2);
+
+		CRenderer2D::EndScene();
+		m_FrameBuffer->UnBind();
+		m_CameraController.GetCamera().RecalculateViewProjectionMatrix();
+	}
+
 	void CEditorLayer::OnGuiRender()
 	{
 		ARC_PROFILE_FUNCTION();
@@ -111,7 +145,7 @@ namespace ARC {
 				m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
 			}
 			uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 1, 0 }, ImVec2{ 0, 1 });
 			ImGui::End();
 			ImGui::PopStyleVar();
 
