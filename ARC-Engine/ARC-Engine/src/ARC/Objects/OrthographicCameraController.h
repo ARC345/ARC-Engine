@@ -14,6 +14,7 @@ namespace ARC {
 
 		void OnUpdate(float _DeltaTime);
 		void OnEvent(CEvent& _Event);
+		void OnResize(float width, float height);
 
 		COrthographicCameraBase& GetCamera() { return m_Camera; }
 		const COrthographicCameraBase& GetCamera() const { return m_Camera; }

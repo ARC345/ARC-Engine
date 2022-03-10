@@ -44,17 +44,17 @@ namespace ARC {
 				switch (T1)
 				{
 				case TopRight: return { 
-					Trans.Location.x() + ((Trans.Scale.x() / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y() / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y() + ((Trans.Scale.x() / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y() / 2) * Cos(Trans.Rotation)) };
+					Trans.Location.x + ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
+					Trans.Location.y + ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
 				case BottomLeft: return {
-					Trans.Location.x() - ((Trans.Scale.x() / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y() / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y() - ((Trans.Scale.x() / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y() / 2) * Cos(Trans.Rotation)) };
+					Trans.Location.x - ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
+					Trans.Location.y - ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
 				case TopLeft: return {
-					Trans.Location.x() - ((Trans.Scale.x() / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y() / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y() - ((Trans.Scale.x() / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y() / 2) * Cos(Trans.Rotation)) };
+					Trans.Location.x - ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
+					Trans.Location.y - ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
 				case BottomRight: return { 
-					Trans.Location.x() + ((Trans.Scale.x() / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y() / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y() + ((Trans.Scale.x() / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y() / 2) * Cos(Trans.Rotation)) };
+					Trans.Location.x + ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
+					Trans.Location.y + ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
 				default:
 					return { 0, 0 };
 				}

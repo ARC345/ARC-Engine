@@ -4,6 +4,7 @@
 
 #define SM_MATH_FUNC [[nodiscard]] inline constexpr
 #define PI 3.14159265358979323
+
 enum ERotType : uint8_t{
 	Degree,
 	Radians
@@ -79,14 +80,36 @@ namespace ARC {
 			static_assert(std::is_arithmetic<T>::value);
 			return std::cos(_1);
 		}
-		template<typename T> SM_MATH_FUNC T Min(T _1, T _2) {
-			static_assert(std::is_arithmetic<T>::value);
-			return _1 < _2 ? _1 : _2;
+		template<typename T>
+		T Min(T&& t)
+		{
+			return std::forward<T>(t);
 		}
-		template<typename T> SM_MATH_FUNC T Max(T _1, T _2) {
-			static_assert(std::is_arithmetic<T>::value);
-			return _1 > _2 ? _1 : _2;
+
+		template<typename T0, typename T1, typename... Ts>
+		typename std::common_type<T0, T1, Ts...>::type Min(T0&& val1, T1&& val2, Ts&&... vs)
+		{
+			if (val1 < val2)
+				return Min(val1, std::forward<Ts>(vs)...);
+			else
+				return Min(val2, std::forward<Ts>(vs)...);
 		}
+		
+		template<typename T>
+		T Max(T&& t)
+		{
+			return std::forward<T>(t);
+		}
+
+		template<typename T0, typename T1, typename... Ts>
+		typename std::common_type<T0, T1, Ts...>::type Max(T0&& val1, T1&& val2, Ts&&... vs)
+		{
+			if (val1 > val2)
+				return Min(val1, std::forward<Ts>(vs)...);
+			else
+				return Min(val2, std::forward<Ts>(vs)...);
+		}
+
 		template<typename T> SM_MATH_FUNC T Clamp(T _1, T _Min, T _Max) {
 			static_assert(std::is_arithmetic<T>::value);
 			return Min(Max(_1, _Min), _Max) ;

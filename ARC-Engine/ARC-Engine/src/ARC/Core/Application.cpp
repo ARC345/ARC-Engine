@@ -20,8 +20,7 @@ namespace ARC
 	namespace Core
 	{
 		CApplication* CApplication::s_Instance=nullptr;
-		
-		CApplication::CApplication() :
+		CApplication::CApplication(const std::string& _Name /*= "ARC-Engine"*/) :
 			m_bRunning(1u)
 		{
 			ARC_PROFILE_FUNCTION();
@@ -32,7 +31,7 @@ namespace ARC
 
 			s_Instance= this;
 
-			m_Window = std::unique_ptr<CWindow>(CWindow::Create());
+			m_Window = std::unique_ptr<CWindow>(CWindow::Create(_Name));
 			
 			CRenderer::Init();
 
@@ -88,6 +87,11 @@ namespace ARC
 		{
 			m_LayerStack.PushOverlay(_overlay);
 			_overlay->OnAttach();
+		}
+
+		void CApplication::Shutdown()
+		{
+			m_bRunning=false;
 		}
 
 		bool CApplication::OnWindowClose(CWindowCloseEvent& _e)

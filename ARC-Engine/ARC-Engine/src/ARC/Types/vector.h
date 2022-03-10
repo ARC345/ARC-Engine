@@ -6,377 +6,459 @@
 #include <initializer_list>
 #include "ARC/Core/Macros.h"
 
+namespace ARC {
+	namespace Trial {
+		
+	}
+}
+
 namespace ARC
 {
+#define VM_FUNC [[nodiscard]] inline constexpr
+
+	namespace Base
+	{
+		template <typename T, size_t N>
+		struct ARC_API TVec_Base : public TTypeBase {
+		public:
+			using Super = TTypeBase;
+			using value_type = T;
+			using size_type = size_t;
+			using type = TVec_Base<value_type, N>;
+
+			value_type& operator[](size_type _)
+			{
+				return begin()[_];
+			};
+			const value_type& operator[](size_type _)const
+			{
+				return begin()[_];
+			};
+
+			VM_FUNC size_type Size() {
+				return N;
+			}
+
+			value_type* begin() { return (value_type*)this; }
+			value_type* end() { return (value_type*)(this + N); }
+			const value_type* begin() const { return (value_type*)this; }
+			const value_type* end() const { return (value_type*)(this + N); }
+		};
+	}
 	template <size_t N, typename T = float>
 	class TVecX;
-	
 	template <size_t N, typename T = float>
 	std::ostream& operator<<(std::ostream& os, const TVecX<N, T>& e)
 	{
 		os << "[";
-		for (uint a = 0; a < N; a++)
+		for (size_t a = 0; a < N; a++)
 			os << e[a] << ((a != N - 1) ? ", " : "]");
 		return os;
 	}
 
-	namespace Base
-	{
-		struct ARC_API TVec_Base : public TTypeBase{};
-	}
-
 	template <size_t N, typename T>
-	class ARC_API TVecX : public Base::TVec_Base
+	class ARC_API TVecX : public Base::TVec_Base<T, N>
 	{
-
-
 	public:
-		TVecX() : m_Data() {};
-		TVecX(const TVecX<N, T>& x)
+		using value_type = T;
+		using Super = Base::TVec_Base<value_type, N>;
+		using type = TVecX<N, value_type>;
+		using size_type = size_t;
+
+		type() : m_Data() {};
+		type(const value_type* x) : m_Data(x)
 		{
-			for (uint a=0;a<N;a++ )
-				m_Data[a] = x[a];
 		};
-		TVecX(const T* x)
+		type(const value_type x)
 		{
-			for (uint a=0;a<=N;a++ )
-			{
-				m_Data[a]=x[a];
-			};
-		};
-		TVecX(const T x)
-		{
-			for (uint a=0;a<=N;a++ )
+			for (size_type a=0;a<=N;a++ )
 			{
 				m_Data[a]=x;
 			};
 		};
 
-		TVecX(T Data[N])
+		type(value_type Data[N])
 			: m_Data(Data)
 		{}
 
-		T& operator[](size_t x)
+		value_type& operator[](size_type x)
 		{
 			return m_Data[x];
 		};
-		const T& operator[](size_t x)const
+		const value_type& operator[](size_type x)const
 		{
 			return m_Data[x];
 		};
 
-		constexpr bool operator==(const TVecX<N, T>& _)
+		constexpr bool operator==(const type& _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				if (this->Data()[i] != _.Data()[i]) return false;
 			}
 			return true;
 		}
-		constexpr void operator+=(const TVecX<N, T>& _)
+		constexpr void operator+=(const type& _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] += _.Data()[i];
 			}
 		}
-		constexpr void operator-=(const TVecX<N, T>& _)
+		constexpr void operator-=(const type& _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] -= _.Data()[i];
 			}
 		}
-		constexpr void operator*=(const TVecX<N, T>& _)
+		constexpr void operator*=(const type& _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] *= _.Data()[i];
 			}
 		}
-		constexpr void operator/=(const TVecX<N, T>& _)
+		constexpr void operator/=(const type& _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] /= _.Data()[i];
 			}
 		}
-		constexpr TVecX<N, T> operator+(const TVecX<N, T>& _)
+		constexpr type operator+(const type& _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] + _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator-(const TVecX<N, T>& _)
+		constexpr type operator-(const type& _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] - _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator*(const TVecX<N, T>& _)
+		constexpr type operator*(const type & _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] - _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator/(const TVecX<N, T>& _)
+		constexpr type operator/(const type& _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] / _.Data()[i];
 			}
 			return rval;
 		}
-		constexpr void operator+=(const T _)
+		constexpr void operator+=(const value_type _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] += _;
 			}
 		}
-		constexpr void operator-=(const T _)
+		constexpr void operator-=(const value_type _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] -= _;
 			}
 		}
-		constexpr void operator*=(const T _)
+		constexpr void operator*=(const value_type _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] *= _;
 			}
 		}
-		constexpr void operator/=(const T _)
+		constexpr void operator/=(const value_type _)
 		{
-			for (size_t i = 0; i < N; i++)
+			for (size_type i = 0; i < N; i++)
 			{
 				this->Data()[i] /= _;
 			}
 		}
-		constexpr TVecX<N, T> operator+(const T x)
+		constexpr type operator+(const value_type x)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] + x;
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator-(const T _)
+		constexpr type operator-(const value_type _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] - _;
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator*(const T _)
+		constexpr type operator*(const value_type _)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] * _;
 			}
 			return rval;
 		}
-		constexpr TVecX<N, T> operator/(const T i)
+		constexpr type operator/(const value_type i)
 		{
-			TVecX<N, T> rval;
-			for (size_t i = 0; i < N; i++)
+			type rval;
+			for (size_type i = 0; i < N; i++)
 			{
 				rval[i] = this->Data()[i] / i;
 			}
 			return rval;
 		}
 
-		inline T* Data() { return m_Data; }
-		inline const T* Data() const { return m_Data; }
+		inline value_type* Data() { return m_Data; }
+		inline const value_type* Data() const { return m_Data; }
 
-		T* begin() { return &m_Data[0]; }
-		T* end() { return &m_Data[GetSize()]; }
+		value_type* begin() { return &m_Data[0]; }
+		value_type* end() { return &m_Data[GetSize()]; }
 
-		virtual constexpr size_t GetSize() const { return N; }
-		friend std::ostream& operator<< <>(std::ostream& os, const TVecX<N,T>& e);
+		friend std::ostream& operator<< <>(std::ostream& os, const type & e);
 
 	public:
 		
 	private:
-		T m_Data[N];
+		value_type m_Data[N];
 	};
 
 	template <typename T = float>
-	class ARC_API TVec2 : public TVecX<2,T>
+	class ARC_API TVec2 : public Base::TVec_Base<T, 2>
 	{
 	public:
-		using Super = TVecX<2, T>;
+		using Super = Base::TVec_Base<T, 2>;
 
-		TVec2()	{}
-		TVec2(const T& tx, const T& ty) { this->Set(tx, ty); }
-		TVec2(const T _) { this->Set(_, _); }
+		using value_type = T;
+		using type = TVec2<value_type>;
+		using type_float = typename std::common_type<value_type, float>::type;
+		using size_type = size_t;
 
-		inline T& x() { return Data()[0]; }
-		inline T& y() { return Data()[1]; }
+		union { value_type x, r; };
+		union { value_type y, g; };
 		
-		inline const T& x() const { return Data()[0]; }
-		inline const T& y() const { return Data()[1]; }
+		type() {}
+		type(const value_type& _x, const value_type& _y) : x(_x), y(_y) {}
+		type(const value_type _) : x(_), y(_) {}
 
-		constexpr TVec2<T> operator+(const TVec2<T>& _) const { return { x() + _.x(), y() + _.y() }; }
-		constexpr TVec2<T> operator-(const TVec2<T>& _) const { return { x() - _.x(), y() - _.y() }; }
-		constexpr TVec2<T> operator/(const TVec2<T>& _) const { return { x() / _.x(), y() / _.y() }; }
-		constexpr TVec2<T> operator*(const TVec2<T>& _) const { return { x() * _.x(), y() * _.y() }; }
-		constexpr TVec2<T> operator+(const T _) const { return { x() + _, y() +_};	}
-		constexpr TVec2<T> operator-(const T _) const { return { x() - _, y() -_};	}
-		constexpr TVec2<T> operator/(const T _) const { return { x() / _, y() /_};	}
-		constexpr TVec2<T> operator*(const T _) const { return { x() * _, y() *_};	}
+		constexpr bool operator==(const type& _) const { return x == _.x && y == _.y; }
+		constexpr bool operator!=(const type& _) const { return !(*this == _); }
 
-		#define VM_FUNC [[nodiscard]] inline constexpr
+		constexpr type operator+(const type& _) const { return { x + _.x, y + _.y }; }
+		constexpr type operator-(const type& _) const { return { x - _.x, y - _.y }; }
+		constexpr type operator/(const type& _) const { return { x / _.x, y / _.y }; }
+		constexpr type operator*(const type& _) const { return { x * _.x, y * _.y }; }
+		constexpr type operator+(const value_type _) const { return { x + _, y + _ }; }
+		constexpr type operator-(const value_type _) const { return { x - _, y - _ }; }
+		constexpr type operator/(const value_type _) const { return { x / _, y / _ }; }
+		constexpr type operator*(const value_type _) const { return { x * _, y * _ }; }
 
-		VM_FUNC static TVec2<T> SinCos(const float _1) { return Math::Sin(_1), Math::Cos(_1); }
-		VM_FUNC static TVec2<T> CosSin(const float _1) { return Math::Cos(_1), Math::Sin(_1); }
+		constexpr void operator+=(const type& _) { x += _.x; y += _.y; }
+		constexpr void operator-=(const type& _) { x -= _.x; y -= _.y; }
+		constexpr void operator/=(const type& _) { x /= _.x; y /= _.y; }
+		constexpr void operator*=(const type& _) { x *= _.x; y *= _.y; }
+		constexpr void operator+=(const value_type _) { x += _; y += _; }
+		constexpr void operator-=(const value_type _) { x -= _; y -= _; }
+		constexpr void operator/=(const value_type _) { x /= _; y /= _; }
+		constexpr void operator*=(const value_type _) { x *= _; y *= _; }
 
-		VM_FUNC static float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
-			return Math::Sqr(_1.x() - _2.x()) + Math::Sqr(_1.y() - _2.y());
+		inline value_type* Data() { return &x; }
+		inline const value_type* Data() const { return &x; }
+
+		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
+			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y);
 		}
-		VM_FUNC static float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
+		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
 			return Math::Sqrt(DistSqr(_1, _2));
 		}
-		VM_FUNC static bool AlmostEqual(const TVec2<T>& _1, const TVec2<T>& _2, double _Tollerance)
-		{
-			return Math::Abs((_1 - _2).x()) <= _Tollerance && Math::Abs((_1 - _2).y()) <= _Tollerance;
+		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, value_type _Tollerance) {
+			return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance;
 		}
-		VM_FUNC float Length() {
+		VM_FUNC value_type MinComponent() {
+			return Math::Min(x, y);
+		}
+		VM_FUNC value_type MaxComponent() {
+			return Math::Max(x, y);
+		}
+		VM_FUNC type_float Length() {
 			return Dist(*this, ZeroVector);
 		}
-		VM_FUNC static T Min(const TVec2<T>& _1) {
-			return Math::Min(_1.x(), _1.y());
-		}
-		VM_FUNC static T Max(const TVec2<T>& _1) {
-			return Math::Max(_1.x(), _1.y());
-		}
 
-		#undef VM_FUNC
-
-		inline void Set(const T& tx, const T& ty) { Data()[0] = tx; Data()[1] = ty; };
-		inline void Set(const TVec2<T> _xy) { Data()[0] = _xy.x(); Data()[1] = _xy.y(); };
 	public:
-		static TVec2<T> ZeroVector;
+		static type ZeroVector;
+		static type OneVector;
+	private:
+	};
+	template <typename T = float>
+	class ARC_API TVec3 : public Base::TVec_Base<T, 3>
+	{
+	public:
+		using Super = Base::TVec_Base<T, 3>;
+
+		using value_type = T;
+		using type = TVec3<T>;
+		using type_float = typename std::common_type<value_type, float>::type;
+		using size_type = size_t;
+
+		union { value_type x, r; };
+		union { value_type y, g; };
+		union { value_type z, b; };
+
+		type() {}
+		type(const value_type& _x, const value_type& _y, const value_type& _z) : x(_x), y(_y), z(_z) {}
+		type(const value_type _) : x(_), y(_), z(_) {}
+
+		constexpr bool operator==(const type& _) const { return x == _.x && y == _.y && z == _.z; }
+		constexpr bool operator!=(const type& _) const { return !(*this == _); }
+
+		constexpr type operator+(const type& _) const { return { x + _.x, y + _.y, z + _.z }; }
+		constexpr type operator-(const type& _) const { return { x - _.x, y - _.y, z - _.z }; }
+		constexpr type operator/(const type& _) const { return { x / _.x, y / _.y, z / _.z }; }
+		constexpr type operator*(const type& _) const { return { x * _.x, y * _.y, z * _.z }; }
+		constexpr type operator+(const value_type _) const { return { x + _, y + _, y + _, z + _ }; }
+		constexpr type operator-(const value_type _) const { return { x - _, y - _, y - _, z - _ }; }
+		constexpr type operator/(const value_type _) const { return { x / _, y / _, y / _, z / _ }; }
+		constexpr type operator*(const value_type _) const { return { x * _, y * _, y * _, z * _ }; }
+
+		constexpr void operator+=(const type& _) { x += _.x; y += _.y; z += _.z; }
+		constexpr void operator-=(const type& _) { x -= _.x; y -= _.y; z -= _.z; }
+		constexpr void operator/=(const type& _) { x /= _.x; y /= _.y; z /= _.z; }
+		constexpr void operator*=(const type& _) { x *= _.x; y *= _.y; z *= _.z; }
+		constexpr void operator+=(const value_type _) { x += _; y += _; z += _; }
+		constexpr void operator-=(const value_type _) { x -= _; y -= _; z -= _; }
+		constexpr void operator/=(const value_type _) { x /= _; y /= _; z /= _; }
+		constexpr void operator*=(const value_type _) { x *= _; y *= _; z *= _; }
+
+		inline value_type* Data() { return &x; }
+		inline const value_type* Data() const { return &x; }
+
+		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
+			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z);
+		}
+		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
+			return Math::Sqrt(DistSqr(_1, _2));
+		}
+		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, type_float _Tollerance) {
+			return
+				Math::Abs(_1.x - _2.x) <= _Tollerance &&
+				Math::Abs(_1.y - _2.y) <= _Tollerance &&
+				Math::Abs(_1.z - _2.z) <= _Tollerance;
+		}
+		VM_FUNC type_float Length() {
+			return Dist(*this, ZeroVector);
+		}
+		VM_FUNC value_type MinComponent() {
+			return Math::Min(x, y, z);
+		}
+		VM_FUNC value_type MaxComponent() {
+			return Math::Max(x, y, z);
+		}
+
+	public:
+		static type ZeroVector;
+		static type OneVector;
 	private:
 	};
 
 	template <typename T = float>
-	class ARC_API TVec3 : public TVecX<3,T>
+	class ARC_API TVec4 : public Base::TVec_Base<T, 4>
 	{
 	public:
-		using Super = TVecX<3, T>;
+		using Super = Base::TVec_Base<T, 4>;
 
-		TVec3() {}
-		TVec3(const T& tx, const T& ty, const T& tz)
-		{
-			this->Set(tx, ty, tz);
+		using value_type = T;
+		using type = TVec4<T>;
+		using type_float = typename std::common_type<value_type, float>::type;
+		using size_type = size_t;
+
+		union { value_type x, r; };
+		union { value_type y, g; };
+		union { value_type z, b; };
+		union { value_type w, a; };
+
+		type() {}
+		type(const value_type& _x, const value_type& _y, const value_type& _z, const value_type& _w) : x(_x), y(_y), z(_z), w(_w) {}
+		type(const value_type _) : x(_), y(_), z(_), w(_) {}
+
+		constexpr bool operator==(const type& _) const { return x == _.x && y == _.y && z == _.z, w == _.w; }
+		constexpr bool operator!=(const type& _) const { return !(*this == _); }
+
+		constexpr type operator+(const type& _) const { return { x + _.x, y + _.y, z + _.z, w + _.w }; }
+		constexpr type operator-(const type& _) const { return { x - _.x, y - _.y, z - _.z, w - _.w }; }
+		constexpr type operator/(const type& _) const { return { x / _.x, y / _.y, z / _.z, w / _.w }; }
+		constexpr type operator*(const type& _) const { return { x * _.x, y * _.y, z * _.z, w * _.w }; }
+		constexpr type operator+(const value_type _) const { return { x + _, y + _, z + _, w + _ }; }
+		constexpr type operator-(const value_type _) const { return { x - _, y - _, z - _, w - _ }; }
+		constexpr type operator/(const value_type _) const { return { x / _, y / _, z / _, w / _ }; }
+		constexpr type operator*(const value_type _) const { return { x * _, y * _, z * _, w * _ }; }
+
+		constexpr void operator+=(const type& _) const { x += _.x; y += _.y; z += _.z; w += _.w; }
+		constexpr void operator-=(const type& _) const { x -= _.x; y -= _.y; z -= _.z; w -= _.w; }
+		constexpr void operator/=(const type& _) const { x /= _.x; y /= _.y; z /= _.z; w /= _.w; }
+		constexpr void operator*=(const type& _) const { x *= _.x; y *= _.y; z *= _.z; w *= _.w; }
+		constexpr void operator+=(const value_type _) const {  x += _; y += _; z += _; w += _; }
+		constexpr void operator-=(const value_type _) const {  x -= _; y -= _; z -= _; w -= _; }
+		constexpr void operator/=(const value_type _) const {  x /= _; y /= _; z /= _; w /= _; }
+		constexpr void operator*=(const value_type _) const {  x *= _; y *= _; z *= _; w *= _; }
+
+		inline value_type* Data() { return &x; }
+		inline const value_type* Data() const { return &x; }
+
+		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
+			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z) + Math::Sqr(_1.w - _2.w);
+		}
+		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
+			return Math::Sqrt(DistSqr(_1, _2));
+		}
+		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, type_float _Tollerance) {
+			return
+				Math::Abs(_1.x - _2.x) <= _Tollerance &&
+				Math::Abs(_1.y - _2.y) <= _Tollerance &&
+				Math::Abs(_1.z - _2.z) <= _Tollerance &&
+				Math::Abs(_1.w - _2.w) <= _Tollerance;
+		}
+		VM_FUNC type_float Length() {
+			return Dist(*this, ZeroVector);
+		}
+		VM_FUNC value_type MinComponent() {
+			return Math::Min(x, y, z, w);
+		}
+		VM_FUNC value_type MaxComponent() {
+			return Math::Max(x, y, z, w);
 		}
 
-		inline T& x() { return Data()[0]; }
-		inline T& y() { return Data()[1]; }
-		inline T& z() { return Data()[2]; }
-
-		inline T& r() { return Data()[0]; }
-		inline T& g() { return Data()[1]; }
-		inline T& b() { return Data()[2]; }
-
-		inline const T& x() const { return Data()[0]; }
-		inline const T& y() const { return Data()[1]; }
-		inline const T& z() const { return Data()[2]; }
-
-		inline const T& r() const { return Data()[0]; }
-		inline const T& g() const { return Data()[1]; }
-		inline const T& b() const { return Data()[2]; }
-
-		[[nodiscard]] inline constexpr float Dist(const TVec2<T>& _1, const TVec2<T>& _2) {
-			return Math::Sqrt(Math::DistSqr(_1, _2));
-		}
-
-		[[nodiscard]] inline constexpr float DistSqr(const TVec2<T>& _1, const TVec2<T>& _2) {
-			return Math::Sqr(_1.x() - _2.x()) + Math::Sqr(_1.y() - _2.y()) + Math::Sqr(_1.z() - _2.z());
-		}
-
-		inline void Set(const T& tx, const T& ty, const T& tz) { *x = tx; *y = ty; *z = tz;};
-		TVec3<T>& operator=(TVec3<T> const& _) {
-			this->Set(_.x(), _.y(), _.z());
-			return *this;
-		};
 	public:
-		static TVec3<T> ZeroVector;
-
+		static type ZeroVector;
+		static type OneVector;
+	private:
 	};
-	template <typename T = float>
-	class ARC_API TVec4 : public TVecX<4, T>
-	{
-	public:
-		using Super = TVecX<4, T>;
-		
-		TVec4(){}
-		TVec4(const TVec4<T>& _)
-		{
-			this->Set(_.x(), _.y(), _.z(), _.w());
-		}
-		TVec4(const T& tw, const T& tx, const T& ty, const T& tz)
-		{
-			this->Set(tw, tx, ty, tz);
-		}
+#undef VM_FUNC
 
-		constexpr TVec4<T> operator+(const TVec4<T>& _) const { return { x() + _.x(), y() + _.y(), z() + _.z(), w() + _.w() }; }
-		constexpr TVec4<T> operator-(const TVec4<T>& _) const { return { x() - _.x(), y() - _.y(), z() - _.z(), w() - _.w() }; }
-		constexpr TVec4<T> operator/(const TVec4<T>& _) const { return { x() / _.x(), y() / _.y(), z() / _.z(), w() / _.w() }; }
-		constexpr TVec4<T> operator*(const TVec4<T>& _) const { return { x() * _.x(), y() * _.y(), z() * _.z(), w() * _.w() }; }
-		constexpr TVec4<T> operator-(const T _) const { return { x() - _, y() - _, z() - _, w() - _ }; }
-		constexpr TVec4<T> operator+(const T _) const { return { x() + _, y() + _, z() + _, w() + _ }; }
-		constexpr TVec4<T> operator/(const T _) const { return { x() / _, y() / _, z() / _, w() / _ }; }
-		constexpr TVec4<T> operator*(const T _) const { return { x() * _, y() * _, z() * _, w() * _ }; }
-
-		inline T& x() { return Data()[0]; }
-		inline T& y() { return Data()[1]; }
-		inline T& z() { return Data()[2]; }
-		inline T& w() { return Data()[3]; }
-		
-		inline T& r() { return Data()[0]; }
-		inline T& g() { return Data()[1]; }
-		inline T& b() { return Data()[2]; }
-		inline T& a() { return Data()[3]; }
-
-		inline const T& x() const { return Data()[0]; }
-		inline const T& y() const { return Data()[1]; }
-		inline const T& z() const { return Data()[2]; }
-		inline const T& w() const { return Data()[3]; }
-
-		inline const T& r() const { return Data()[0]; }
-		inline const T& g() const { return Data()[1]; }
-		inline const T& b() const { return Data()[2]; }
-		inline const T& a() const { return Data()[3]; }
-
-		inline void Set(const T& tx, const T& ty, const T& tz, const T& tw) {
-			x() = tx; y() = ty; z() = tz;  w() = tw;
-		};
-
-	public:
-		static TVec4<T> ZeroVector;
-	};
-
-	template<typename T> TVec2<T> TVec2<T>::ZeroVector = {0, 0};
-	template<typename T> TVec3<T> TVec3<T>::ZeroVector = {0, 0, 0};
-	template<typename T> TVec4<T> TVec4<T>::ZeroVector = {0, 0, 0, 0};
+	template<typename T> TVec2<T> TVec2<T>::ZeroVector = TVec2<T>(0, 0);
+	template<typename T> TVec3<T> TVec3<T>::ZeroVector = TVec3<T>(0, 0, 0);
+	template<typename T> TVec4<T> TVec4<T>::ZeroVector = TVec4<T>(0, 0, 0, 0);
+	
+	template<typename T> TVec2<T> TVec2<T>::OneVector = TVec2<T>(1, 1);
+	template<typename T> TVec3<T> TVec3<T>::OneVector = TVec3<T>(1, 1, 1);
+	template<typename T> TVec4<T> TVec4<T>::OneVector = TVec4<T>(1, 1, 1, 1);
 
 	using FVec2 = TVec2<float>;
 	using FVec3 = TVec3<float>;

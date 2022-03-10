@@ -7,7 +7,7 @@
 #include "ARC\Events\MouseEvent.h"
 
 #include "glad\glad.h"
-#include "OpenGl\OpenGLContext.h"
+#include "Platform\OpenGl\OpenGLContext.h"
 #include "ARC/Core/Macros.h"
 
 namespace ARC{ 

@@ -56,7 +56,7 @@ namespace ARC {
 		{
 			for (uint8_t y = 0; y < 32; y++)
 			{
-				if (PlayerSprite.Texture->GetPixelColor({ x, y }).a() != 0)
+				if (PlayerSprite.Texture->GetPixelColor({ x, y }).a != 0)
 				{
 					CollisionData.push_back( std::make_shared<TVec2<uint8_t>>( x, y ));
 				}
@@ -81,27 +81,27 @@ namespace ARC {
 			if (SWL && SWL->GameState == EGameState::Play)
 			{
 				float lerpalpha = 0;
-				Velocity.x() *= 0.97f*_DeltaTime*60.f;
-				Velocity.y() *= 0.97f*_DeltaTime*60.f;
+				Velocity.x *= 0.97f*_DeltaTime*60.f;
+				Velocity.y *= 0.97f*_DeltaTime*60.f;
 
 				if (CInput::IsKeyPressed(ARC_KEY_A) || CInput::IsKeyPressed(ARC_KEY_W) || CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT) || CInput::IsKeyPressed(ARC_KEY_LEFT) || CInput::IsKeyPressed(ARC_KEY_UP) || CInput::IsKeyPressed(ARC_KEY_DOWN)) {
 					lerpalpha += _DeltaTime;
 					if (CInput::IsKeyPressed(ARC_KEY_A) || CInput::IsKeyPressed(ARC_KEY_LEFT)) {
-						if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 0;
-						else Velocity.x() = -1;
+						if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x = 0;
+						else Velocity.x = -1;
 					}
-					else if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x() = 1;
+					else if (CInput::IsKeyPressed(ARC_KEY_D) || CInput::IsKeyPressed(ARC_KEY_RIGHT)) Velocity.x = 1;
 					if (CInput::IsKeyPressed(ARC_KEY_W) || CInput::IsKeyPressed(ARC_KEY_UP)) {
-						if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = 0;
-						else Velocity.y() = 1;
+						if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y = 0;
+						else Velocity.y = 1;
 					}
-					else if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y() = -1;
+					else if (CInput::IsKeyPressed(ARC_KEY_S) || CInput::IsKeyPressed(ARC_KEY_DOWN)) Velocity.y = -1;
 
 					FVec2 emissionPoint = { 0.0f, -0.05f };
 					float s = std::sin(PlayerSprite.GetRotation());
 					float c = std::cos(PlayerSprite.GetRotation());
 
-					FVec2 rotated = FVec2(-emissionPoint.y()*s, emissionPoint.y() * c);
+					FVec2 rotated = FVec2(-emissionPoint.y*s, emissionPoint.y * c);
 					ParticleSystem.Defaults.Location = PlayerSprite.GetLocation();
 					ParticleSystem.Defaults.Velocity = Math::InterpF<Linear>(ParticleSystem.Defaults.Velocity, (Velocity + rotated)* -1, lerpalpha);
 					ParticleSystem.Emit();
@@ -111,23 +111,23 @@ namespace ARC {
 					lerpalpha = std::clamp(lerpalpha, 0.f, 1.f);
 				}
 
-				PlayerSprite.Transform.Location.x() += Velocity.x() * Speed * _DeltaTime;
-				PlayerSprite.Transform.Location.y() += Velocity.y() * Speed * _DeltaTime;
+				PlayerSprite.Transform.Location.x += Velocity.x * Speed * _DeltaTime;
+				PlayerSprite.Transform.Location.y += Velocity.y * Speed * _DeltaTime;
 
-				PlayerSprite.Transform.Location.x() = std::clamp<float>(PlayerSprite.Transform.Location.x(), -1.6f, 1.6f);
-				PlayerSprite.Transform.Location.y() = std::clamp<float>(PlayerSprite.Transform.Location.y(), -0.94f, 0.94f);
+				PlayerSprite.Transform.Location.x = std::clamp<float>(PlayerSprite.Transform.Location.x, -1.6f, 1.6f);
+				PlayerSprite.Transform.Location.y = std::clamp<float>(PlayerSprite.Transform.Location.y, -0.94f, 0.94f);
 				ParticleSystem.OnUpdate(_DeltaTime);
 			}
  			const FVec2 mouse_location = CInput::GetMouseXY();
 			auto window_height = Core::CApplication::Get().GetWindow().GetHeight();
 			auto window_width = Core::CApplication::Get().GetWindow().GetWidth();
 
- 			const float y = -((mouse_location.y() / window_height)*2-1);
- 			const float x = 1.6666f *((mouse_location.x() / window_width)*2-1);
+ 			const float y = -((mouse_location.y / window_height)*2-1);
+ 			const float x = 1.6666f *((mouse_location.x / window_width)*2-1);
  			
 			float x_angle = Math::Conv<Radians, Degree>(atan2(
- 					y - PlayerSprite.Transform.Location.y(),
- 					x - PlayerSprite.Transform.Location.x())
+ 					y - PlayerSprite.Transform.Location.y,
+ 					x - PlayerSprite.Transform.Location.x)
  				);
 			PlayerSprite.Transform.Rotation = Math::Conv<Degree, Radians>(x_angle - 90.f);
 		}

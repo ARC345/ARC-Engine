@@ -47,6 +47,12 @@ namespace ARC {
 		dispatcher.Dispatch<ARC::CWindowResizeEvent>(BIND_FN(&COrthographicCameraController::OnWindowResized));
 	}
 
+	void COrthographicCameraController::OnResize(float width, float height)
+	{
+		m_AspectRatio = width / height;
+		CalculateView();
+	}
+
 	void COrthographicCameraController::CalculateView()
 	{
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
@@ -64,9 +70,7 @@ namespace ARC {
 	bool COrthographicCameraController::OnWindowResized(CWindowResizeEvent& _Event)
 	{
 		ARC_PROFILE_FUNCTION();
-		m_AspectRatio = (float)_Event.GetX() / (float)_Event.GetY();
-		CalculateView();
-
+		OnResize(_Event.GetX(), _Event.GetY());
 		return false;
 	}
 }

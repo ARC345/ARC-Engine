@@ -1329,6 +1329,9 @@
     <ClInclude Include="src\ARC\Core\EntryPoint.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Core\GlmHelpers.h">
+      <Filter>src\ARC\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Core\Ini.h">
       <Filter>src\ARC\Core</Filter>
     </ClInclude>
@@ -1374,9 +1377,6 @@
     <ClInclude Include="src\ARC\Input\KeyCodes.h">
       <Filter>src\ARC\Input</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Input\WindowsInput.h">
-      <Filter>src\ARC\Input</Filter>
-    </ClInclude>
     <ClInclude Include="src\ARC\Objects\CameraBase.h">
       <Filter>src\ARC\Objects</Filter>
     </ClInclude>
@@ -1402,6 +1402,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\Color.h">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ARC\Renderer\FrameBuffer.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h">
@@ -1437,6 +1440,9 @@
     <ClInclude Include="src\ARC\Renderer\VertexArray.h">
       <Filter>src\ARC\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\ARC\Types\Array.h">
+      <Filter>src\ARC\Types</Filter>
+    </ClInclude>
     <ClInclude Include="src\ARC\Types\Pointer.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
@@ -1449,9 +1455,6 @@
     <ClInclude Include="src\ARC\Types\Vector.h">
       <Filter>src\ARC\Types</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Types\Array.h">
-      <Filter>src\ARC\Types</Filter>
-    </ClInclude>
     <ClInclude Include="src\PCH\arc_pch.h">
       <Filter>src\PCH</Filter>
     </ClInclude>
@@ -1459,6 +1462,9 @@
       <Filter>src\Platform\OpenGl</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGl\OpenGLContext.h">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGl\OpenGLFrameBuffer.h">
       <Filter>src\Platform\OpenGl</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGl\OpenGLRendererAPI.h">
@@ -1473,10 +1479,9 @@
     <ClInclude Include="src\Platform\OpenGl\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\WindowsWindow.h">
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\ARC\Core\GlmHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp">
@@ -1497,7 +1502,7 @@
     <ClCompile Include="src\ARC\Helpers\Helpers.cpp">
       <Filter>src\ARC\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\ARC\Input\WindowsInput.cpp">
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\ARC\Input</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp">
@@ -1519,6 +1524,9 @@
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Color.cpp">
+      <Filter>src\ARC\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ARC\Renderer\FrameBuffer.cpp">
       <Filter>src\ARC\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\ARC\Renderer\Layer.cpp">
@@ -1563,6 +1571,9 @@
     <ClCompile Include="src\Platform\OpenGl\OpenGLContext.cpp">
       <Filter>src\Platform\OpenGl</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGl\OpenGLFrameBuffer.cpp">
+      <Filter>src\Platform\OpenGl</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGl\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGl</Filter>
     </ClCompile>
@@ -1575,7 +1586,7 @@
     <ClCompile Include="src\Platform\OpenGl\OpenGLVertexArray.cpp">
       <Filter>src\Platform\OpenGl</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\WindowsWindow.cpp">
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform</Filter>
     </ClCompile>
   </ItemGroup>

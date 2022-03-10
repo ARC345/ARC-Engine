@@ -82,7 +82,11 @@ void CSandbox2D::OnAttach()
 	s_textureMap['W'] = ARC::CSubTexture2D::CreateFromCoords(m_Spritesheet, { 11.f, 11.f }, { 128.f, 128.f });
 	s_textureMap['D'] = ARC::CSubTexture2D::CreateFromCoords(m_Spritesheet, { 6.f, 11.f }, { 128.f, 128.f });
 	ParticleSystem->Defaults.Texture = m_CheckerboardTexture;
-	m_CameraController.SetZoomLevel(8.f);
+	m_CameraController.SetZoomLevel(1.f);
+
+	ARC::SFrameBufferSpecifications frame_buffer_specs;
+	frame_buffer_specs.Width = 1280;
+	frame_buffer_specs.Height = 720;
 }
 
 void CSandbox2D::OnDetach()
@@ -282,8 +286,10 @@ void CSandbox2D::OnEvent(ARC::CEvent& _Event)
 void CSandbox2D::OnGuiRender()
 {
 	ARC_PROFILE_FUNCTION();
+	
 	auto stats = ARC::CRenderer2D::GetStats();
 	ImGui::Begin("Renderer2D");
+	ImGui::Image((void*)m_CheckerboardTexture->GetRendererID(), ImVec2(100.f, 100.f));
 	ImGui::Text("DrawCalls: %d", stats.DrawCalls);
 	ImGui::Text("QuadCount: %d", stats.QuadCount);
 	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
@@ -300,6 +306,6 @@ void CSandbox2D::OnGuiRender()
 		ImGui::ColorEdit4("SQ_Colour", SQ_Colour.Data());
 		ImGui::TreePop();
 	}
-	if(ImGui::Button(ARC::bStressTest ? "Go to Sandbox?" : "Go to StressTest?")) { ARC::bStressTest = !ARC::bStressTest; }
+	if (ImGui::Button(ARC::bStressTest ? "Go to Sandbox?" : "Go to StressTest?")) { ARC::bStressTest = !ARC::bStressTest; }
 	ImGui::End();
 }

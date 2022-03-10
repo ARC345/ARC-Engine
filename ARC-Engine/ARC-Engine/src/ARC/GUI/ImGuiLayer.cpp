@@ -16,7 +16,7 @@
 #include "../Helpers/Helpers.h"
 
 namespace ARC {
-	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer") {}
+	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer"), m_bBlockEvents(1u) {}
 	CImGuiLayer::~CImGuiLayer() {}
 	
 	void CImGuiLayer::OnAttach()
@@ -55,6 +55,14 @@ namespace ARC {
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
+	}
+
+	void CImGuiLayer::OnEvent(CEvent& _e)
+	{
+		if (!m_bBlockEvents) return;
+		ImGuiIO& io = ImGui::GetIO();
+		_e.bHandled |= _e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		_e.bHandled |= _e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 	}
 
 	void CImGuiLayer::Begin()

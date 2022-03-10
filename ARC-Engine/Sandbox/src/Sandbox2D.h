@@ -5,6 +5,8 @@
 #include "ARC/Objects/Primitive2D.h"
 #include "ARC/Objects/ParticleSystem2D.h"
 
+namespace ARC { class CFrameBuffer; }
+
 namespace ARC { class CSubTexture2D; }
 
 namespace ARC { class CTexture2D; }

@@ -178,17 +178,17 @@ namespace ARC {
 		}
 
 		glm::mat4 transform =
-			 	glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x(), _Position.y(), _ZOrder)) *
+			 	glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x, _Position.y, _ZOrder)) *
 			 	glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
-			 	glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x(), _Size.y(), 1.0f));
+			 	glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x, _Size.y, 1.0f));
 
 		for (size_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r, _Color.g, _Color.b, _Color.a);
 			s_Data.QuadVertexBufferPtr->TexCoord = CTexture2D::TexCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
+			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x, _TextureScaling.y);
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -222,17 +222,17 @@ namespace ARC {
 		}
 
 		glm::mat4 transform =
-			glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x(), _Position.y(), _ZOrder)) *
+			glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x, _Position.y, _ZOrder)) *
 			glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
-			glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x(), _Size.y(), 1.0f));
+			glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x, _Size.y, 1.0f));
 
 		for (size_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r(), _Color.g(), _Color.b(), _Color.a());
+			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r, _Color.g, _Color.b, _Color.a);
 			s_Data.QuadVertexBufferPtr->TexCoord = _SubTex->GetTexCoords()[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x(), _TextureScaling.y());
+			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x, _TextureScaling.y);
 			s_Data.QuadVertexBufferPtr++;
 		}
 

@@ -22,7 +22,7 @@ namespace ARC {
 			return ss.str();
 		}
 
-		EVENT_CLASS_CATEGORY(Mouse | Input)
+		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 		EVENT_CLASS_TYPE(MouseMoved)
 
 	private:
@@ -47,7 +47,7 @@ namespace ARC {
 			inline float GetXOffset() const { return m_Offset[0]; }
 			inline float GetYOffset() const { return m_Offset[1]; }
 
-			EVENT_CLASS_CATEGORY(Mouse | Input)
+			EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 			EVENT_CLASS_TYPE(MouseScrolled)
 		private: 
 			FVec2 m_Offset;
@@ -58,7 +58,7 @@ namespace ARC {
 	public:
 		inline uint GetMouseButton() const { return m_MouseButton; }
 
-		EVENT_CLASS_CATEGORY(Mouse | Input)
+		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
 		CMouseButtonEvent(uint p_Button) : m_MouseButton(p_Button) {}
 		uint m_MouseButton;

@@ -579,7 +579,6 @@
     <ClInclude Include="src\ARC\Helpers\Math.h" />
     <ClInclude Include="src\ARC\Input\Input.h" />
     <ClInclude Include="src\ARC\Input\KeyCodes.h" />
-    <ClInclude Include="src\ARC\Input\WindowsInput.h" />
     <ClInclude Include="src\ARC\Objects\CameraBase.h" />
     <ClInclude Include="src\ARC\Objects\Object.h" />
     <ClInclude Include="src\ARC\Objects\OrthographicCameraController.h" />
@@ -589,6 +588,7 @@
     <ClInclude Include="src\ARC\Profiling\Timer.h" />
     <ClInclude Include="src\ARC\Renderer\Buffer.h" />
     <ClInclude Include="src\ARC\Renderer\Color.h" />
+    <ClInclude Include="src\ARC\Renderer\FrameBuffer.h" />
     <ClInclude Include="src\ARC\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\ARC\Renderer\Layer.h" />
     <ClInclude Include="src\ARC\Renderer\LayerStack.h" />
@@ -600,19 +600,20 @@
     <ClInclude Include="src\ARC\Renderer\SubTexture2D.h" />
     <ClInclude Include="src\ARC\Renderer\Texture.h" />
     <ClInclude Include="src\ARC\Renderer\VertexArray.h" />
+    <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\ARC\Types\Pointer.h" />
     <ClInclude Include="src\ARC\Types\Transform2D.h" />
     <ClInclude Include="src\ARC\Types\TybeBase.h" />
     <ClInclude Include="src\ARC\Types\Vector.h" />
-    <ClInclude Include="src\ARC\Types\Array.h" />
     <ClInclude Include="src\PCH\arc_pch.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGl\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGl\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platform\WindowsWindow.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="out\stb_image\stb_image.cpp" />
@@ -621,7 +622,7 @@
     <ClCompile Include="src\ARC\GUI\ImGuiBuild.cpp" />
     <ClCompile Include="src\ARC\GUI\ImGuiLayer.cpp" />
     <ClCompile Include="src\ARC\Helpers\Helpers.cpp" />
-    <ClCompile Include="src\ARC\Input\WindowsInput.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\ARC\Objects\CameraBase.cpp" />
     <ClCompile Include="src\ARC\Objects\Object.cpp" />
     <ClCompile Include="src\ARC\Objects\OrthographicCameraController.cpp" />
@@ -629,6 +630,7 @@
     <ClCompile Include="src\ARC\Objects\Primitive2D.cpp" />
     <ClCompile Include="src\ARC\Renderer\Buffer.cpp" />
     <ClCompile Include="src\ARC\Renderer\Color.cpp" />
+    <ClCompile Include="src\ARC\Renderer\FrameBuffer.cpp" />
     <ClCompile Include="src\ARC\Renderer\Layer.cpp" />
     <ClCompile Include="src\ARC\Renderer\LayerStack.cpp" />
     <ClCompile Include="src\ARC\Renderer\RenderCommand.cpp" />
@@ -645,11 +647,12 @@
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGl\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGl\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGl\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGl\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGl\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGl\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGl\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Platform\WindowsWindow.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="out\GLFW\GLFW.vcxproj">

@@ -22,6 +22,7 @@
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Shader.h"
 #include "ARC/Renderer/Texture.h"
+#include "ARC/Renderer/FrameBuffer.h"
 
 #include "ARC/Objects/CameraBase.h"
 #include "ARC/Objects/OrthographicCameraController.h"
