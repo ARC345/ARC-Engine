@@ -1,12 +1,12 @@
 [submodule "ARC-Engine/out/spdlog"]
-	path = ARC-Engine/vendor/spdlog
-	url = https://github.com/gabime/spdlog/
+	path = ARC-Engine/out/spdlog
+	url = https://github.com/gabime/spdlog
 [submodule "ARC-Engine/out/GLFW"]
 	path = ARC-Engine/out/GLFW
-	url = https://github.com/TheCherno/glfw
+	url = https://github.com/TheCherno/glfw.git
 [submodule "ARC-Engine/out/imgui"]
 	path = ARC-Engine/out/imgui
-	url = https://Github.com/Hellboy434/imgui
+	url = https://Github.com/Hellboy434/imgui.git
 [submodule "ARC-Engine/out/glm"]
 	path = ARC-Engine/out/glm
 	url = https://github.com/g-truc/glm.git
