@@ -1,0 +1,18 @@
+[submodule "ARC-Engine/out/spdlog"]
+	path = ARC-Engine/out/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "ARC-Engine/out/imgui"]
+	path = ARC-Engine/out/imgui
+	url = https://github.com/Hellboy434/imgui
+[submodule "ARC-Engine/out/inifile_cpp"]
+	path = ARC-Engine/out/inifile_cpp
+	url = https://github.com/Hellboy434/inifile-cpp
+[submodule "ARC-Engine/out/GLFW"]
+	path = ARC-Engine/out/GLFW
+	url = https://github.com/TheCherno/glfw.git
+[submodule "ARC-Engine/out/glm"]
+	path = ARC-Engine/out/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "ARC-Engine/src/ARC/Profiling"]
+	path = ARC-Engine/src/ARC/Profiling
+	url = https://gist.github.com/75b8b46af8c0d3e5060185b951b5e42a.git
