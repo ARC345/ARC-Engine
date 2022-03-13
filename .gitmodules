@@ -4,6 +4,7 @@
 [submodule "ARC-Engine/out/imgui"]
 	path = ARC-Engine/out/imgui
 	url = https://github.com/Hellboy434/imgui
+	branch = docking
 [submodule "ARC-Engine/out/inifile_cpp"]
 	path = ARC-Engine/out/inifile_cpp
 	url = https://github.com/Hellboy434/inifile-cpp
