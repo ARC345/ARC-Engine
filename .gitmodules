@@ -1,6 +1,6 @@
 [submodule "ARC-Engine/out/spdlog"]
 	path = ARC-Engine/out/spdlog
-	url = https://github.com/gabime/spdlog
+	url = https://github.com/gabime/spdlog.git
 [submodule "ARC-Engine/out/GLFW"]
 	path = ARC-Engine/out/GLFW
 	url = https://github.com/TheCherno/glfw.git
