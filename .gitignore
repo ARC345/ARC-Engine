@@ -1,7 +1,7 @@
 # Directories
-ARC-Engine/.vs/
-ARC-Engine/_bin/
-ARC-Engine/_int/
+.vs/
+_bin/
+_int/
 **/logs/	
 
 #files
