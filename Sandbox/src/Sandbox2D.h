@@ -30,6 +30,8 @@ public:
 	virtual void OnEvent(ARC::CEvent& _Event) override;
 	virtual void OnGuiRender() override;
 
+	virtual void ___Print___(const char* _);
+
 	float prev = 0.f;
 protected:
 	ARC::TRef<ARC::CShader> m_Shader;

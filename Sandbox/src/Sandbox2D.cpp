@@ -17,6 +17,7 @@
 #include "ARC\Core\Log.h"
 #include "ARC\Core\Ini.h"
 #include "ARC\Renderer\SubTexture2D.h"
+#include "ARC/Types/Delegate.h"
 
 namespace ARC{ static bool bStressTest = false; }
 static const uint32_t s_MapWidth = 24;
@@ -73,6 +74,21 @@ CSandbox2D::CSandbox2D() :
 void CSandbox2D::OnAttach()
 {
 	ARC::CIniFile inif;
+	ARC::CMulticastDelegate<void(const char*)> x;
+	x.Bind<&CSandbox2D::___Print___>(this);
+	x.Bind<&CSandbox2D::___Print___>(this);
+	x.Bind<&CSandbox2D::___Print___>(this);
+	x.Bind<&CSandbox2D::___Print___>(this);
+	x.Bind([](const char* v) -> void { ARC_CORE_TRACE(v); });
+	x("Hello");
+	
+	ARC::CDelegate<void(const char*)> y;
+	y.Bind<&CSandbox2D::___Print___>(this);
+	y.Bind<&CSandbox2D::___Print___>(this);
+	y.Bind<&CSandbox2D::___Print___>(this);
+	y.Bind<&CSandbox2D::___Print___>(this);
+	y("Hi");
+	
 	m_CheckerboardTexture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
 	m_Spritesheet = ARC::CTexture2D::Create("assets/textures/RPGpack_sheet_2X.png");
 
@@ -308,4 +324,9 @@ void CSandbox2D::OnGuiRender()
 	}
 	if (ImGui::Button(ARC::bStressTest ? "Go to Sandbox?" : "Go to StressTest?")) { ARC::bStressTest = !ARC::bStressTest; }
 	ImGui::End();
+}
+
+void CSandbox2D::___Print___(const char* _)
+{
+	ARC_WARN(_);
 }
