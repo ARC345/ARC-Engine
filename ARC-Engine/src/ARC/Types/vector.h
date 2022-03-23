@@ -2,15 +2,8 @@
 
 #include "TybeBase.h"
 #include <type_traits>
-#include <string>
 #include <initializer_list>
-#include "ARC/Core/Macros.h"
-
-namespace ARC {
-	namespace Trial {
-		
-	}
-}
+#include "String.h"
 
 namespace ARC
 {
@@ -43,17 +36,21 @@ namespace ARC
 			value_type* end() { return (value_type*)(this + N); }
 			const value_type* begin() const { return (value_type*)this; }
 			const value_type* end() const { return (value_type*)(this + N); }
+
+			TString ToString() {
+				TString x = fmt::format("{}", *begin()) ;
+				for (size_t i = 1; i < N; i++)
+				{
+					x = fmt::format("{}, {}", x, (*this)[i]);
+				}
+				return fmt::format("[{}]", x);
+			}
+			
+			//template<typename OStream>
+			//friend OStream& operator<<(OStream& os, const TVec_Base<T, N>& c) {
+			//	return os << "[" << "]";
+			//}
 		};
-	}
-	template <size_t N, typename T = float>
-	class TVecX;
-	template <size_t N, typename T = float>
-	std::ostream& operator<<(std::ostream& os, const TVecX<N, T>& e)
-	{
-		os << "[";
-		for (size_t a = 0; a < N; a++)
-			os << e[a] << ((a != N - 1) ? ", " : "]");
-		return os;
 	}
 
 	template <size_t N, typename T>
@@ -232,8 +229,6 @@ namespace ARC
 
 		value_type* begin() { return &m_Data[0]; }
 		value_type* end() { return &m_Data[GetSize()]; }
-
-		friend std::ostream& operator<< <>(std::ostream& os, const type & e);
 
 	public:
 		

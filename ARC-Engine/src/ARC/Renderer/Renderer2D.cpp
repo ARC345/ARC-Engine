@@ -1,15 +1,16 @@
 #include "arc_pch.h"
 #include "Renderer2D.h"
 #include "Shader.h"
-#include "Platform\OpenGl\OpenGLShader.h"
+#include "Platform/OpenGl/OpenGLShader.h"
 #include "RenderCommand.h"
 #include "Buffer.h"
 #include "VertexArray.h"
-#include "ARC\Objects\CameraBase.h"
-#include "glm\ext\matrix_transform.hpp"
-#include "glm\gtx\rotate_vector.inl"
+#include "ARC/Renderer/CameraBase.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtx/rotate_vector.inl"
 #include "Texture.h"
 #include "SubTexture2D.h"
+#include "ARC/Objects/Primitive2D.h"
 
 namespace ARC {
 	struct SQuadVertex

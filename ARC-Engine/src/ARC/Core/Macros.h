@@ -14,8 +14,6 @@
 #define ARC_CORE_ASSERT(x, ...)
 #endif
 
-#define _ASSERT_DB(x) if(!(x)) __debugbreak();
-
 #define ifnr(x) if(!(x)) return;
 #define ifr(x) if((x)) return;
 #define ifnr_callback(x, y) if(!(x)){y; return;}
@@ -25,6 +23,10 @@
 #define COMBINE2(a,b) a##b
 
 #define BIND_FN(x) std::bind(x, this, std::placeholders::_1)
+
+#define LIKELY(mCondition) __builtin_expect(!!(mCondition), 1)
+#define UNLIKELY(mCondition) __builtin_expect(!!(mCondition), 0)
+
 #define ARC_PROFILE
 #ifdef ARC_PROFILE
 #define ARC_PROFILE_SCOPE(name) ::ARC::CTimer COMBINE2(ARC_timer, __LINE__)(name, true, true)

@@ -15,6 +15,7 @@ IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
 IncludeDir["glm"] = "ARC-Engine/out/glm"
+IncludeDir["meta"] = "ARC-Engine/out/meta"
 IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
 
 group "Dependencies"
@@ -42,7 +43,8 @@ project "ARC-Engine"
 		"%{prj.name}/out/stb_image/**.cpp",
 		"%{prj.name}/out/stb_image/**.h",
 		"%{prj.name}/out/glm/glm/**.hpp",
-		"%{prj.name}/out/glm/glm/**.inl"
+		"%{prj.name}/out/glm/glm/**.inl",
+		"%{prj.name}/out/meta/**.hpp"
 	}
 
 	includedirs
@@ -54,6 +56,7 @@ project "ARC-Engine"
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.meta}",
 		"%{IncludeDir.stb_image}"
 	}
 
@@ -68,6 +71,7 @@ project "ARC-Engine"
 	defines
 	{
 		"_CRT_SECURE_NO_WARNINGS",
+		"NOMINMAX",
 		"GLFW_INCLUDE_NONE"
 	}
 
@@ -110,6 +114,7 @@ project "ARC-Editor"
 		"ARC-Engine/out/spdlog/include",
 		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.meta}",
 		"ARC-Engine/out"
 	}
 
@@ -157,6 +162,7 @@ project "Sandbox"
 		"ARC-Engine/out/spdlog/include",
 		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.meta}",
 		"ARC-Engine/out"
 	}
 

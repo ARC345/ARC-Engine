@@ -88,7 +88,7 @@ bool CSpaceWar::DetectCollision()
 
 				for (auto& PlayerCC : cachedLocs)
 				{
-					if (ARC::FVec2::AlmostEqual(*PlayerCC, RCCN, 0.01))
+					if (ARC::FVec2::AlmostEqual(*PlayerCC, RCCN, 0.01f))
 					{
 						return true;
 					}

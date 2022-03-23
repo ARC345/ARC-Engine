@@ -1,23 +1,24 @@
-﻿#include "PCH\arc_pch.h"
+﻿#include "PCH/arc_pch.h"
 #include "Sandbox2D.h"
-#include "ARC\Renderer\Buffer.h"
-#include "ARC\Renderer\Shader.h"
-#include "ARC\Renderer\VertexArray.h"
-#include "imgui\imgui.h"
-#include "glm\glm\gtc\type_ptr.inl"
-#include "glm\glm\ext\matrix_transform.hpp"
-#include "ARC\Objects\ParticleModifier2D.h"
-#include "glm\glm\ext\matrix_float4x4.hpp"
-#include "Platform\OpenGl\OpenGLShader.h"
-#include "ARC\Renderer\Renderer.h"
-#include "ARC\Renderer\RenderCommand.h"
-#include "ARC/Renderer/Renderer2D.h"
+#include "ARC/Renderer/Buffer.h"
+#include "ARC/Renderer/Shader.h"
 #include "ARC/Renderer/Texture.h"
+#include "ARC/Renderer/Renderer.h"
+#include "ARC/Renderer/Renderer2D.h"
+#include "ARC/Renderer/VertexArray.h"
+#include "ARC/Renderer/SubTexture2D.h"
+#include "ARC/Renderer/RenderCommand.h"
+#include "ARC/Renderer/ParticleModifier2D.h"
+#include "imgui/imgui.h"
+#include "glm/glm/gtc/type_ptr.inl"
+#include "glm/glm/ext/matrix_transform.hpp"
+#include "glm/glm/ext/matrix_float4x4.hpp"
+#include "Platform/OpenGl/OpenGLShader.h"
+#include "ARC/Core/Log.h"
+#include "ARC/Core/Ini.h"
 #include "ARC/Types/Vector.h"
-#include "ARC\Core\Log.h"
-#include "ARC\Core\Ini.h"
-#include "ARC\Renderer\SubTexture2D.h"
 #include "ARC/Types/Delegate.h"
+#include "ARC/Objects/Ecs.h"
 
 namespace ARC{ static bool bStressTest = false; }
 static const uint32_t s_MapWidth = 24;
@@ -79,7 +80,7 @@ void CSandbox2D::OnAttach()
 	x.Bind<&CSandbox2D::___Print___>(this);
 	x.Bind<&CSandbox2D::___Print___>(this);
 	x.Bind<&CSandbox2D::___Print___>(this);
-	x.Bind([](const char* v) -> void { ARC_CORE_TRACE(v); });
+	x.Bind([](const char* v) -> void { ARC_TRACE(v); });
 	x("Hello");
 	
 	ARC::CDelegate<void(const char*)> y;
@@ -88,6 +89,17 @@ void CSandbox2D::OnAttach()
 	y.Bind<&CSandbox2D::___Print___>(this);
 	y.Bind<&CSandbox2D::___Print___>(this);
 	y("Hi");
+
+	ARC::ECS::tests::runtimeTests();
+	
+	ARC::FVec3 abxd;
+	ARC_TRACE("{}", abxd.ToString());
+
+	//ARC::Experimental::EntityManager em(10);
+	//for (size_t i = 0; i < 100; i++)
+	//{
+	//	em.CreateEntity();
+	//}
 	
 	m_CheckerboardTexture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
 	m_Spritesheet = ARC::CTexture2D::Create("assets/textures/RPGpack_sheet_2X.png");

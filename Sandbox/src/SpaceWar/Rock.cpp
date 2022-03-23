@@ -1,6 +1,6 @@
 #include "PCH/arc_pch.h"
 #include "Rock.h"
-#include "ARC\Renderer\Texture.h"
+#include "ARC/Renderer/Texture.h"
 #include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Helpers/Helpers.h"
 
@@ -9,10 +9,10 @@ namespace ARC {
 
 	void CRock::Load(FVec2 _Velocity, FVec2 _Position)
 	{
-		std::string path = "assets/textures/Rock";
+		TString path = "assets/textures/Rock";
 		SpriteIndex = (int)(HPR::Random::Float() * s_NumberOfRockSprites);
 		path.append(std::to_string(SpriteIndex+1));
-		path.append(std::string(".png"));
+		path.append(TString(".png"));
 		Sprite.Texture = CTexture2D::Create(path, true);
 
 		if (SpriteCollisionData[SpriteIndex].empty())

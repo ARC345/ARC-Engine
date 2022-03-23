@@ -2,8 +2,6 @@
 
 // For use by ARC Applications
 
-#include <stdio.h> // @todo replace with logging lib
-
 #include "ARC/Core/Application.h"
 #include "ARC/Core/Log.h"
 
@@ -24,7 +22,7 @@
 #include "ARC/Renderer/Texture.h"
 #include "ARC/Renderer/FrameBuffer.h"
 
-#include "ARC/Objects/CameraBase.h"
-#include "ARC/Objects/OrthographicCameraController.h"
+#include "ARC/Renderer/CameraBase.h"
+#include "ARC/Renderer/OrthographicCameraController.h"
 
 #include "ARC/Helpers/Math.h"

@@ -1,9 +1,9 @@
 #pragma once
-#include "ARC\Types\Transform2D.h"
-#include "ARC\Objects\Primitive2D.h"
+#include "ARC/Types/Transform2D.h"
+#include "ARC/Objects/Primitive2D.h"
 #include <vector>
 #include <memory>
-#include "ARC\Objects\ParticleSystem2D.h"
+#include "ARC/Renderer/ParticleSystem2D.h"
 
 namespace ARC { class CLayer; }
 

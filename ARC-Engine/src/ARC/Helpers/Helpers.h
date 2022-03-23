@@ -60,6 +60,21 @@ namespace ARC {
 				}
 			}
 		}
+
+		class Family {
+			static std::size_t Identifier() noexcept {
+				static std::size_t value = 0;
+				return value++;
+			}
+
+		public:
+			template<typename>
+			static std::size_t Type() noexcept {
+				static const std::size_t value = Identifier();
+				return value;
+			}
+		};
+
 		class Random
 		{
 		public:

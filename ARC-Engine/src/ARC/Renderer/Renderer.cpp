@@ -1,11 +1,11 @@
 #include "arc_pch.h"
 #include "Renderer.h"
 #include "RenderCommand.h"
-#include "ARC\Objects\CameraBase.h"
+#include "ARC/Renderer/CameraBase.h"
 #include "Shader.h"
 #include "VertexArray.h"
-#include "Platform\OpenGl\OpenGLShader.h"
-#include "ARC\Types\vector.h"
+#include "Platform/OpenGl/OpenGLShader.h"
+#include "ARC/Types/Vector.h"
 #include "Renderer2D.h"
 
 namespace ARC {

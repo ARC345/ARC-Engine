@@ -2,7 +2,7 @@
 #include <string>
 #include "ARC/Core/Application.h"
 #include "ARC/Renderer/Layer.h"
-#include "ARC/Objects/OrthographicCameraController.h"
+#include "ARC/Renderer/OrthographicCameraController.h"
 #include "ARC/Objects/Primitive2D.h"
 #include "ARC/Renderer/Color.h"
 
