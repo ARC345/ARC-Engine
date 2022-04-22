@@ -36,7 +36,6 @@ namespace ARC
 			value_type* end() { return (value_type*)(this + N); }
 			const value_type* begin() const { return (value_type*)this; }
 			const value_type* end() const { return (value_type*)(this + N); }
-
 			TString ToString() {
 				TString x = fmt::format("{}", *begin()) ;
 				for (size_t i = 1; i < N; i++)
@@ -53,20 +52,6 @@ namespace ARC
 		};
 	}
 
-	template <size_t N, typename T>
-	class ARC_API TVecX : public Base::TVec_Base<T, N>
-	{
-	public:
-		using value_type = T;
-		using Super = Base::TVec_Base<value_type, N>;
-		using type = TVecX<N, value_type>;
-		using size_type = size_t;
-
-		type() : m_Data() {};
-		type(const value_type* x) : m_Data(x)
-		{
-		};
-		type(const value_type x)
 		{
 			for (size_type a=0;a<=N;a++ )
 			{
@@ -405,7 +390,6 @@ namespace ARC
 		constexpr type operator/(const value_type _) const { return { x / _, y / _, z / _, w / _ }; }
 		constexpr type operator*(const value_type _) const { return { x * _, y * _, z * _, w * _ }; }
 
-		constexpr void operator+=(const type& _) { x += _.x; y += _.y; z += _.z; w += _.w; }
 		constexpr void operator-=(const type& _) { x -= _.x; y -= _.y; z -= _.z; w -= _.w; }
 		constexpr void operator/=(const type& _) { x /= _.x; y /= _.y; z /= _.z; w /= _.w; }
 		constexpr void operator*=(const type& _) { x *= _.x; y *= _.y; z *= _.z; w *= _.w; }
@@ -414,16 +398,6 @@ namespace ARC
 		constexpr void operator/=(const value_type _) {  x /= _; y /= _; z /= _; w /= _; }
 		constexpr void operator*=(const value_type _) {  x *= _; y *= _; z *= _; w *= _; }
 
-		inline value_type* Data() { return &x; }
-		inline const value_type* Data() const { return &x; }
-
-		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
-			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z) + Math::Sqr(_1.w - _2.w);
-		}
-		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
-			return Math::Sqrt(DistSqr(_1, _2));
-		}
-		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, type_float _Tollerance) {
 			return
 				Math::Abs(_1.x - _2.x) <= _Tollerance &&
 				Math::Abs(_1.y - _2.y) <= _Tollerance &&
