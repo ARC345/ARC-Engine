@@ -90,8 +90,6 @@ void CSandbox2D::OnAttach()
 	y.Bind<&CSandbox2D::___Print___>(this);
 	y("Hi");
 
-	ARC::ECS::tests::runtimeTests();
-	
 	ARC::FVec3 abxd;
 	ARC_TRACE("{}", abxd.ToString());
 
@@ -125,6 +123,7 @@ void CSandbox2D::OnDetach()
 void CSandbox2D::OnUpdate(float _DeltaTime)
 {
 	ARC_PROFILE_FUNCTION();
+		
 	{
 		ARC_PROFILE_SCOPE("Stuff");
 		m_CameraController.OnUpdate(_DeltaTime);
@@ -146,7 +145,6 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 		Smoke->Emit();
 		Smoke->OnUpdate(_DeltaTime);
 		Smoke->OnRender();
-
 		
 		for (size_t x = 0; x < s_MapWidth; x++)
 		{

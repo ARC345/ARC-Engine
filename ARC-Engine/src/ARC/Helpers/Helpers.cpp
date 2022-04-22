@@ -9,7 +9,7 @@ namespace ARC {
 	static std::unordered_map<std::string, std::shared_ptr<ini::IniFile>> IniFiles;
 
 	namespace HPR {
-		std::mt19937 Random::s_RandomEngine;
+		std::mt19937 Random::s_RandomEngine32;
 		std::uniform_int_distribution<std::mt19937::result_type> Random::s_Distribution;
 	}
 

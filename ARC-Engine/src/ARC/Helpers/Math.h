@@ -80,6 +80,10 @@ namespace ARC {
 			static_assert(std::is_arithmetic<T>::value);
 			return std::cos(_1);
 		}
+		template<typename T> SM_MATH_FUNC T Atan2(T _1, T _2) {
+			static_assert(std::is_arithmetic<T>::value);
+			return std::atan2(_1, _2);
+		}
 		template<typename T>
 		T Min(T&& t)
 		{
@@ -131,13 +135,13 @@ namespace ARC {
 			return (_Low <= _1 && _1 <= _High);
 		}
 		template<ERotType From, ERotType To> SM_MATH_FUNC float Conv(float _1) {
-			if (From == ERotType::Degree && To == ERotType::Radians) return float(_1 * PI / 180.f);
-			if (From == ERotType::Radians && To == ERotType::Degree) return float(_1 / (PI / 180.f));
+			if constexpr (From == ERotType::Degree && To == ERotType::Radians) return float(_1 * PI / 180.f);
+			if constexpr (From == ERotType::Radians && To == ERotType::Degree) return float(_1 / (PI / 180.f));
 		}
 		template<typename T, ETimeType From, ETimeType To> SM_MATH_FUNC T Conv(T _Time) {
-			if (From == To) return _Time;
-			if (To == ETimeType::Day)	return Conv<T, From, Hour>(_Time) / 24.f;
-			if (From == ETimeType::Day)	return Conv<T, Hour, To>(_Time * 24.f);
+			if constexpr (From == To) return _Time;
+			if constexpr (To == ETimeType::Day)	return Conv<T, From, Hour>(_Time) / 24.f;
+			if constexpr (From == ETimeType::Day)	return Conv<T, Hour, To>(_Time * 24.f);
 
 			int8_t FromI = int8_t(From);
 			int8_t ToI = int8_t(To);

@@ -17,9 +17,11 @@
 #include "glm\glm\gtc\type_ptr.inl"
 #include "ARC\Renderer\Texture.h"
 
-//#define SpaceWar
+#define Ecs
 #ifdef SpaceWar
 	#include "SpaceWar\SpaceWar.h"
+#elif defined Ecs
+	#include "ECSExample.h"
 #else
 	#include "Sandbox2D.h"
 #endif
@@ -204,6 +206,8 @@ CSandbox::CSandbox()
 {
 	#ifdef SpaceWar
 		PushLayer(new CSpaceWar());
+	#elif defined Ecs
+		PushLayer(new ARC::CECSExample());
 	#else
 		PushLayer(new CSandbox2D());
 	#endif

@@ -405,14 +405,14 @@ namespace ARC
 		constexpr type operator/(const value_type _) const { return { x / _, y / _, z / _, w / _ }; }
 		constexpr type operator*(const value_type _) const { return { x * _, y * _, z * _, w * _ }; }
 
-		constexpr void operator+=(const type& _) const { x += _.x; y += _.y; z += _.z; w += _.w; }
-		constexpr void operator-=(const type& _) const { x -= _.x; y -= _.y; z -= _.z; w -= _.w; }
-		constexpr void operator/=(const type& _) const { x /= _.x; y /= _.y; z /= _.z; w /= _.w; }
-		constexpr void operator*=(const type& _) const { x *= _.x; y *= _.y; z *= _.z; w *= _.w; }
-		constexpr void operator+=(const value_type _) const {  x += _; y += _; z += _; w += _; }
-		constexpr void operator-=(const value_type _) const {  x -= _; y -= _; z -= _; w -= _; }
-		constexpr void operator/=(const value_type _) const {  x /= _; y /= _; z /= _; w /= _; }
-		constexpr void operator*=(const value_type _) const {  x *= _; y *= _; z *= _; w *= _; }
+		constexpr void operator+=(const type& _) { x += _.x; y += _.y; z += _.z; w += _.w; }
+		constexpr void operator-=(const type& _) { x -= _.x; y -= _.y; z -= _.z; w -= _.w; }
+		constexpr void operator/=(const type& _) { x /= _.x; y /= _.y; z /= _.z; w /= _.w; }
+		constexpr void operator*=(const type& _) { x *= _.x; y *= _.y; z *= _.z; w *= _.w; }
+		constexpr void operator+=(const value_type _) {  x += _; y += _; z += _; w += _; }
+		constexpr void operator-=(const value_type _) {  x -= _; y -= _; z -= _; w -= _; }
+		constexpr void operator/=(const value_type _) {  x /= _; y /= _; z /= _; w /= _; }
+		constexpr void operator*=(const value_type _) {  x *= _; y *= _; z *= _; w *= _; }
 
 		inline value_type* Data() { return &x; }
 		inline const value_type* Data() const { return &x; }

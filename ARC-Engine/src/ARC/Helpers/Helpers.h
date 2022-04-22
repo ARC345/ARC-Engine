@@ -17,11 +17,18 @@ using uint = unsigned int;
 using uchar = unsigned char;
 using ulong = unsigned long;
 
+struct CounterId {};
+
 enum EQuadCorner {
 	TopLeft,
 	TopRight,
 	BottomLeft,
 	BottomRight
+};
+
+enum class ERandom {
+	Normal,
+	None
 };
 
 namespace ARC {
@@ -38,7 +45,7 @@ namespace ARC {
 		}
 
 		namespace QUAD {
-			template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& Trans) { 
+			template<EQuadCorner T1> FVec2 GetCorner(const FTransform2D& Trans) { 
 				using namespace Math;
 
 				switch (T1)
@@ -59,46 +66,85 @@ namespace ARC {
 					return { 0, 0 };
 				}
 			}
+			
 		}
-
-		class Family {
-			static std::size_t Identifier() noexcept {
-				static std::size_t value = 0;
-				return value++;
-			}
-
-		public:
-			template<typename>
-			static std::size_t Type() noexcept {
-				static const std::size_t value = Identifier();
-				return value;
-			}
-		};
 
 		class Random
 		{
 		public:
+			using randclass = std::mt19937;
+
 			static void Init()
 			{
-				s_RandomEngine.seed(std::random_device()());
+				s_RandomEngine32.seed(std::random_device()());
+			}
+			template<typename T>
+			static void Init(const T* _Seed)
+			{
+				if constexpr(_Seed == nullptr)
+					Init();
+				else
+					s_RandomEngine32.seed(*_Seed);
 			}
 
-
-			static float Float()
-			{
-				return (float)s_Distribution(s_RandomEngine) / (float)0xFFFFFFFF;
+			template<typename T>
+			static T Get() {
+				return (T)s_Distribution(s_RandomEngine32);
+			}
+			template<ERandom T>
+			static auto Get() {
+				if constexpr (T == ERandom::Normal) {
+					return (float)s_Distribution(s_RandomEngine32) / (float)randclass::max();
+				}
+				else 
+					return uint32_t(10);
 			}
 			
-			static float Float(float _Min, float _Max)
-			{
-				return _Min+((float)s_Distribution(s_RandomEngine) / (float)(0xFFFFFFFF/(_Max-_Min)));
+			template<typename T>
+			static T Get(T _Min, T _Max) {
+				return _Min + ((T)s_Distribution(s_RandomEngine32) / ((T)randclass::max() / (_Max - _Min)));
 			}
+			
+			static inline float Normal() { return Random::Get<ERandom::Normal>(); }
+
+			static inline float Float() { return Random::Get<float>(); }
+			static inline float Float(float _Min, float _Max) { return Random::Get(_Min, _Max); }
+
+			static inline int Int() { return Random::Get<int>(); }
+			static inline int Int(int _Min, int _Max) { return Random::Get(_Min, _Max); }
 			
 		private:
-			static std::mt19937 s_RandomEngine;
+			static std::mt19937 s_RandomEngine32;
 			static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
 		};
 
+		template<typename T>
+		class CustomCounter
+		{
+			template<int N>
+			struct Flag { friend constexpr int setFlag(Flag<N>); };
+
+			template<int N>
+			struct Writer
+			{
+				friend constexpr int setFlag(Flag<N>) { return 0; }
+			};
+
+			template<int N>
+			static constexpr int reader(float, Flag<N>) { return N; }
+
+			template<int N, int = setFlag(Flag<N>{}) >
+			static constexpr int reader(int, Flag<N>, int value = reader(0, Flag<N + 1>{}))
+			{
+				return value;
+			}
+
+		public:
+			template<int N = reader(0, Flag<0>{}), int = sizeof(Writer<N>) >
+			static constexpr int Next() { return N; }
+		};
+		struct CounterId_Default : CounterId {};
+		using Counter = CustomCounter<CounterId_Default>;
 	//	namespace BIT {
 	// 	template<typename T>
 	// 		inline static bool Contains(uint BitField, const T& flag) {

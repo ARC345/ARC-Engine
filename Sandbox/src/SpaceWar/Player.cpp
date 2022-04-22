@@ -1,18 +1,25 @@
 #include "PCH/arc_pch.h"
-#include "Player.h"
+
 #include "ARC/Types/Transform2D.h"
 #include "ARC/Objects/Primitive2D.h"
-#include "ARC/Events/Event.h"
-#include "ARC/Events/MouseEvent.h"
+
 #include "glm/glm/ext/matrix_transform.hpp"
 #include "glm/glm/ext/matrix_float4x4.hpp"
-#include "ARC/Core/Application.h"
-#include "ARC/Core/Window.h"
-#include "ARC/Input/KeyCodes.h"
-#include "ARC/Events/KeyEvent.h"
-#include "ARC/Input/Input.h"
 #include "glm/ext/scalar_common.hpp"
+
+#include "ARC/Core/Window.h"
+#include "ARC/Core/Application.h"
+
+#include "ARC/Input/Input.h"
+#include "ARC/Input/KeyCodes.h"
+
+#include "Player.h"
 #include "SpaceWar.h"
+
+#include "ARC/Events/Event.h"
+#include "ARC/Events/KeyEvent.h"
+#include "ARC/Events/MouseEvent.h"
+
 #include "ARC/Renderer/Texture.h"
 #include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Renderer/ParticleSystem2D.h"
@@ -46,7 +53,7 @@ namespace ARC {
 		PlayerSprite.Transform.Scale = {0.1f, 0.1f};
 		PlayerSprite.Transform.ZOrder = 0.2f;
 
-		auto TL = HPR::QUAD::GetScaledCorner<TopLeft>(PlayerSprite.GetTransform());
+		auto TL = HPR::QUAD::GetCorner<TopLeft>(PlayerSprite.GetTransform());
 		MinDist = FVec2::Dist(TL, PlayerSprite.GetLocation());
 
 		for (uint8_t x = 0; x < 32; x++)

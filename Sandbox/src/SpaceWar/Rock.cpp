@@ -38,7 +38,7 @@ namespace ARC {
 			HPR::Random::Float(0.3f, 0.7f) };
 		Velocity = _Velocity;
 
-		auto TL = HPR::QUAD::GetScaledCorner<TopLeft>(Sprite.GetTransform());
+		auto TL = HPR::QUAD::GetCorner<TopLeft>(Sprite.GetTransform());
 		MinDist = FVec2::Dist(TL, Sprite.GetLocation());
 	}
 

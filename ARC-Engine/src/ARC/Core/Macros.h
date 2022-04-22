@@ -22,6 +22,13 @@
 #define COMBINE3(a,b,c) a##b##c
 #define COMBINE2(a,b) a##b
 
+#define XCOMBINE4(a,b,c,d) COMBINE4(a,b,c,d)
+#define XCOMBINE3(a,b,c) COMBINE3(a,b,c)
+#define XCOMBINE2(a,b) COMBINE2(a,b)
+
+#define MIDDLEMAN(x, ...) x(__VA_ARGS__)
+#define NOTHING(x) x
+
 #define BIND_FN(x) std::bind(x, this, std::placeholders::_1)
 
 #define LIKELY(mCondition) __builtin_expect(!!(mCondition), 1)

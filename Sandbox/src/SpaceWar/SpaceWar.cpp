@@ -52,10 +52,10 @@ void CSpaceWar::OnDetach()
 bool CSpaceWar::DetectCollision()
 {
 	ARC_PROFILE_FUNCTION();
-	ARC::FVec2 TLPP = ARC::HPR::QUAD::GetScaledCorner<TopLeft>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 TRPP = ARC::HPR::QUAD::GetScaledCorner<TopRight>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 BLPP = ARC::HPR::QUAD::GetScaledCorner<BottomLeft>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 BRPP = ARC::HPR::QUAD::GetScaledCorner<BottomRight>(m_Player->PlayerSprite.GetTransform());
+	ARC::FVec2 TLPP = ARC::HPR::QUAD::GetCorner<TopLeft>(m_Player->PlayerSprite.GetTransform());
+	ARC::FVec2 TRPP = ARC::HPR::QUAD::GetCorner<TopRight>(m_Player->PlayerSprite.GetTransform());
+	ARC::FVec2 BLPP = ARC::HPR::QUAD::GetCorner<BottomLeft>(m_Player->PlayerSprite.GetTransform());
+	ARC::FVec2 BRPP = ARC::HPR::QUAD::GetCorner<BottomRight>(m_Player->PlayerSprite.GetTransform());
 
 	std::vector<std::shared_ptr<ARC::FVec2>> cachedLocs;
 	cachedLocs.reserve(m_Player->CollisionData.size());
@@ -74,10 +74,10 @@ bool CSpaceWar::DetectCollision()
 		auto dist2 = ARC::Math::Max(rock->MinDist, m_Player->MinDist);
 		if (dist1 < dist2)
 		{
-			ARC::FVec2 TLRP = ARC::HPR::QUAD::GetScaledCorner<TopLeft>(rock->Sprite.GetTransform());
-			ARC::FVec2 TRRP = ARC::HPR::QUAD::GetScaledCorner<TopRight>(rock->Sprite.GetTransform());
-			ARC::FVec2 BLRP = ARC::HPR::QUAD::GetScaledCorner<BottomLeft>(rock->Sprite.GetTransform());
-			ARC::FVec2 BRRP = ARC::HPR::QUAD::GetScaledCorner<BottomRight>(rock->Sprite.GetTransform());
+			ARC::FVec2 TLRP = ARC::HPR::QUAD::GetCorner<TopLeft>(rock->Sprite.GetTransform());
+			ARC::FVec2 TRRP = ARC::HPR::QUAD::GetCorner<TopRight>(rock->Sprite.GetTransform());
+			ARC::FVec2 BLRP = ARC::HPR::QUAD::GetCorner<BottomLeft>(rock->Sprite.GetTransform());
+			ARC::FVec2 BRRP = ARC::HPR::QUAD::GetCorner<BottomRight>(rock->Sprite.GetTransform());
 
 			for (auto& RockCC : ARC::CRock::SpriteCollisionData[rock->SpriteIndex])
 			{

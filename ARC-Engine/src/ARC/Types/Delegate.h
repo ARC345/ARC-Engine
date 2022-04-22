@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include "Utils\MPL\Interface.hpp"
 
 namespace ARC {
 	template<typename RET>
@@ -10,6 +11,9 @@ namespace ARC {
 	template<typename RET, typename ...PARAMS>
 	class CDelegate<RET(PARAMS...)> {
 	public:
+		using Params = MPL::TypeList<PARAMS...>;
+		using RVal = RET;
+
 		CDelegate() : fn(nullptr) {}
 
 		template<auto Candidate, typename Type>
@@ -85,6 +89,12 @@ namespace ARC {
 		
 		[[nodiscard]] inline bool IsEmpty() const { return m_InvocationList.size() < 1; }
 		[[nodiscard]] inline size_t Size() const { return m_InvocationList.size(); }
+
+		void Clear() {
+			for (auto& element : m_InvocationList)
+				delete element;
+			m_InvocationList.clear();
+		}
 
 		template<auto Candidate, typename Type>
 		void Bind(Type value_or_instance) {
