@@ -46,3 +46,4 @@ _int/
 *.exe
 *.out
 *.app
+/Sandbox/logs/*.json
