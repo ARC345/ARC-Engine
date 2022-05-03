@@ -1,6 +1,14 @@
 #pragma once
 #include "ARC/Core/Application.h"
+#include "ARC/Renderer/OrthographicCameraController.h"
+#include "ARC/Objects/Primitive2D.h"
+#include "ARC/Renderer/Color.h"
+#include "ARC/Renderer/Layer.h"
+#include <vector>
 #include "imgui/imgui.h"
+
+namespace ARC { class CMouseButtonPressedEvent; }
+namespace ARC { class CVertexArray; }
 namespace ARC { class CTexture2D; }
 namespace ARC { class CPlayer; }
 namespace ARC { class CShader; }

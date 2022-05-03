@@ -48,7 +48,7 @@ namespace ARC {
 		for (const auto& x : layout)
 		{
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, HPR::GetComponentCount(x.Type), HPR::ShaderTypeToOpenGlBaseType(x.Type), x.bNormalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)x.Offset);
+			glVertexAttribPointer(index, HPR::GetComponentCount(x.Type), HPR::ShaderTypeToOpenGlBaseType(x.Type), x.bNormalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(uint64_t)x.Offset);
 			++index;
 		}
 

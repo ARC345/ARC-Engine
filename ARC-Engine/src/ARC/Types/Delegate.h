@@ -123,7 +123,7 @@ namespace ARC {
 		[[nodiscard]] void operator()(PARAMS... args, HANDLER handler) const {
 			size_t index = 0;
 			for (auto& item : invocationList) {
-				RET value = element->operator (args);
+				RET value = element->operator (args...);
 				handler(index, &value);
 				++index;
 			} //loop

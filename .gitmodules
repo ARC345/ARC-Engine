@@ -17,3 +17,9 @@
 [submodule "ARC-Engine/src/ARC/Profiling"]
 	path = ARC-Engine/src/ARC/Profiling
 	url = https://gist.github.com/75b8b46af8c0d3e5060185b951b5e42a.git
+[submodule "ARC-Engine/out/sparse-map"]
+	path = ARC-Engine/out/sparse-map
+	url = https://github.com/Tessil/sparse-map.git
+[submodule "ARC-Engine/out/ordered-map"]
+	path = ARC-Engine/out/ordered-map
+	url = https://github.com/Tessil/ordered-map.git

@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "ARC\Renderer\Color.h"
+#include "ARC/Types/Color.h"
 #include "ARC\Types\Vector.h"
 #include "ARC\Types\Transform2D.h"
 #include "ARC\Types\Pointer.h"

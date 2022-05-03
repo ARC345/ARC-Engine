@@ -2,11 +2,18 @@
 #include "EditorLayer.h"
 #include "imgui\imgui.h"
 #include "ARC\Objects\Primitive2D.h"
-#include "ARC\Renderer\Color.h"
+#include "ARC\Types\Color.h"
 #include "ARC\Renderer\Renderer2D.h"
 #include "ARC\Renderer\RenderCommand.h"
+#include "ARC/Scene/Scene.h"
+#include "ARC\Scene\Entity.h"
+#include "ARC\Types\Glm.h"
+#include "glm\ext\matrix_clip_space.inl"
 
 namespace ARC {
+	static CEntity ESquare;
+	static CEntity ECamera;
+
 	CEditorLayer::CEditorLayer() :
 		CLayer("EditorLayer"),
 		m_CameraController(1280.f / 780.f, true)
@@ -19,7 +26,19 @@ namespace ARC {
 		frame_buffer_specs.Width = 1280;
 		frame_buffer_specs.Height = 720;
 		m_FrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
-		m_ViewportSize = { 1280.f, 720.f };
+
+		m_ActiveScene = CreateRef<CScene>();
+
+		ESquare = m_ActiveScene->CreateEntity("Square Entity");
+		ESquare.AddComponent<CSpriteRendererComponent>(CColor::Green);
+		
+		ECamera = m_ActiveScene->CreateEntity("Camera Entity");
+
+		auto& cameraComp = ECamera.AddComponent<CCameraComponent>();
+		cameraComp.bPrimary = true;
+
+		ECamera.AddComponent<CNativeScriptComponent>().BindController<CCameraController>();
+		m_SceneHierachyPanel.SetContext(m_ActiveScene);
 	}
 
 	void CEditorLayer::OnDetach()
@@ -28,31 +47,31 @@ namespace ARC {
 
 	void CEditorLayer::OnUpdate(float _DeltaTime)
 	{
-		// test
-		ARC::CRenderer2D::ResetStats();
+		if (SFrameBufferSpecifications spec = m_FrameBuffer->GetSpecifications();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // zero sized framebuffer is invalid
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		{
+			m_FrameBuffer->Resize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
+			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+			m_ActiveScene->OnViewportResize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
+		}
+
 		if (m_ViewportHovered && m_ViewportFocused)
 		{
 			m_CameraController.OnUpdate(_DeltaTime);
 		}
+		
+		CRenderer2D::ResetStats();
 
 		m_FrameBuffer->Bind();
+
 		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 		CRenderCommand::Clear();
 
-		CRenderer2D::BeginScene(m_CameraController.GetCamera());
+		m_ActiveScene->OnUpdate(_DeltaTime);
 
-		CPrimitive2D Quad2;
-		Quad2.Transform.Location = { 0.f, 0.f };
-		Quad2.Transform.Rotation = 0;
-		Quad2.Transform.Scale = { 1.f, 1.f };
-		Quad2.Transform.ZOrder = 0.2f;
-		Quad2.Color = CColor::Red;
-
-		CRenderer2D::DrawQuad(Quad2);
-
-		CRenderer2D::EndScene();
 		m_FrameBuffer->UnBind();
-		m_CameraController.GetCamera().RecalculateViewProjectionMatrix();
 	}
 
 	void CEditorLayer::OnGuiRender()
@@ -119,9 +138,12 @@ namespace ARC {
 
 				ImGui::EndMenuBar();
 			}
+
+			m_SceneHierachyPanel.OnImGuiRender();
+
 			ImGui::Begin("Settings");
 
-			auto stats = ARC::CRenderer2D::GetStats();
+			auto stats = CRenderer2D::GetStats();
 			ImGui::Text("Renderer2D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
@@ -137,13 +159,7 @@ namespace ARC {
 			m_ViewportHovered = ImGui::IsWindowHovered();
 			Core::CApplication::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-			if (m_ViewportSize != *((FVec2*)&viewportPanelSize))
-			{
-				m_FrameBuffer->Resize({(uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y});
-				m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-
-				m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
-			}
+			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 1, 0 }, ImVec2{ 0, 1 });
 			ImGui::End();

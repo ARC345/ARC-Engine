@@ -25,42 +25,69 @@ namespace ARC {
 		{
 			m_Camera.Position.x -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
 			m_Camera.Position.y -= sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
 		}
 		else if (CInput::IsKeyPressed(ARC_KEY_D))
 		{
 			m_Camera.Position.x += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
 			m_Camera.Position.y += sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
 		}
 
 		if (CInput::IsKeyPressed(ARC_KEY_W))
 		{
 			m_Camera.Position.x += -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
 			m_Camera.Position.y += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
 		}
 		else if (CInput::IsKeyPressed(ARC_KEY_S))
 		{
 			m_Camera.Position.x -= -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed  * _DeltaTime;
 			m_Camera.Position.y -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
 		}
 
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
+		{
 			m_Camera.Position.x -= m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
+		}
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_D))
+		{
 			m_Camera.Position.x += m_CamMoveSpeed * _DeltaTime;
-
+			m_bNeedsRecalculation = 1u;
+		}
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_W))
+		{
 			m_Camera.Position.y += m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
+		}
 		if (ARC::CInput::IsKeyPressed(ARC_KEY_S))
+		{
 			m_Camera.Position.y -= m_CamMoveSpeed * _DeltaTime;
+			m_bNeedsRecalculation = 1u;
+		}
 
 		if(m_bCanRotate) {
 			if (ARC::CInput::IsKeyPressed(ARC_KEY_Q))
+			{
 				m_Camera.Rotation += m_CamRotSpeed * _DeltaTime;
+				m_bNeedsRecalculation = 1u;
+			}
 			if (ARC::CInput::IsKeyPressed(ARC_KEY_E))
+			{
 				m_Camera.Rotation -= m_CamRotSpeed * _DeltaTime;
+				m_bNeedsRecalculation = 1u;
+			}
 		}
 
 		m_CamMoveSpeed = m_ZoomLevel;
+
+		if (m_bNeedsRecalculation)
+		{
+			m_Camera.RecalculateViewProjectionMatrix();
+		}
+
 	}
 
 	void COrthographicCameraController::OnEvent(CEvent& _Event)

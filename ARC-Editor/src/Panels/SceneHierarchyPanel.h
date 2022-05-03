@@ -1,10 +1,10 @@
 #pragma once
+#include "ARC\Types\Pointer.h"
+#include "ARC\Scene\Entity.h"
+
+namespace ARC { class CScene; }
 
 namespace ARC {
-	class CScene{
-		friend class CSceneHierarchyPanel;
-	};
-
 	class CSceneHierarchyPanel
 	{
 	public:
@@ -15,9 +15,12 @@ namespace ARC {
 		void OnImGuiRender();
 
 	private:
-		//void DrawEntityNode();
-
+		void DrawEntityNode(CEntity pEntity);
+		void DrawComponents(CEntity pEntity);
+		template<typename T>
+		void DrawComponent(CEntity& pEntity);
 	private:
 		TRef<CScene> m_Context;
+		CEntity m_SelectedEntity;
 	};
 }

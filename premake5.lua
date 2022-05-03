@@ -15,6 +15,8 @@ IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
 IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
 IncludeDir["glm"] = "ARC-Engine/out/glm"
+IncludeDir["sparsemap"] = "ARC-Engine/out/sparse-map/include"
+IncludeDir["orderedmap"] = "ARC-Engine/out/ordered-map/include"
 IncludeDir["meta"] = "ARC-Engine/out/meta"
 IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
 
@@ -44,6 +46,10 @@ project "ARC-Engine"
 		"%{prj.name}/out/stb_image/**.h",
 		"%{prj.name}/out/glm/glm/**.hpp",
 		"%{prj.name}/out/glm/glm/**.inl",
+		"%{prj.name}/out/sparse-map/include/tsl/**.h",
+		"%{prj.name}/out/sparse-map/include/tsl/**.h",
+		"%{prj.name}/out/ordered-map/include/tsl/**.h",
+		"%{prj.name}/out/ordered-map/include/tsl/**.h",
 		"%{prj.name}/out/meta/**.hpp"
 	}
 
@@ -56,6 +62,8 @@ project "ARC-Engine"
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.sparsemap}",
+		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
 		"%{IncludeDir.stb_image}"
 	}
@@ -115,6 +123,8 @@ project "ARC-Editor"
 		"ARC-Engine/out/spdlog/include",
 		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.sparsemap}",
+		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
 		"ARC-Engine/out"
 	}
@@ -142,6 +152,9 @@ project "ARC-Editor"
 		runtime "Release"
 		optimize "on"
 project "Sandbox"
+	location "Sandbox"
+	kind "ConsoleApp"
+	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
 
@@ -160,6 +173,8 @@ project "Sandbox"
 		"ARC-Engine/out/spdlog/include",
 		"ARC-Engine/out/inifile_cpp/include",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.sparsemap}",
+		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
 		"ARC-Engine/out"
 	}

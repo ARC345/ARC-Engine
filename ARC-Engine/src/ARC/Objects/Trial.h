@@ -49,12 +49,12 @@ struct TBullet
 struct TPlayerBullet
 {
 };
-Define_Component(CPosition);
-Define_Component(CVelocity);
-Define_Component(CAcceleration);
-Define_Component(CRender);
-Define_Component(CHealth);
-Define_Component(CLife);
-Define_Component(CHitbox);
-Define_Component(CCooldown);
+RegisterComponent(CPosition);
+RegisterComponent(CVelocity);
+RegisterComponent(CAcceleration);
+RegisterComponent(CRender);
+RegisterComponent(CHealth);
+RegisterComponent(CLife);
+RegisterComponent(CHitbox);
+RegisterComponent(CCooldown);
 }

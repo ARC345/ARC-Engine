@@ -79,7 +79,7 @@ namespace ARC {
 			Quad.Color = particle.Color;
 			Quad.Texture = particle.Texture;
 			Quad.TextureScaling = { 1.f, 1.f };
-			Quad.Transform.Rotation = Math::Conv<Degree, Radians>(particle.Rotation);
+			Quad.Transform.Rotation = Math::Conv<Degrees, Radians>(particle.Rotation);
 
 			CRenderer2D::DrawQuad(Quad);
 		}

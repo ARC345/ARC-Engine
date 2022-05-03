@@ -1,3 +1,4 @@
+#include "PCH/arc_pch.h"
 #include "Sandbox2D.h"
 #include "ARC/Renderer/Buffer.h"
 #include "ARC/Renderer/Shader.h"
@@ -19,6 +20,27 @@
 #include "ARC/Types/Delegate.h"
 #include "ARC/Objects/Ecs.h"
 
+namespace ARC { static bool bStressTest = false; }
+static const uint32_t s_MapWidth = 24;
+static uint32_t s_MapHeight = 12;
+static const char* s_MapTiles =
+"WWWWWWWWWWWWWWWWWWWWWWWW"
+"WWWWDDDDDDDDWWWWWWWWWWWW"
+"WWWDDDDDDDDDDDDDDDWWWWWW"
+"WWWDDDDDDDDDDDDDDDDDWWWW"
+"WWWDDDDDDDDDDDDDDDDDDWWW"
+"WWWWWWDDDDDDDDDDDDDDWWWW"
+"WWWWDDDDDDDDWWDDDDDDWWWW"
+"WWWDDDDDDDDWWWWDDDDDWWWW"
+"WWWWDDDDDDDDWWDDDDDDWWWW"
+"WWWWWWDDDDDDDDDWWWWWWWWW"
+"WWWWWWWWDDDDDDDWWWWWWWWW"
+"WWWWWWWWWWWWWWWWWWWWWWWW";
+
+CSandbox2D::CSandbox2D() :
+	CLayer("Sandbox2D"),
+	m_CameraController(1280.f / 780.f, true)
+{
 	ParticleSystem = ARC::CreateRef<ARC::CParticleSystem2D>();
 	ParticleSystem->Defaults.bIsActive=false;
 	ParticleSystem->Defaults.Scale = {0.4f, 0.4f};

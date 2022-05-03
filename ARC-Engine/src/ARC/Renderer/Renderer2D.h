@@ -1,10 +1,13 @@
 #pragma once
-#include "Color.h"
+#include "ARC/Types/Color.h"
+#include "ARC/Types/Transform2D.h"
+
+namespace ARC { class CCamera; }
 
 namespace ARC { class CSubTexture2D; }
 namespace ARC { class CPrimitive2D; }
 
-namespace ARC { class COrthographicCameraBase; }
+namespace ARC { class COrthographicCamera; }
 namespace ARC { class CVertexArray; }
 namespace ARC { class CTexture2D; }
 namespace ARC { class CShader; }
@@ -16,7 +19,9 @@ namespace ARC {
 			static void Init();
 			static void Shutdown();
 
-			static void BeginScene(const COrthographicCameraBase& _Camera);
+			static void BeginScene(const COrthographicCamera& _Camera);
+			static void BeginScene(const CCamera& _Camera, const FTransform2D& _Transform);
+
 			static void EndScene();
 			
 			static void Flush();

@@ -4,6 +4,9 @@
 #include "ARC/Renderer/OrthographicCameraController.h"
 #include "ARC/Renderer/ParticleSystem2D.h"
 #include "ARC/Objects/Primitive2D.h"
+#include "Panels/SceneHierarchyPanel.h"
+
+namespace ARC { class CScene; }
 
 namespace ARC {
 	class CEditorLayer : public CLayer
@@ -17,13 +20,15 @@ namespace ARC {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate(float _DeltaTime) override;
-
 	protected:
 	private:
 		uint8_t m_ViewportFocused : 1;
 		uint8_t m_ViewportHovered : 1;
 		FVec2 m_ViewportSize;
 		TRef<CFrameBuffer> m_FrameBuffer;
+		TRef<CScene> m_ActiveScene;
+		
 		COrthographicCameraController m_CameraController;
+		CSceneHierarchyPanel m_SceneHierachyPanel;
 	};
 }

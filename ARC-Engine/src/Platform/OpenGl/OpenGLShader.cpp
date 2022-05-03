@@ -4,7 +4,7 @@
 #include "glad\glad.h"
 #include "ARC\Core\Log.h"
 #include "ARC\Helpers\Helpers.h"
-#include "ARC\Renderer\Color.h"
+#include "ARC/Types/Color.h"
 
 namespace ARC {
 	std::string COpenGLShader::s_Seperator = "#type";

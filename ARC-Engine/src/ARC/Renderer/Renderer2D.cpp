@@ -5,20 +5,21 @@
 #include "RenderCommand.h"
 #include "Buffer.h"
 #include "VertexArray.h"
-#include "ARC/Renderer/CameraBase.h"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/gtx/rotate_vector.inl"
+#include "ARC/Renderer/OrthographicCamera.h"
 #include "Texture.h"
 #include "SubTexture2D.h"
 #include "ARC/Objects/Primitive2D.h"
+#include "Camera.h"
+#include "ARC/Types/Glm.h"
+#include "glm/gtx/transform.hpp"
 
 namespace ARC {
 	struct SQuadVertex
 	{
-		glm::vec3 Position;
-		glm::vec4 Color;
-		glm::vec2 TexCoord;
-		glm::vec2 TexScaling;
+		FGVec3 Position;
+		FGVec4 Color;
+		FGVec2 TexCoord;
+		FGVec2 TexScaling;
 		float TexIndex;
 	};
 
@@ -43,7 +44,7 @@ namespace ARC {
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
 
-		glm::vec4 QuadVertexPositions[4];
+		FGVec4 QuadVertexPositions[4];
 
 		CRenderer2D::SStatistics Statistics;
 
@@ -121,10 +122,21 @@ namespace ARC {
 	{
 	}
 
-	void CRenderer2D::BeginScene(const COrthographicCameraBase& _Camera)
+	void CRenderer2D::BeginScene(const COrthographicCamera& _Camera)
 	{
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<glm::mat4>("u_ViewProjection", _Camera.GetViewProjectionMatrix());
+		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", _Camera.GetViewProjectionMatrix());
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.TextureSlotIndex = 1;
+	}
+
+	void CRenderer2D::BeginScene(const CCamera& _Camera, const FTransform2D& _Transform)
+	{
+		FGMat4 Trans = _Camera.GetProjection() * glm::inverse(_Transform.To<FGMat4>());
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", Trans);
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
@@ -178,18 +190,18 @@ namespace ARC {
 			}
 		}
 
-		glm::mat4 transform =
-			 	glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x, _Position.y, _ZOrder)) *
-			 	glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
-			 	glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x, _Size.y, 1.0f));
+		FGMat4 transform =
+			 	glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _ZOrder)) *
+			 	glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
+			 	glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
 
 		for (size_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r, _Color.g, _Color.b, _Color.a);
+			s_Data.QuadVertexBufferPtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
 			s_Data.QuadVertexBufferPtr->TexCoord = CTexture2D::TexCoords[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x, _TextureScaling.y);
+			s_Data.QuadVertexBufferPtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
 			s_Data.QuadVertexBufferPtr++;
 		}
 
@@ -222,18 +234,18 @@ namespace ARC {
 			}
 		}
 
-		glm::mat4 transform =
-			glm::translate(glm::mat4(1.0f), glm::vec3(_Position.x, _Position.y, _ZOrder)) *
-			glm::rotate(glm::mat4(1.0f), _Rotation, glm::vec3(0, 0, 1)) *
-			glm::scale(glm::mat4(1.0f), glm::vec3(_Size.x, _Size.y, 1.0f));
+		FGMat4 transform =
+			glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _ZOrder)) *
+			glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
+			glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
 
 		for (size_t i = 0; i < 4; i++)
 		{
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = glm::vec4(_Color.r, _Color.g, _Color.b, _Color.a);
+			s_Data.QuadVertexBufferPtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
 			s_Data.QuadVertexBufferPtr->TexCoord = _SubTex->GetTexCoords()[i];
 			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = glm::vec2(_TextureScaling.x, _TextureScaling.y);
+			s_Data.QuadVertexBufferPtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
 			s_Data.QuadVertexBufferPtr++;
 		}
 

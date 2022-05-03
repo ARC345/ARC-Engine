@@ -22,7 +22,7 @@
 #include "ARC/Renderer/Texture.h"
 #include "ARC/Renderer/FrameBuffer.h"
 
-#include "ARC/Renderer/CameraBase.h"
+#include "ARC/Renderer/OrthographicCamera.h"
 #include "ARC/Renderer/OrthographicCameraController.h"
 
 #include "ARC/Helpers/Math.h"

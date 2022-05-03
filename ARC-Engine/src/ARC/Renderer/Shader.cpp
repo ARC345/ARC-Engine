@@ -2,10 +2,10 @@
 #include "Renderer.h"
 #include "Platform\OpenGl\OpenGLShader.h"
 #include "ARC\Core\Core.h"
-#include "Color.h"
-
-#include "glm\gtc\type_ptr.inl"
+#include "ARC/Types/Color.h"
+#include "ARC\Types\Glm.h"
 #include "glm\gtx\compatibility.hpp"
+#include "glm\gtc\type_ptr.inl"
 
 namespace ARC {
 	TRef<CShader> CShader::Create(const std::string& _Name, const std::string& _VertexSrc, const std::string& _FragmentSrc)
@@ -97,17 +97,17 @@ namespace ARC {
 		SetFloat4(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<glm::vec4>(const std::string& _Name, const glm::vec4& _Value)
+	void CShader::Set<FGVec4>(const std::string& _Name, const glm::vec4& _Value)
 	{
 		SetFloat4(_Name, glm::value_ptr(_Value));
 	}
 	template<>
-	void CShader::Set<glm::mat4>(const std::string& _Name, const glm::mat4& _Value)
+	void CShader::Set<FGMat4>(const std::string& _Name, const glm::mat4& _Value)
 	{
 		SetMat4(_Name, glm::value_ptr(_Value));
 	}
 	template<>
-	void CShader::Set<glm::mat3>(const std::string& _Name, const glm::mat3& _Value)
+	void CShader::Set<FGMat3>(const std::string& _Name, const glm::mat3& _Value)
 	{
 		SetMat3(_Name, glm::value_ptr(_Value));
 	}

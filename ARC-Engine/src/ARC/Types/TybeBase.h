@@ -2,19 +2,13 @@
 #include <string>
 #include "ARC\Core\Macros.h"
 
-#define ARC_CLASS(x)\
-		public:\
-			static inline std::string GetName() { return std::string(#x); }\
-		private:
 namespace ARC
 {
-	namespace Base
+	#define ARC_TYPE() public: template<typename __T__> __T__ To() const { return HPR::Conv<__T__>(*this); } private:
+
+	struct ARC_API TTypeBase
 	{
-		struct ARC_API TTypeBase
-		{
-		public:
-			TTypeBase() {};
-			static inline std::string GetName() { return "TTypeBase"; }
-		};
-	}
+	protected:
+		TTypeBase() {};
+	};
 }

@@ -2,26 +2,21 @@
 // License: AFL 3.0 | https://opensource.org/licenses/AFL-3.0
 // http://vittorioromeo.info | vittorio.romeo@outlook.com
 
+#pragma once
+
 #include <memory>
-#include "meta\Utils\Utils.hpp"
-#include "Utils\MPL\Interface.hpp"
+#include "ARC/Ecs/ECS_Component.h"
 #include <bitset>
-#include <vector>
-#include "meta.hpp"
+#include <map>
+#include <utility>
+#include <variant>
 
 namespace ARC::ECS {
-	ECS_STRONG_TYPEDEF(std::size_t, DataIndex_t);
-	ECS_STRONG_TYPEDEF(std::size_t, EntityIndex_t);
-
-	ECS_STRONG_TYPEDEF(std::size_t, HandleDataIndex_t);
-	ECS_STRONG_TYPEDEF(int, Counter_t);
-
 	namespace Impl
 	{
 		template <typename TSettings>
-		class CEntity
+		struct SEntity
 		{
-		public:
 			using tSettings = TSettings;
 			using tBitset = typename tSettings::tBitset;
 			DataIndex_t DataIndex;
@@ -49,30 +44,23 @@ namespace ARC::ECS {
 			using tComponentList = typename tSettings::tComponentList;
 
 			template <typename... Ts>
-			using tTupleOfVectors = std::tuple<std::vector<Ts>...>;
+			using tPools = std::tuple<SPool<Ts>...>;
 
-			MPL::Rename<tTupleOfVectors, tComponentList> m_Vectors;
+			MPL::Rename<tPools, tComponentList> m_Pools;
 		public:
-			void Grow(std::size_t _NewCapacity)
+			void Grow(std::size_t pNewCapacity)
 			{
 				Utils::forTuple(
-					[this, _NewCapacity](auto& v)
+					[this, pNewCapacity](auto& v)
 					{
-						v.resize(_NewCapacity);
+						v.Grow(pNewCapacity);
 					},
-					m_Vectors);
+					m_Pools);
 			}
 
-			template <typename T>
-			auto& GetComponent(DataIndex_t _I) noexcept
-			{
-				return std::get<std::vector<T>>(m_Vectors)[_I];
-			}
-			
-			template <typename T>
-			auto& GetAllComponents() noexcept
-			{
-				return std::get<std::vector<T>>(m_Vectors);
+			template<typename T>
+			inline SPool<T>& Get() {
+				return std::get<SPool<T>>(m_Pools);
 			}
 		};
 	}
@@ -178,13 +166,12 @@ namespace ARC::ECS {
 			{
 				auto& b(this->GetSignatureBitset<T>());
 
-				using tSignatureComponents =	typename tSignatureBitsets::template tSignatureComponents<T>;
+				using tSignatureComponents = typename tSignatureBitsets::template tSignatureComponents<T>;
 				using tSignatureTags = typename tSignatureBitsets::template tSignatureTags<T>;
 
 				MPL::forTypes<tSignatureComponents>([this, &b](auto t)
 					{
-						b[tSettings::template GetComponentBit<ECS_TYPE(t)>()] =
-							true;
+						b[tSettings::template GetComponentBit<ECS_TYPE(t)>()] = true;
 					});
 
 				MPL::forTypes<tSignatureTags>([this, &b](auto t)
@@ -212,12 +199,13 @@ namespace ARC::ECS {
 		using tSettings = TSettings;
 		using tThisType = CManager<tSettings>;
 		using tBitset = typename tSettings::tBitset;
-		using tEntity = Impl::CEntity<tSettings>;
+		using tEntity = Impl::SEntity<tSettings>;
 		using tSignatureBitsetsStorage = Impl::SSignatureBitsetsStorage<tSettings>;
 		using tComponentStorage = Impl::CComponentStorage<tSettings>;
 
 	public:
 		using Handle = Impl::SHandle;
+
 	private:
 		using HandleData = Impl::SHandleData;
 
@@ -252,12 +240,12 @@ namespace ARC::ECS {
 
 			m_Capacity = _NewCapacity;
 		}
-
 		void GrowIfNeeded()
 		{
 			if (m_Capacity > m_SizeNext) return;
 			GrowTo((m_Capacity + 10) * 2);
 		}
+
 		auto& GetEntity(EntityIndex_t _I) noexcept
 		{
 			ARC_CORE_ASSERT(m_SizeNext > _I);
@@ -271,49 +259,40 @@ namespace ARC::ECS {
 
 		auto& GetHandleData(HandleDataIndex_t _I) noexcept
 		{
-			assert(m_HandleData.size() > _I);
+			ARC_CORE_ASSERT(m_HandleData.size() > _I);
 			return m_HandleData[_I];
 		}
 		const auto& GetHandleData(HandleDataIndex_t _I) const noexcept
 		{
-			assert(m_HandleData.size() > _I);
+			ARC_CORE_ASSERT(m_HandleData.size() > _I);
 			return m_HandleData[_I];
 		}
 
-		auto& GetHandleData(EntityIndex_t _I) noexcept
+		inline auto& GetHandleData(EntityIndex_t _I) noexcept
 		{
 			return GetHandleData(GetEntity(_I).HandleDataIndex);
 		}
-		const auto& GetHandleData(EntityIndex_t _I) const noexcept
+		inline const auto& GetHandleData(EntityIndex_t _I) const noexcept
 		{
 			return GetHandleData(GetEntity(_I).HandleDataIndex);
 		}
 
-		auto& GetHandleData(const Handle& _I) noexcept
-		{
-			return GetHandleData(_I.HandleDataIndex);
-		}
-		const auto& GetHandleData(const Handle& _I) const noexcept
-		{
-			return GetHandleData(_I.HandleDataIndex);
-		}
+		auto& GetHandleData(const Handle& _I) noexcept { return GetHandleData(_I.HandleDataIndex); }
+		const auto& GetHandleData(const Handle& _I) const noexcept { return GetHandleData(_I.HandleDataIndex); }
 
 	public:
 		CManager() { GrowTo(100); }
-		auto IsHandleValid(Handle _I) const noexcept
-		{
-			return _I.Counter == GetHandleData(_I).Counter;
-		}
+		auto IsHandleValid(Handle _I) const noexcept { return _I.Counter == GetHandleData(_I).Counter; }
 		auto GetEntityIndex(const Handle& _I) const noexcept
 		{
-			assert(IsHandleValid(_I));
+			ARC_CORE_ASSERT(IsHandleValid(_I));
 			return GetHandleData(_I).EntityIndex;
 		}
 		auto IsAlive(EntityIndex_t _I) const noexcept
 		{
 			return GetEntity(_I).bAlive;
 		}
-		void Kill(EntityIndex_t _I) noexcept { GetEntity(_I).bAlive = false; }
+		void Kill(EntityIndex_t _I) noexcept { GetEntity(_I).bAlive = true; }
 		void Kill(const Handle& _I) noexcept { Kill(GetEntityIndex(_I)); }
 		
 		template <typename T>
@@ -372,9 +351,8 @@ namespace ARC::ECS {
 			auto& e(GetEntity(_I));
 			e.Bitset[tSettings::template GetComponentBit<T>()] = true;
 
-			auto& c(m_Components.template GetComponent<T>(e.DataIndex));
-			c = T(ECS_FWD(mXs)...);
-
+			auto& c(m_Components.Get<T>().AddComponent(_I, e.DataIndex, ECS_FWD(mXs)...));
+			
 			return c;
 		}
 		template <typename T, typename... TArgs>
@@ -386,37 +364,40 @@ namespace ARC::ECS {
 		auto& GetComponent(EntityIndex_t _I) noexcept {
 			static_assert(tSettings::template IsComponent<T>());
 			ARC_CORE_ASSERT(HasComponent<T>(_I));
-			return m_Components.template GetComponent<T>(GetEntity(_I).DataIndex);
+			return m_Components.Get<T>().GetComponent(GetEntity(_I).DataIndex);
 		}
 		template <typename ... Ts>
-		auto& GetComponents(EntityIndex_t _I) noexcept {
-			static_assert(tSettings::template IsComponent<Ts>()...);
-			ARC_CORE_ASSERT(HasComponent<Ts>(_I)...);
+		auto GetComponents(EntityIndex_t _I) noexcept {
+			//static_assert(tSettings::template IsComponent<Ts>()...);
+			//ARC_CORE_ASSERT(HasComponent<Ts>(_I)...);
+			//
 
-			auto di(mMgr.GetEntity(_I).DataIndex);
+			auto di(GetEntity(_I).DataIndex);
 
-			return std::tuple<Ts...>(m_Components.template GetComponent<Ts>(di)...);
+			return std::tuple<Ts...>(m_Components.Get<Ts>().GetComponent(di)...);
 		}
+		
 		template <typename T>
 		auto& GetComponent(const Handle& _I) noexcept {
 			return GetComponent<T>(GetEntityIndex(_I));
 		}
 
 		template <typename ... Ts>
-		auto& GetComponents(const Handle& _I) noexcept {
+		auto GetComponents(const Handle& _I) noexcept {
 			return GetComponents<Ts...>(GetEntityIndex(_I));
 		}
 
 		template <typename T>
-		auto& GetAllComponents() noexcept {
-			static_assert(MPL::Contains<tSettings::ComponentList, T>::value);
-			return m_Components.template GetAllComponents<T>();
+		std::vector<T>& GetAllComponentsOfClass() noexcept {
+			static_assert(MPL::Contains<T, tSettings::tComponentList>::value);
+			//return std::vector<T>;
+			return m_Components.Get<T>().GetAllComponents();
 		}
 
 		template <typename T>
 		void RemoveComponent(EntityIndex_t _I) noexcept
 		{
-			static_assert(tSettings::template isComponent<T>(), "");
+			static_assert(tSettings::template IsComponent<T>(), "");
 			GetEntity(_I).Bitset[tSettings::template GetComponentBit<T>()] = false;
 		}
 		template <typename T>
@@ -494,25 +475,42 @@ namespace ARC::ECS {
 			return (signatureBitset & entityBitset) == signatureBitset;
 		}
 		
-		template <typename T>
-		void GetMatchingEntities(std::vector<EntityIndex_t>& pOut) noexcept
+		template <typename ... Ts>
+		std::vector<EntityIndex_t> GetMatchingEntities() noexcept
 		{
-			static_assert(tSettings::template IsSignature<T>());
-
-			UpdateEntities([&pOut](auto i)
-				{
-					if (MatchesSignature<T>(i))
-						pOut.push_back(i);
-				});
+			using InTypes = MPL::TypeList<Ts...>;
 			
-			return pOut;
+			static_assert(InTypes::size > 0, "Please pass in more than 0 types");
+			if constexpr (InTypes::size == 1)
+			{
+				return m_Components.Get<Ts...>().GetAllEntities();
+			}
+			
+			bool bFirst = true;
+			std::vector<EntityIndex_t> rval;
+			MPL::forTypes<InTypes>([&](auto t) {
+					auto& iX = m_Components.Get<ECS_TYPE(t)>().GetAllEntities();
+					if (bFirst)
+					{
+						rval = iX; 
+					}
+					else
+					{
+						rval.erase(
+							std::remove_if(rval.begin(), rval.end(), [&](size_t i) {
+								return std::binary_search(iX.begin(), iX.end(), i);
+							})
+							, rval.end());
+					}
+				});
+			return rval;
 		}
 
 
-		template <typename TF, typename ... Ts>
-		void UpdateEntities(TF&& mFunction, Ts& ... _Args)
+		template <typename TF>
+		void UpdateEntities(TF&& mFunction)
 		{
-			for (EntityIndex_t i{ 0 }; i < m_Size; ++i) mFunction(i, _Args...);
+			for (EntityIndex_t i{ 0 }; i < m_Size; ++i) mFunction(i);
 		}
 		
 		template <typename T, typename TF>
@@ -552,7 +550,7 @@ namespace ARC::ECS {
 				{
 					auto di(mMgr.GetEntity(mI).DataIndex);
 
-					mFunction(mI, mMgr.m_Components.template GetComponent<Ts>(di)...);
+					mFunction(mI, mMgr.m_Components.Get<Ts>().GetComponent(di)...);
 				}
 			};
 		//}
@@ -627,17 +625,13 @@ namespace ARC::ECS {
 	};
 
 	namespace IMPL {
-		template<size_t N>
-		struct ClassList {
-			using type = MPL::TypeList<>;
-		};
+		template<size_t N> struct ITRL_ComponentList { using type = MPL::TypeList<>; };
+		template<size_t N> struct ITRL_SignatureList { using type = MPL::TypeList<>; };
+		template<size_t N> struct ITRL_TagList { using type = MPL::TypeList<>; };
 	}
 	class ComponentCounterId : CounterId {};
 	class SignatureCounterId : CounterId {};
 	class TagCounterId : CounterId {};
-	using AllComponents = IMPL::ClassList<HPR::CustomCounter<ECS::ComponentCounterId>::Next() - 1>::type;
-	using AllSignatures = IMPL::ClassList<HPR::CustomCounter<ECS::SignatureCounterId>::Next() - 1>::type;
-	using AllTags = IMPL::ClassList<HPR::CustomCounter<ECS::TagCounterId>::Next() - 1>::type;
 }
 
 #define ITRL_ECS_Var_GetName(x, y) COMBINE4(_ARC_ECS_CLASS_LIST_COUNTER_VAR_, y, _, x)
@@ -646,21 +640,27 @@ namespace ARC::ECS {
 #define ITRL_ECS_Signature(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Signature) = HPR::CustomCounter<ECS::SignatureCounterId>::Next();
 #define ITRL_ECS_Tag(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Tag) = HPR::CustomCounter<ECS::TagCounterId>::Next();
 
-#define Define_Component(x) \
+#define RegisterComponent(x) \
 		ITRL_ECS_Component(x); \
 		template<> \
-		struct ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Component)> { \
-			using type = MPL::PushBack<ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Component)-1>::type, x>; \
+		struct ECS::IMPL::ITRL_ComponentList<ITRL_ECS_Var_GetName(x, Component)> { \
+			using type = MPL::PushBack<ECS::IMPL::ITRL_ComponentList<ITRL_ECS_Var_GetName(x, Component)-1>::type, x>; \
 		};
-#define ECS_Signature(x) \
+#define RegisterSignature(x) \
 		ITRL_ECS_Signature(x); \
 		template<> \
-		struct ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Signature)> { \
-			using type = MPL::PushBack<ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Signature)-1>::type, x>; \
+		struct ECS::IMPL::ITRL_SignatureList<ITRL_ECS_Var_GetName(x, Signature)> { \
+			using type = MPL::PushBack<ECS::IMPL::ITRL_SignatureList<ITRL_ECS_Var_GetName(x, Signature)-1>::type, x>; \
 		};
-#define ECS_Tag(x) \
+#define RegisterTag(x) \
 		ITRL_ECS_Tag(x); \
 		template<> \
-		struct ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Tag)> { \
-			using type = MPL::PushBack<ECS::IMPL::ClassList<ITRL_ECS_Var_GetName(x, Tag)-1>::type, x>; \
+		struct ECS::IMPL::ITRL_TagList<ITRL_ECS_Var_GetName(x, Tag)> { \
+			using type = MPL::PushBack<ECS::IMPL::ITRL_TagList<ITRL_ECS_Var_GetName(x, Tag)-1>::type, x>; \
 		};
+
+
+namespace ARC
+{
+	using EntityID = ECS::EntityIndex_t;
+}

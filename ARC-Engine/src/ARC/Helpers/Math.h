@@ -6,7 +6,7 @@
 #define PI 3.14159265358979323
 
 enum ERotType : uint8_t{
-	Degree,
+	Degrees,
 	Radians
 };
 enum ETimeType : int8_t{
@@ -135,8 +135,8 @@ namespace ARC {
 			return (_Low <= _1 && _1 <= _High);
 		}
 		template<ERotType From, ERotType To> SM_MATH_FUNC float Conv(float _1) {
-			if constexpr (From == ERotType::Degree && To == ERotType::Radians) return float(_1 * PI / 180.f);
-			if constexpr (From == ERotType::Radians && To == ERotType::Degree) return float(_1 / (PI / 180.f));
+			if constexpr (From == ERotType::Degrees && To == ERotType::Radians) return float(_1 * PI / 180.f);
+			if constexpr (From == ERotType::Radians && To == ERotType::Degrees) return float(_1 / (PI / 180.f));
 		}
 		template<typename T, ETimeType From, ETimeType To> SM_MATH_FUNC T Conv(T _Time) {
 			if constexpr (From == To) return _Time;

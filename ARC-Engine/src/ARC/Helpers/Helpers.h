@@ -4,8 +4,8 @@
 #include <limits>
 #include <stdint.h>
 #include <algorithm>
-#include "..\Types\vector.h"
-#include "..\Types\Transform2D.h"
+#include "ARC\Types\Vector.h"
+#include "ARC\Types\Transform2D.h"
 #include "Math.h"
 
 namespace ARC { namespace Core { class CApplication; } }
@@ -33,8 +33,10 @@ enum class ERandom {
 
 namespace ARC {
 	namespace HPR {
+		template<typename To, typename From>
+		To Conv(const From& _);
 
-		template<typename T, typename U> static constexpr size_t GetOffset(U T::* member)
+		template<typename T, typename U> static constexpr size_t GetDataMemberOffset(U T::* member)
 		{
 			return (char*)&((T*)nullptr->*member) - (char*)nullptr;
 		}
@@ -145,15 +147,5 @@ namespace ARC {
 		};
 		struct CounterId_Default : CounterId {};
 		using Counter = CustomCounter<CounterId_Default>;
-	//	namespace BIT {
-	// 	template<typename T>
-	// 		inline static bool Contains(uint BitField, const T& flag) {
-	// 			static_assert(std::is_enum(T));
-	// 			return BitField & T;
-	// 		}
- 	//	}
-		namespace INP {
-
-		}
 	}
 }

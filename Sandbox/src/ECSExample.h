@@ -11,7 +11,7 @@ namespace ARC { class CVertexArray; }
 namespace ARC { class CEvent; }
 
 namespace ARC {
-	using MyComponents = ECS::IMPL::ClassList<HPR::CustomCounter<ECS::ComponentCounterId>::Next()-1>::type;
+	using MyComponents = ECS::IMPL::ITRL_ComponentList<HPR::CustomCounter<ECS::ComponentCounterId>::Next()-1>::type;
 	//using MyComponents = ECS::ComponentList<CPosition, CVelocity, CAcceleration, CRender, CHealth, CLife, CHitbox, CCooldown>;
 	using MyTags = ECS::TagList<TPlayer, TBoss, TBullet, TPlayerBullet>;
 
