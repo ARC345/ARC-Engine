@@ -2,12 +2,16 @@
 #include "Scene.h"
 #include "ARC\Renderer\Renderer2D.h"
 #include "ARC\Objects\Primitive2D.h"
+#include "Component.h"
 
 namespace ARC {
 	CScene::CScene()
 	{
-		CEntity entity(m_Manager.CreateIndex(), this);
-		entity.AddTag<InvalidEntityTag>();
+		// entity 0 is invalid
+		CEntity entity(m_Manager.CreateEntity(), this);
+		//entity.AddTag<InvalidEntityTag>();
+
+		SetupComponents();
 	}
 
 	CScene::~CScene()
@@ -15,19 +19,30 @@ namespace ARC {
 
 	}
 
+	void CScene::SetupComponents()
+	{
+	}
+
 	CEntity CScene::CreateEntity(const TString& pName)
 	{
-		CEntity entity(m_Manager.CreateIndex(), this);
+		CEntity entity(m_Manager.CreateEntity(), this);
 		entity.AddComponent<CTransform2DComponent>();
 		entity.AddComponent<CNameComponent>(pName);
 
 		return entity;
 	}
 
+	void CScene::RemoveEntity(CEntity Entity)
+	{
+		m_Manager.Kill(Entity.GetID());
+		Entity.OnKill();
+	}
+
 	void CScene::OnUpdate(float DeltaTime)
 	{
+		//m_Manager.Refresh();
 		{
-			auto& comps = m_Manager.GetAllComponentsOfClass<CNativeScriptComponent>();
+			auto& comps = m_Manager.GetComponents<CNativeScriptComponent>();
 			for (auto& comp : comps)
 			{
 				if (!comp.Controller)
@@ -36,17 +51,16 @@ namespace ARC {
 					comp.Controller->Setup(comp.OwningEntity);
 					comp.Controller->OnCreate();
 				}
-
+			
 				comp.Controller->OnUpdate(DeltaTime);
 			}
 		}
 		CCamera* MainCam = nullptr;
 		FTransform2D* CamTransform = nullptr;
 		{
-			std::vector<EntityID> OutEntities = m_Manager.GetMatchingEntities<CTransform2DComponent, CCameraComponent>();
-			for (auto entity : OutEntities)
+			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CCameraComponent>();
+			for (auto[entity, TransformComp, CameraComp] : filter)
 			{
-				auto& [TransformComp, CameraComp] = m_Manager.GetComponents<CTransform2DComponent, CCameraComponent>(entity);
 				if (CameraComp.bPrimary)
 				{
 					MainCam = &CameraComp.Camera;
@@ -59,27 +73,32 @@ namespace ARC {
 		{
 			CRenderer2D::BeginScene(*MainCam, *CamTransform);
 
-			std::vector<EntityID> OutEntities = m_Manager.GetMatchingEntities<CTransform2DComponent, CSpriteRendererComponent>();
-
-			CPrimitive2D Quad;
-			for (auto entity : OutEntities)
+			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CSpriteRendererComponent>();
+			auto filter2 = m_Manager.GetComponents<CCameraComponent>();
+			
+			if (filter2.size()!=1)
 			{
-				auto& [TransformComp, SpriteRenderComp] = m_Manager.GetComponents<CTransform2DComponent, CSpriteRendererComponent>(entity);
-				Quad.Color = SpriteRenderComp;
+				static CPrimitive2D Quad;
+				CRenderer2D::DrawQuad(Quad);
+			}
+
+			for (auto [entity, TransformComp, SpriteRendererComp] : filter)
+			{
+				static CPrimitive2D Quad;
+				Quad.Color = SpriteRendererComp;
 				Quad.Transform = TransformComp;
 				CRenderer2D::DrawQuad(Quad);
 			}
 
 			CRenderer2D::EndScene();
 		}
-		m_Manager.Refresh();
 	}
 
 	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
 	{
 		m_ViewportSize = pNewSize;
 
-		auto& Comps = m_Manager.GetAllComponentsOfClass<CCameraComponent>();
+		auto& Comps = m_Manager.GetComponents<CCameraComponent>();
 
 		for (auto& component : Comps)
 		{

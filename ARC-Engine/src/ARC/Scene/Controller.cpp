@@ -29,6 +29,9 @@ namespace ARC
 	
 	void CCameraController::OnUpdate(float pDeltaTime)
 	{
+		return;
+		if (!GetControlledEntity()->IsValid()) return;
+			
 		auto& trans = GetControlledEntity()->GetComponent<CTransform2DComponent>().Transform;
 		float speed = 5.f;
 

@@ -3,10 +3,10 @@
 
 namespace ARC
 {
-	struct InvalidEntityTag{};
-	struct EntityTag{};
-
-	RegisterTag(InvalidEntityTag);
-	RegisterTag(EntityTag);
+	//struct InvalidEntityTag{};
+	//struct EntityTag{};
+	//
+	//RegisterTag(InvalidEntityTag);
+	//RegisterTag(EntityTag);
 	
 }

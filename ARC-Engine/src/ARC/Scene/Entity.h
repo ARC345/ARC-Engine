@@ -13,6 +13,7 @@ namespace ARC {
 		CEntity(const CEntity&) = default;
 
 		EntityID GetID() const { return m_Entity; }
+		bool IsValid() const;
 
 		template<typename T>
 		[[nodiscard]] inline bool HasComponent() const { 
@@ -32,7 +33,7 @@ namespace ARC {
 			return comp;
 		}
 		template<typename T>
-		inline void RemoveComponent() {
+		void RemoveComponent() {
 			ARC_CORE_ASSERT(m_Scene && HasComponent<T>())
 			return m_Scene->GetManager().RemoveComponent<T>(m_Entity);
 		}
@@ -52,14 +53,17 @@ namespace ARC {
 			ARC_CORE_ASSERT(m_Scene && HasTag<T>())
 			m_Scene->GetManager().RemoveTag<T>(m_Entity);
 		}
+
 		// 0th entity is invalid
 		operator bool() const { return m_Entity; }
 		bool operator == (const CEntity _) const { return m_Entity == _.m_Entity && m_Scene == _.m_Scene; }
 		bool operator != (const CEntity _) const { return !(*this == _); }
 	protected:
-
+		virtual void OnKill();
 	private:
 		EntityID m_Entity{0};
 		CScene* m_Scene = nullptr;
+
+		friend class CScene;
 	};
 }

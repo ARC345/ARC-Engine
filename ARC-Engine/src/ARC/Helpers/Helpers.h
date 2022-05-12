@@ -147,5 +147,11 @@ namespace ARC {
 		};
 		struct CounterId_Default : CounterId {};
 		using Counter = CustomCounter<CounterId_Default>;
+
+		template<typename T>
+		constexpr const T& Zero() { 
+			static T _;
+			return _;
+		};
 	}
 }

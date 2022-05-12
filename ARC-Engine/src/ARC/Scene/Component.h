@@ -10,19 +10,44 @@
 namespace ARC {
 	class CEntity;
 
+	#define ARCComponent(x) static constexpr uint32_t Flags = x;
+
+	struct CComponentHelper
+	{
+		template<typename T>
+		static constexpr const char* GetName()
+		{
+			if (T::Flags & CComponentBase::AutoName)
+			{
+				return ECS::ComponentName<T>::Get()+1;
+			}
+			else
+			{
+				return T::ComponentName;
+			}
+		}
+		template<typename T>
+		static constexpr const char* GetFlags()
+		{
+			return T::Flags;
+		}
+
+	};
+
 	struct CComponentBase
 	{
 		enum ComponentFlags : uint32_t
 		{
 			ComponentFlagsNone = 0,
 			ShowInPropertiesPanel = 1 << 0,
+			AutoName = 1 << 1,
 		};
 
 		virtual void OnConstruct(CEntity* pOwningEntity){};
 		virtual void DrawPropertiesUI(CEntity& pEntity) {};
 
-		static constexpr uint32_t Flags = 0|ShowInPropertiesPanel;
-		static constexpr const char* Name = "Unnamed Component";
+		static constexpr uint32_t Flags = 0|ShowInPropertiesPanel|AutoName;
+		static constexpr const char* ComponentName = "";
 	};
 
 	struct CTransform2DComponent : public CComponentBase
@@ -35,15 +60,13 @@ namespace ARC {
 
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
 
-		static constexpr uint32_t Flags = CComponentBase::Flags & ~ShowInPropertiesPanel;
-
 		operator auto& () { return Transform; }
 		operator const auto& () const { return Transform; }
 	};
 	
 	struct CSpriteRendererComponent : public CComponentBase
 	{
-		CColor Color;
+		CColor Color = CColor::White;
 
 		CSpriteRendererComponent() = default;
 		CSpriteRendererComponent(const CSpriteRendererComponent&) = default;
@@ -96,6 +119,8 @@ namespace ARC {
 
 		virtual void OnConstruct(CEntity* pOwningEntity);
 
+		static constexpr uint32_t Flags = 0 & ~ShowInPropertiesPanel | AutoName;
+
 		template<typename T>
 		void BindController()
 		{
@@ -104,9 +129,9 @@ namespace ARC {
 		}
 	};
 	
-	RegisterComponent(CNativeScriptComponent);
-	RegisterComponent(CTransform2DComponent);
-	RegisterComponent(CSpriteRendererComponent);
 	RegisterComponent(CNameComponent);
+	RegisterComponent(CTransform2DComponent);
+	RegisterComponent(CNativeScriptComponent);
+	RegisterComponent(CSpriteRendererComponent);
 	RegisterComponent(CCameraComponent);
 }

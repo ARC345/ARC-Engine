@@ -13,7 +13,14 @@ namespace ARC
 
 	void CTransform2DComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
-		ImGui::DragFloat3("Location", Transform.Location.begin(), 0.5f, 0, 0, "%.3f");
+		FVec3 _ = {Transform.Location.x, Transform.Location.y, Transform.ZOrder};
+		_.DrawGuiControl("Translation", 100.f, FVec3::ZeroVector);
+		Transform.Location = {_.x, _.y};
+		Transform.ZOrder = _.z;
+		FVec1 _2 = Math::Conv<Radians, Degrees>(Transform.Rotation);
+		_2.DrawGuiControl("Rotation", 100.f);
+		Transform.Rotation = Math::Conv<Degrees, Radians>(_2.x);
+		Transform.Scale.DrawGuiControl("Scale", 100.f, FVec2::OneVector);
 	}
 
 	void CCameraComponent::DrawPropertiesUI(CEntity& pEntity)

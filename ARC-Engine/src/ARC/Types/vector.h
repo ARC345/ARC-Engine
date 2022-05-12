@@ -237,6 +237,25 @@ namespace ARC
 	};
 
 	template <typename T = float>
+	class ARC_API TVec1 : public Base::TVec_Base<T, 1>
+	{
+	public:
+		using Super = Base::TVec_Base<T, 1>;
+
+		using value_type = T;
+		using type = TVec1<value_type>;
+		using type_float = typename std::common_type<value_type, float>::type;
+		using size_type = size_t;
+
+		union { value_type x, r; };
+
+		type() {}
+		type(const value_type& _x) : x(_x){}
+
+		void DrawGuiControl(const char* ID, float pColumnWidth);
+	};
+	
+	template <typename T = float>
 	class ARC_API TVec2 : public Base::TVec_Base<T, 2>
 	{
 		ARC_TYPE();
@@ -255,7 +274,7 @@ namespace ARC
 		
 		type() {}
 		type(const value_type& _x, const value_type& _y) : x(_x), y(_y) {}
-		type(const value_type _) : x(_), y(_) {}
+		type(const value_type& _) : x(_), y(_) {}
 
 		constexpr bool operator==(const type& _) const { return x == _.x && y == _.y; }
 		constexpr bool operator!=(const type& _) const { return !(*this == _); }
@@ -281,6 +300,8 @@ namespace ARC
 		inline value_type* Data() { return &x; }
 		inline const value_type* Data() const { return &x; }
 
+		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
+
 		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
 			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y);
 		}
@@ -305,6 +326,7 @@ namespace ARC
 		static type OneVector;
 	private:
 	};
+	
 	template <typename T = float>
 	class ARC_API TVec3 : public Base::TVec_Base<T, 3>
 	{
@@ -347,6 +369,9 @@ namespace ARC
 
 		inline value_type* Data() { return &x; }
 		inline const value_type* Data() const { return &x; }
+
+		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
+ 		void DrawGui(float pColumnWidth) const;
 
 		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
 			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z);
@@ -456,6 +481,7 @@ namespace ARC
 	template<typename T> TVec3<T> TVec3<T>::OneVector = TVec3<T>(1, 1, 1);
 	template<typename T> TVec4<T> TVec4<T>::OneVector = TVec4<T>(1, 1, 1, 1);
 
+	using FVec1 = TVec1<float>;
 	using FVec2 = TVec2<float>;
 	using FVec3 = TVec3<float>;
 	using FVec4 = TVec4<float>;

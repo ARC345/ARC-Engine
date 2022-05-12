@@ -33,13 +33,39 @@ namespace ARC {
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 			m_SelectedEntity = {};
 
+		// right click on a blank space
+		if (ImGui::BeginPopupContextWindow(0, 1, false))
+		{
+			if (ImGui::MenuItem("Create Empty Entity"))
+				m_Context->CreateEntity("Empty Entity");
+			ImGui::EndPopup();
+		}
+
 		ImGui::End();
 
 		ImGui::Begin("Properties");
 		
 		if(m_SelectedEntity)
+		{
 			DrawComponents(m_SelectedEntity);
-		
+
+			if (ImGui::Button("Add Component"))
+				ImGui::OpenPopup("AddComponent");
+
+			if (ImGui::BeginPopup("AddComponent"))
+			{
+				MPL::forTypes<CScene::MyComponents>([&](auto t) {
+					using tComponentType = ECS_TYPE(t);
+
+					if (ImGui::MenuItem(CComponentHelper::GetName<tComponentType>()))
+					{
+						m_SelectedEntity.AddComponent<tComponentType>();
+						ImGui::CloseCurrentPopup();
+					}
+				});
+				ImGui::EndPopup();
+			}
+		}
 		ImGui::End();
 	}
 
@@ -57,9 +83,24 @@ namespace ARC {
 			{
 				m_SelectedEntity = pEntity; 
 			}
+
+			bool bDeleteEntity = false;
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				if (ImGui::MenuItem("Delete Entity"))
+					bDeleteEntity = true;
+				ImGui::EndPopup();
+			}
+
 			if (bOpened)
 			{
 				ImGui::TreePop();
+			}
+			if (bDeleteEntity)
+			{
+				m_Context->RemoveEntity(pEntity);
+				m_SelectedEntity = {};
 			}
 		}
 	}
@@ -67,11 +108,18 @@ namespace ARC {
 	void CSceneHierarchyPanel::DrawComponents(CEntity pEntity)
 	{
 		MPL::forTypes<CScene::MyComponents>([&](auto t){
+			using tComponentType = ECS_TYPE(t);
 			if (pEntity.HasComponent<ECS_TYPE(t)>())
 			{
-				if (ECS_TYPE(t)::Flags & CComponentBase::ShowInPropertiesPanel)
+				if (tComponentType::Flags & CComponentBase::ShowInPropertiesPanel)
 				{
-					pEntity.GetComponent<ECS_TYPE(t)>().DrawPropertiesUI(pEntity);
+					std::string name = CComponentHelper::GetName<tComponentType>();
+					if(ImGui::TreeNodeEx((void*)typeid(tComponentType).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, name.c_str()))
+					{
+						pEntity.GetComponent<tComponentType>().DrawPropertiesUI(pEntity);
+
+						ImGui::TreePop();
+					}
 				}
 			}
 		});

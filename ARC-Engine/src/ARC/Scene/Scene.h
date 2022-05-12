@@ -16,8 +16,11 @@ namespace ARC {
 		CScene();
 		~CScene();
 		
+		void SetupComponents();
+
 		CEntity CreateEntity(const TString& pName = "Entity");
-		
+		void RemoveEntity(CEntity Entity);
+
 		inline size_t GetEntityCount() const { return m_Manager.GetEntityCount(); }
 
 		inline MyManager& GetManager() { return m_Manager; }
