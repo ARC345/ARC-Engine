@@ -1,14 +1,18 @@
-﻿#include "PCH\arc_pch.h"
+﻿#include "PCH/arc_pch.h"
 #include "EditorLayer.h"
-#include "imgui\imgui.h"
-#include "ARC\Objects\Primitive2D.h"
-#include "ARC\Types\Color.h"
-#include "ARC\Renderer\Renderer2D.h"
-#include "ARC\Renderer\RenderCommand.h"
+#include "imgui/imgui.h"
+#include "ARC/Objects/Primitive2D.h"
+#include "ARC/Types/Color.h"
+#include "ARC/Renderer/Renderer2D.h"
+#include "ARC/Renderer/RenderCommand.h"
 #include "ARC/Scene/Scene.h"
-#include "ARC\Scene\Entity.h"
-#include "ARC\Types\Glm.h"
-#include "glm\ext\matrix_clip_space.inl"
+#include "ARC/Scene/Entity.h"
+#include "ARC/Types/Glm.h"
+#include "glm/ext/matrix_clip_space.inl"
+#include "ARC/Core/PlatformUtils.h"
+#include "ARC/Renderer/FrameBuffer.h"
+#include "Atom/Atom.h"
+#include "ImGuizmo.h"
 
 namespace ARC {
 	static CEntity ESquare;
@@ -28,21 +32,15 @@ namespace ARC {
 		m_FrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
 
 		m_ActiveScene = CreateRef<CScene>();
-
-		ESquare = m_ActiveScene->CreateEntity("Square Entity");
-		ESquare.AddComponent<CSpriteRendererComponent>(CColor::Green);
-		
-		ECamera = m_ActiveScene->CreateEntity("Camera Entity");
-
-		auto& cameraComp = ECamera.AddComponent<CCameraComponent>();
-		cameraComp.bPrimary = true;
-
-		ECamera.AddComponent<CNativeScriptComponent>().BindController<CCameraController>();
+		m_AtomExp = CreateRef<CAtomExp>();
 		m_SceneHierachyPanel.SetContext(m_ActiveScene);
+		
+		m_AtomExp->OnAttach(m_ActiveScene);
 	}
 
 	void CEditorLayer::OnDetach()
 	{
+		m_AtomExp->OnDetach();
 	}
 
 	void CEditorLayer::OnUpdate(float _DeltaTime)
@@ -57,10 +55,7 @@ namespace ARC {
 			m_ActiveScene->OnViewportResize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
 		}
 
-		if (m_ViewportHovered && m_ViewportFocused)
-		{
-			m_CameraController.OnUpdate(_DeltaTime);
-		}
+		if (m_ViewportHovered && m_ViewportFocused)	m_CameraController.OnUpdate(_DeltaTime);
 		
 		CRenderer2D::ResetStats();
 
@@ -70,7 +65,7 @@ namespace ARC {
 		CRenderCommand::Clear();
 
 		m_ActiveScene->OnUpdate(_DeltaTime);
-
+		m_AtomExp->OnUpdate(_DeltaTime);
 		m_FrameBuffer->UnBind();
 	}
 
@@ -132,7 +127,27 @@ namespace ARC {
 					// Disabling fullscreen would allow the window to be moved to the front of other windows, 
 					// which we can't undo at the moment without finer window depth/z control.
 
-					if (ImGui::MenuItem("Exit")) Core::CApplication::Get().Shutdown();
+					if (ImGui::MenuItem("New")) {}
+					if (ImGui::MenuItem("Save")) {}
+					if (ImGui::MenuItem("Open...", "Ctrl+O"))
+					{
+						TString filepath = CFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						if (!filepath.empty())
+						{
+							m_ActiveScene = CreateRef<CScene>();
+							m_ActiveScene->DeserializeFromText(filepath);
+
+							m_ActiveScene->OnViewportResize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
+							m_SceneHierachyPanel.SetContext(m_ActiveScene);
+						}
+					}
+					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
+					{
+						auto filepath = CFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						if (!filepath.empty())
+							m_ActiveScene->SerializeToText(filepath);
+					}
+					if (ImGui::MenuItem("Exit")) CApplication::Get().Shutdown();
 					ImGui::EndMenu();
 				}
 
@@ -157,15 +172,29 @@ namespace ARC {
 			//@todo
 			m_ViewportFocused = ImGui::IsWindowFocused();
 			m_ViewportHovered = ImGui::IsWindowHovered();
-			Core::CApplication::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 1, 0 }, ImVec2{ 0, 1 });
+			
+			// Gizmos
+			const CEntity selectedEntity = m_SceneHierachyPanel.GetSelectedEntity();
+			if (selectedEntity)
+			{
+				ImGuizmo::SetOrthographic(false);
+				ImGuizmo::SetDrawlist();
+				//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
+
+
+			}
+
 			ImGui::End();
 			ImGui::PopStyleVar();
 
+			m_AtomExp->OnGuiRender();
 			ImGui::End();
+
 		}
 	}
 }

@@ -23,3 +23,9 @@
 [submodule "ARC-Engine/out/ordered-map"]
 	path = ARC-Engine/out/ordered-map
 	url = https://github.com/Tessil/ordered-map.git
+[submodule "ARC-Engine/out/yaml-cpp"]
+	path = ARC-Engine/out/yaml-cpp
+	url = https://github.com/Hellboy434/yaml-cpp
+[submodule "ARC-Engine/out/ImGuizmo"]
+	path = ARC-Engine/out/ImGuizmo
+	url = https://github.com/Hellboy434/ImGuizmo

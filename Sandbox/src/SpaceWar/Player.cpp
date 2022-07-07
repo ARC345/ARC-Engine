@@ -1,4 +1,4 @@
-#include "PCH/arc_pch.h"
+#include "arc_pch.h"
 
 #include "ARC/Types/Transform2D.h"
 #include "ARC/Objects/Primitive2D.h"
@@ -123,8 +123,8 @@ namespace ARC {
 				ParticleSystem.OnUpdate(_DeltaTime);
 			}
  			const FVec2 mouse_location = CInput::GetMouseXY();
-			auto window_height = Core::CApplication::Get().GetWindow().GetHeight();
-			auto window_width = Core::CApplication::Get().GetWindow().GetWidth();
+			auto window_height = CApplication::Get().GetWindow().GetHeight();
+			auto window_width = CApplication::Get().GetWindow().GetWidth();
 
  			const float y = -((mouse_location.y / window_height)*2-1);
  			const float x = 1.6666f *((mouse_location.x / window_width)*2-1);

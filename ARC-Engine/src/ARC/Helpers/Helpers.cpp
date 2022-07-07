@@ -18,16 +18,20 @@ namespace ARC {
 		template<typename To, typename From>
 		To Conv(const From& _)
 		{
-			static_assert(false, "Conversion not defined");
+			return (To)_;
 		}
 		template<>
 		FGMat4 Conv(const FTransform2D& _) 
 		{
-			return glm::translate(FGMat4(1.0f), FGVec3(_.Location.x, _.Location.y, _.ZOrder)) *
+			return glm::translate(FGMat4(1.0f), FGVec3(_.Location.x, _.Location.y, _.Location.z)) *
 				glm::rotate(FGMat4(1.0f), _.Rotation, FGVec3(0, 0, 1)) *
 				glm::scale(FGMat4(1.0f), FGVec3(_.Scale.x, _.Scale.y, 1.0f));
 		}
-
+		template<typename To, typename From>
+		TVec<3, To> Conv(const TVec<3, From>& _)
+		{
+			return TVec<3, To>(_[0], _[1], _[2]);
+		}
 		std::string IO::ReadFile(const std::string& _Path)
 		{
 			std::ifstream is(_Path, std::ios::in | std::ios::binary);
@@ -39,9 +43,8 @@ namespace ARC {
 
 		std::string IO::ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention /*= true*/)
 		{
-			// assets/shaders/Texture.glsl
 			auto lastSlash = _Path.find_last_of("/\\");
-			// Texture.glsl
+			
 			lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
 			if(!_bRemoveExtention) return _Path.substr(lastSlash);
 

@@ -1,5 +1,7 @@
+include "./_vendor/premake/premake_customization/solution_items.lua"
+
 workspace "ARC-Engine"
-	architecture "x64"
+	architecture "x86_64"
 	startproject "Sandbox"
 
 	configurations
@@ -8,196 +10,37 @@ workspace "ARC-Engine"
 		"Release",
 		"Dist"
 	}
+	solution_items
+	{
+		".editorconfig"
+	}
+
+	flags
+	{
+		"MultiProcessorCompile"
+	}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
-IncludeDir["GLFW"] = "ARC-Engine/out/GLFW/include"
-IncludeDir["GLAD"] = "ARC-Engine/out/GLAD/include"
-IncludeDir["ImGui"] = "ARC-Engine/out/imgui"
-IncludeDir["glm"] = "ARC-Engine/out/glm"
-IncludeDir["sparsemap"] = "ARC-Engine/out/sparse-map/include"
-IncludeDir["orderedmap"] = "ARC-Engine/out/ordered-map/include"
-IncludeDir["meta"] = "ARC-Engine/out/meta"
-IncludeDir["stb_image"] = "ARC-Engine/out/stb_image"
+IncludeDir["GLFW"] = "%{wks.location}/ARC-Engine/out/GLFW/include"
+IncludeDir["GLAD"] = "%{wks.location}/ARC-Engine/out/GLAD/include"
+IncludeDir["ImGui"] = "%{wks.location}/ARC-Engine/out/imgui"
+IncludeDir["yaml_cpp"] = "%{wks.location}/ARC-Engine/out/yaml-cpp/include"
+IncludeDir["glm"] = "%{wks.location}/ARC-Engine/out/glm"
+IncludeDir["sparsemap"] = "%{wks.location}/ARC-Engine/out/sparse-map/include"
+IncludeDir["orderedmap"] = "%{wks.location}/ARC-Engine/out/ordered-map/include"
+IncludeDir["meta"] = "%{wks.location}/ARC-Engine/out/meta"
+IncludeDir["stb_image"] = "%{wks.location}/ARC-Engine/out/stb_image"
+IncludeDir["ImGuizmo"] = "%{wks.location}/ARC-Engine/out/ImGuizmo"
 
 group "Dependencies"
+	include "_vendor/premake"
 	include "ARC-Engine/out/GLFW"
 	include "ARC-Engine/out/GLAD"
 	include "ARC-Engine/out/imgui"
+	include "ARC-Engine/out/yaml-cpp"
 group ""
 
-project "ARC-Engine"
-	location "ARC-Engine"
-	kind "StaticLib"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("_int/" .. outputdir .. "/%{prj.name}")
-	
-	pchheader "arc_pch.h"
-	pchsource "%{prj.name}/src/PCH/arc_pch.cpp"
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/out/stb_image/**.cpp",
-		"%{prj.name}/out/stb_image/**.h",
-		"%{prj.name}/out/glm/glm/**.hpp",
-		"%{prj.name}/out/glm/glm/**.inl",
-		"%{prj.name}/out/sparse-map/include/tsl/**.h",
-		"%{prj.name}/out/sparse-map/include/tsl/**.h",
-		"%{prj.name}/out/ordered-map/include/tsl/**.h",
-		"%{prj.name}/out/ordered-map/include/tsl/**.h",
-		"%{prj.name}/out/meta/**.hpp"
-	}
-
-	includedirs
-	{
-		"%{prj.name}/src",
-		"%{prj.name}/out/spdlog/include",
-		"%{prj.name}/out/inifile_cpp/include",
-		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.GLAD}",
-		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.sparsemap}",
-		"%{IncludeDir.orderedmap}",
-		"%{IncludeDir.meta}",
-		"%{IncludeDir.stb_image}"
-	}
-
-	links
-	{
-		"GLFW",
-		"GLAD",
-		"ImGui",
-		"opengl32.lib"
-	}
-
-	defines
-	{
-		"_CRT_SECURE_NO_WARNINGS",
-		"NOMINMAX",
-		"GLFW_INCLUDE_NONE"
-	}
-
-	disablewarnings { "26812" }
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ARC_DEBUG"
-		runtime "Debug"
-		symbols "on"
-	filter "configurations:Release"
-		defines "ARC_RELEASE"
-		runtime "Release"
-		optimize "on"
-	filter "configurations:Dist"
-		defines "ARC_DIST"
-		runtime "Release"
-		optimize "on"
-	
-project "ARC-Editor"
-	location "ARC-Editor"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("_int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"ARC-Engine/src",
-		"ARC-Engine/out/spdlog/include",
-		"ARC-Engine/out/inifile_cpp/include",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.sparsemap}",
-		"%{IncludeDir.orderedmap}",
-		"%{IncludeDir.meta}",
-		"ARC-Engine/out"
-	}
-
-	links
-	{
-		"ARC-Engine"
-	}
-
-	disablewarnings { "26812" }
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ARC_DEBUG"
-		runtime "Debug"
-		symbols "on"
-	filter "configurations:Release"
-		defines "ARC_RELEASE"
-		runtime "Release"
-		optimize "on"
-	filter "configurations:Dist"
-		defines "ARC_DIST"
-		runtime "Release"
-		optimize "on"
-project "Sandbox"
-	location "Sandbox"
-	kind "ConsoleApp"
-	language "C++"
-	cppdialect "C++17"
-	staticruntime "on"
-
-	targetdir ("_bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("_int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
-	}
-
-	includedirs
-	{
-		"ARC-Engine/src",
-		"ARC-Engine/out/spdlog/include",
-		"ARC-Engine/out/inifile_cpp/include",
-		"%{IncludeDir.glm}",
-		"%{IncludeDir.sparsemap}",
-		"%{IncludeDir.orderedmap}",
-		"%{IncludeDir.meta}",
-		"ARC-Engine/out"
-	}
-
-	links
-	{
-		"ARC-Engine"
-	}
-
-	disablewarnings { "26812" }
-
-	filter "system:windows"
-		systemversion "latest"
-
-	filter "configurations:Debug"
-		defines "ARC_DEBUG"
-		runtime "Debug"
-		symbols "on"
-	filter "configurations:Release"
-		defines "ARC_RELEASE"
-		runtime "Release"
-		optimize "on"
-	filter "configurations:Dist"
-		defines "ARC_DIST"
-		runtime "Release"
-		optimize "on"
+include "ARC-Engine"
+include "Sandbox"
+include "ARC-Editor"

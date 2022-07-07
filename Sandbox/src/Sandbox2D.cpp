@@ -166,7 +166,7 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 		if (ARC::bStressTest)
 		{
 			ARC::CPrimitive2D Quad;
-			Quad.Color = ARC::CColor::Red;
+			Quad.Color = ARC::FColor::Red;
 
 			ARC::CRenderer2D::DrawQuad({ 0.0f, 0.0f }, 0, { 50.0f, 50.f }, 0.f, ARC::CColor::White, m_CheckerboardTexture);
 			for (float x = -10.f; x <= 10; x += 0.5)
@@ -176,7 +176,7 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 					Quad.Transform.Location = { x, y };
 					Quad.Transform.Scale = { 0.45f, 0.45f };
 					Quad.Transform.ZOrder = 0.1f;
-					Quad.Color = ARC::CColor((x + 5) / 10, 0.4f, (y + 5) / 10, 0.69f);
+					Quad.Color = ARC::FColor((x + 5) / 10, 0.4f, (y + 5) / 10, 0.69f);
 					ARC::CRenderer2D::DrawQuad(Quad);
 				}
 			}
@@ -187,7 +187,7 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 			Quad2.Transform.Rotation = glm::radians(prev);
 			Quad2.Transform.Scale = { 10.f, 10.f };
 			Quad2.Transform.ZOrder = 0.2f;
-			Quad2.Color = ARC::CColor::Red;
+			Quad2.Color = ARC::FColor::Red;
 
 			ARC::CRenderer2D::DrawQuad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
@@ -286,7 +286,7 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 
 			Quad2.Transform.Scale = { 1.f, 1.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Red;
+			Quad2.Color = ARC::FColor::Red;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
 			ARC::CRenderer2D::DrawQuad(Quad2);

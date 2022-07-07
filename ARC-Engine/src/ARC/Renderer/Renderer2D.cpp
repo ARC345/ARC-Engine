@@ -164,7 +164,7 @@ namespace ARC {
 		CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 	}
 
-	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -192,7 +192,7 @@ namespace ARC {
 		}
 
 		FGMat4 transform =
-			 	glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _ZOrder)) *
+			 	glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _Position.z)) *
 			 	glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
 			 	glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
 
@@ -210,7 +210,7 @@ namespace ARC {
 
 		++s_Data.Statistics.QuadCount;
 	}
-	void CRenderer2D::DrawQuad(const FVec2& _Position, const float _Rotation, const FVec2& _Size, float _ZOrder, const CColor& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
 	{
 		if (s_Data.QuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset();
@@ -236,7 +236,7 @@ namespace ARC {
 		}
 
 		FGMat4 transform =
-			glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _ZOrder)) *
+			glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _Position.z)) *
 			glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
 			glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
 
@@ -260,7 +260,7 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 
-		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.GetTransform().ZOrder, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
+		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
 	}
 
 	CRenderer2D::SStatistics CRenderer2D::GetStats()

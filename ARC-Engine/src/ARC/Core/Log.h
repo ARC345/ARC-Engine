@@ -23,10 +23,10 @@ namespace ARC
 #define ARC_CORE_INFO(...)  ::ARC::CLog::GetCoreLogger()->info(__VA_ARGS__)
 #define ARC_CORE_WARN(...)  ::ARC::CLog::GetCoreLogger()->warn(__VA_ARGS__)
 #define ARC_CORE_ERROR(...) ::ARC::CLog::GetCoreLogger()->error(__VA_ARGS__)
-#define ARC_CORE_FATAL(...) ::ARC::CLog::GetCoreLogger()->critical(__VA_ARGS__)
+#define ARC_CORE_CRITICAL(...) ::ARC::CLog::GetCoreLogger()->critical(__VA_ARGS__)
 
 #define ARC_TRACE(...) ::ARC::CLog::GetClientLogger()->trace(__VA_ARGS__)
 #define ARC_INFO(...)  ::ARC::CLog::GetClientLogger()->info(__VA_ARGS__)
 #define ARC_WARN(...)  ::ARC::CLog::GetClientLogger()->warn(__VA_ARGS__)
 #define ARC_ERROR(...) ::ARC::CLog::GetClientLogger()->error(__VA_ARGS__)
-#define ARC_FATAL(...) ::ARC::CLog::GetClientLogger()->critical(__VA_ARGS__)
+#define ARC_CRITICAL(...) ::ARC::CLog::GetClientLogger()->critical(__VA_ARGS__)

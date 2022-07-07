@@ -44,7 +44,7 @@ namespace ARC
 		float m_OrthographicNear = -1.0f;
 		float m_OrthographicFar = 1.0f;
 
-		float m_PerspectiveFOV = Math::Conv<Degrees, Radians>(45.f);
+		float m_PerspectiveFOV = Math::Conv<ERotType::Degrees, ERotType::Radians>(45.f);
 		float m_PerspectiveNear = 0.01f;
 		float m_PerspectiveFar = 1.f;
 

@@ -1,3 +1,5 @@
+
+#include "PCH\arc_pch.h"
 //--------EntryPoint-----------------
 #include "ARC/Core/EntryPoint.h"
 //-----------------------------------

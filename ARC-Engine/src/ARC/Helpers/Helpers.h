@@ -4,6 +4,7 @@
 #include <limits>
 #include <stdint.h>
 #include <algorithm>
+#include <type_traits>
 #include "ARC\Types\Vector.h"
 #include "ARC\Types\Transform2D.h"
 #include "Math.h"
@@ -19,7 +20,7 @@ using ulong = unsigned long;
 
 struct CounterId {};
 
-enum EQuadCorner {
+enum class EQuadCorner {
 	TopLeft,
 	TopRight,
 	BottomLeft,
@@ -46,29 +47,29 @@ namespace ARC {
 			[[nodiscard]] std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);
 		}
 
-		namespace QUAD {
-			template<EQuadCorner T1> FVec2 GetCorner(const FTransform2D& Trans) { 
-				using namespace Math;
+		template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& pTrans) {
+			using namespace Math;
 
-				switch (T1)
-				{
-				case TopRight: return { 
-					Trans.Location.x + ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y + ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
-				case BottomLeft: return {
-					Trans.Location.x - ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y - ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
-				case TopLeft: return {
-					Trans.Location.x - ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) - ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y - ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) + ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
-				case BottomRight: return { 
-					Trans.Location.x + ((Trans.Scale.x / 2) * Cos(Trans.Rotation)) + ((Trans.Scale.y / 2) * Sin(Trans.Rotation)),
-					Trans.Location.y + ((Trans.Scale.x / 2) * Sin(Trans.Rotation)) - ((Trans.Scale.y / 2) * Cos(Trans.Rotation)) };
-				default:
-					return { 0, 0 };
-				}
+			GetScaledCorner(pTrans, Sin(pTrans.Rotation), Cos(pTrans.Rotation));
+		}
+		template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& pTrans, float pSin, float pCos) {
+			using namespace Math;
+
+			switch (T1)
+			{
+			case EQuadCorner::TopRight: return {
+				pTrans.Location.x + ((pTrans.Scale.x / 2) * pCos) - ((pTrans.Scale.y / 2) * pSin),
+				pTrans.Location.y + ((pTrans.Scale.x / 2) * pSin) + ((pTrans.Scale.y / 2) * pCos) };
+			case EQuadCorner::BottomLeft: return {										    
+				pTrans.Location.x - ((pTrans.Scale.x / 2) * pCos) + ((pTrans.Scale.y / 2) * pSin),
+				pTrans.Location.y - ((pTrans.Scale.x / 2) * pSin) - ((pTrans.Scale.y / 2) * pCos) };
+			case EQuadCorner::TopLeft: return {											    
+				pTrans.Location.x - ((pTrans.Scale.x / 2) * pCos) - ((pTrans.Scale.y / 2) * pSin),
+				pTrans.Location.y - ((pTrans.Scale.x / 2) * pSin) + ((pTrans.Scale.y / 2) * pCos) };
+			case EQuadCorner::BottomRight: return {										    
+				pTrans.Location.x + ((pTrans.Scale.x / 2) * pCos) + ((pTrans.Scale.y / 2) * pSin),
+				pTrans.Location.y + ((pTrans.Scale.x / 2) * pSin) - ((pTrans.Scale.y / 2) * pCos) };
 			}
-			
 		}
 
 		class Random

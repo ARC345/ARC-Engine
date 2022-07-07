@@ -35,9 +35,10 @@ namespace ARC
 			}
 
 			value_type* begin() { return (value_type*)this; }
-			value_type* end() { return (value_type*)(this + N); }
+			value_type* end() {	return begin() + N - 1;	}
+
 			const value_type* begin() const { return (value_type*)this; }
-			const value_type* end() const { return (value_type*)(this + N); }
+			const value_type* end() const { return begin() + N - 1; }
 			TString ToString() {
 				TString x = fmt::format("{}", *begin()) ;
 				for (size_t i = 1; i < N; i++)
@@ -46,204 +47,106 @@ namespace ARC
 				}
 				return fmt::format("[{}]", x);
 			}
-			
-			//template<typename OStream>
-			//friend OStream& operator<<(OStream& os, const TVec_Base<T, N>& c) {
-			//	return os << "[" << "]";
-			//}
 		};
 	}
 	template <size_t N, typename T>
-	class ARC_API TVecX : public Base::TVec_Base<T, N>
+	class ARC_API TVec : public Base::TVec_Base<T, N>
 	{
 	public:
 		using value_type = T;
 		using Super = Base::TVec_Base<value_type, N>;
-		using type = TVecX<N, value_type>;
+		using type = TVec<N, value_type>;
+		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
 		type() : m_Data() {};
-		type(const value_type* x) : m_Data(x)
+		type(const value_type* _) : m_Data(_)
 		{
 		};
-		type(const value_type x)
+		type(const value_type _)
 		{
-			for (size_type a=0;a<=N;a++ )
-			{
-				m_Data[a]=x;
-			};
+			for (auto& iv : *this)
+				iv=x;
 		};
 
 		type(value_type Data[N])
 			: m_Data(Data)
 		{}
 
-		value_type& operator[](size_type x)
+		value_type& operator[](size_type _)
 		{
-			return m_Data[x];
+			return m_Data[_];
 		};
-		const value_type& operator[](size_type x)const
+		const value_type& operator[](size_type _) const
 		{
-			return m_Data[x];
+			return m_Data[_];
 		};
 
 		constexpr bool operator==(const type& _)
 		{
 			for (size_type i = 0; i < N; i++)
-			{
-				if (this->Data()[i] != _.Data()[i]) return false;
-			}
+				if (Data()[i] != _.Data()[i])
+					return false;
 			return true;
 		}
-		constexpr void operator+=(const type& _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] += _.Data()[i];
-			}
-		}
-		constexpr void operator-=(const type& _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] -= _.Data()[i];
-			}
-		}
-		constexpr void operator*=(const type& _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] *= _.Data()[i];
-			}
-		}
-		constexpr void operator/=(const type& _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] /= _.Data()[i];
-			}
-		}
-		constexpr type operator+(const type& _)
+		constexpr void operator+=(const type& _) { this = *this + _; }
+		constexpr void operator-=(const type& _) { this = *this - _; }
+		constexpr void operator*=(const type& _) { this = *this * _; }
+		constexpr void operator/=(const type& _) { this = *this / _; }
+		
+		constexpr type operator+(const type& _) const
 		{
 			type rval;
 			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] + _.Data()[i];
-			}
+				rval[i] = Data()[i] + _.Data()[i];
 			return rval;
 		}
-		constexpr type operator-(const type& _)
+		constexpr type operator-(const type& _) const
 		{
 			type rval;
 			for (size_type i = 0; i < N; i++)
-			{
+				rval[i] = Data()[i] - _.Data()[i];
+			return rval;
+		}
+		constexpr type operator*(const type& _) const
+		{
+			type rval;
+			for (size_type i = 0; i < N; i++)
 				rval[i] = this->Data()[i] - _.Data()[i];
-			}
 			return rval;
 		}
-		constexpr type operator*(const type & _)
+		constexpr type operator/(const type& _) const
 		{
 			type rval;
 			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] - _.Data()[i];
-			}
-			return rval;
-		}
-		constexpr type operator/(const type& _)
-		{
-			type rval;
-			for (size_type i = 0; i < N; i++)
-			{
 				rval[i] = this->Data()[i] / _.Data()[i];
-			}
 			return rval;
 		}
-		constexpr void operator+=(const value_type _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] += _;
-			}
-		}
-		constexpr void operator-=(const value_type _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] -= _;
-			}
-		}
-		constexpr void operator*=(const value_type _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] *= _;
-			}
-		}
-		constexpr void operator/=(const value_type _)
-		{
-			for (size_type i = 0; i < N; i++)
-			{
-				this->Data()[i] /= _;
-			}
-		}
-		constexpr type operator+(const value_type x)
-		{
-			type rval;
-			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] + x;
-			}
-			return rval;
-		}
-		constexpr type operator-(const value_type _)
-		{
-			type rval;
-			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] - _;
-			}
-			return rval;
-		}
-		constexpr type operator*(const value_type _)
-		{
-			type rval;
-			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] * _;
-			}
-			return rval;
-		}
-		constexpr type operator/(const value_type i)
-		{
-			type rval;
-			for (size_type i = 0; i < N; i++)
-			{
-				rval[i] = this->Data()[i] / i;
-			}
-			return rval;
-		}
+		constexpr void operator+=(const value_type _) { iv += type(_); }
+		constexpr void operator-=(const value_type _) { iv -= type(_); }
+		constexpr void operator*=(const value_type _) { iv *= type(_); }
+		constexpr void operator/=(const value_type _) { iv /= type(_); }
+
+		constexpr type operator+(const value_type _) const { return *this+type(_); }
+		constexpr type operator-(const value_type _) const { return *this-type(_); }
+		constexpr type operator*(const value_type _) const { return *this*type(_); }
+		constexpr type operator/(const value_type _) const { return *this/type(_); }
 
 		inline value_type* Data() { return m_Data; }
 		inline const value_type* Data() const { return m_Data; }
 
-		value_type* begin() { return &m_Data[0]; }
-		value_type* end() { return &m_Data[GetSize()]; }
-
-	public:
-		
 	private:
 		value_type m_Data[N];
 	};
 
-	template <typename T = float>
-	class ARC_API TVec1 : public Base::TVec_Base<T, 1>
+	template <typename T>
+	class ARC_API TVec<1, T> : public Base::TVec_Base<T, 1>
 	{
 	public:
 		using Super = Base::TVec_Base<T, 1>;
 
 		using value_type = T;
-		using type = TVec1<value_type>;
+		using type = TVec<1, value_type>;
 		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
@@ -253,10 +156,16 @@ namespace ARC
 		type(const value_type& _x) : x(_x){}
 
 		void DrawGuiControl(const char* ID, float pColumnWidth);
+
+		VM_FUNC type_float Dist(const type& _) const { return Math::Dist(*this, _); }
+		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
+		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
+		VM_FUNC type Normalize() const { return this / Length(); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(this, _, _Tollerance); }
 	};
-	
-	template <typename T = float>
-	class ARC_API TVec2 : public Base::TVec_Base<T, 2>
+
+	template <typename T>
+	class ARC_API TVec<2, T> : public Base::TVec_Base<T, 2>
 	{
 		ARC_TYPE();
 		
@@ -265,7 +174,7 @@ namespace ARC
 		using Super = Base::TVec_Base<T, 2>;
 
 		using value_type = T;
-		using type = TVec2<value_type>;
+		using type = TVec<2, value_type>;
 		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
@@ -301,40 +210,32 @@ namespace ARC
 		inline const value_type* Data() const { return &x; }
 
 		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
+		
+		//M_FUNC static bool AreCollinear(const type& _1, const type& _2, value_type _Tollerance) { return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance; }
+		//M_FUNC static bool AreCollinitial(const type& _1, const type& _2, value_type _Tollerance) { return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance; }
+		
+		VM_FUNC value_type MinComponent() const { return Math::Min(x, y); }
+		VM_FUNC value_type MaxComponent() const { return Math::Max(x, y); }
 
-		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
-			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y);
-		}
-		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
-			return Math::Sqrt(DistSqr(_1, _2));
-		}
-		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, value_type _Tollerance) {
-			return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance;
-		}
-		VM_FUNC value_type MinComponent() {
-			return Math::Min(x, y);
-		}
-		VM_FUNC value_type MaxComponent() {
-			return Math::Max(x, y);
-		}
-		VM_FUNC type_float Length() {
-			return Dist(*this, ZeroVector);
-		}
-
+		VM_FUNC type_float Dist(const type& _) const { return Math::Dist(*this, _); }
+		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
+		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
+		VM_FUNC type Normalize() const { return this / Length(); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
 	public:
 		static type ZeroVector;
 		static type OneVector;
 	private:
 	};
 	
-	template <typename T = float>
-	class ARC_API TVec3 : public Base::TVec_Base<T, 3>
+	template <typename T>
+	class ARC_API TVec<3, T> : public Base::TVec_Base<T, 3>
 	{
 	public:
 		using Super = Base::TVec_Base<T, 3>;
 
 		using value_type = T;
-		using type = TVec3<T>;
+		using type = TVec<3, T>;
 		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
@@ -353,10 +254,10 @@ namespace ARC
 		constexpr type operator-(const type& _) const { return { x - _.x, y - _.y, z - _.z }; }
 		constexpr type operator/(const type& _) const { return { x / _.x, y / _.y, z / _.z }; }
 		constexpr type operator*(const type& _) const { return { x * _.x, y * _.y, z * _.z }; }
-		constexpr type operator+(const value_type _) const { return { x + _, y + _, y + _, z + _ }; }
-		constexpr type operator-(const value_type _) const { return { x - _, y - _, y - _, z - _ }; }
-		constexpr type operator/(const value_type _) const { return { x / _, y / _, y / _, z / _ }; }
-		constexpr type operator*(const value_type _) const { return { x * _, y * _, y * _, z * _ }; }
+		constexpr type operator+(const value_type _) const { return { x + _, y + _, z + _ }; }
+		constexpr type operator-(const value_type _) const { return { x - _, y - _, z - _ }; }
+		constexpr type operator/(const value_type _) const { return { x / _, y / _, z / _ }; }
+		constexpr type operator*(const value_type _) const { return { x * _, y * _, z * _ }; }
 
 		constexpr void operator+=(const type& _) { x += _.x; y += _.y; z += _.z; }
 		constexpr void operator-=(const type& _) { x -= _.x; y -= _.y; z -= _.z; }
@@ -373,42 +274,33 @@ namespace ARC
 		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
  		void DrawGui(float pColumnWidth) const;
 
-		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
-			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z);
-		}
-		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
-			return Math::Sqrt(DistSqr(_1, _2));
-		}
-		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, type_float _Tollerance) {
-			return
-				Math::Abs(_1.x - _2.x) <= _Tollerance &&
-				Math::Abs(_1.y - _2.y) <= _Tollerance &&
-				Math::Abs(_1.z - _2.z) <= _Tollerance;
-		}
-		VM_FUNC type_float Length() {
-			return Dist(*this, ZeroVector);
-		}
-		VM_FUNC value_type MinComponent() {
-			return Math::Min(x, y, z);
-		}
-		VM_FUNC value_type MaxComponent() {
-			return Math::Max(x, y, z);
-		}
+		VM_FUNC value_type MinComponent() const { return Math::Min(x, y, z); }
+		VM_FUNC value_type MaxComponent() const { return Math::Max(x, y, z); }
 
+		VM_FUNC type_float Dist(const type& _) const { return Math::Dist(*this, _); }
+		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
+		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
+
+		VM_FUNC type Normalize() const { return *this / Length(); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
+
+		VM_FUNC type Mask(type _) { return *this*_; }
+
+		template<typename T> T To() const { return HPR::Conv<T>(*this); }
 	public:
 		static type ZeroVector;
 		static type OneVector;
 	private:
 	};
 
-	template <typename T = float>
-	class ARC_API TVec4 : public Base::TVec_Base<T, 4>
+	template <typename T>
+	class ARC_API TVec<4, T> : public Base::TVec_Base<T, 4>
 	{
 	public:
 		using Super = Base::TVec_Base<T, 4>;
 
 		using value_type = T;
-		using type = TVec4<T>;
+		using type = TVec<4, T>;
 		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
@@ -443,35 +335,26 @@ namespace ARC
 		inline value_type* Data() { return &x; }
 		inline const value_type* Data() const { return &x; }
 
-		VM_FUNC static type_float DistSqr(const type& _1, const type& _2) {
-			return Math::Sqr(_1.x - _2.x) + Math::Sqr(_1.y - _2.y) + Math::Sqr(_1.z - _2.z) + Math::Sqr(_1.w - _2.w);
-		}
-		VM_FUNC static type_float Dist(const type& _1, const type& _2) {
-			return Math::Sqrt(DistSqr(_1, _2));
-		}
-		VM_FUNC static bool AlmostEqual(const type& _1, const type& _2, type_float _Tollerance) {
-			return
-				Math::Abs(_1.x - _2.x) <= _Tollerance &&
-				Math::Abs(_1.y - _2.y) <= _Tollerance &&
-				Math::Abs(_1.z - _2.z) <= _Tollerance &&
-				Math::Abs(_1.w - _2.w) <= _Tollerance;
-		}
-		VM_FUNC type_float Length() {
-			return Dist(*this, ZeroVector);
-		}
-		VM_FUNC value_type MinComponent() {
-			return Math::Min(x, y, z, w);
-		}
-		VM_FUNC value_type MaxComponent() {
-			return Math::Max(x, y, z, w);
-		}
+		VM_FUNC value_type MinComponent() { return Math::Min(x, y, z, w); }
+		VM_FUNC value_type MaxComponent() { return Math::Max(x, y, z, w); }
 
+		VM_FUNC type_float Dist(const type& _) const { return Math::Dist(*this, _); }
+		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
+		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
+		VM_FUNC type Normalize() const { return this / Length(); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
 	public:
 		static type ZeroVector;
 		static type OneVector;
 	private:
 	};
+
 #undef VM_FUNC
+
+	template<typename T> using TVec1 = TVec<1, T>;
+	template<typename T> using TVec2 = TVec<2, T>;
+	template<typename T> using TVec3 = TVec<3, T>;
+	template<typename T> using TVec4 = TVec<4, T>;
 
 	template<typename T> TVec2<T> TVec2<T>::ZeroVector = TVec2<T>(0, 0);
 	template<typename T> TVec3<T> TVec3<T>::ZeroVector = TVec3<T>(0, 0, 0);

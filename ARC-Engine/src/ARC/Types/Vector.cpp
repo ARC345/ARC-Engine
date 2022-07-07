@@ -5,9 +5,11 @@
 
 namespace ARC
 {
-
 	void FVec1::DrawGuiControl(const char* ID, float pColumnWidth)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		auto BoldFont = io.Fonts->Fonts[0];
+
 		ImGui::PushID(ID);
 
 		ImGui::Columns(2);
@@ -23,8 +25,11 @@ namespace ARC
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.9f, 0.2f, 0.2f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.8f, 0.1f, 0.15f, 1.0f });
 
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("X"))
 			x = 0;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##X", &x, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -37,6 +42,9 @@ namespace ARC
 
 	void FVec2::DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		auto BoldFont = io.Fonts->Fonts[0];
+
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
@@ -52,8 +60,11 @@ namespace ARC
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.9f, 0.2f, 0.2f, 1.0f });
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.8f, 0.1f, 0.15f, 1.0f });
 
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("X"))
 			x = pDefaults.x;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##X", &x, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -61,12 +72,15 @@ namespace ARC
 
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0.48f, 0.8f, 0.3f, 1.f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.65f, 0.9f, 0.45f, 1.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.48f, 0.8f, 0.3f, 1.0f });
-
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.38f, 0.65f, 0.2f, 1.f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.55f, 0.85f, 0.35f, 1.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.38f, 0.75f, 0.2f, 1.0f });
+		
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("Y"))
 			y = pDefaults.y;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##Y", &y, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -79,6 +93,9 @@ namespace ARC
 
 	void FVec3::DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults)
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		auto BoldFont = io.Fonts->Fonts[0];
+
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
@@ -95,8 +112,11 @@ namespace ARC
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0.9f, 0.2f, 0.2f, 1.0f});
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0.8f, 0.1f, 0.15f, 1.0f});
 
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("X"))
 			x = pDefaults.x;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##X", &x, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -104,12 +124,15 @@ namespace ARC
 		
 		ImGui::SameLine();
 
-		ImGui::PushStyleColor(ImGuiCol_Button, { 0.48f, 0.8f, 0.3f, 1.f});
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.65f, 0.9f, 0.45f, 1.0f});
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.48f, 0.8f, 0.3f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.38f, 0.65f, 0.2f, 1.f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.55f, 0.85f, 0.35f, 1.0f});
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.38f, 0.75f, 0.2f, 1.0f});
 
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("Y"))
 			y = pDefaults.y;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##Y", &y, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -121,8 +144,11 @@ namespace ARC
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.3f, 0.4f, 1.f, 1.0f});
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.1f, 0.2f, 1.f, 1.f });
 
+		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("Z"))
 			z = pDefaults.z;
+		ImGui::PopFont();
+		
 		ImGui::SameLine();
 		ImGui::DragFloat("##Z", &z, 0.1f);
 		ImGui::PopStyleColor(3);
@@ -138,5 +164,4 @@ namespace ARC
 	{
 
 	}
-
 }

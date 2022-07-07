@@ -1,4 +1,4 @@
-// #include "PCH/arc_pch.h"
+ #include "arc_pch.h"
 // #include "ECSExample.h"
 // #include "imgui/imgui.h"
 // #include "ARC/Renderer/Renderer2D.h"

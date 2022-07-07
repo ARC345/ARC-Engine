@@ -14,6 +14,8 @@ namespace ARC {
 		void SetContext(const TRef<CScene>& pScene);
 		void OnImGuiRender();
 
+		CEntity GetSelectedEntity() const { return m_SelectedEntity; }
+
 	private:
 		void DrawEntityNode(CEntity pEntity);
 		void DrawComponents(CEntity pEntity);

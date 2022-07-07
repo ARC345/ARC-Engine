@@ -8,7 +8,7 @@
 
 #ifdef ARC_PLATFORM_WINDOWS
 
-extern ARC::Core::CApplication* ARC::Core::CreateApplication();
+extern ARC::CApplication* ARC::CreateApplication();
 
 int main(int p_ArgA, char** p_ArgB)
 {	
@@ -28,7 +28,7 @@ int main(int p_ArgA, char** p_ArgB)
 	//--------------Create-Application--------------//
 	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::Create::Application", "logs/CSandBox2D-Create-Application.json");
 	ARC_CORE_INFO("Creating-Application");
-	ARC::Core::CApplication* App = ARC::Core::CreateApplication();
+	ARC::CApplication* App = ARC::CreateApplication();
 	ARC_CORE_INFO("Application:[{0}]-Created-Successfully", App->GetAppName());
 	ARC_PROFILE_END_SESSION();
 	//--------------Application-Created-------------//

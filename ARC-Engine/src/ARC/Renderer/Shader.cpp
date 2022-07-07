@@ -92,7 +92,7 @@ namespace ARC {
 		SetFloat2(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<CColor>(const std::string& _Name, const CColor& _Value)
+	void CShader::Set<FColor>(const std::string& _Name, const FColor& _Value)
 	{
 		SetFloat4(_Name, _Value.Data());
 	}

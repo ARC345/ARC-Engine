@@ -10,10 +10,9 @@ namespace ARC {
 	{
 		ARC_TYPE();
 	public:
-		TTransform2D() : Location(TVec2<T>::ZeroVector), ZOrder(0), Rotation(0), Scale( TVec2<T>(1, 1)) {};
+		TTransform2D() : Location(TVec3<T>::ZeroVector), Rotation(0), Scale( TVec2<T>(1, 1)) {};
 
-		TVec2<T> Location;
-		T ZOrder;
+		TVec3<T> Location;
 		T Rotation;
 		TVec2<T> Scale;
 	};

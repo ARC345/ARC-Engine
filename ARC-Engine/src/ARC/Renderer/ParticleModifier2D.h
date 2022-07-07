@@ -64,7 +64,7 @@ namespace ARC {
 	}
 
 	template<>
-	void CParticleVariationModifier2D<CColor>::ApplyModifier(CParticle2D& _Particle)
+	void CParticleVariationModifier2D<FColor>::ApplyModifier(CParticle2D& _Particle)
 	{
 		(_Particle.*MemberProperty).x += (HPR::Random::Float() - 0.5f) * Variation.x;
 		(_Particle.*MemberProperty).y += (HPR::Random::Float() - 0.5f) * Variation.y;

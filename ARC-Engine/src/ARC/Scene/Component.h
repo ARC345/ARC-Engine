@@ -1,30 +1,41 @@
 #pragma once
 
-#include "ARC\Types\Transform2D.h"
-#include "ARC/Types/Color.h"
-#include "SceneCamera.h"
+#include "ARC/Types/Transform2D.h"
 #include "ARC/Types/Delegate.h"
+#include "ARC/Types/Color.h"
+#include "ARC/Renderer/Texture.h"
+#include "ARC/Objects/Ecs.h"
+#include "SceneCamera.h"
 #include "Controller.h"
-#include "ARC\Objects\Ecs.h"
+
+namespace YAML { class Emitter; }
+namespace YAML { class Node; }
 
 namespace ARC {
 	class CEntity;
 
 	#define ARCComponent(x) static constexpr uint32_t Flags = x;
 
-	struct CComponentHelper
+	namespace ECF {
+		enum EComponentFlags : uint32_t
+		{
+			ComponentFlagsNone = 0,
+			ShowInPropertiesPanel = 1 << 0,
+			AutoName = 1 << 1,
+			ShowHeader = 1 << 2,
+			AutoAddToAll = 1 << 3,
+			Serializable = 1 << 4,
+			DefaultComponentFlags = ShowInPropertiesPanel | AutoName | ShowHeader
+		};
+	}
+
+	struct CComponentTraits
 	{
 		template<typename T>
 		static constexpr const char* GetName()
 		{
-			if (T::Flags & CComponentBase::AutoName)
-			{
-				return ECS::ComponentName<T>::Get()+1;
-			}
-			else
-			{
-				return T::ComponentName;
-			}
+			if constexpr (T::Flags & ECF::AutoName)	return ECS::ComponentName<T>::Get()+1; // +1 to remove the first char which should be C ( CComponentName -> ComponentName )
+			else return T::ComponentName;
 		}
 		template<typename T>
 		static constexpr const char* GetFlags()
@@ -36,17 +47,12 @@ namespace ARC {
 
 	struct CComponentBase
 	{
-		enum ComponentFlags : uint32_t
-		{
-			ComponentFlagsNone = 0,
-			ShowInPropertiesPanel = 1 << 0,
-			AutoName = 1 << 1,
-		};
-
 		virtual void OnConstruct(CEntity* pOwningEntity){};
 		virtual void DrawPropertiesUI(CEntity& pEntity) {};
+		virtual void Serialize(YAML::Emitter& pOut) {};
+		virtual void Deserialize(YAML::Node& pData) {};
 
-		static constexpr uint32_t Flags = 0|ShowInPropertiesPanel|AutoName;
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags;
 		static constexpr const char* ComponentName = "";
 	};
 
@@ -59,23 +65,30 @@ namespace ARC {
 		CTransform2DComponent(const FTransform2D& pTransform) : Transform(pTransform){};
 
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
 
-		operator auto& () { return Transform; }
-		operator const auto& () const { return Transform; }
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::AutoAddToAll | ECF::Serializable;
+
+		operator FTransform2D& () { return Transform; }
+		operator const FTransform2D& () const { return Transform; }
 	};
 	
 	struct CSpriteRendererComponent : public CComponentBase
 	{
-		CColor Color = CColor::White;
+		FColor Color = FColor::White;
+		TRef<CTexture2D> Texture = nullptr;
+		FVec2 TextureScaling = FVec2::OneVector;
 
 		CSpriteRendererComponent() = default;
 		CSpriteRendererComponent(const CSpriteRendererComponent&) = default;
-		CSpriteRendererComponent(const CColor& pColor) : Color(pColor){};
+		CSpriteRendererComponent(const FColor& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTexScaling) : Color(pColor), Texture(pTex), TextureScaling(pTexScaling) {};
 
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
 
-		operator auto& () { return Color; }
-		operator const auto& () const { return Color; }
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 	};
 	
 	struct CNameComponent : public CComponentBase
@@ -87,6 +100,10 @@ namespace ARC {
 		CNameComponent(const TString& pName) : Name(pName){};
 
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+
+		static constexpr uint32_t Flags = ECF::ShowInPropertiesPanel | ECF::AutoName | ECF::AutoAddToAll | ECF::Serializable;
 
 		operator auto& () { return Name; }
 		operator const auto& () const { return Name; }
@@ -104,6 +121,10 @@ namespace ARC {
 		CCameraComponent(const CCameraComponent&) = default;
 
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 
 		operator auto& () { return Camera; }
 		operator const auto& () const { return Camera; }
@@ -119,7 +140,7 @@ namespace ARC {
 
 		virtual void OnConstruct(CEntity* pOwningEntity);
 
-		static constexpr uint32_t Flags = 0 & ~ShowInPropertiesPanel | AutoName;
+		static constexpr uint32_t Flags = ECF::AutoName;
 
 		template<typename T>
 		void BindController()
@@ -128,10 +149,53 @@ namespace ARC {
 			DestroyInstancesDelegate.Bind([](CEntityController*& pInst) { delete pInst; pInst = nullptr; });
 		}
 	};
-	
+
+	//@TEMP
+	struct CNetForceComponent : public CComponentBase
+	{
+		FVec3 NetForce = FVec3::ZeroVector;
+
+		static constexpr uint32_t Flags = ECF::AutoName | ECF::AutoAddToAll;
+	};
+	struct CElectricSignComponent : public CComponentBase
+	{
+		enum EElectricSign { Negative = -1, Neutral = 0, Positive=1 };
+		int8_t Sign = 0;
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::AutoAddToAll | ECF::Serializable;
+	};
+	struct CMassComponent : public CComponentBase
+	{
+		float Mass = 1;
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+	};
+	struct CVelocityComponent : public CComponentBase
+	{
+		FVec3 Velocity = FVec3::ZeroVector;
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable | ECF::AutoAddToAll;
+	};
+
 	RegisterComponent(CNameComponent);
 	RegisterComponent(CTransform2DComponent);
 	RegisterComponent(CNativeScriptComponent);
 	RegisterComponent(CSpriteRendererComponent);
 	RegisterComponent(CCameraComponent);
+	RegisterComponent(CNetForceComponent);
+	RegisterComponent(CElectricSignComponent);
+	RegisterComponent(CMassComponent);
+	RegisterComponent(CVelocityComponent);
 }

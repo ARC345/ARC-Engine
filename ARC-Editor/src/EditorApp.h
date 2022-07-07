@@ -2,7 +2,7 @@
 #include "ARC/Core/Application.h"
 
 namespace ARC {
-	class CEditorApp : public ARC::Core::CApplication
+	class CEditorApp : public ARC::CApplication
 	{
 	public:
 		CEditorApp();

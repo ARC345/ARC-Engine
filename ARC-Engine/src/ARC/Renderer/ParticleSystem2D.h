@@ -25,13 +25,12 @@ namespace ARC {
 	class CParticle2D {
 	public:
 		CParticle2D() : bIsActive(1u) {}
-		FVec2 Location = {1.f, 1.f};
-		float ZOrder = 0.f;
+		FVec3 Location = {0.f, 0.f, 0.f};
 		float Rotation = 0.f;
 		FVec2 Scale = {1.f, 1.f};
-		CColor Color = ARC::CColor::White;
+		FColor Color = ARC::FColor::White;
 		TRef<CTexture2D> Texture = nullptr;
-		FVec2 Velocity = {0.f, 0.f};
+		FVec3 Velocity = {0.f, 0.f, 0.f};
 		float Life = 1.f;
 		uint8_t bIsActive : 1;
 		uint8_t bInitial : 1;		

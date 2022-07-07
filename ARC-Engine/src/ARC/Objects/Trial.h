@@ -17,7 +17,7 @@ struct CRender
 
 	CRender()
 	{
-		Primitive.Color = CColor::Blue;
+		Primitive.Color = FColor::Blue;
 		Primitive.Transform.Scale = FVec2{ 0.8f, 0.5f };
 	}
 };
@@ -27,7 +27,7 @@ struct CHitbox
 
 	CHitbox()
 	{
-		Primitive.Color = CColor::Red;
+		Primitive.Color = FColor::Red;
 		Primitive.Transform.Scale = FVec2{ 0.8f, 0.5f };
 	}
 };

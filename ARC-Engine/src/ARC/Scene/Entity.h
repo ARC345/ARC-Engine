@@ -54,14 +54,13 @@ namespace ARC {
 			m_Scene->GetManager().RemoveTag<T>(m_Entity);
 		}
 
-		// 0th entity is invalid
-		operator bool() const { return m_Entity; }
+		operator bool() const { return m_Entity!=ECS::InvalidEntityID; }
 		bool operator == (const CEntity _) const { return m_Entity == _.m_Entity && m_Scene == _.m_Scene; }
 		bool operator != (const CEntity _) const { return !(*this == _); }
 	protected:
 		virtual void OnKill();
 	private:
-		EntityID m_Entity{0};
+		EntityID m_Entity = (EntityID)ECS::InvalidEntityID;
 		CScene* m_Scene = nullptr;
 
 		friend class CScene;

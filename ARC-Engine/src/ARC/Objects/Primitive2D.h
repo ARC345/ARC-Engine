@@ -13,8 +13,8 @@ namespace ARC {
 		public CObject
 	{
 	public:
-		inline const FVec2& GetLocation() const { return Transform.Location; }
-		inline FVec2 GetLocation() { return Transform.Location; }
+		inline const FVec3& GetLocation() const { return Transform.Location; }
+		inline FVec3 GetLocation() { return Transform.Location; }
 
 		inline const float& GetRotation() const { return Transform.Rotation; }
 		inline float GetRotation() { return Transform.Rotation; }
@@ -27,7 +27,7 @@ namespace ARC {
 
 	public:
 		FTransform2D Transform;
-		CColor Color = CColor::White;
+		FColor Color = FColor::White;
 		TRef<CTexture2D> Texture = nullptr;
 		FVec2 TextureScaling = {1, 1};
 	};

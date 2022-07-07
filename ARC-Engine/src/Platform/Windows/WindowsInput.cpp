@@ -13,14 +13,14 @@ namespace ARC {
 
 	bool CInput::IsMouseButtonPressed(int _button)
 	{
-		auto window = static_cast<GLFWwindow*>(Core::CApplication::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, _button);
 		return state == GLFW_PRESS;
 	}
 
 	FVec2 CInput::GetMouseXY()
 	{
-		auto window = static_cast<GLFWwindow*>(Core::CApplication::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		TVec2<double> mousexy;
 		glfwGetCursorPos(window, &mousexy.x, &mousexy.y);
 		return FVec2((float)mousexy.x, (float)mousexy.y);
@@ -28,7 +28,7 @@ namespace ARC {
 
 	int CInput::GetKey(int _keycode)
 	{
-		auto window = static_cast<GLFWwindow*>(Core::CApplication::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		return glfwGetKey(window, _keycode);
 	}
 }

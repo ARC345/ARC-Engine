@@ -71,6 +71,10 @@ namespace ARC::ECS
 	template <typename... Ts> using ComponentList = MPL::TypeList<Ts...>;
 	template <typename... Ts> using TagList = MPL::TypeList<Ts...>;
 
+	template<typename ... Ts> class CBlueprint {
+		std::tuple<Ts...> Defaults;
+	};
+
 	template <typename TSettings>
 	class CManager
 	{
@@ -80,6 +84,7 @@ namespace ARC::ECS
 		using tThisType = CManager<tSettings>;
 		using tBitset = typename tSettings::tBitset;
 		using tComponentStorage = CComponentStorage<tSettings>;
+		template<typename ... Ts> using tBlueprint = CBlueprint<Ts...>;
 
 	public:
 		CManager() { Resize(10); }
@@ -89,7 +94,7 @@ namespace ARC::ECS
 		size_t GetEntityCount() const { return m_EntityCount; }
 		size_t GetEmptyCount() const { return m_Size - m_EntityCount; }
 		
-		EntityIndex_t FindFirstDead(EntityIndex_t pOffset = 0) const;
+		EntityIndex_t FindFirstDead(EntityIndex_t pOffset = EntityIndex_t(0)) const;
 		EntityIndex_t FindFirstAlive() const;
 
 		template<typename T> static constexpr bool IsComponent() { return tSettings::IsComponent<T>(); }
@@ -150,6 +155,7 @@ namespace ARC::ECS
 		template<typename T, typename ... Ts> T& AddComponent(EntityIndex_t pEnt, Ts&&... pArgs) {
 			static_assert(IsComponent<T>());
 			ARC_CORE_ASSERT(IsAlive(pEnt));
+			ARC_CORE_ASSERT(!HasComponent<T>(pEnt));
 			return m_Components.Get<T>().AddComponent(pEnt, ECS_FWD(pArgs)...);
 		}
 		template<typename T> void RemoveComponent(EntityIndex_t pEnt) {
@@ -184,13 +190,11 @@ namespace ARC::ECS
 			GrowIfNeeded();
 			
 			EntityIndex_t freeIndex;
+			m_SelectedEmpty = FindFirstDead();
 			if (m_SelectedEmpty == InvalidEntityID)
 				freeIndex = m_Size++;
 			else
-			{
 				freeIndex = m_SelectedEmpty;
-				m_SelectedEmpty = FindFirstDead(m_SelectedEmpty);
-			}
 
 			ARC_CORE_ASSERT(!IsAlive(freeIndex));
 			m_SelectedEmpty = InvalidEntityID;
@@ -227,7 +231,8 @@ namespace ARC::ECS
 	EntityIndex_t CManager<TSettings>::FindFirstDead(EntityIndex_t pOffset /*= 0*/) const
 	{
 		for (EntityIndex_t i = pOffset; i < m_Size; ++i)
-			if (Contains(i) && !IsAlive(i)) return i;
+			if (!IsAlive(i))
+				return i;
 		return (EntityIndex_t)InvalidEntityID;
 	}
 	template <typename TSettings>
@@ -243,9 +248,12 @@ namespace ARC::ECS
 		template<size_t N> struct ITRL_SignatureList { using type = MPL::TypeList<>; };
 		template<size_t N> struct ITRL_TagList { using type = MPL::TypeList<>; };
 	}
+
 	class ComponentCounterId : CounterId {};
 	class SignatureCounterId : CounterId {};
 	class TagCounterId : CounterId {};
+
+	using ComponentCounter = HPR::CustomCounter<ComponentCounterId>;
 
 	template<typename>
 	struct ComponentName {
@@ -253,12 +261,14 @@ namespace ARC::ECS
 	};
 }
 
+#define AUTO_COMPONENTS() ECS::IMPL::ITRL_ComponentList<HPR::CustomCounter<ECS::ComponentCounterId>::Next() - 1>::type
+#define AUTO_SIGNATURES() ECS::IMPL::ITRL_SignatureList<HPR::CustomCounter<ECS::SignatureCounterId>::Next() - 1>::type
+#define AUTO_TAGS() ECS::IMPL::ITRL_TagList<HPR::CustomCounter<ECS::TagCounterId>::Next() - 1>::type
+
 #define DEF_COMPONENT_NAME(X) template<> struct ECS::ComponentName<X> { static const char* Get() { return #X; } }
 #define ITRL_ECS_Var_GetName(x, y) COMBINE4(_ARC_ECS_CLASS_LIST_COUNTER_VAR_, y, _, x)
 
-#define ITRL_ECS_Component(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Component) = HPR::CustomCounter<ECS::ComponentCounterId>::Next();
-#define ITRL_ECS_Signature(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Signature) = HPR::CustomCounter<ECS::SignatureCounterId>::Next();
-#define ITRL_ECS_Tag(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Tag) = HPR::CustomCounter<ECS::TagCounterId>::Next();
+#define ITRL_ECS_Component(x) static constexpr size_t ITRL_ECS_Var_GetName(x, Component) = ECS::ComponentCounter::Next();
 
 #define RegisterComponent(x) \
 		ITRL_ECS_Component(x); \

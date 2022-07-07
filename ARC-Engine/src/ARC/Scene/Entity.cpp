@@ -13,12 +13,12 @@ namespace ARC
 
 	void CEntity::OnKill()
 	{
-		m_Entity = 0;
+		m_Entity = ECS::InvalidEntityID;
 		m_Scene = nullptr;
 	}
 
 	bool CEntity::IsValid() const
 	{
-		return m_Entity != ECS::InvalidEntityID && m_Scene != nullptr;// && !HasTag<InvalidEntityTag>();
+		return m_Entity != ECS::InvalidEntityID && m_Scene != nullptr;
 	}
 }

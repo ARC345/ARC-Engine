@@ -3,14 +3,12 @@
 #include "ARC\Renderer\Renderer2D.h"
 #include "ARC\Objects\Primitive2D.h"
 #include "Component.h"
+#include "Utils\MPL\Interface.hpp"
+#include "Utils\MetaFor.hpp"
 
 namespace ARC {
 	CScene::CScene()
 	{
-		// entity 0 is invalid
-		CEntity entity(m_Manager.CreateEntity(), this);
-		//entity.AddTag<InvalidEntityTag>();
-
 		SetupComponents();
 	}
 
@@ -26,8 +24,17 @@ namespace ARC {
 	CEntity CScene::CreateEntity(const TString& pName)
 	{
 		CEntity entity(m_Manager.CreateEntity(), this);
-		entity.AddComponent<CTransform2DComponent>();
-		entity.AddComponent<CNameComponent>(pName);
+
+		MPL::forTypes<MyComponents>([&](auto t){
+			using tCompType = ECS_TYPE(t);
+			if constexpr (tCompType::Flags & ECF::AutoAddToAll)
+			{
+				if constexpr (std::is_same_v<tCompType, CNameComponent>)
+					entity.AddComponent<CNameComponent>(pName);
+				else
+					entity.AddComponent<tCompType>();
+			}
+		});
 
 		return entity;
 	}
@@ -85,12 +92,20 @@ namespace ARC {
 			for (auto [entity, TransformComp, SpriteRendererComp] : filter)
 			{
 				static CPrimitive2D Quad;
-				Quad.Color = SpriteRendererComp;
+				Quad.Color = SpriteRendererComp.Color;
+				Quad.Texture = SpriteRendererComp.Texture;
+				Quad.TextureScaling = SpriteRendererComp.TextureScaling;
 				Quad.Transform = TransformComp;
 				CRenderer2D::DrawQuad(Quad);
 			}
 
 			CRenderer2D::EndScene();
+		}
+
+		{
+			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CVelocityComponent>();
+			for (auto [entity, ctc, cvc] : filter)
+				ctc.Transform.Location += cvc.Velocity;
 		}
 	}
 
@@ -109,4 +124,93 @@ namespace ARC {
 		}
 	}
 
+	void CScene::SerializeEntity(YAML::Emitter& pOut, CEntity pEntity)
+	{
+		pOut << YAML::BeginMap;
+		pOut << YAML::Key << "Entity" << YAML::Value << "1038845309209";
+
+		MPL::forTypes<MyComponents>([&](auto t) {
+			using tCompType = ECS_TYPE(t);
+
+				if (pEntity.HasComponent<tCompType>())
+				{
+					pOut << YAML::Key << CComponentTraits::GetName<tCompType>();
+					pOut << YAML::Value << YAML::BeginMap;
+					if constexpr (tCompType::Flags & ECF::Serializable)
+						pEntity.GetComponent<tCompType>().Serialize(pOut);
+					pOut << YAML::EndMap;
+				}
+
+			});
+
+		pOut << YAML::EndMap;
+	}
+
+	void CScene::SerializeToText(const TString& pFilepath)
+	{
+		YAML::Emitter out;
+		out << YAML::BeginMap;
+		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
+
+		m_Manager.UpdateEntities([&](auto pEid){
+			CEntity entity = { pEid, this };
+			if (!entity) return;
+
+			CScene::SerializeEntity(out, entity);			
+		});
+		out << YAML::EndSeq;
+		out << YAML::EndMap;
+
+		std::ofstream fout(pFilepath);
+		fout << out.c_str();
+	}
+
+	void CScene::SerializeToBinary(const TString& pFilepath)
+	{
+		
+	}
+
+	bool CScene::DeserializeFromText(const TString& pFilepath)
+	{
+		YAML::Node data = YAML::LoadFile(pFilepath);
+		if (!data["Scene"]) return false;
+
+		TString SceneName = data["Scene"].as<TString>();
+
+		auto entities = data["Entities"];
+		if (entities)
+		{
+			for (auto entity : entities)
+			{
+				uint64_t uuid = entity["Entity"].as<uint64_t>();
+
+				CEntity deserializedEntity = CreateEntity();
+
+				MPL::forTypes<MyComponents>([&](auto t) {
+					using tCompType = ECS_TYPE(t);
+
+					if constexpr (tCompType::Flags & ECF::Serializable) {
+						if (auto comp = entity[CComponentTraits::GetName<tCompType>()])
+						{
+							tCompType* component = nullptr;
+							if constexpr (!(tCompType::Flags & ECF::AutoAddToAll))
+								component = &deserializedEntity.AddComponent<tCompType>();
+							else
+								component = &deserializedEntity.GetComponent<tCompType>();
+							
+							component->Deserialize(comp);
+						}
+					}
+					});
+
+			}
+		}
+		return true;
+	}
+
+	bool CScene::DeserializeFromBinary(const TString& pFilepath)
+	{
+		return false;
+	}
 }

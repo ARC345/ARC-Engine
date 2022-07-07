@@ -1,11 +1,12 @@
 #pragma once
-#include "ARC/Core/Application.h"
+
 #include "ARC/Renderer/Layer.h"
 #include "ARC/Renderer/OrthographicCameraController.h"
-#include "ARC/Renderer/ParticleSystem2D.h"
-#include "ARC/Objects/Primitive2D.h"
 #include "Panels/SceneHierarchyPanel.h"
 
+namespace ARC { class CAtomExp; }
+
+namespace ARC { class CFrameBuffer; }
 namespace ARC { class CScene; }
 
 namespace ARC {
@@ -20,6 +21,7 @@ namespace ARC {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate(float _DeltaTime) override;
+
 	protected:
 	private:
 		uint8_t m_ViewportFocused : 1;
@@ -27,7 +29,8 @@ namespace ARC {
 		FVec2 m_ViewportSize;
 		TRef<CFrameBuffer> m_FrameBuffer;
 		TRef<CScene> m_ActiveScene;
-		
+		TRef<CAtomExp> m_AtomExp;
+
 		COrthographicCameraController m_CameraController;
 		CSceneHierarchyPanel m_SceneHierachyPanel;
 	};

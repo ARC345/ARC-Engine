@@ -4,9 +4,10 @@
 #include <ARC.h>
 #include "EditorApp.h"
 #include "EditorLayer.h"
+#include "Atom/Atom.h"
 
 namespace ARC {
-	Core::CApplication* Core::CreateApplication()
+	CApplication* CreateApplication()
 	{
 		return new CEditorApp();
 	}

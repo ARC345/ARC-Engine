@@ -58,8 +58,9 @@ namespace ARC {
 					i->ApplyModifier(particle);
 				}
 			}
+
+			
 			particle.Location += particle.Velocity * _DeltaTime;
-			//particle.Rotation += 10.f * _DeltaTime;
 			particle.Life -= _DeltaTime;
 		}
 	}
@@ -75,11 +76,10 @@ namespace ARC {
 			Quad.Transform.Location = particle.Location;
 			Quad.Transform.Rotation = particle.Rotation;
 			Quad.Transform.Scale = particle.Scale;
-			Quad.Transform.ZOrder = particle.ZOrder;
 			Quad.Color = particle.Color;
 			Quad.Texture = particle.Texture;
 			Quad.TextureScaling = { 1.f, 1.f };
-			Quad.Transform.Rotation = Math::Conv<Degrees, Radians>(particle.Rotation);
+			Quad.Transform.Rotation = Math::Radians(particle.Rotation);
 
 			CRenderer2D::DrawQuad(Quad);
 		}

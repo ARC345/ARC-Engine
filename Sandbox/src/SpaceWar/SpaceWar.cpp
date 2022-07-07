@@ -1,4 +1,4 @@
-﻿#include "PCH\arc_pch.h"
+﻿#include "arc_pch.h"
 #include "SpaceWar.h"
 #include "ARC\Renderer\Buffer.h"
 #include "ARC\Renderer\Shader.h"
@@ -196,8 +196,8 @@ void CSpaceWar::OnGuiRender()
 		case EGameState::MainMenu:
 		{
 			auto pos = ImGui::GetWindowPos();
-			auto width = ARC::Core::CApplication::Get().GetWindow().GetWidth();
-			auto height = ARC::Core::CApplication::Get().GetWindow().GetHeight();
+			auto width = ARC::CApplication::Get().GetWindow().GetWidth();
+			auto height = ARC::CApplication::Get().GetWindow().GetHeight();
 			pos.x += width * 0.5f - 460.0f;
 			pos.y += 50.0f;
 			if (m_Blink)
@@ -207,8 +207,8 @@ void CSpaceWar::OnGuiRender()
 		case EGameState::GameOver:
 		{
 			auto pos = ImGui::GetWindowPos();
-			auto width = ARC::Core::CApplication::Get().GetWindow().GetWidth();
-			auto height = ARC::Core::CApplication::Get().GetWindow().GetHeight();
+			auto width = ARC::CApplication::Get().GetWindow().GetWidth();
+			auto height = ARC::CApplication::Get().GetWindow().GetHeight();
 			pos.x += width * 0.5f - 460.0f;
 			pos.y += 50.0f;
 			if (m_Blink)

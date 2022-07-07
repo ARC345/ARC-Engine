@@ -1,16 +1,18 @@
 #pragma once
-#include "ARC\Objects\Ecs.h"
+#include "ARC/Objects/Ecs.h"
 #include "Entity.h"
 #include "Component.h"
 #include "Tag.h"
-#include "ARC\Types\Vector.h"
+#include "ARC/Types/Vector.h"
+#include "ARC/Types/String.h"
+#include "ARC/Core/Yaml.h"
 
 namespace ARC {
 	class CScene
 	{
-		using MyComponents = ECS::IMPL::ITRL_ComponentList<HPR::CustomCounter<ECS::ComponentCounterId>::Next() - 1>::type;
-		using MySignatures = ECS::IMPL::ITRL_SignatureList<HPR::CustomCounter<ECS::SignatureCounterId>::Next() - 1>::type;
-		using MyTags = ECS::IMPL::ITRL_TagList<HPR::CustomCounter<ECS::TagCounterId>::Next() - 1>::type;
+		using MyComponents = AUTO_COMPONENTS();
+		using MySignatures = AUTO_SIGNATURES();
+		using MyTags = AUTO_TAGS();
 		using MyManager = ECS::CManager<ECS::SSettings<MyComponents, MyTags, MySignatures>>;
 	public:
 		CScene();
@@ -28,6 +30,15 @@ namespace ARC {
 		
 		void OnUpdate(float DeltaTime);
 		void OnViewportResize(TVec2<uint32_t> pNewSize);
+
+		void SerializeToText(const TString& pFilepath);
+		void SerializeToBinary(const TString& pFilepath);
+		bool DeserializeFromText(const TString& pFilepath);
+		bool DeserializeFromBinary(const TString& pFilepath);
+
+	private:
+		static void SerializeEntity(YAML::Emitter& pOut, CEntity pEntity);
+		static void DeserializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 
 	private:
 		TVec2<uint32_t> m_ViewportSize;

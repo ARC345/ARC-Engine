@@ -17,7 +17,7 @@ namespace ARC {
 		void End();
 
 		void SetBlockEvents(bool _) {m_bBlockEvents = _; };
-
+		void SetDarkThemeColors();
 	private:
 		uint8_t m_bBlockEvents : 1;
 		float m_Time = 0.f;
