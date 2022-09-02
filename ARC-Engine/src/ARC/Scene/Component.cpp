@@ -5,115 +5,8 @@
 #include "Scene.h"
 #include "ARC/Core/Yaml.h"
 
-namespace YAML {
-	template<>
-	struct convert<ARC::FVec2>
-	{
-		static Node encode(const ARC::FVec2& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			return node;
-		}
-		static bool decode(const Node& node, ARC::FVec2& rhs) {
-			if (!node.IsSequence() || node.size() != 2)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			return true;
-		}
-	};
-	template<>
-	struct convert<ARC::FVec3>
-	{
-		static Node encode(const ARC::FVec3& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			return node;
-		}
-		static bool decode(const Node& node, ARC::FVec3& rhs) {
-			if (!node.IsSequence() || node.size() != 3)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			return true;
-		}
-	};
-	template<>
-	struct convert<ARC::FVec4>
-	{
-		static Node encode(const ARC::FVec4& rhs) {
-			Node node;
-			node.push_back(rhs.x);
-			node.push_back(rhs.y);
-			node.push_back(rhs.z);
-			node.push_back(rhs.w);
-			return node;
-		}
-		static bool decode(const Node& node, ARC::FVec4& rhs) {
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.x = node[0].as<float>();
-			rhs.y = node[1].as<float>();
-			rhs.z = node[2].as<float>();
-			rhs.w = node[3].as<float>();
-			return true;
-		}
-	};
-
-	template<>
-	struct convert<ARC::FColor>
-	{
-		static Node encode(const ARC::FColor& rhs) {
-			Node node;
-			node.push_back(rhs.r);
-			node.push_back(rhs.g);
-			node.push_back(rhs.b);
-			node.push_back(rhs.a);
-			return node;
-		}
-		static bool decode(const Node& node, ARC::FColor& rhs) {
-			if (!node.IsSequence() || node.size() != 4)
-				return false;
-
-			rhs.r = node[0].as<float>();
-			rhs.g = node[1].as<float>();
-			rhs.b = node[2].as<float>();
-			rhs.a = node[3].as<float>();
-			return true;
-		}
-	};
-}
 namespace ARC
 {
-	YAML::Emitter& operator << (YAML::Emitter& pOut, const FVec2& _) {
-		pOut << YAML::Flow;
-		pOut << YAML::BeginSeq << _.x << _.y << YAML::EndSeq;
-		return pOut;
-	}
-
-	YAML::Emitter& operator << (YAML::Emitter& pOut, const FVec3& _) {
-		pOut << YAML::Flow;
-		pOut << YAML::BeginSeq << _.x << _.y << _.z << YAML::EndSeq;
-		return pOut;
-	}
-	YAML::Emitter& operator << (YAML::Emitter& pOut, const FVec4& _) {
-		pOut << YAML::Flow;
-		pOut << YAML::BeginSeq << _.x << _.y << _.z << _.w << YAML::EndSeq;
-		return pOut;
-	}
-	YAML::Emitter& operator << (YAML::Emitter& pOut, const FColor& _) {
-		pOut << YAML::Flow;
-		pOut << YAML::BeginSeq << _.r << _.g << _.b << _.a << YAML::EndSeq;
-		return pOut;
-	}
-
 	void CNativeScriptComponent::OnConstruct(CEntity* pOwningEntity)
 	{
 		OwningEntity = pOwningEntity;
@@ -231,7 +124,7 @@ namespace ARC
 	{
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
-		strcpy_s(buffer, sizeof(buffer), Name.c_str());
+		strcpy_s(buffer, sizeof(buffer), Name.CStr());
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
 			Name = buffer;
 	}

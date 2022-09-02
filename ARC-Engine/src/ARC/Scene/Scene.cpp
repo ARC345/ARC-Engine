@@ -162,7 +162,7 @@ namespace ARC {
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
-		std::ofstream fout(pFilepath);
+		std::ofstream fout(pFilepath.CStr());
 		fout << out.c_str();
 	}
 
@@ -173,7 +173,7 @@ namespace ARC {
 
 	bool CScene::DeserializeFromText(const TString& pFilepath)
 	{
-		YAML::Node data = YAML::LoadFile(pFilepath);
+		YAML::Node data = YAML::LoadFile(pFilepath.CStr());
 		if (!data["Scene"]) return false;
 
 		TString SceneName = data["Scene"].as<TString>();

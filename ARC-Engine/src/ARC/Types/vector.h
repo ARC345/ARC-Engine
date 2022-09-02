@@ -211,9 +211,6 @@ namespace ARC
 
 		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
 		
-		//M_FUNC static bool AreCollinear(const type& _1, const type& _2, value_type _Tollerance) { return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance; }
-		//M_FUNC static bool AreCollinitial(const type& _1, const type& _2, value_type _Tollerance) { return Math::Abs(_1.x - _2.x) <= _Tollerance && Math::Abs(_1.y - _2.y) <= _Tollerance; }
-		
 		VM_FUNC value_type MinComponent() const { return Math::Min(x, y); }
 		VM_FUNC value_type MaxComponent() const { return Math::Max(x, y); }
 

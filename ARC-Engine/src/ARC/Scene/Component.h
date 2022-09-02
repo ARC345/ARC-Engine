@@ -138,7 +138,7 @@ namespace ARC {
 		CDelegate<CEntityController*()> InstantiateDelegate;
 		CDelegate<void(CEntityController*&)> DestroyInstancesDelegate;
 
-		virtual void OnConstruct(CEntity* pOwningEntity);
+		virtual void OnConstruct(CEntity* pOwningEntity) override;
 
 		static constexpr uint32_t Flags = ECF::AutoName;
 

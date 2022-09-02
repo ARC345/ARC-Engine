@@ -129,7 +129,7 @@ namespace ARC {
 
 		{
 			ImGuiTreeNodeFlags TreeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((m_SelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
-			bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
+			bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.CStr());
 
 			if (ImGui::IsItemClicked())
 			{
@@ -168,7 +168,7 @@ namespace ARC {
 					if(tComponentType::Flags & ECF::ShowHeader)
 					{
 						TString name = CComponentTraits::GetName<tComponentType>();
-						bool bTreeNodeOpen = ImGui::TreeNodeEx((void*)typeid(tComponentType).hash_code(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, name.c_str());
+						bool bTreeNodeOpen = ImGui::TreeNodeEx((void*)typeid(tComponentType).hash_code(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, name.CStr());
 						bool bDeleteComp = false;
 						if (ImGui::BeginPopupContextItem())
 						{

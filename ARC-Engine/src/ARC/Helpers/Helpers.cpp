@@ -9,7 +9,7 @@
 #include "glm\gtx\transform.hpp"
 
 namespace ARC {
-	static std::unordered_map<std::string, std::shared_ptr<ini::IniFile>> IniFiles;
+	static std::unordered_map<TString, std::shared_ptr<ini::IniFile>> IniFiles;
 
 	namespace HPR {
 		std::mt19937 Random::s_RandomEngine32;
@@ -32,24 +32,24 @@ namespace ARC {
 		{
 			return TVec<3, To>(_[0], _[1], _[2]);
 		}
-		std::string IO::ReadFile(const std::string& _Path)
+		TString IO::ReadFile(const TString& _Path)
 		{
 			std::ifstream is(_Path, std::ios::in | std::ios::binary);
 			ARC_CORE_ASSERT(is.is_open(), "Could not find the file \"{0}\"", _Path.c_str());
-			std::string str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
+			TString str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
 			is.close();
 			return str;
 		}
 
-		std::string IO::ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention /*= true*/)
+		TString IO::ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention /*= true*/)
 		{
 			auto lastSlash = _Path.find_last_of("/\\");
 			
-			lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+			lastSlash = lastSlash == TString::NPos() ? 0 : lastSlash + 1;
 			if(!_bRemoveExtention) return _Path.substr(lastSlash);
 
 			auto lastDot = _Path.rfind('.');
-			auto count = lastDot == std::string::npos ? _Path.size() - lastSlash : lastDot - lastSlash;
+			auto count = lastDot == TString::NPos() ? _Path.size() - lastSlash : lastDot - lastSlash;
 
 			return _Path.substr(lastSlash, count);
 		}
