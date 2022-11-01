@@ -11,4 +11,6 @@ namespace ARC
 	protected:
 		TTypeBase() {};
 	};
+
+	using TString = std::string;
 }

@@ -1,13 +1,13 @@
 #pragma once
 #include "ARC/Objects/Ecs.h"
 #include "Entity.h"
-#include "Component.h"
+#include "ComponentTest.h"
 #include "Tag.h"
 #include "ARC/Types/Vector.h"
-#include "ARC/Types/String.h"
 #include "ARC/Core/Yaml.h"
 
 namespace ARC {
+
 	class CScene
 	{
 		using MyComponents = AUTO_COMPONENTS();

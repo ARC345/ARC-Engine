@@ -7,20 +7,20 @@
 #include "ARC/Types/Color.h"
 
 namespace ARC {
-	std::string COpenGLShader::s_Seperator = "#type";
+	TString COpenGLShader::s_Seperator = "#type";
 
-	COpenGLShader::COpenGLShader(const std::string& _Name, const std::string& _VertexSrc, const std::string& _FragmentSrc) :
+	COpenGLShader::COpenGLShader(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc) :
 		m_Name(_Name)
 	{
-		std::unordered_map<GLenum, std::string> sources;
+		std::unordered_map<GLenum, TString> sources;
 		sources[GL_VERTEX_SHADER] = _VertexSrc;
 		sources[GL_FRAGMENT_SHADER] = _FragmentSrc;
 		Compile(sources);
 	}
 
-	COpenGLShader::COpenGLShader(const std::string& _Path)
+	COpenGLShader::COpenGLShader(const TString& _Path)
 	{
-		std::string source = HPR::IO::ReadFile(_Path);
+		TString source = HPR::IO::ReadFile(_Path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
@@ -42,7 +42,7 @@ namespace ARC {
 		glUseProgram(0);
 	}
 
-	unsigned int COpenGLShader::ShaderTypeFromString(std::string& _Type)
+	unsigned int COpenGLShader::ShaderTypeFromString(TString& _Type)
 	{
 		if (_Type == "vertex")
 			return GL_VERTEX_SHADER;
@@ -53,7 +53,7 @@ namespace ARC {
 		return 0;
 	}
 
-	std::string COpenGLShader::StringFromShaderType(unsigned int _Type)
+	TString COpenGLShader::StringFromShaderType(unsigned int _Type)
 	{
 		switch (_Type)
 		{
@@ -63,33 +63,33 @@ namespace ARC {
 				return "fragment";
 			default:
 				ARC_CORE_ASSERT(0, "Invalid shader type specifier");
-				return 0;
+				return "";
 		}
 	}
 
-	std::unordered_map<GLenum, std::string> COpenGLShader::PreProcess(const std::string& _Source)
+	std::unordered_map<GLenum, TString> COpenGLShader::PreProcess(const TString& _Source)
 	{
 		ARC_PROFILE_FUNCTION();
-		std::unordered_map<GLenum, std::string> shaderSources;
+		std::unordered_map<GLenum, TString> shaderSources;
 		size_t pos = _Source.find(s_Seperator.c_str(), 0);
 
-		while (pos != std::string::npos)
+		while (pos != TString::npos)
 		{
-			size_t eol = _Source.find_first_of("\r\n", pos); // finds first newline position
-			ARC_CORE_ASSERT(eol != std::string::npos, "Syntax Error");
-			size_t begin = pos + s_Seperator.length() + 1; // find first s_Seperator
-			std::string type = _Source.substr(begin, eol - begin);
+			size_t eol = _Source.find_first_of("\r\n", pos); // Finds first newline position
+			ARC_CORE_ASSERT(eol != TString::npos, "Syntax Error");
+			size_t begin = pos + s_Seperator.length() + 1; // Find first s_Seperator
+			TString type = _Source.substr(begin, eol - begin);
 			
 			size_t nextLinePos = _Source.find_first_not_of("\r\n", eol);
-			ARC_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
+			ARC_CORE_ASSERT(nextLinePos != TString::npos, "Syntax error");
 			pos = _Source.find(s_Seperator, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] = _Source.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? _Source.size() - 1 : nextLinePos));
+			shaderSources[ShaderTypeFromString(type)] = _Source.substr(nextLinePos, pos - (nextLinePos == TString::npos ? _Source.length() - 1 : nextLinePos));
 		}
 
 		return shaderSources;
 	}
 
-	void COpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& _ShaderSources)
+	void COpenGLShader::Compile(const std::unordered_map<GLenum, TString>& _ShaderSources)
 	{
 		ARC_PROFILE_FUNCTION();
 		// Get a program object.
@@ -105,7 +105,7 @@ namespace ARC {
 			GLuint shader = glCreateShader(key);
 
 			// Send the shader source code to GL
-			// Note that std::string's .c_str is NULL character terminated.
+			// Note that TString's .CStr is NULL character terminated.
 			const GLchar* source = value.c_str();
 			glShaderSource(shader, 1, &source, 0);
 		
@@ -128,7 +128,7 @@ namespace ARC {
 				glDeleteShader(shader);
 
 				ARC_CORE_ERROR("{0}", infoLog.data());
-				ARC_CORE_ASSERT(false, "{0} Shader compilation failiure!", StringFromShaderType(key));
+				ARC_CORE_ASSERT(false, "{0} Shader compilation failiure!", StringFromShaderType(key).data());
 				return;
 			}
 
@@ -177,72 +177,72 @@ namespace ARC {
 		}
 	}
 
-	void COpenGLShader::SetMat4(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetMat4(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, _Value);
 	}
 
-	void COpenGLShader::SetMat3(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetMat3(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniformMatrix3fv(location, 1, GL_FALSE, _Value);
 	}
 
-	void COpenGLShader::SetInt(const std::string& _Name, const int* _Value)
+	void COpenGLShader::SetInt(const TString& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform1iv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetInt2(const std::string& _Name, const int* _Value)
+	void COpenGLShader::SetInt2(const TString& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform2iv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetInt3(const std::string& _Name, const int* _Value)
+	void COpenGLShader::SetInt3(const TString& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform3iv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetInt4(const std::string& _Name, const int* _Value)
+	void COpenGLShader::SetInt4(const TString& _Name, const int* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform4iv(location, 1, _Value);
 	}
-	void COpenGLShader::SetFloat(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetFloat(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform1fv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetFloat2(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetFloat2(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform2fv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetFloat3(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetFloat3(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform3fv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetFloat4(const std::string& _Name, const float* _Value)
+	void COpenGLShader::SetFloat4(const TString& _Name, const float* _Value)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform4fv(location, 1, _Value);
 	}
 
-	void COpenGLShader::SetIntArray(const std::string& _Name, const int* _Values, uint32_t _Count)
+	void COpenGLShader::SetIntArray(const TString& _Name, const int* _Values, uint32_t _Count)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform1iv(location, _Count, _Values);
 	}
 
-	void COpenGLShader::SetFloatArray(const std::string& _Name, const float* _Values, uint32_t _Count)
+	void COpenGLShader::SetFloatArray(const TString& _Name, const float* _Values, uint32_t _Count)
 	{
 		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
 		glUniform1fv(location, _Count, _Values);

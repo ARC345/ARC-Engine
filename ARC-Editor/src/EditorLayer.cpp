@@ -132,7 +132,7 @@ namespace ARC {
 					if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					{
 						TString filepath = CFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
-						if (!filepath.Empty())
+						if (!filepath.empty())
 						{
 							m_ActiveScene = CreateRef<CScene>();
 							m_ActiveScene->DeserializeFromText(filepath);

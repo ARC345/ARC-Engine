@@ -15,7 +15,6 @@
 #include <unordered_set>
 
 #include "ARC/Types/Pointer.h"
-#include "ARC/Types/String.h"
 #include "ARC/Types/Vector.h"
 
 #include "ARC/Helpers/Helpers.h"

@@ -2,7 +2,6 @@
 #include "Scene.h"
 #include "ARC\Renderer\Renderer2D.h"
 #include "ARC\Objects\Primitive2D.h"
-#include "Component.h"
 #include "Utils\MPL\Interface.hpp"
 #include "Utils\MetaFor.hpp"
 
@@ -162,7 +161,7 @@ namespace ARC {
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
-		std::ofstream fout(pFilepath.CStr());
+		std::ofstream fout(pFilepath.c_str());
 		fout << out.c_str();
 	}
 
@@ -173,7 +172,7 @@ namespace ARC {
 
 	bool CScene::DeserializeFromText(const TString& pFilepath)
 	{
-		YAML::Node data = YAML::LoadFile(pFilepath.CStr());
+		YAML::Node data = YAML::LoadFile(pFilepath.c_str());
 		if (!data["Scene"]) return false;
 
 		TString SceneName = data["Scene"].as<TString>();

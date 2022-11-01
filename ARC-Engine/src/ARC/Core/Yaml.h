@@ -1,28 +1,10 @@
 #pragma once
 #include "yaml-cpp/yaml.h"
-#include "ARC/Types/String.h"
 #include "ARC/Types/Color.h"
 #include "ARC/Types/Vector.h"
 
 namespace YAML
 {
-	template<>
-	struct convert<ARC::TString>
-	{
-		static Node encode(const ARC::TString& rhs)
-		{
-			return Node(rhs.CStr());
-		}
-
-		static bool decode(const Node& node, ARC::TString& rhs)
-		{
-			if (!node.IsSequence() || node.size() != 1)
-				return false;
-
-			rhs = node[0].as<std::string>();
-			return true;
-		}
-	};
 	template<>
 	struct convert<ARC::FVec2>
 	{

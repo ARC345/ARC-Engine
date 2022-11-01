@@ -61,6 +61,11 @@ project "ARC-Engine"
 		"%{IncludeDir.ImGuizmo}"
 	}
 
+	ComponentDirs = "%{prj.location}src\\ARC\\Components"
+	ScriptsDir = "%{wks.location}Scripts\\"
+
+	prebuildcommands{ "python %{ScriptsDir}GenComponentList.py %{ComponentDirs}" }
+
 	filter "files:out/ImGuizmo/**.cpp"
 		flags "NoPCH"
 

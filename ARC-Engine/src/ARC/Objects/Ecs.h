@@ -209,7 +209,7 @@ namespace ARC::ECS
 		}
 		template <typename TF>
 		void UpdateEntitiesRaw(TF&& pFunction) {
-			for (EntityIndex_t i = (EntityIndex_t)0; i < (EntityIndex_t)m_Size; ++i)
+			for (auto i = (EntityIndex_t)0; i < (EntityIndex_t)m_Size; ++i)
 				pFunction(i);
 		}
 

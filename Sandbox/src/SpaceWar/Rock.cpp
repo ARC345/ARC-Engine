@@ -11,8 +11,8 @@ namespace ARC {
 	{
 		TString path = "assets/textures/Rock";
 		SpriteIndex = (int)(HPR::Random::Float() * s_NumberOfRockSprites);
-		path.append(std::to_string(SpriteIndex+1));
-		path.append(TString(".png"));
+		path.Append(std::to_string(SpriteIndex+1));
+		path.Append(TString(".png"));
 		Sprite.Texture = CTexture2D::Create(path, true);
 
 		if (SpriteCollisionData[SpriteIndex].empty())

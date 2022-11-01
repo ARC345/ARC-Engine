@@ -43,8 +43,8 @@ namespace ARC {
 		}
 
 		namespace IO {
-			[[nodiscard]] std::string ReadFile(const std::string& _Path);
-			[[nodiscard]] std::string ExtractFileNameFromPath(const std::string& _Path, bool _bRemoveExtention = true);
+			[[nodiscard]] TString ReadFile(const TString& _Path);
+			[[nodiscard]] TString ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention = true);
 		}
 
 		template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& pTrans) {
@@ -146,6 +146,7 @@ namespace ARC {
 			template<int N = reader(0, Flag<0>{}), int = sizeof(Writer<N>) >
 			static constexpr int Next() { return N; }
 		};
+
 		struct CounterId_Default : CounterId {};
 		using Counter = CustomCounter<CounterId_Default>;
 

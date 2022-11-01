@@ -34,7 +34,7 @@ namespace ARC {
 		}
 		TString IO::ReadFile(const TString& _Path)
 		{
-			std::ifstream is(_Path, std::ios::in | std::ios::binary);
+			std::ifstream is(_Path.c_str(), std::ios::in | std::ios::binary);
 			ARC_CORE_ASSERT(is.is_open(), "Could not find the file \"{0}\"", _Path.c_str());
 			TString str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
 			is.close();
@@ -45,11 +45,11 @@ namespace ARC {
 		{
 			auto lastSlash = _Path.find_last_of("/\\");
 			
-			lastSlash = lastSlash == TString::NPos() ? 0 : lastSlash + 1;
+			lastSlash = lastSlash == TString::npos ? 0 : lastSlash + 1;
 			if(!_bRemoveExtention) return _Path.substr(lastSlash);
 
 			auto lastDot = _Path.rfind('.');
-			auto count = lastDot == TString::NPos() ? _Path.size() - lastSlash : lastDot - lastSlash;
+			auto count = (lastDot == TString::npos ? _Path.length() - lastSlash : lastDot - lastSlash);
 
 			return _Path.substr(lastSlash, count);
 		}

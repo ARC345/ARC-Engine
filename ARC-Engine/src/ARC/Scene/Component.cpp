@@ -124,7 +124,7 @@ namespace ARC
 	{
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
-		strcpy_s(buffer, sizeof(buffer), Name.CStr());
+		strcpy_s(buffer, sizeof(buffer), Name.c_str());
 		if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
 			Name = buffer;
 	}
