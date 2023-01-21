@@ -18,7 +18,6 @@
 #include "ARC/Core/Ini.h"
 #include "ARC/Types/Vector.h"
 #include "ARC/Types/Delegate.h"
-#include "ARC/Objects/Ecs.h"
 
 namespace ARC { static bool bStressTest = false; }
 static const uint32_t s_MapWidth = 24;

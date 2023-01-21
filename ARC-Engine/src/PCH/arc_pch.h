@@ -7,6 +7,7 @@
 #include <functional>
 #include <random>
 #include <cmath>
+//#include <ranges>
 
 #include <sstream>
 #include <array>
@@ -16,6 +17,7 @@
 
 #include "ARC/Types/Pointer.h"
 #include "ARC/Types/Vector.h"
+#include "ARC/Types/Delegate.h"
 
 #include "ARC/Helpers/Helpers.h"
 #include "ARC/Core/Log.h"

@@ -2,7 +2,6 @@
 
 #include "glm/glm.hpp"
 
-
 namespace ARC
 {
 	using FGMat4 = glm::mat4;

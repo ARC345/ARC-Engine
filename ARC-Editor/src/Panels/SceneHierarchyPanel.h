@@ -18,9 +18,7 @@ namespace ARC {
 
 	private:
 		void DrawEntityNode(CEntity pEntity);
-		void DrawComponents(CEntity pEntity);
-		template<typename T>
-		void DrawComponent(CEntity& pEntity);
+
 	private:
 		TRef<CScene> m_Context;
 		CEntity m_SelectedEntity;

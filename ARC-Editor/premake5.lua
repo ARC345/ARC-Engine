@@ -29,7 +29,8 @@ project "ARC-Editor"
 		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.entt}"
 	}
 	filter "files:out/ImGuizmo/**.cpp"
 		flags "NoPCH"

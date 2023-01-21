@@ -8,7 +8,7 @@ namespace ARC {
 	static float Time_Multiplier = 1.f;
 	static float TimeElapsed_World = 0.0;
 	static float TimeElapsed_ThisFrame = 0.0;
-	static bool bPause = 0;
+	static bool bPause = false;
 
 	static FVec3 FindClosestPointOnLine(FVec3 pLB, FVec3 pLE, FVec3 pP)
 	{
@@ -30,13 +30,18 @@ namespace ARC {
 		auto cam = m_ActiveScene->CreateEntity("Camera");
 		auto& ccc = cam.AddComponent<CCameraComponent>();
 		ccc.bPrimary = true;
-
+		auto& camTransformComp = cam.AddComponent<CTransform2DComponent>();
+		
 		auto tex = CTexture2D::Create("assets/textures/circle-64.png");
 
 		auto electron = m_ActiveScene->CreateEntity("Atom");
-		electron.GetComponent<CTransform2DComponent>().Transform.Location = FVec3::OneVector;
+
+		auto& trans = FTransform2D();
+
+		electron.AddComponent<CTransform2DComponent>(trans);
 		electron.AddComponent<CSpriteRendererComponent>(FColor::Blue, tex, FVec2::OneVector);
 		auto electron2 = m_ActiveScene->CreateEntity("Atom2");
+		electron2.AddComponent<CTransform2DComponent>();
 		electron2.AddComponent<CSpriteRendererComponent>(FColor::Blue, tex, FVec2::OneVector);
 	}
 
@@ -54,9 +59,9 @@ namespace ARC {
 
 		// 
 		{
-			auto& filterC = m_ActiveScene->GetManager().FilterComponents<CMassComponent, CSpriteRendererComponent, CElectricSignComponent>();
+			auto filterC = m_ActiveScene->FilterByComponents<CMassComponent, CSpriteRendererComponent, CElectricSignComponent>();
 
-			for (auto [eid, cmc, csrc, cesn] : filterC)
+			for (auto [eid, cmc, csrc, cesn] : filterC.each())
 			{
 				if (cesn.Sign == CElectricSignComponent::EElectricSign::Negative)
 				{
@@ -79,12 +84,12 @@ namespace ARC {
 
 		// Gravity
 		{
-			auto& filterC = m_ActiveScene->GetManager().FilterComponents<CNetForceComponent, CTransform2DComponent, CMassComponent>();
+			auto filterC = m_ActiveScene->FilterByComponents<CNetForceComponent, CTransform2DComponent, CMassComponent>();
 
 			static constexpr double gravityConstant = 6.6743e-11; // m3 kg-1 s-2
 
-			for (auto [eid, cnfc, ctc, cmc] : filterC)
-				for (auto [eid1, cnfc1, ctc1, cmc1] : filterC)
+			for (auto&& [eid, cnfc, ctc, cmc] : filterC.each())
+				for (auto&& [eid1, cnfc1, ctc1, cmc1] : filterC.each())
 					if (eid != eid1)
 					{
 						auto ctc1_to_ctc = ctc1.Transform.Location - ctc.Transform.Location;
@@ -94,13 +99,13 @@ namespace ARC {
 		}
 		// Coulomb force
 		{
-			auto& filterC = m_ActiveScene->GetManager().FilterComponents<CNetForceComponent, CTransform2DComponent, CElectricSignComponent>();
+			auto filterC = m_ActiveScene->FilterByComponents<CNetForceComponent, CTransform2DComponent, CElectricSignComponent>();
 
 			static constexpr double coulombConstant = 8.9e9; // N / m2
 			static constexpr double chargeInProton = 1.602e-19;
 
-			for (auto [eid, cnfc, ctc, cesc] : filterC)
-				for (auto [eid1, cnfc1, ctc1, cesc1] : filterC)
+			for (auto&& [eid, cnfc, ctc, cesc] : filterC.each())
+				for (auto&& [eid1, cnfc1, ctc1, cesc1] : filterC.each())
 					if (eid != eid1)
 					{
 						auto UnitVector = (ctc1.Transform.Location - ctc.Transform.Location).Normalize();
@@ -114,9 +119,9 @@ namespace ARC {
 
 		// Overlap Response
 		{
-			auto& filterC = m_ActiveScene->GetManager().FilterComponents<CNetForceComponent, CTransform2DComponent, CMassComponent, CVelocityComponent>();
+			auto filterC = m_ActiveScene->FilterByComponents<CNetForceComponent, CTransform2DComponent, CMassComponent, CVelocityComponent>();
 			
-			for (auto [eid, cnfc, ctc, cmc, cvc] : filterC)
+			for (auto&& [eid, cnfc, ctc, cmc, cvc] : filterC.each())
 			{
 				FVec3 acc = cnfc.NetForce / cmc.Mass;
 				cnfc.NetForce = FVec3::ZeroVector;
@@ -128,13 +133,13 @@ namespace ARC {
 
 		// Collision Response
 		{
-			auto& filterC = m_ActiveScene->GetManager().FilterComponents<CTransform2DComponent, CMassComponent, CVelocityComponent>();
-			for (auto [eid, ctc, cmc, cvc] : filterC)
+			auto filterC = m_ActiveScene->FilterByComponents<CTransform2DComponent, CMassComponent, CVelocityComponent>();
+			for (auto&& [eid, ctc, cmc, cvc] : filterC.each())
 			{
 				const FVec3& CurrLoc = ctc.Transform.Location * Mask;
 				float rad = ctc.Transform.Scale.x / 2;
 
-				for (auto [eid1, ctc1, cmc1, cvc1] : filterC)
+				for (auto&& [eid1, ctc1, cmc1, cvc1] : filterC.each())
 				{
 					const FVec3& CurrLoc1 = ctc1.Transform.Location * Mask;
 

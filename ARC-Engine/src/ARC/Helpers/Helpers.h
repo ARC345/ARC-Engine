@@ -9,6 +9,9 @@
 #include "ARC\Types\Transform2D.h"
 #include "Math.h"
 
+#if defined(__GNUC__) || defined(__GNUG__)
+	#include <cxxabi.h>
+#endif
 namespace ARC { namespace Core { class CApplication; } }
 
 namespace ARC { class CEvent; }
@@ -34,6 +37,33 @@ enum class ERandom {
 
 namespace ARC {
 	namespace HPR {
+		template<typename T, bool TbIncludeNamespace=false>
+		TString GetClassName()
+		{
+			// @TODO Test code
+			#if defined(__GNUC__) || defined(__GNUG__)
+				int status;
+				std::unique_ptr<char> realname;
+				const std::type_info& ti = typeid(e);
+				realname.reset(abi::__cxa_demangle(ti.name(), 0, 0, &status));
+				assert(status == 0);
+				return std::string(realname.get());
+			#elif defined(_MSC_VER)
+				auto rval = std::string(typeid(T).name());
+
+				std::size_t pos=0;
+				if constexpr (TbIncludeNamespace) 
+					pos = rval.find_first_of(' ') + 1;
+				else 
+					pos = rval.find_last_of("::") + 1;
+
+				return rval.substr(pos, rval.size() - pos);
+			#else
+				ARC_CORE_ASSERT(false, "Undefined for this compiler")
+			#endif
+
+		}
+
 		template<typename To, typename From>
 		To Conv(const From& _);
 

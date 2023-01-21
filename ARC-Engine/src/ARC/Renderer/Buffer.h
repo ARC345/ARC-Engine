@@ -76,7 +76,9 @@ namespace ARC {
 		{
 			CalculateOffsetAndStride();
 		};
+		[[nodiscard]]
 		inline const std::vector<SBufferElement>& GetElements() const { return m_BufferElements; }
+		[[nodiscard]]
 		inline uint32_t GetStride() const { return m_Stride; }
 
 

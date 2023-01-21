@@ -4,9 +4,10 @@
 #include "ARC/Types/Delegate.h"
 #include "ARC/Types/Color.h"
 #include "ARC/Renderer/Texture.h"
-#include "ARC/Objects/Ecs.h"
 #include "SceneCamera.h"
 #include "Controller.h"
+#include "entt.hpp"
+#include <iostream>
 
 namespace YAML { class Emitter; }
 namespace YAML { class Node; }
@@ -14,36 +15,62 @@ namespace YAML { class Node; }
 namespace ARC {
 	class CEntity;
 
-	#define CFlags(x) static constexpr uint32_t Flags = x;
-
 	namespace ECF {
 		enum EComponentFlags : uint32_t
 		{
 			ComponentFlagsNone = 0,
 			ShowInPropertiesPanel = 1 << 0,
-			AutoName = 1 << 1,
-			ShowHeader = 1 << 2,
-			AutoAddToAll = 1 << 3,
-			Serializable = 1 << 4,
-			DefaultComponentFlags = ShowInPropertiesPanel | AutoName | ShowHeader
+			ShowHeader = 1 << 1,
+			Serializable = 1 << 2,
+			DefaultComponentFlags = ShowInPropertiesPanel | ShowHeader
 		};
+	}
+
+	namespace ITRL::META {
+		template<typename T>
+		static void GetFlags(ECF::EComponentFlags& pOut)
+		{
+			pOut = (ECF::EComponentFlags)T::Flags;
+		}
 	}
 
 	struct CComponentTraits
 	{
 		template<typename T>
-		static constexpr const char* GetName()
+		static constexpr bool IsComponent()
 		{
-			if constexpr (T::Flags & ECF::AutoName)	return ECS::ComponentName<T>::Get()+1; // +1 to remove the first char which should be C ( CComponentName -> ComponentName )
-			else return T::ComponentName;
+			return std::is_base_of_v<CComponentBase, T>;
+		}
+		
+		template<typename T>
+		static constexpr decltype(auto) GetName()
+		{
+			return HPR::GetClassName<T>();
 		}
 		template<typename T>
-		static constexpr const char* GetFlags()
+		static constexpr decltype(auto) GetNameHash()
+		{
+			return GetNameHash(GetName<T>());
+		}
+		static constexpr decltype(auto) GetNameHash(const TString& pName)
+		{
+			return entt::hashed_string::value(pName.c_str(), pName.size());
+		}
+		template<typename T>
+		static constexpr decltype(auto) GetFlags()
 		{
 			return T::Flags;
 		}
-
+		
+		static decltype(auto) GetFlags(const TString& pName)
+		{
+			using namespace entt::literals;
+			auto _ = ECF::ComponentFlagsNone;
+			entt::resolve(GetNameHash(pName)).func("get_flags"_hs).invoke({}, entt::forward_as_meta(_));
+			return _;
+		}
 	};
+
 
 	struct CComponentBase
 	{
@@ -52,7 +79,6 @@ namespace ARC {
 		virtual void Serialize(YAML::Emitter& pOut) {};
 		virtual void Deserialize(YAML::Node& pData) {};
 
-		static constexpr uint32_t Flags = ECF::DefaultComponentFlags;
-		static constexpr const char* ComponentName = "";
+		static constexpr ECF::EComponentFlags Flags = ECF::DefaultComponentFlags;
 	};
 }

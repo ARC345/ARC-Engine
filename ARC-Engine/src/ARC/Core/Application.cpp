@@ -3,17 +3,17 @@
 #include "ARC/Types/vector.h"
 #include "ARC/Events/ApplicationEvent.h"
 #include "Window.h"
-#include "glad\glad.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 #include "ARC/Input\Input.h"
 #include "ARC/Renderer/Shader.h"
 #include "ARC/Renderer/Buffer.h"
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Renderer.h"
 #include "ARC/GUI/ImGuiLayer.h"
-#include "GLFW\glfw3.h"
 #include "Macros.h"
 #include "ARC/Profiling/Timer.h"
-#include "../Helpers/Math.h"
+#include "ARC/Helpers/Math.h"
 
 namespace ARC
 {

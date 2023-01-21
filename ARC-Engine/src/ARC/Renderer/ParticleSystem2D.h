@@ -53,5 +53,4 @@ namespace ARC {
 		std::vector<CParticle2D> m_ParticlePool;
 		uint32_t m_PoolIndex;
 	};
-
 }

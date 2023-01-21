@@ -21,7 +21,6 @@ namespace ARC {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate(float _DeltaTime) override;
-
 	protected:
 	private:
 		uint8_t m_ViewportFocused : 1;

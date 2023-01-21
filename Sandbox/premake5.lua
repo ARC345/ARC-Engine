@@ -28,7 +28,8 @@ project "Sandbox"
 		"%{IncludeDir.sparsemap}",
 		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.entt}"
 	}
 	defines
 	{

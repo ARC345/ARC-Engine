@@ -35,10 +35,9 @@ namespace ARC{
 		CImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; };
 
 		inline static CApplication& Get() { return *s_Instance; }
-		inline virtual std::string GetAppName() =0; 
+		inline virtual std::string GetAppName() =0;
 		inline std::string GetEngineName() {return "ARC-Engine";}; 
 		inline float GetDeltaTime() const { return m_DeltaTime; }
-
 
 	private:
 		bool OnWindowClose(CWindowCloseEvent& _e);

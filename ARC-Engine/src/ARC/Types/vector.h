@@ -3,11 +3,11 @@
 #include "TybeBase.h"
 #include <type_traits>
 #include <initializer_list>
-#include "String.h"
+//#include "../Core/Log.h"
 
 namespace ARC
 {
-#define VM_FUNC [[nodiscard]] inline constexpr
+	#define VM_FUNC [[nodiscard]] inline constexpr
 
 	namespace Base
 	{
@@ -218,7 +218,7 @@ namespace ARC
 		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
 		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
 		VM_FUNC type Normalize() const { return this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::Equal(*this, _, _Tollerance); }
 	public:
 		static type ZeroVector;
 		static type OneVector;
@@ -279,7 +279,7 @@ namespace ARC
 		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
 
 		VM_FUNC type Normalize() const { return *this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::Equal(*this, _, _Tollerance); }
 
 		VM_FUNC type Mask(type _) { return *this*_; }
 
@@ -339,7 +339,7 @@ namespace ARC
 		VM_FUNC type_float DistSqr(const type& _) const { return Math::DistSqr(*this, _); }
 		VM_FUNC type_float Length() const { return Dist(ZeroVector); }
 		VM_FUNC type Normalize() const { return this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::AlmostEqual(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return Math::Equal(*this, _, _Tollerance); }
 	public:
 		static type ZeroVector;
 		static type OneVector;

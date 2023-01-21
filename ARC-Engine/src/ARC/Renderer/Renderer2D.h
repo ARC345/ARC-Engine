@@ -30,7 +30,6 @@ namespace ARC {
 			*	@param _Position: Center location of quad.
 			*	@param _Rotation: Rotation of quad in radians.
 			*	@param _Size: Size of quad.
-			*	@param _Zorder: Z position of quad.
 			*	@param _Color: Color of quad.
 			*	@param _Texture: Texture of quad.
 			*	@param _TextureScaling: Scaling applied to the texture.
@@ -40,7 +39,6 @@ namespace ARC {
 			*	@param _Position: Center location of quad.
 			*	@param _Rotation: Rotation of quad in radians.
 			*	@param _Size: Size of quad.
-			*	@param _Zorder: Z position of quad.
 			*	@param _Color: Color of quad.
 			*	@param _Texture: Texture of quad.
 			*	@param _TextureScaling: Scaling applied to the texture.
