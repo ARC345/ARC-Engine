@@ -17,19 +17,19 @@ namespace ARC {
 	class ARC_API CKeyPressedEvent : public CKeyEvent
 	{
 		public:
-			CKeyPressedEvent(int p_KeyCode, uint p_RepeatCount) : 
+			CKeyPressedEvent(int p_KeyCode, TUint p_RepeatCount) : 
 				m_RepeatCount() {
 					m_KeyCode = p_KeyCode;
 				}
 		
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << " [" << m_KeyCode << "]: Repeated Count= " << m_RepeatCount;
 				return ss.str();
 			}
 			EVENT_CLASS_TYPE(KeyPressed);
 		private:	
-			uint m_RepeatCount = 0;
+			TUint m_RepeatCount = 0;
 	};
 	class ARC_API CKeyReleasedEvent : public CKeyEvent
 	{
@@ -39,7 +39,7 @@ namespace ARC {
 				m_KeyCode = p_KeyCode;
 			}
 
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << " [" << m_KeyCode << "]";
 				return ss.str();
@@ -54,7 +54,7 @@ namespace ARC {
 				m_KeyCode = p_KeyCode;
 			}
 
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << " [" << m_KeyCode << "]";
 				return ss.str();

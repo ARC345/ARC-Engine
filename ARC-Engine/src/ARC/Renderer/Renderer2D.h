@@ -22,6 +22,9 @@ namespace ARC {
 			static void BeginScene(const COrthographicCamera& _Camera);
 			static void BeginScene(const CCamera& _Camera, const FTransform2D& _Transform);
 
+			//static void EditorBeginScene(const CEditorCamera& _Camera);
+			static void EditorBeginScene(const CCamera& _Camera, const FTransform2D& _Transform);
+
 			static void EndScene();
 			
 			static void Flush();
@@ -34,7 +37,7 @@ namespace ARC {
 			*	@param _Texture: Texture of quad.
 			*	@param _TextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& _Position, const float _Rotation = 0.f, const FVec2& _Size = { 1.f, 1.f }, const FColor& _Color = FColor::White, const TRef<CTexture2D>& _Tex = nullptr, const FVec2& _TextureScaling = {1.f, 1.f});
+			static void DrawQuad(const FVec3& _Position, const float _Rotation = 0.f, const FVec2& _Size = FVec2::OneVector(), const FColor4& _Color = FColor4::White(), const TRef<CTexture2D>& _Tex = nullptr, const FVec2& _TextureScaling = FVec2::OneVector());
 			/*
 			*	@param _Position: Center location of quad.
 			*	@param _Rotation: Rotation of quad in radians.
@@ -43,7 +46,7 @@ namespace ARC {
 			*	@param _Texture: Texture of quad.
 			*	@param _TextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor& _Color, const TRef<CSubTexture2D>& _Tex, const FVec2& _TextureScaling);
+			static void DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor4& _Color, const TRef<CSubTexture2D>& _Tex, const FVec2& _TextureScaling);
 			static void DrawQuad(const CPrimitive2D& Quad);
 
 			struct SStatistics

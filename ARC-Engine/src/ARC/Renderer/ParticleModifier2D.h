@@ -1,4 +1,5 @@
 #pragma once
+#include "../Helpers/Random.h"
 namespace ARC { class CParticle2D; }
 
 namespace ARC {
@@ -34,48 +35,48 @@ namespace ARC {
 	template<typename T>
 	void CParticleVariationModifier2D<T>::ApplyModifier(CParticle2D& _Particle)
 	{
-		_Particle.*MemberProperty += (HPR::Random::Float() - 0.5f) * Variation;
+		_Particle.*MemberProperty += (SRandom::Float() - 0.5f) * Variation;
 	}
 	template<>
 	void CParticleVariationModifier2D<float>::ApplyModifier(CParticle2D& _Particle)
 	{
-		_Particle.*MemberProperty += (HPR::Random::Float() - 0.5f) * Variation;
+		_Particle.*MemberProperty += (SRandom::Float() - 0.5f) * Variation;
 	}
 	template<>
 	void CParticleVariationModifier2D<FVec2>::ApplyModifier(CParticle2D& _Particle)
 	{
-		(_Particle.*MemberProperty).x += (HPR::Random::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (HPR::Random::Float() - 0.5f) * Variation.y;
+		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
+		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
 	}
 	template<>
 	void CParticleVariationModifier2D<FVec3>::ApplyModifier(CParticle2D& _Particle)
 	{
-		(_Particle.*MemberProperty).x += (HPR::Random::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (HPR::Random::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (HPR::Random::Float() - 0.5f) * Variation.z;
+		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
+		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
+		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
 	}
 	template<>
 	void CParticleVariationModifier2D<FVec4>::ApplyModifier(CParticle2D& _Particle)
 	{
-		(_Particle.*MemberProperty).x += (HPR::Random::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (HPR::Random::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (HPR::Random::Float() - 0.5f) * Variation.z;
-		(_Particle.*MemberProperty).w += (HPR::Random::Float() - 0.5f) * Variation.w;
+		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
+		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
+		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
+		(_Particle.*MemberProperty).w += (SRandom::Float() - 0.5f) * Variation.w;
 	}
 
 	template<>
-	void CParticleVariationModifier2D<FColor>::ApplyModifier(CParticle2D& _Particle)
+	void CParticleVariationModifier2D<FColor4>::ApplyModifier(CParticle2D& _Particle)
 	{
-		(_Particle.*MemberProperty).x += (HPR::Random::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (HPR::Random::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (HPR::Random::Float() - 0.5f) * Variation.z;
-		(_Particle.*MemberProperty).w += (HPR::Random::Float() - 0.5f) * Variation.w;
+		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
+		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
+		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
+		(_Particle.*MemberProperty).w += (SRandom::Float() - 0.5f) * Variation.w;
 	}
 
 	template<typename LerpingFunction, typename T>
 	void CParticleLifetimeModifier2D<LerpingFunction, T>::ApplyModifier(CParticle2D& _Particle)
 	{
-		(_Particle.*MemberProperty) = Math::InterpF<LerpingFunction, T>(InitialVal, EndVal, _Particle.Life/Scaling);
+		(_Particle.*MemberProperty) = SMath::InterpF<LerpingFunction, T>(InitialVal, EndVal, _Particle.Life/Scaling);
 	}
 	template<typename LerpingFunction, typename T>
 	void CParticleLifetimeModifier2D<LerpingFunction, T>::ApplyInitialModifier(CParticle2D& _Particle)

@@ -9,7 +9,7 @@ namespace ARC {
 		None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 	};
 
-	namespace HPR {
+	struct SShaderHelper {
 		static uint32_t GetSize(EShaderDataType _Type)
 		{
 			switch (_Type)
@@ -50,9 +50,9 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
 			return 0;
 		}
-	}
+	};
 
-	struct SBufferElement
+	struct CBufferElement
 	{
 		std::string Name;
 		EShaderDataType Type;
@@ -60,8 +60,8 @@ namespace ARC {
 		uint32_t Size;
 		uint8_t bNormalized : 1;
 
-		SBufferElement(EShaderDataType _Type, const std::string& _Name, bool _bNormalized = false)
-			: Name(_Name), Type(_Type), Offset(0u), Size(HPR::GetSize(_Type)), bNormalized(_bNormalized)
+		CBufferElement(EShaderDataType _Type, const std::string& _Name, bool _bNormalized = false)
+			: Name(_Name), Type(_Type), Offset(0u), Size(SShaderHelper::GetSize(_Type)), bNormalized(_bNormalized)
 		{
 
 		}
@@ -71,22 +71,22 @@ namespace ARC {
 	{
 	public:
 		CBufferLayout(){};
-		CBufferLayout(const std::initializer_list<SBufferElement>& _Elem)
+		CBufferLayout(const std::initializer_list<CBufferElement>& _Elem)
 			: m_BufferElements(_Elem)
 		{
 			CalculateOffsetAndStride();
 		};
-		[[nodiscard]]
-		inline const std::vector<SBufferElement>& GetElements() const { return m_BufferElements; }
-		[[nodiscard]]
-		inline uint32_t GetStride() const { return m_Stride; }
+		[[nodiscard]] inline const
+		std::vector<CBufferElement>& GetElements() const { return m_BufferElements; }
+		[[nodiscard]] inline
+		uint32_t GetStride() const { return m_Stride; }
 
 
-		std::vector<SBufferElement>::iterator begin() { return m_BufferElements.begin(); }
-		std::vector<SBufferElement>::iterator end() { return m_BufferElements.end(); }
+		std::vector<CBufferElement>::iterator begin() { return m_BufferElements.begin(); }
+		std::vector<CBufferElement>::iterator end() { return m_BufferElements.end(); }
 
-		std::vector<SBufferElement>::const_iterator begin() const { return m_BufferElements.begin(); }
-		std::vector<SBufferElement>::const_iterator end() const { return m_BufferElements.end(); }
+		std::vector<CBufferElement>::const_iterator begin() const { return m_BufferElements.begin(); }
+		std::vector<CBufferElement>::const_iterator end() const { return m_BufferElements.end(); }
 
 	private:
 		void CalculateOffsetAndStride() {
@@ -101,7 +101,7 @@ namespace ARC {
 		}
 
 	private:
-		std::vector<SBufferElement> m_BufferElements;
+		std::vector<CBufferElement> m_BufferElements;
 		uint32_t m_Stride=0;
 	};
 

@@ -2,7 +2,7 @@ include "./_vendor/premake/premake_customization/solution_items.lua"
 
 workspace "ARC-Engine"
 	architecture "x86_64"
-	startproject "Sandbox"
+	startproject "ARC-Editor"
 
 	configurations
 	{

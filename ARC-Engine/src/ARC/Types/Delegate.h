@@ -57,12 +57,10 @@ namespace ARC {
 
 		#define TDELEGATEFUNC [[nodiscard]] inline
 
-		TDELEGATEFUNC void* Data() const { return instance; }
-
 		TDELEGATEFUNC RET operator()(PARAMS... args) const { return fn(storage, args...); }
 		TDELEGATEFUNC explicit operator bool() const { return fn != nullptr; }
-		TDELEGATEFUNC bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn && instance == _.instance; }
-		TDELEGATEFUNC bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn || instance != _.instance; }
+		TDELEGATEFUNC bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn; }
+		TDELEGATEFUNC bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn; }
 
 		#undef TDELEGATEFUNC
 	private:
@@ -76,7 +74,7 @@ namespace ARC {
 	template<typename RET, typename ...PARAMS>
 	class TMulticastDelegate<RET(PARAMS...)> {
 		using DelegateClass = TDelegate<RET(PARAMS...)>;
-		using InvocationListClass = std::list<typename DelegateClass*>;
+		using InvocationListClass = std::list<DelegateClass*>;
 
 	public:
 		TMulticastDelegate() = default;
@@ -123,14 +121,13 @@ namespace ARC {
 		template<typename HANDLER>
 		[[nodiscard]] void operator()(PARAMS... args, HANDLER handler) const {
 			size_t index = 0;
-			for (auto& item : invocationList) {
-				RET value = element->operator (args...);
+			for (auto& item : m_InvocationList) {
+				RET value = *item(args...);
 				handler(index, &value);
 				++index;
 			} //loop
 		}
 		[[nodiscard]] inline explicit operator bool() const { return !IsEmpty(); }
-		[[nodiscard]] inline bool operator!=(const DelegateClass& _) const { return fn != _.fn || instance != _.instance; }
 
 		typename InvocationListClass::iterator begin() { return m_InvocationList.begin(); }
 		typename InvocationListClass::iterator end() { return m_InvocationList.end(); }

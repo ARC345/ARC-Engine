@@ -107,7 +107,7 @@ namespace ARC{
 				}
 			}
 		});
-		glfwSetCharCallback(m_Window, [](GLFWwindow* _window, uint _keycode) {
+		glfwSetCharCallback(m_Window, [](GLFWwindow* _window, TUint _keycode) {
 			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
 			CKeyTypedEvent _event(_keycode);
 			Data.EventCallback(_event);

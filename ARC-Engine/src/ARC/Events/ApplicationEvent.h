@@ -15,7 +15,7 @@ namespace ARC {
 		inline int GetX() const { return GetDimentions().x; };
 		inline int GetY() const { return GetDimentions().y; };
 
-		virtual std::string ToString() const override {
+		virtual TString ToString() const override {
 			std::stringstream ss;
 			ss << GetName() << ": " << GetX() << ", " << GetY();
 			return ss.str();

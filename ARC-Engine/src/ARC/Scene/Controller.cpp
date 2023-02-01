@@ -5,6 +5,7 @@
 #include "ARC\Input\Input.h"
 #include "ARC\Input\KeyCodes.h"
 #include "Scene.h"
+#include "BasicComponents.h"
 
 namespace ARC
 {

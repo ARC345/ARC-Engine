@@ -6,7 +6,8 @@
 
 namespace ARC {
 	COpenGLTexture2D::COpenGLTexture2D(const std::string& _Path, bool bManualClear) : 
-		CTexture2D(Load(_Path))
+		CTexture2D(Load(_Path)),
+		m_Path(_Path)
 	{
 		if (!bManualClear)
 		{

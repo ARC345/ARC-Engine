@@ -6,6 +6,9 @@
 #include "ARC\Scene\SceneCamera.h"
 #include "Utils\MPL\Interface.hpp"
 #include "ARC\Scene\Component.h"
+#include "ARC\Scene\Entity.h"
+#include "ARC\Scene\BasicComponents.h"
+#include "ARC\Scene\SceneRegistry.h"
 
 namespace ARC {
 	CSceneHierarchyPanel::CSceneHierarchyPanel(const TRef<CScene>& pScene)
@@ -47,12 +50,37 @@ namespace ARC {
 		
 		if(m_SelectedEntity)
 		{
-			for(auto& _ : m_Context->GetTypeErasedGetComponentFuncs()) {
-				auto* comp = _.second(m_SelectedEntity);
-				if (comp && ImGui::TreeNodeEx(_.first.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, _.first.c_str())) {
-					comp->DrawPropertiesUI(m_SelectedEntity);
+			if (CComponentBase* comp = SSceneRegistry::GetTypeErasedGetComponentFuncs()[CComponentTraits::GetName<CNameComponent>()](m_SelectedEntity)) {
+				ImGui::Text("Name:");
+				ImGui::SameLine(100.f, 20.f);
+				comp->DrawPropertiesUI(m_SelectedEntity);
+			}
 
-					ImGui::TreePop();
+			bool bNameCompFound = false;
+
+			for(auto& _ : SSceneRegistry::GetTypeErasedGetComponentFuncs()) {
+				if (auto* comp = _.second(m_SelectedEntity)) {
+					bool bDeleteComponent = false;
+
+					if (!bNameCompFound && _.first == CComponentTraits::GetName<CNameComponent>()) {
+						bNameCompFound = true;
+						continue;
+					}
+
+					if (comp->GetFlags() & ECF::EComponentFlags::ShowInPropertiesPanel
+						&& ImGui::TreeNodeEx(_.first.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, _.first.c_str())) {
+						if (ImGui::BeginPopupContextItem())
+						{
+							if (ImGui::MenuItem("Delete Component"))
+								bDeleteComponent = true;
+							ImGui::EndPopup();
+						}
+						comp->DrawPropertiesUI(m_SelectedEntity);
+
+						ImGui::TreePop();
+					}
+					if (bDeleteComponent)
+						SSceneRegistry::GetTypeErasedRemoveComponentFuncs()[_.first](m_SelectedEntity);
 				}
 			}
 
@@ -61,16 +89,17 @@ namespace ARC {
 
 			if (ImGui::BeginPopup("AddComponent"))
 			{
-				for(auto& comp : m_Context->GetTypeErasedGetComponentFuncs())
+				for(auto& comp : SSceneRegistry::GetTypeErasedGetComponentFuncs())
 				{
 					if (!comp.second(m_SelectedEntity) && ImGui::MenuItem(comp.first.c_str()))
 					{
-						m_Context->GetTypeErasedAddComponentFuncs()[comp.first](m_SelectedEntity);
+						SSceneRegistry::GetTypeErasedAddComponentFuncs()[comp.first](m_SelectedEntity);
 						ImGui::CloseCurrentPopup();
 					}
 				}
 				ImGui::EndPopup();
 			}
+
 		}
 		ImGui::End();
 
@@ -134,33 +163,31 @@ namespace ARC {
 
 		auto& name = pEntity.GetComponent<CNameComponent>();
 
+		ImGuiTreeNodeFlags TreeFlags = 
+			ImGuiTreeNodeFlags_OpenOnArrow
+			| ImGuiTreeNodeFlags_SpanAvailWidth
+			| ImGuiTreeNodeFlags_OpenOnDoubleClick
+			| ((m_SelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
+		bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
+
+		if (ImGui::IsItemClicked())
+			m_SelectedEntity = pEntity;
+
+		bool bDeleteEntity = false;
+
+		if (ImGui::BeginPopupContextItem())
 		{
-			ImGuiTreeNodeFlags TreeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick | ((m_SelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
-			bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
+			if (ImGui::MenuItem("Delete Entity"))
+				bDeleteEntity = true;
+			ImGui::EndPopup();
+		}
 
-			if (ImGui::IsItemClicked())
-			{
-				m_SelectedEntity = pEntity; 
-			}
-
-			bool bDeleteEntity = false;
-
-			if (ImGui::BeginPopupContextItem())
-			{
-				if (ImGui::MenuItem("Delete Entity"))
-					bDeleteEntity = true;
-				ImGui::EndPopup();
-			}
-
-			if (bOpened)
-			{
-				ImGui::TreePop();
-			}
-			if (bDeleteEntity)
-			{
-				m_Context->RemoveEntity(pEntity);
-				m_SelectedEntity = {};
-			}
+		if (bOpened)
+			ImGui::TreePop();
+		if (bDeleteEntity)
+		{
+			m_Context->RemoveEntity(pEntity);
+			m_SelectedEntity = {};
 		}
 	}
 }

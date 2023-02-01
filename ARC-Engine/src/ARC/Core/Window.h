@@ -6,11 +6,11 @@ namespace ARC { class CEvent; }
 
 namespace ARC {
 	struct SWindowProps {
-		std::string Title;
+		TString Title;
 		uint32_t Width;
 		uint32_t Height;
 
-		SWindowProps(const std::string& _title = "ARC-Engine", uint32_t _width = 1280, uint32_t _height = 720) : Title(_title), Width(_width), Height(_height){}
+		SWindowProps(const TString& _title = "ARC-Engine", uint32_t _width = 1280, uint32_t _height = 720) : Title(_title), Width(_width), Height(_height){}
 	};
 
 	class CWindow {

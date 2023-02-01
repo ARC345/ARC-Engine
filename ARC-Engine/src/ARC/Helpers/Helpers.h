@@ -2,11 +2,12 @@
 
 #include <random>
 #include <limits>
-#include <stdint.h>
+#include <cstdint>
 #include <algorithm>
 #include <type_traits>
 #include "ARC\Types\Vector.h"
 #include "ARC\Types\Transform2D.h"
+#include "Conversions.h"
 #include "Math.h"
 
 #if defined(__GNUC__) || defined(__GNUG__)
@@ -17,9 +18,9 @@ namespace ARC { namespace Core { class CApplication; } }
 namespace ARC { class CEvent; }
 #define OUT
 
-using uint = unsigned int;
-using uchar = unsigned char;
-using ulong = unsigned long;
+using TUint = unsigned int;
+using TUchar = unsigned char;
+using TUlong = unsigned long;
 
 struct CounterId {};
 
@@ -36,8 +37,9 @@ enum class ERandom {
 };
 
 namespace ARC {
-	namespace HPR {
-		template<typename T, bool TbIncludeNamespace=false>
+	struct SHPR {
+		template<typename T, bool TbIncludeNamespace = false>
+		static 
 		TString GetClassName()
 		{
 			// @TODO Test code
@@ -64,27 +66,27 @@ namespace ARC {
 
 		}
 
-		template<typename To, typename From>
-		To Conv(const From& _);
-
-		template<typename T, typename U> static constexpr size_t GetDataMemberOffset(U T::* member)
+		template<typename T, typename U>
+		static constexpr 
+		size_t GetDataMemberOffset(U T::* member)
 		{
 			return (char*)&((T*)nullptr->*member) - (char*)nullptr;
 		}
 
-		namespace IO {
-			[[nodiscard]] TString ReadFile(const TString& _Path);
-			[[nodiscard]] TString ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention = true);
+		[[nodiscard]] static
+		TString ReadFile(const TString& _Path);
+		
+		[[nodiscard]] static
+		TString ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention = true);
+
+		template<EQuadCorner T1>
+		static
+		FVec2 GetScaledCorner(const FTransform2D& pTrans) {
+			GetScaledCorner(pTrans, SMath::Sin(pTrans.Rotation), SMath::Cos(pTrans.Rotation));
 		}
-
-		template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& pTrans) {
-			using namespace Math;
-
-			GetScaledCorner(pTrans, Sin(pTrans.Rotation), Cos(pTrans.Rotation));
-		}
-		template<EQuadCorner T1> FVec2 GetScaledCorner(const FTransform2D& pTrans, float pSin, float pCos) {
-			using namespace Math;
-
+		template<EQuadCorner T1>
+		static
+		FVec2 GetScaledCorner(const FTransform2D& pTrans, float pSin, float pCos) {
 			switch (T1)
 			{
 			case EQuadCorner::TopRight: return {
@@ -102,53 +104,10 @@ namespace ARC {
 			}
 		}
 
-		class Random
-		{
-		public:
-			using randclass = std::mt19937;
-
-			static void Init()
-			{
-				s_RandomEngine32.seed(std::random_device()());
-			}
-			template<typename T>
-			static void Init(const T* _Seed)
-			{
-				if constexpr(_Seed == nullptr)
-					Init();
-				else
-					s_RandomEngine32.seed(*_Seed);
-			}
-
-			template<typename T>
-			static T Get() {
-				return (T)s_Distribution(s_RandomEngine32);
-			}
-			template<ERandom T>
-			static auto Get() {
-				if constexpr (T == ERandom::Normal) {
-					return (float)s_Distribution(s_RandomEngine32) / (float)randclass::max();
-				}
-				else 
-					return uint32_t(10);
-			}
-			
-			template<typename T>
-			static T Get(T _Min, T _Max) {
-				return _Min + ((T)s_Distribution(s_RandomEngine32) / ((T)randclass::max() / (_Max - _Min)));
-			}
-			
-			static inline float Normal() { return Random::Get<ERandom::Normal>(); }
-
-			static inline float Float() { return Random::Get<float>(); }
-			static inline float Float(float _Min, float _Max) { return Random::Get(_Min, _Max); }
-
-			static inline int Int() { return Random::Get<int>(); }
-			static inline int Int(int _Min, int _Max) { return Random::Get(_Min, _Max); }
-			
-		private:
-			static std::mt19937 s_RandomEngine32;
-			static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
+		template<typename To, typename From>
+		static
+		To Conv(const From& p) {
+			return SConvert<To, From>::Conv(p);
 		};
 
 		template<typename T>
@@ -179,11 +138,5 @@ namespace ARC {
 
 		struct CounterId_Default : CounterId {};
 		using Counter = CustomCounter<CounterId_Default>;
-
-		template<typename T>
-		constexpr const T& Zero() { 
-			static T _;
-			return _;
-		};
-	}
+	};
 }

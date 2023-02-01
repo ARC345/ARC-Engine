@@ -47,34 +47,34 @@ namespace ARC {
 			m_bNeedsRecalculation = 1u;
 		}
 
-		if (ARC::CInput::IsKeyPressed(ARC_KEY_A))
+		if (CInput::IsKeyPressed(ARC_KEY_A))
 		{
 			m_Camera.Position.x -= m_CamMoveSpeed * _DeltaTime;
 			m_bNeedsRecalculation = 1u;
 		}
-		if (ARC::CInput::IsKeyPressed(ARC_KEY_D))
+		if (CInput::IsKeyPressed(ARC_KEY_D))
 		{
 			m_Camera.Position.x += m_CamMoveSpeed * _DeltaTime;
 			m_bNeedsRecalculation = 1u;
 		}
-		if (ARC::CInput::IsKeyPressed(ARC_KEY_W))
+		if (CInput::IsKeyPressed(ARC_KEY_W))
 		{
 			m_Camera.Position.y += m_CamMoveSpeed * _DeltaTime;
 			m_bNeedsRecalculation = 1u;
 		}
-		if (ARC::CInput::IsKeyPressed(ARC_KEY_S))
+		if (CInput::IsKeyPressed(ARC_KEY_S))
 		{
 			m_Camera.Position.y -= m_CamMoveSpeed * _DeltaTime;
 			m_bNeedsRecalculation = 1u;
 		}
 
 		if(m_bCanRotate) {
-			if (ARC::CInput::IsKeyPressed(ARC_KEY_Q))
+			if (CInput::IsKeyPressed(ARC_KEY_Q))
 			{
 				m_Camera.Rotation += m_CamRotSpeed * _DeltaTime;
 				m_bNeedsRecalculation = 1u;
 			}
-			if (ARC::CInput::IsKeyPressed(ARC_KEY_E))
+			if (CInput::IsKeyPressed(ARC_KEY_E))
 			{
 				m_Camera.Rotation -= m_CamRotSpeed * _DeltaTime;
 				m_bNeedsRecalculation = 1u;
@@ -93,9 +93,9 @@ namespace ARC {
 	void COrthographicCameraController::OnEvent(CEvent& _Event)
 	{
 		ARC_PROFILE_FUNCTION();
-		ARC::CEventDispatcher dispatcher(_Event);
-		dispatcher.Dispatch<ARC::CMouseScrolledEvent>(BIND_FN(&COrthographicCameraController::OnMouseScrolledEvent));
-		dispatcher.Dispatch<ARC::CWindowResizeEvent>(BIND_FN(&COrthographicCameraController::OnWindowResized));
+		CEventDispatcher dispatcher(_Event);
+		dispatcher.Dispatch<CMouseScrolledEvent>(BIND_FN(&COrthographicCameraController::OnMouseScrolledEvent));
+		dispatcher.Dispatch<CWindowResizeEvent>(BIND_FN(&COrthographicCameraController::OnWindowResized));
 	}
 
 	void COrthographicCameraController::OnResize(float width, float height)

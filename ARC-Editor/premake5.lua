@@ -1,7 +1,7 @@
 project "ARC-Editor"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 
 	targetdir ("%{wks.location}/_bin/" .. outputdir .. "/%{prj.name}")
