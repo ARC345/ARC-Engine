@@ -21,7 +21,7 @@ namespace ARC {
 
 	void CRenderer::OnWindowResize(TVec2<uint32_t> _Dimentions)
 	{
-		CRenderCommand::SetViewport(TVec2<uint32_t>::ZeroVector, _Dimentions);
+		CRenderCommand::SetViewport(TVec2<uint32_t>::ZeroVector(), _Dimentions);
 	}
 
 	void CRenderer::BeginScene(COrthographicCamera& _Cam)

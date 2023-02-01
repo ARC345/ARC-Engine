@@ -2,7 +2,7 @@
 #include "RenderCommand.h"
 #include "RendererAPI.h"
 
-#include "ARC\Types\Glm.h"
+#include "ARC\Wrappers\Glm.h"
 
 namespace ARC { class CShader; }
 namespace ARC { class CVertexArray; }
@@ -29,7 +29,5 @@ namespace ARC {
 		};
 
 		static SSceneData* m_SceneData;
-	};
-
-	
+	};	
 }

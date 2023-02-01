@@ -28,7 +28,7 @@ namespace ARC {
 		FVec3 Location = {0.f, 0.f, 0.f};
 		float Rotation = 0.f;
 		FVec2 Scale = {1.f, 1.f};
-		FColor Color = ARC::FColor::White;
+		FColor4 Color = FColor4::White();
 		TRef<CTexture2D> Texture = nullptr;
 		FVec3 Velocity = {0.f, 0.f, 0.f};
 		float Life = 1.f;

@@ -20,11 +20,11 @@ namespace ARC {
 
 	COpenGLShader::COpenGLShader(const TString& _Path)
 	{
-		TString source = HPR::IO::ReadFile(_Path);
+		TString source = SHPR::ReadFile(_Path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
-		m_Name = HPR::IO::ExtractFileNameFromPath(_Path);
+		m_Name = SHPR::ExtractFileNameFromPath(_Path);
 	}
 
 	COpenGLShader::~COpenGLShader()

@@ -10,6 +10,7 @@ namespace ARC {
 			virtual ~CTexture() = default;
 
 			virtual void ClearData() = 0;
+			virtual const TString& GetPath() const = 0;
 			virtual void SetData(void*, uint32_t _Size) = 0;
 			virtual void Bind(uint32_t _Slot = 0) const = 0;
 

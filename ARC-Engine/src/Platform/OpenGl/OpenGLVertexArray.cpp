@@ -4,7 +4,7 @@
 #include "ARC\Renderer\Buffer.h"
 
 namespace ARC {
-	namespace HPR {
+	struct SOpenGLShaderHelper {
 		static GLenum ShaderTypeToOpenGlBaseType(EShaderDataType _Type) {
 			switch (_Type)
 			{
@@ -24,7 +24,7 @@ namespace ARC {
 			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
 				return 0;
 		};
-	}
+	};
 
 	COpenGLVertexArray::COpenGLVertexArray()
 	{
@@ -48,7 +48,7 @@ namespace ARC {
 		for (const auto& x : layout)
 		{
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, HPR::GetComponentCount(x.Type), HPR::ShaderTypeToOpenGlBaseType(x.Type), x.bNormalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(uint64_t)x.Offset);
+			glVertexAttribPointer(index, SShaderHelper::GetComponentCount(x.Type), SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(x.Type), x.bNormalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(uint64_t)x.Offset);
 			++index;
 		}
 

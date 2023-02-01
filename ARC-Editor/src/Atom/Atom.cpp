@@ -2,6 +2,10 @@
 #include "Atom.h"
 #include "ARC/Scene/Scene.h"
 #include "imgui/imgui.h"
+#include "ARC/Scene/Entity.h"
+#include "ARC/Scene/BasicComponents.h"
+#include "ARC/Scene/SceneRegistry.h"
+#include "ARC/Helpers/Random.h"
 
 namespace ARC {
 	// 2d only
@@ -10,9 +14,43 @@ namespace ARC {
 	static float TimeElapsed_ThisFrame = 0.0;
 	static bool bPause = false;
 
+	void CElectricSignComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		static const char* SignStrings[] = { "Negative", "Neutral", "Positive" };
+		const char* currentSignString = SignStrings[1 + Sign];
+
+		if (ImGui::BeginCombo("Sign", currentSignString))
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				bool isSelected = currentSignString == SignStrings[i];
+				if (ImGui::Selectable(SignStrings[i], isSelected))
+				{
+					currentSignString = SignStrings[i];
+					Sign = i - 1;
+				}
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+	}
+
+	void CElectricSignComponent::Serialize(YAML::Emitter& pOut)
+	{
+		//pOut << YAML::Key << "Sign" << YAML::Value << Sign;
+	}
+
+	void CElectricSignComponent::Deserialize(YAML::Node& pData)
+	{
+		//Sign = pData["Sign"].as<int8_t>();
+	}
+
 	static FVec3 FindClosestPointOnLine(FVec3 pLB, FVec3 pLE, FVec3 pP)
 	{
-		float LineLength = Math::Dist(pLB, pLE);
+		float LineLength = SMath::Dist(pLB, pLE);
 		FVec3 Vector = pP - pLB;
 		FVec3 LineDirection = (pLE - pLB) / LineLength;
 
@@ -26,6 +64,9 @@ namespace ARC {
 
 	void CAtomExp::OnAttach(TRef<CScene>& pActiveScene)
 	{
+		SSceneRegistry::SetupComponent<CNetForceComponent>();
+		SSceneRegistry::SetupComponent<CElectricSignComponent>();
+
 		m_ActiveScene = pActiveScene;
 		auto cam = m_ActiveScene->CreateEntity("Camera");
 		auto& ccc = cam.AddComponent<CCameraComponent>();
@@ -33,16 +74,22 @@ namespace ARC {
 		auto& camTransformComp = cam.AddComponent<CTransform2DComponent>();
 		
 		auto tex = CTexture2D::Create("assets/textures/circle-64.png");
+		auto trans = FTransform2D();
 
-		auto electron = m_ActiveScene->CreateEntity("Atom");
-
-		auto& trans = FTransform2D();
-
-		electron.AddComponent<CTransform2DComponent>(trans);
-		electron.AddComponent<CSpriteRendererComponent>(FColor::Blue, tex, FVec2::OneVector);
-		auto electron2 = m_ActiveScene->CreateEntity("Atom2");
-		electron2.AddComponent<CTransform2DComponent>();
-		electron2.AddComponent<CSpriteRendererComponent>(FColor::Blue, tex, FVec2::OneVector);
+		{
+		auto electron = m_ActiveScene->CreateEntity("Atom1");
+		auto& _ = electron.AddComponent<CTransform2DComponent>(trans);
+		_.Transform.Location = FVec3(SRandom::Float(-10, 10), SRandom::Float(-10, 10), 0);
+		electron.AddComponent<CSpriteRendererComponent>(FColor4::Blue(), tex, FVec2::OneVector());
+		}{
+		auto electron = m_ActiveScene->CreateEntity("Atom2");
+		auto& _ = electron.AddComponent<CTransform2DComponent>(trans);
+		_.Transform.Location = FVec3(SRandom::Float(-10, 10), SRandom::Float(-10, 10), 0);
+		electron.AddComponent<CSpriteRendererComponent>(FColor4::Blue(), tex, FVec2::OneVector());
+		}
+		for (size_t i = 0; i < 100; i++)
+		{
+		}
 	}
 
 	void CAtomExp::OnDetach()
@@ -65,18 +112,18 @@ namespace ARC {
 			{
 				if (cesn.Sign == CElectricSignComponent::EElectricSign::Negative)
 				{
-					cmc.Mass = 9.10938e-31;
-					csrc.Color = FColor::Blue;
+					cmc.Mass = 9.10938e-31f;
+					csrc.Color = FColor4::Blue();
 				}
 				else if (cesn.Sign == CElectricSignComponent::EElectricSign::Neutral)
 				{
-					cmc.Mass = 1.6749e-27;
-					csrc.Color = FColor::Yellow;
+					cmc.Mass = 1.6749e-27f;
+					csrc.Color = FColor4::Yellow();
 				}
 				else if (cesn.Sign == CElectricSignComponent::EElectricSign::Positive)
 				{
-					cmc.Mass = 1.67262192e-27;
-					csrc.Color = FColor::Red;
+					cmc.Mass = 1.67262192e-27f;
+					csrc.Color = FColor4::Red();
 				}
 			}
 		}
@@ -86,14 +133,14 @@ namespace ARC {
 		{
 			auto filterC = m_ActiveScene->FilterByComponents<CNetForceComponent, CTransform2DComponent, CMassComponent>();
 
-			static constexpr double gravityConstant = 6.6743e-11; // m3 kg-1 s-2
+			static constexpr double gravityConstant = 6.6743e-11f; // m3 kg-1 s-2
 
 			for (auto&& [eid, cnfc, ctc, cmc] : filterC.each())
 				for (auto&& [eid1, cnfc1, ctc1, cmc1] : filterC.each())
 					if (eid != eid1)
 					{
 						auto ctc1_to_ctc = ctc1.Transform.Location - ctc.Transform.Location;
-						FVec3 force = ctc1_to_ctc.Normalize() * gravityConstant * cmc.Mass * cmc1.Mass / Math::DistSqr(ctc.Transform.Location, ctc1.Transform.Location);
+						FVec3 force = ctc1_to_ctc.Normalize() * gravityConstant * cmc.Mass * cmc1.Mass / SMath::DistSqr(ctc.Transform.Location, ctc1.Transform.Location);
 						cnfc.NetForce += force;
 					}
 		}
@@ -109,7 +156,7 @@ namespace ARC {
 					if (eid != eid1)
 					{
 						auto UnitVector = (ctc1.Transform.Location - ctc.Transform.Location).Normalize();
-						if (auto dist = Math::DistSqr(ctc.Transform.Location, ctc1.Transform.Location))
+						if (auto dist = SMath::DistSqr(ctc.Transform.Location, ctc1.Transform.Location))
 						{
 							FVec3 force = UnitVector * -1.f * chargeInProton * chargeInProton * coulombConstant * float(cesc.Sign) * float(cesc1.Sign) / dist;
 							cnfc.NetForce += force;
@@ -124,7 +171,7 @@ namespace ARC {
 			for (auto&& [eid, cnfc, ctc, cmc, cvc] : filterC.each())
 			{
 				FVec3 acc = cnfc.NetForce / cmc.Mass;
-				cnfc.NetForce = FVec3::ZeroVector;
+				cnfc.NetForce = FVec3::ZeroVector();
 				float rad = ctc.Transform.Scale.x / 2;
 				cvc.Velocity += acc * pDeltaTime * Time_Multiplier;
 				cvc.Velocity *= Mask;
@@ -145,9 +192,9 @@ namespace ARC {
 
 					if (eid != eid1)
 					{
-						float dist = Math::DistSqr(CurrLoc*Mask, CurrLoc1 * Mask);
+						float dist = SMath::DistSqr(CurrLoc*Mask, CurrLoc1 * Mask);
 						float rad1 = ctc1.Transform.Scale.x / 2;
-						if (dist <= Math::Sqr(ctc.Transform.Scale.x + ctc1.Transform.Scale.x)/4)
+						if (dist <= SMath::Sqr(ctc.Transform.Scale.x + ctc1.Transform.Scale.x)/4)
 						{
 							ARC_CORE_INFO("Collision");
 							float overlap = 0.5f * (dist - rad - rad1);

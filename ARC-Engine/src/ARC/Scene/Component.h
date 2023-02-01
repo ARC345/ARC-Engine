@@ -26,13 +26,17 @@ namespace ARC {
 		};
 	}
 
-	namespace ITRL::META {
-		template<typename T>
-		static void GetFlags(ECF::EComponentFlags& pOut)
-		{
-			pOut = (ECF::EComponentFlags)T::Flags;
-		}
-	}
+	struct CComponentBase
+	{
+		virtual void OnConstruct(CEntity& pOwningEntity){};
+		virtual void DrawPropertiesUI(CEntity& pEntity) {};
+		virtual void Serialize(YAML::Emitter& pOut) {};
+		virtual void Deserialize(YAML::Node& pData) {};
+		virtual uint32_t GetFlags()=0;
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags;
+		static constexpr int32_t OnTopPriority = 0; // >1 top priority, <1 means bottom priority in scene heirachy panel @TODO implemeant
+	};
 
 	struct CComponentTraits
 	{
@@ -41,44 +45,29 @@ namespace ARC {
 		{
 			return std::is_base_of_v<CComponentBase, T>;
 		}
-		
 		template<typename T>
 		static constexpr decltype(auto) GetName()
 		{
-			return HPR::GetClassName<T>();
-		}
-		template<typename T>
-		static constexpr decltype(auto) GetNameHash()
-		{
-			return GetNameHash(GetName<T>());
-		}
-		static constexpr decltype(auto) GetNameHash(const TString& pName)
-		{
-			return entt::hashed_string::value(pName.c_str(), pName.size());
+			static_assert(IsComponent<T>());
+			return SHPR::GetClassName<T>();
 		}
 		template<typename T>
 		static constexpr decltype(auto) GetFlags()
 		{
+			static_assert(IsComponent<T>());
 			return T::Flags;
 		}
-		
-		static decltype(auto) GetFlags(const TString& pName)
-		{
-			using namespace entt::literals;
-			auto _ = ECF::ComponentFlagsNone;
-			entt::resolve(GetNameHash(pName)).func("get_flags"_hs).invoke({}, entt::forward_as_meta(_));
-			return _;
+		template<typename T>
+		static constexpr decltype(auto) GetID() noexcept {
+			static const std::size_t value = ItrlCounter();
+			return value;
 		}
-	};
 
+	private:
+		static std::size_t ItrlCounter() noexcept {
+			static std::size_t value = 0;
+			return value++;
+		}
 
-	struct CComponentBase
-	{
-		virtual void OnConstruct(CEntity* pOwningEntity){};
-		virtual void DrawPropertiesUI(CEntity& pEntity) {};
-		virtual void Serialize(YAML::Emitter& pOut) {};
-		virtual void Deserialize(YAML::Node& pData) {};
-
-		static constexpr ECF::EComponentFlags Flags = ECF::DefaultComponentFlags;
 	};
 }

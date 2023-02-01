@@ -10,8 +10,9 @@
 #include "SubTexture2D.h"
 #include "ARC/Objects/Primitive2D.h"
 #include "Camera.h"
-#include "ARC/Types/Glm.h"
 #include "glm/gtx/transform.hpp"
+#include <algorithm>
+#include "ARC/Wrappers/Glm.h"
 
 namespace ARC {
 	struct SQuadVertex
@@ -39,12 +40,13 @@ namespace ARC {
 		uint32_t QuadIndexCount=0;
 
 		SQuadVertex* QuadVertexBufferBase=nullptr;
-		SQuadVertex* QuadVertexBufferPtr=nullptr;
+		SQuadVertex* QuadVertexBufferBasePtr=nullptr;
 
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
 
 		FGVec4 QuadVertexPositions[4];
+		FGMat4 camTransform;
 
 		CRenderer2D::SStatistics Statistics;
 
@@ -77,7 +79,7 @@ namespace ARC {
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 		s_Data.QuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
 		
-		uint32_t* quad_indices = new uint32_t[s_Data.MaxIndices];
+		auto* quad_indices = new uint32_t[s_Data.MaxIndices];
 
 		uint32_t offset = 0;
 		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
@@ -124,28 +126,47 @@ namespace ARC {
 
 	void CRenderer2D::BeginScene(const COrthographicCamera& _Camera)
 	{
+		FGMat4 Trans = _Camera.GetViewProjectionMatrix();
+
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", _Camera.GetViewProjectionMatrix());
 		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
+
+		s_Data.camTransform = Trans;
 	}
 
 	void CRenderer2D::BeginScene(const CCamera& _Camera, const FTransform2D& _Transform)
 	{
-		FGMat4 Trans = _Camera.GetProjection() * glm::inverse(_Transform.To<FGMat4>());
+		FGMat4 Trans = _Camera.GetProjection() * glm::inverse(SHPR::Conv<FGMat4>(_Transform));
 
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", Trans);
 		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
+		s_Data.camTransform = Trans;
 	}
 
+	template <int Length, typename T>
+	struct Block
+	{
+		T n_[Length];
+	};
 	void CRenderer2D::EndScene()
 	{
 		ARC_PROFILE_FUNCTION();
-		auto data_size = uint32_t((uint8_t*)s_Data.QuadVertexBufferPtr- (uint8_t*)s_Data.QuadVertexBufferBase);
+
+		auto data_size = uint32_t((uint8_t*)s_Data.QuadVertexBufferBasePtr- (uint8_t*)s_Data.QuadVertexBufferBase);
+
+		std::sort((Block<4, SQuadVertex>*)s_Data.QuadVertexBufferBase, (Block<4, SQuadVertex>*)s_Data.QuadVertexBufferBasePtr,
+			[&](const Block<4, SQuadVertex>& p1, const Block<4, SQuadVertex>& p2) -> bool {
+				FGVec3 tmp = FGVec3(s_Data.camTransform[3]) - p1.n_[0].Position;
+				FGVec3 tmp2 = FGVec3(s_Data.camTransform[3]) - p2.n_[0].Position;
+				return p1.n_[0].Position[2] < p2.n_[0].Position[2];
+			});
+
 		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, data_size);
 		
 		Flush();
@@ -164,7 +185,7 @@ namespace ARC {
 		CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor4& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -198,19 +219,20 @@ namespace ARC {
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
-			s_Data.QuadVertexBufferPtr->TexCoord = CTexture2D::TexCoords[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
-			s_Data.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferBasePtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
+			s_Data.QuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
+			s_Data.QuadVertexBufferBasePtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferBasePtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
+			s_Data.QuadVertexBufferBasePtr++;
 		}
 
 		s_Data.QuadIndexCount += 6;
 
 		++s_Data.Statistics.QuadCount;
 	}
-	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
+
+	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor4& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
 	{
 		if (s_Data.QuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset();
@@ -242,12 +264,12 @@ namespace ARC {
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferPtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
-			s_Data.QuadVertexBufferPtr->TexCoord = _SubTex->GetTexCoords()[i];
-			s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferPtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
-			s_Data.QuadVertexBufferPtr++;
+			s_Data.QuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferBasePtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
+			s_Data.QuadVertexBufferBasePtr->TexCoord = _SubTex->GetTexCoords()[i];
+			s_Data.QuadVertexBufferBasePtr->TexIndex = textureIndex;
+			s_Data.QuadVertexBufferBasePtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
+			s_Data.QuadVertexBufferBasePtr++;
 		}
 
 		s_Data.QuadIndexCount += 6;
@@ -277,7 +299,7 @@ namespace ARC {
 	{
 		EndScene();
 		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
 		s_Data.TextureSlotIndex = 1;
 	}
 }

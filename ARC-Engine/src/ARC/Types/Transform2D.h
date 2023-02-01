@@ -1,18 +1,16 @@
 #pragma once
-#include "TybeBase.h"
 #include "Vector.h"
-#include "Glm.h"
-#include "ARC\Helpers\Helpers.h"
 
 namespace ARC {
 	template<typename T>
 	class TTransform2D : public TTypeBase
 	{
-		ARC_TYPE()
+		ARC_TYPE();
 
 	public:
-		TTransform2D() : Location(TVec3<T>::ZeroVector), Rotation(0), Scale(TVec2<T>::OneVector) {}
+		TTransform2D() : Location(TVec3<T>::ZeroVector()), Rotation(0), Scale(TVec2<T>::OneVector()) {}
 		TTransform2D(TVec3<T> _L, T _R, TVec2<T> _S) : Location(_L), Rotation(_R), Scale(_S) {}
+		
 		TVec3<T> Location;
 		T Rotation;
 		TVec2<T> Scale;

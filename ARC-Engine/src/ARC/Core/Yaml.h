@@ -67,9 +67,9 @@ namespace YAML
 	};
 
 	template<>
-	struct convert<ARC::FColor>
+	struct convert<ARC::FColor4>
 	{
-		static Node encode(const ARC::FColor& rhs) {
+		static Node encode(const ARC::FColor4& rhs) {
 			Node node;
 			node.push_back(rhs.r);
 			node.push_back(rhs.g);
@@ -77,7 +77,7 @@ namespace YAML
 			node.push_back(rhs.a);
 			return node;
 		}
-		static bool decode(const Node& node, ARC::FColor& rhs) {
+		static bool decode(const Node& node, ARC::FColor4& rhs) {
 			if (!node.IsSequence() || node.size() != 4)
 				return false;
 

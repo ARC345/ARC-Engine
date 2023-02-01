@@ -7,18 +7,16 @@ namespace ARC {
 	{
 	public:
 		CMouseMovedEvent(FVec2 p_MouseXY) :
-			m_MouseXY(p_MouseXY) {}
+			m_MousePos(p_MouseXY) {}
 		CMouseMovedEvent(float p_MouseX, float p_MouseY) :
-			m_MouseXY(FVec2(p_MouseX, p_MouseY)) {
+			m_MousePos(FVec2(p_MouseX, p_MouseY)) {
 			}
 
-		inline FVec2 GetXY() const {return m_MouseXY;};
-		inline float GetX() const {return m_MouseXY[0];};
-		inline float GetY() const {return m_MouseXY[1];};
+		inline FVec2 GetPos() const {return m_MousePos;};
 
-		virtual std::string ToString() const {
+		virtual TString ToString() const {
 			std::stringstream ss;
-			ss << GetName() << "[" << GetX() << "," << GetY() << "]";
+			ss << GetName() << "[" << GetPos().x << "," << GetPos().y << "]";
 			return ss.str();
 		}
 
@@ -26,7 +24,7 @@ namespace ARC {
 		EVENT_CLASS_TYPE(MouseMoved)
 
 	private:
-		FVec2 m_MouseXY;
+		FVec2 m_MousePos;
 	};
 
 	class ARC_API CMouseScrolledEvent : public CEvent
@@ -37,7 +35,7 @@ namespace ARC {
 			CMouseScrolledEvent(float p_OffsetX, float p_OffsetY) :
 				m_Offset(FVec2(p_OffsetY, p_OffsetY)) {}
 		
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << "[" << GetXOffset() << "," << GetYOffset() << "]";
 				return ss.str();
@@ -56,20 +54,20 @@ namespace ARC {
 	class ARC_API CMouseButtonEvent : public CEvent
 	{
 	public:
-		inline uint GetMouseButton() const { return m_MouseButton; }
+		inline TUint GetMouseButton() const { return m_MouseButton; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	protected:
-		CMouseButtonEvent(uint p_Button) : m_MouseButton(p_Button) {}
-		uint m_MouseButton;
+		CMouseButtonEvent(TUint p_Button) : m_MouseButton(p_Button) {}
+		TUint m_MouseButton;
 	};
 
 	class ARC_API CMouseButtonPressedEvent : public CMouseButtonEvent
 	{
 		public:
-			CMouseButtonPressedEvent(uint p_Button) : CMouseButtonEvent(p_Button) {}
+			CMouseButtonPressedEvent(TUint p_Button) : CMouseButtonEvent(p_Button) {}
 
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << " [" << m_MouseButton << "]";
 				return ss.str();
@@ -81,9 +79,9 @@ namespace ARC {
 	class ARC_API CMouseButtonReleasedEvent : public CMouseButtonEvent
 	{
 		public:
-			CMouseButtonReleasedEvent(uint p_Button) : CMouseButtonEvent(p_Button) {}
+			CMouseButtonReleasedEvent(TUint p_Button) : CMouseButtonEvent(p_Button) {}
 
-			virtual std::string ToString() const override {
+			virtual TString ToString() const override {
 				std::stringstream ss;
 				ss << GetName() << " [" << m_MouseButton << "]";
 				return ss.str();

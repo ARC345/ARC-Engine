@@ -49,7 +49,7 @@ namespace ARC {
 
 		SetDarkThemeColors();
 		ImGui::StyleColorsDark();
-		auto& app = ARC::CApplication::Get();
+		auto& app = CApplication::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -85,7 +85,7 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)ARC::CApplication::Get().GetWindow().GetWidth(), (float)ARC::CApplication::Get().GetWindow().GetHeight());
+		io.DisplaySize = ImVec2((float)CApplication::Get().GetWindow().GetWidth(), (float)CApplication::Get().GetWindow().GetHeight());
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

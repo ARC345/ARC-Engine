@@ -19,11 +19,4 @@ namespace ARC
 	{
 		return m_Entity != entt::null && m_Scene != nullptr;
 	}
-
-	void CEntity::Serialize(const bool pbBinary, YAML::Emitter& pEmitter)
-	{
-		ARC_CORE_ASSERT(IsValid(), "Cannot serialize a dead entity")
-
-		Serializer(pEmitter);
-	}
 }

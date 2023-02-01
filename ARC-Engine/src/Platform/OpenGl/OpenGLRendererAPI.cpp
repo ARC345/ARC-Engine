@@ -19,7 +19,7 @@ namespace ARC {
 		glViewport(_BottemLeftCoord.x, _BottemLeftCoord.y, _Dimentions.x, _Dimentions.y);
 	}
 
-	void COpenGLRendererAPI::SetClearColour(const glm::vec4 _Colour)
+	void COpenGLRendererAPI::SetClearColour(const FColor4 _Colour)
 	{
 		glClearColor(_Colour.r, _Colour.g, _Colour.b, _Colour.a);
 	}
