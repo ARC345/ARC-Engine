@@ -4,17 +4,18 @@
 
 namespace ARC {
 	template<typename RET>
-	class CDelegate;
+	class TDelegate;
 	template<typename RET>
-	class CMulticastDelegate;
+	class TMulticastDelegate;
 
+	// @TODO rewrite
 	template<typename RET, typename ...PARAMS>
-	class CDelegate<RET(PARAMS...)> {
+	class TDelegate<RET(PARAMS...)> {
 	public:
 		using Params = MPL::TypeList<PARAMS...>;
 		using RVal = RET;
 
-		CDelegate() : fn(nullptr) {}
+		TDelegate() : fn(nullptr) {}
 
 		template<auto Candidate, typename Type>
 		void Bind(Type value_or_instance) {
@@ -41,7 +42,7 @@ namespace ARC {
 		};
 		template<typename Invokable>
 		void Bind(Invokable invokable) {
-			static_assert(sizeof(Invokable) < sizeof(void*));
+			static_assert(sizeof(Invokable) < sizeof(void*), "capture list not supported currently");
 			static_assert(std::is_class_v<Invokable>);
 			static_assert(std::is_trivially_destructible_v<Invokable>);
 			static_assert(std::is_invocable_r_v<RET, Invokable, PARAMS...>);
@@ -54,16 +55,14 @@ namespace ARC {
 			};
 		};
 
-		#define CDELEGATEFUNC [[nodiscard]] inline
+		#define TDELEGATEFUNC [[nodiscard]] inline
 
-		CDELEGATEFUNC void* Data() const { return instance; }
+		TDELEGATEFUNC RET operator()(PARAMS... args) const { return fn(storage, args...); }
+		TDELEGATEFUNC explicit operator bool() const { return fn != nullptr; }
+		TDELEGATEFUNC bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn; }
+		TDELEGATEFUNC bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn; }
 
-		CDELEGATEFUNC RET operator()(PARAMS... args) const { return fn(storage, args...); }
-		CDELEGATEFUNC explicit operator bool() const { return fn != nullptr; }
-		CDELEGATEFUNC bool operator==(const CDelegate<RET(PARAMS...)>& _) const { return fn == _.fn && instance == _.instance; }
-		CDELEGATEFUNC bool operator!=(const CDelegate<RET(PARAMS...)>& _) const { return fn != _.fn || instance != _.instance; }
-
-		#undef CDELEGATEFUNC
+		#undef TDELEGATEFUNC
 	private:
 	protected:
 		using storage_type = std::aligned_storage_t<sizeof(void*), alignof(void*)>;
@@ -73,13 +72,13 @@ namespace ARC {
 	};
 	
 	template<typename RET, typename ...PARAMS>
-	class CMulticastDelegate<RET(PARAMS...)> {
-		using DelegateClass = CDelegate<RET(PARAMS...)>;
-		using InvocationListClass = std::list<typename DelegateClass*>;
+	class TMulticastDelegate<RET(PARAMS...)> {
+		using DelegateClass = TDelegate<RET(PARAMS...)>;
+		using InvocationListClass = std::list<DelegateClass*>;
 
 	public:
-		CMulticastDelegate() = default;
-		~CMulticastDelegate() {
+		TMulticastDelegate() = default;
+		~TMulticastDelegate() {
 			for (auto& element : m_InvocationList) delete element;
 			m_InvocationList.clear();
 		};
@@ -122,14 +121,13 @@ namespace ARC {
 		template<typename HANDLER>
 		[[nodiscard]] void operator()(PARAMS... args, HANDLER handler) const {
 			size_t index = 0;
-			for (auto& item : invocationList) {
-				RET value = element->operator (args...);
+			for (auto& item : m_InvocationList) {
+				RET value = *item(args...);
 				handler(index, &value);
 				++index;
 			} //loop
 		}
 		[[nodiscard]] inline explicit operator bool() const { return !IsEmpty(); }
-		[[nodiscard]] inline bool operator!=(const DelegateClass& _) const { return fn != _.fn || instance != _.instance; }
 
 		typename InvocationListClass::iterator begin() { return m_InvocationList.begin(); }
 		typename InvocationListClass::iterator end() { return m_InvocationList.end(); }

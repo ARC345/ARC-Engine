@@ -46,7 +46,7 @@ namespace ARC {
 		virtual EEventType GetEventType() const override {return GetStaticType();}\
 		virtual const char* GetName() const override {return #type;}
 
-	#define EVENT_CLASS_CATEGORY(category) virtual uint GetCategoryFlags() const override { return category; }
+	#define EVENT_CLASS_CATEGORY(category) virtual TUint GetCategoryFlags() const override { return category; }
 
 	class ARC_API CEvent
 	{
@@ -56,19 +56,19 @@ namespace ARC {
 		virtual ~CEvent() = default;
 
 		virtual EEventType GetEventType() const = 0;
-		virtual uint GetCategoryFlags() const = 0;
+		virtual TUint GetCategoryFlags() const = 0;
 
 		// get event name
 		virtual const char* GetName() const = 0;
 		
 		// converts event to string
-		virtual std::string ToString() const { return std::string(GetName()); };
+		virtual TString ToString() const { return TString(GetName()); };
 
 		inline bool IsInCategory(EEventCategory category) {
 			return GetCategoryFlags() & category;
 		}
 
-		uint bHandled : 1;
+		TUint bHandled : 1;
 	};
 
 	class CEventDispatcher

@@ -2,7 +2,7 @@ include "./_vendor/premake/premake_customization/solution_items.lua"
 
 workspace "ARC-Engine"
 	architecture "x86_64"
-	startproject "Sandbox"
+	startproject "ARC-Editor"
 
 	configurations
 	{
@@ -31,6 +31,7 @@ IncludeDir["sparsemap"] = "%{wks.location}/ARC-Engine/out/sparse-map/include"
 IncludeDir["orderedmap"] = "%{wks.location}/ARC-Engine/out/ordered-map/include"
 IncludeDir["meta"] = "%{wks.location}/ARC-Engine/out/meta"
 IncludeDir["stb_image"] = "%{wks.location}/ARC-Engine/out/stb_image"
+IncludeDir["entt"] = "%{wks.location}/ARC-Engine/out/entt/include"
 IncludeDir["ImGuizmo"] = "%{wks.location}/ARC-Engine/out/ImGuizmo"
 
 group "Dependencies"

@@ -1,14 +1,23 @@
 #include "arc_pch.h"
 #include "Scene.h"
-#include "ARC\Renderer\Renderer2D.h"
-#include "ARC\Objects\Primitive2D.h"
-#include "Utils\MPL\Interface.hpp"
-#include "Utils\MetaFor.hpp"
+#include "ARC/Renderer/Renderer2D.h"
+#include "ARC/Objects/Primitive2D.h"
+#include "Utils/MPL/Interface.hpp"
+#include "ARC/Core/Yaml.h"
+#include "Entity.h"
+#include "BasicComponents.h"
+#include "SceneRegistry.h"
 
 namespace ARC {
 	CScene::CScene()
 	{
-		SetupComponents();
+		SSceneRegistry::SetupComponent<CNameComponent>();
+		SSceneRegistry::SetupComponent<CTransform2DComponent>();
+		SSceneRegistry::SetupComponent<CSpriteRendererComponent>();
+		SSceneRegistry::SetupComponent<CCameraComponent>();
+		SSceneRegistry::SetupComponent<CNativeScriptComponent>();
+		SSceneRegistry::SetupComponent<CMassComponent>();
+		SSceneRegistry::SetupComponent<CVelocityComponent>();
 	}
 
 	CScene::~CScene()
@@ -16,132 +25,132 @@ namespace ARC {
 
 	}
 
-	void CScene::SetupComponents()
-	{
-	}
-
 	CEntity CScene::CreateEntity(const TString& pName)
 	{
-		CEntity entity(m_Manager.CreateEntity(), this);
+		CEntity entity(m_Manager.create(), this);
 
-		MPL::forTypes<MyComponents>([&](auto t){
-			using tCompType = ECS_TYPE(t);
-			if constexpr (tCompType::Flags & ECF::AutoAddToAll)
-			{
-				if constexpr (std::is_same_v<tCompType, CNameComponent>)
-					entity.AddComponent<CNameComponent>(pName);
-				else
-					entity.AddComponent<tCompType>();
-			}
-		});
+		entity.AddComponent<CNameComponent>(pName);
 
 		return entity;
 	}
 
 	void CScene::RemoveEntity(CEntity Entity)
 	{
-		m_Manager.Kill(Entity.GetID());
+		m_Manager.destroy(Entity.GetID());
 		Entity.OnKill();
 	}
 
-	void CScene::OnUpdate(float DeltaTime)
+	//void CScene::OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera)
+	//{
+	//	CRenderer2D::EditorBeginScene(*mainCam, *camTransform);
+	//
+	//	if (m_Manager.view<CCameraComponent>().size() != 1)
+	//	{
+	//		static CPrimitive2D Quad;
+	//		CRenderer2D::DrawQuad(Quad);
+	//	}
+	//
+	//	m_Manager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+	//		{
+	//			static CPrimitive2D Quad;
+	//			Quad.Color = spriteRendererComp.Color;
+	//			Quad.Texture = spriteRendererComp.Texture;
+	//			Quad.TextureScaling = spriteRendererComp.TextureScaling;
+	//			Quad.Transform = transformComp;
+	//			CRenderer2D::DrawQuad(Quad);
+	//		});
+	//
+	//	CRenderer2D::EditorEndScene();
+	//}
+
+	void CScene::OnUpdateRuntime(float DeltaTime)
 	{
-		//m_Manager.Refresh();
-		{
-			auto& comps = m_Manager.GetComponents<CNativeScriptComponent>();
-			for (auto& comp : comps)
+		m_Manager.view<CNativeScriptComponent>().each([=](auto entity, auto& nativeScriptcomp)
 			{
-				if (!comp.Controller)
+				if (!nativeScriptcomp.Controller)
 				{
-					comp.Controller = comp.InstantiateDelegate();
-					comp.Controller->Setup(comp.OwningEntity);
-					comp.Controller->OnCreate();
+					nativeScriptcomp.Controller = nativeScriptcomp.InstantiateDelegate();
+					nativeScriptcomp.Controller->Setup(nativeScriptcomp.OwningEntity);
+					nativeScriptcomp.Controller->OnCreate();
 				}
-			
-				comp.Controller->OnUpdate(DeltaTime);
-			}
-		}
-		CCamera* MainCam = nullptr;
-		FTransform2D* CamTransform = nullptr;
-		{
-			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CCameraComponent>();
-			for (auto[entity, TransformComp, CameraComp] : filter)
-			{
-				if (CameraComp.bPrimary)
-				{
-					MainCam = &CameraComp.Camera;
-					CamTransform = &TransformComp.Transform;
-					break;
-				}
-			}
-		}
-		if (MainCam)
-		{
-			CRenderer2D::BeginScene(*MainCam, *CamTransform);
 
-			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CSpriteRendererComponent>();
-			auto filter2 = m_Manager.GetComponents<CCameraComponent>();
-			
-			if (filter2.size()!=1)
+				nativeScriptcomp.Controller->OnUpdate(DeltaTime);
+			});
+		
+		CCamera* mainCam = nullptr;
+		FTransform2D* camTransform = nullptr;
+		
+		m_Manager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
+			{
+				if (cameraComp.bPrimary)
+				{
+					mainCam = &cameraComp.Camera;
+					camTransform = &transformComp.Transform;
+					return;
+				}
+			});
+
+		if (mainCam)
+		{
+			CRenderer2D::BeginScene(*mainCam, *camTransform);
+
+			if (m_Manager.view<CCameraComponent>().size()!=1)
 			{
 				static CPrimitive2D Quad;
 				CRenderer2D::DrawQuad(Quad);
 			}
 
-			for (auto [entity, TransformComp, SpriteRendererComp] : filter)
-			{
-				static CPrimitive2D Quad;
-				Quad.Color = SpriteRendererComp.Color;
-				Quad.Texture = SpriteRendererComp.Texture;
-				Quad.TextureScaling = SpriteRendererComp.TextureScaling;
-				Quad.Transform = TransformComp;
-				CRenderer2D::DrawQuad(Quad);
-			}
+			m_Manager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+				{
+					static CPrimitive2D Quad;
+					Quad.Color = spriteRendererComp.Color;
+					Quad.Texture = spriteRendererComp.Texture;
+					Quad.TextureScaling = spriteRendererComp.TextureScaling;
+					Quad.Transform = transformComp;
+					CRenderer2D::DrawQuad(Quad);
+				});
 
 			CRenderer2D::EndScene();
 		}
 
-		{
-			auto filter = m_Manager.FilterComponents<CTransform2DComponent, CVelocityComponent>();
-			for (auto [entity, ctc, cvc] : filter)
-				ctc.Transform.Location += cvc.Velocity;
-		}
+		m_Manager.view<CTransform2DComponent, CVelocityComponent>().each([](auto entity, auto& transformComp, auto& velocityComp)
+			{
+				transformComp.Transform.Location += velocityComp.Velocity;
+			});
 	}
 
 	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
 	{
 		m_ViewportSize = pNewSize;
 
-		auto& Comps = m_Manager.GetComponents<CCameraComponent>();
-
-		for (auto& component : Comps)
-		{
-			if (!component.bFixedAspectRatio)
+		m_Manager.view<CCameraComponent>().each([=](auto entity, auto& cameraComp)
 			{
-				component.Camera.SetViewportSize(pNewSize);
-			}
-		}
+				if (!cameraComp.bFixedAspectRatio)
+				{
+					cameraComp.Camera.SetViewportSize(pNewSize);
+				}
+			});
 	}
 
 	void CScene::SerializeEntity(YAML::Emitter& pOut, CEntity pEntity)
 	{
 		pOut << YAML::BeginMap;
-		pOut << YAML::Key << "Entity" << YAML::Value << "1038845309209";
+		pOut << YAML::Key << "Entity" << YAML::Value << "1038845309209"; // @TODO
+		pOut << YAML::Key << "Components" << YAML::Value << YAML::BeginSeq;
 
-		MPL::forTypes<MyComponents>([&](auto t) {
-			using tCompType = ECS_TYPE(t);
-
-				if (pEntity.HasComponent<tCompType>())
+		for (auto& comp : SSceneRegistry::GetTypeErasedGetComponentFuncs())
+			if (auto* compPtr = comp.second(pEntity))
+				if (compPtr->GetFlags() & ECF::EComponentFlags::Serializable)
 				{
-					pOut << YAML::Key << CComponentTraits::GetName<tCompType>();
-					pOut << YAML::Value << YAML::BeginMap;
-					if constexpr (tCompType::Flags & ECF::Serializable)
-						pEntity.GetComponent<tCompType>().Serialize(pOut);
+					pOut << YAML::BeginMap;
+					pOut << YAML::Key << "Name" << YAML::Value << comp.first;
+					pOut << YAML::Key << "Data" << YAML::Value << YAML::BeginMap;
+					compPtr->Serialize(pOut);
+					pOut << YAML::EndMap;
 					pOut << YAML::EndMap;
 				}
 
-			});
-
+		pOut << YAML::EndSeq;
 		pOut << YAML::EndMap;
 	}
 
@@ -152,12 +161,14 @@ namespace ARC {
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		m_Manager.UpdateEntities([&](auto pEid){
-			CEntity entity = { pEid, this };
-			if (!entity) return;
+		m_Manager.each([&](const TEntityID pEID)
+			{
+				CEntity entity = { pEID, this };
+				if (!entity) return;
 
-			CScene::SerializeEntity(out, entity);			
-		});
+				CScene::SerializeEntity(out, entity);			
+			});
+
 		out << YAML::EndSeq;
 		out << YAML::EndMap;
 
@@ -183,26 +194,19 @@ namespace ARC {
 			for (auto entity : entities)
 			{
 				uint64_t uuid = entity["Entity"].as<uint64_t>();
-
 				CEntity deserializedEntity = CreateEntity();
+				
+				for (auto compData : entity["Components"])
+				{
+					auto Node = compData["Data"];
 
-				MPL::forTypes<MyComponents>([&](auto t) {
-					using tCompType = ECS_TYPE(t);
-
-					if constexpr (tCompType::Flags & ECF::Serializable) {
-						if (auto comp = entity[CComponentTraits::GetName<tCompType>()])
-						{
-							tCompType* component = nullptr;
-							if constexpr (!(tCompType::Flags & ECF::AutoAddToAll))
-								component = &deserializedEntity.AddComponent<tCompType>();
-							else
-								component = &deserializedEntity.GetComponent<tCompType>();
-							
-							component->Deserialize(comp);
-						}
+					if (compData["Name"].as<TString>() == CComponentTraits::GetName<CNameComponent>()) {
+						deserializedEntity.GetComponent<CNameComponent>().Deserialize(Node);
+						continue;
 					}
-					});
 
+					SSceneRegistry::GetTypeErasedAddComponentFuncs()[compData["Name"].as<TString>()](deserializedEntity)->Deserialize(Node);
+				}
 			}
 		}
 		return true;

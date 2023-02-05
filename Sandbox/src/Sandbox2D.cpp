@@ -18,7 +18,6 @@
 #include "ARC/Core/Ini.h"
 #include "ARC/Types/Vector.h"
 #include "ARC/Types/Delegate.h"
-#include "ARC/Objects/Ecs.h"
 
 namespace ARC { static bool bStressTest = false; }
 static const uint32_t s_MapWidth = 24;
@@ -75,7 +74,7 @@ CSandbox2D::CSandbox2D() :
 void CSandbox2D::OnAttach()
 {
 	ARC::CIniFile inif;
-	ARC::CMulticastDelegate<void(const char*)> x;
+	ARC::TMulticastDelegate<void(const char*)> x;
 	x.Bind<&CSandbox2D::___Print___>(this);
 	x.Bind<&CSandbox2D::___Print___>(this);
 	x.Bind<&CSandbox2D::___Print___>(this);
@@ -83,7 +82,7 @@ void CSandbox2D::OnAttach()
 	x.Bind([](const char* v) -> void { ARC_TRACE(v); });
 	x("Hello");
 	
-	ARC::CDelegate<void(const char*)> y;
+	ARC::TDelegate<void(const char*)> y;
 	y.Bind<&CSandbox2D::___Print___>(this);
 	y.Bind<&CSandbox2D::___Print___>(this);
 	y.Bind<&CSandbox2D::___Print___>(this);

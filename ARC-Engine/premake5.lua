@@ -1,7 +1,7 @@
 project "ARC-Engine"
 	kind "StaticLib"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 
 	targetdir ("%{wks.location}/_bin/" .. outputdir .. "/%{prj.name}")
@@ -23,6 +23,7 @@ project "ARC-Engine"
 		"out/sparse-map/include/tsl/**.h",
 		"out/ordered-map/include/tsl/**.h",
 		"out/ordered-map/include/tsl/**.h",
+		"out/entt/include/**.hpp",
 		"out/meta/**.hpp"
 	}
 
@@ -58,13 +59,9 @@ project "ARC-Engine"
 		"%{IncludeDir.meta}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.entt}"
 	}
-
-	ComponentDirs = "%{prj.location}src\\ARC\\Components"
-	ScriptsDir = "%{wks.location}Scripts\\"
-
-	prebuildcommands{ "python %{ScriptsDir}GenComponentList.py %{ComponentDirs}" }
 
 	filter "files:out/ImGuizmo/**.cpp"
 		flags "NoPCH"

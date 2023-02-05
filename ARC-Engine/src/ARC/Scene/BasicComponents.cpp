@@ -1,24 +1,27 @@
 #include "arc_pch.h"
+#include "BasicComponents.h"
 #include "Component.h"
 #include "Entity.h"
 #include "imgui.h"
 #include "Scene.h"
 #include "ARC/Core/Yaml.h"
+#include "ARC/GUI/ImGuiHelper.h"
+#include "../Core/PlatformUtils.h"
 
 namespace ARC
 {
-	void CNativeScriptComponent::OnConstruct(CEntity* pOwningEntity)
+	void CNativeScriptComponent::OnConstruct(CEntity& pOwningEntity)
 	{
-		OwningEntity = pOwningEntity;
+		OwningEntity = &pOwningEntity;
 	}
 
 	void CTransform2DComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
-		Transform.Location.DrawGuiControl("Translation", 100.f, FVec3::ZeroVector);
-		FVec1 _2 = Math::Degrees(Transform.Rotation);
-		_2.DrawGuiControl("Rotation", 100.f);
-		Transform.Rotation = Math::Radians(_2.x);
-		Transform.Scale.DrawGuiControl("Scale", 100.f, FVec2::OneVector);
+		SGuiHelper::DrawGuiControl(Transform.Location, "Translation", 100.f, FVec3::ZeroVector());
+		FVec1 _ = SMath::Degrees(Transform.Rotation);
+		SGuiHelper::DrawGuiControl(_, "Rotation", 100.f);
+		Transform.Rotation = SMath::Radians(_.x);
+		SGuiHelper::DrawGuiControl(Transform.Scale, "Scale", 100.f, FVec2::OneVector());
 	}
 
 	void CTransform2DComponent::Serialize(YAML::Emitter& pOut)
@@ -37,6 +40,9 @@ namespace ARC
 
 	void CCameraComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
+		bool bprimary = bPrimary;
+		ImGui::Checkbox("PrimaryCamera", &bprimary);
+		bPrimary = bprimary;  
 		static const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
 		const char* currentProjectionTypeString = projectionTypeStrings[(int)Camera.GetProjectionType()];
 
@@ -73,7 +79,7 @@ namespace ARC
 		}
 		if (Camera.GetProjectionType() == CSceneCamera::EProjectionType::Perspective)
 		{
-			float perspectiveFOV = Math::Conv<ERotType::Radians, ERotType::Degrees>(Camera.GetPerspectiveFOV());
+			float perspectiveFOV = SMath::Conv<ERotType::Radians, ERotType::Degrees>(Camera.GetPerspectiveFOV());
 			if (ImGui::DragFloat("FOV", &perspectiveFOV))
 				Camera.SetPerspectiveFOV(perspectiveFOV);
 
@@ -141,51 +147,37 @@ namespace ARC
 
 	void CSpriteRendererComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
-		ImGui::ColorEdit4("Color", Color.Data());
+		SGuiHelper::DrawGuiControl(Color, "Color", 100.f, FColor4::Black());
+		ImGui::Text("TexturePath   "); // @TODO allow text edit
+		ImGui::SameLine();
+		ImGui::Text(Texture ? Texture->GetPath().c_str() : "");
+		ImGui::SameLine();
+		if(ImGui::Button("...")) {
+			TString filepath = CFileDialogs::OpenFile("ARC-Engine Texture (*.png)\0*.png\0");
+			if (!filepath.empty())
+			{
+				Texture = CTexture2D::Create(filepath);
+			}
+		}
 	}
 
 	void CSpriteRendererComponent::Serialize(YAML::Emitter& pOut)
 	{
 		pOut << YAML::Key << "Color" << YAML::Value << Color;
+		if (Texture)
+			pOut << YAML::Key << "TexturePath" << YAML::Value << Texture->GetPath();
+		pOut << YAML::Key << "TextureScaling" << YAML::Value << TextureScaling;
 	}
 
 	void CSpriteRendererComponent::Deserialize(YAML::Node& pData)
 	{
-		Color = pData["Color"].as<FColor>();
-	}
-
-	void CElectricSignComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		static const char* SignStrings[] = { "Negative", "Neutral", "Positive"};
-		const char* currentSignString = SignStrings[1+Sign];
-
-		if (ImGui::BeginCombo("Sign", currentSignString))
+		Color = pData["Color"].as<FColor4>();
+		if (pData["TexturePath"])
 		{
-			for (int i = 0; i < 3; i++)
-			{
-				bool isSelected = currentSignString == SignStrings[i];
-				if (ImGui::Selectable(SignStrings[i], isSelected))
-				{
-					currentSignString = SignStrings[i];
-					Sign = i-1;
-				}
-				if (isSelected)
-					ImGui::SetItemDefaultFocus();
-			}
-
-			ImGui::EndCombo();
+			TString texturePath = pData["TexturePath"].as<TString>();
+			Texture = CTexture2D::Create(texturePath);
 		}
-
-	}
-
-	void CElectricSignComponent::Serialize(YAML::Emitter& pOut)
-	{
-		pOut << YAML::Key << "Sign" << YAML::Value << Sign;
-	}
-
-	void CElectricSignComponent::Deserialize(YAML::Node& pData)
-	{
-		Sign = pData["Sign"].as<int8_t>();
+		TextureScaling = pData["TextureScaling"].as<FVec2>();
 	}
 
 	void CVelocityComponent::DrawPropertiesUI(CEntity& pEntity)
@@ -217,5 +209,4 @@ namespace ARC
 	{
 		Mass = pData["Mass"].as<float>();
 	}
-
 }

@@ -7,7 +7,7 @@
 #include "ARC/Renderer/RenderCommand.h"
 #include "ARC/Scene/Scene.h"
 #include "ARC/Scene/Entity.h"
-#include "ARC/Types/Glm.h"
+#include "ARC/Wrappers/Glm.h"
 #include "glm/ext/matrix_clip_space.inl"
 #include "ARC/Core/PlatformUtils.h"
 #include "ARC/Renderer/FrameBuffer.h"
@@ -64,7 +64,7 @@ namespace ARC {
 		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 		CRenderCommand::Clear();
 
-		m_ActiveScene->OnUpdate(_DeltaTime);
+		m_ActiveScene->OnUpdateRuntime(_DeltaTime);
 		m_AtomExp->OnUpdate(_DeltaTime);
 		m_FrameBuffer->UnBind();
 	}

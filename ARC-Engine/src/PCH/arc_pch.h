@@ -7,15 +7,19 @@
 #include <functional>
 #include <random>
 #include <cmath>
+//#include <ranges>
 
 #include <sstream>
 #include <array>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "ARC/Types/Pointer.h"
 #include "ARC/Types/Vector.h"
+#include "ARC/Types/Color.h"
+#include "ARC/Types/Delegate.h"
 
 #include "ARC/Helpers/Helpers.h"
 #include "ARC/Core/Log.h"

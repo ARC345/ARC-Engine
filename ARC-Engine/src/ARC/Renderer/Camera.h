@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ARC/Types/Glm.h"
+#include "ARC/Wrappers/Glm.h"
 
 namespace ARC
 {

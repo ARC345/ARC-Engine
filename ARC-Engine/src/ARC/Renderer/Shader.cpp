@@ -1,11 +1,11 @@
 #include "arc_pch.h"
 #include "Renderer.h"
-#include "Platform\OpenGl\OpenGLShader.h"
-#include "ARC\Core\Core.h"
+#include "Platform/OpenGl/OpenGLShader.h"
+#include "ARC/Core/Core.h"
 #include "ARC/Types/Color.h"
-#include "ARC\Types\Glm.h"
-#include "glm\gtx\compatibility.hpp"
-#include "glm\gtc\type_ptr.inl"
+#include "ARC/Wrappers/Glm.h"
+#include "glm/gtx/compatibility.hpp"
+#include "glm/gtc/type_ptr.inl"
 
 namespace ARC {
 	TRef<CShader> CShader::Create(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc)
@@ -92,7 +92,7 @@ namespace ARC {
 		SetFloat2(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<FColor>(const TString& _Name, const FColor& _Value)
+	void CShader::Set<FColor4>(const TString& _Name, const FColor4& _Value)
 	{
 		SetFloat4(_Name, _Value.Data());
 	}

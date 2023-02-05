@@ -1,7 +1,7 @@
 project "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 
 	targetdir ("%{wks.location}/_bin/" .. outputdir .. "/%{prj.name}")
@@ -28,7 +28,8 @@ project "Sandbox"
 		"%{IncludeDir.sparsemap}",
 		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.entt}"
 	}
 	defines
 	{

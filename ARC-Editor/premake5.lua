@@ -1,7 +1,7 @@
 project "ARC-Editor"
 	kind "ConsoleApp"
 	language "C++"
-	cppdialect "C++17"
+	cppdialect "C++20"
 	staticruntime "on"
 
 	targetdir ("%{wks.location}/_bin/" .. outputdir .. "/%{prj.name}")
@@ -29,7 +29,8 @@ project "ARC-Editor"
 		"%{IncludeDir.orderedmap}",
 		"%{IncludeDir.meta}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.entt}"
 	}
 	filter "files:out/ImGuizmo/**.cpp"
 		flags "NoPCH"

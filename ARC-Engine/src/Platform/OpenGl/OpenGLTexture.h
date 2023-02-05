@@ -16,6 +16,8 @@ namespace ARC {
 			virtual void Bind(uint32_t _Slot = 0) const override;
 			virtual void ClearData() override;
 
+			virtual const TString& GetPath() const override { return m_Path; };
+
 			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) override;
 
 			virtual bool operator==(const CTexture& _Tex) const override {
@@ -33,7 +35,7 @@ namespace ARC {
 			unsigned int m_InternalFormat; //GLenum 
 			unsigned int m_DataFormat; //GLenum 
 			unsigned char* m_Data;
-			std::string m_Path;
+			TString m_Path;
 			uint32_t m_RendererID;
 	};
 }
