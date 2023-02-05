@@ -37,16 +37,19 @@ namespace ARC {
 
 		TRef<CShader> TextureShader;
 
-		uint32_t QuadIndexCount=0;
+		uint32_t TranslucentQuadIndexCount = 0;
+		SQuadVertex* TranslucentQuadVertexBufferBase=nullptr;
+		SQuadVertex* TranslucentQuadVertexBufferBasePtr=nullptr;
 
-		SQuadVertex* QuadVertexBufferBase=nullptr;
-		SQuadVertex* QuadVertexBufferBasePtr=nullptr;
+		uint32_t OpaqueQuadIndexCount = 0;
+		SQuadVertex* OpaqueQuadVertexBufferBase = nullptr;
+		SQuadVertex* OpaqueQuadVertexBufferBasePtr = nullptr;
 
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
 
 		FGVec4 QuadVertexPositions[4];
-		FGMat4 camTransform;
+		FGMat4 CameraTransform;
 
 		CRenderer2D::SStatistics Statistics;
 
@@ -59,13 +62,13 @@ namespace ARC {
 
 		//--------------------------------+[Code for square]+--------------------------------//
 
-		//float square_verts[5 * 4] = {
+		//float squarepverts[5 * 4] = {
 		//	- 0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 		//	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
 		//	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
 		//	-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		//};
-		//unsigned int quad_indices[] = { 0, 1, 2, 2, 3, 0 };
+		//unsigned int quadpindices[] = { 0, 1, 2, 2, 3, 0 };
 		
 		s_Data.QuadVertexArray = CVertexArray::Create();
 		s_Data.QuadVertexBuffer = CVertexBuffer::Create(s_Data.MaxVertices * sizeof(SQuadVertex));
@@ -77,7 +80,8 @@ namespace ARC {
 			{ EShaderDataType::Float, "a_TexIndex" },
 			});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-		s_Data.QuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
+		s_Data.OpaqueQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
+		s_Data.TranslucentQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
 		
 		auto* quad_indices = new uint32_t[s_Data.MaxIndices];
 
@@ -124,81 +128,112 @@ namespace ARC {
 	{
 	}
 
-	void CRenderer2D::BeginScene(const COrthographicCamera& _Camera)
+	void CRenderer2D::BeginScene(const COrthographicCamera& pCamera)
 	{
-		FGMat4 Trans = _Camera.GetViewProjectionMatrix();
+		FGMat4 Trans = pCamera.GetViewProjectionMatrix();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", _Camera.GetViewProjectionMatrix());
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
+		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", pCamera.GetViewProjectionMatrix());
+		
+		s_Data.TranslucentQuadIndexCount = 0;
+		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+
+		s_Data.OpaqueQuadIndexCount = 0;
+		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+
 		s_Data.TextureSlotIndex = 1;
 
-		s_Data.camTransform = Trans;
+		s_Data.CameraTransform = Trans;
 	}
 
-	void CRenderer2D::BeginScene(const CCamera& _Camera, const FTransform2D& _Transform)
+	void CRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
 	{
-		FGMat4 Trans = _Camera.GetProjection() * glm::inverse(SHPR::Conv<FGMat4>(_Transform));
+		FGMat4 Trans = pCamera.GetProjection() * glm::inverse(SHPR::Conv<FGMat4>(pTransform));
 
 		s_Data.TextureShader->Bind();
 		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", Trans);
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
+		
+		s_Data.TranslucentQuadIndexCount = 0;
+		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+
+		s_Data.OpaqueQuadIndexCount = 0;
+		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+
 		s_Data.TextureSlotIndex = 1;
-		s_Data.camTransform = Trans;
+		s_Data.CameraTransform = Trans;
 	}
 
-	template <int Length, typename T>
-	struct Block
-	{
-		T n_[Length];
-	};
-	void CRenderer2D::EndScene()
+	void CRenderer2D::EndScene_Translucent()
 	{
 		ARC_PROFILE_FUNCTION();
+		auto data_size = uint32_t((uint8_t*)s_Data.TranslucentQuadVertexBufferBasePtr - (uint8_t*)s_Data.TranslucentQuadVertexBufferBase);
 
-		auto data_size = uint32_t((uint8_t*)s_Data.QuadVertexBufferBasePtr- (uint8_t*)s_Data.QuadVertexBufferBase);
+		struct Block { SQuadVertex n_[4]; };
 
-		std::sort((Block<4, SQuadVertex>*)s_Data.QuadVertexBufferBase, (Block<4, SQuadVertex>*)s_Data.QuadVertexBufferBasePtr,
-			[&](const Block<4, SQuadVertex>& p1, const Block<4, SQuadVertex>& p2) -> bool {
-				FGVec3 tmp = FGVec3(s_Data.camTransform[3]) - p1.n_[0].Position;
-				FGVec3 tmp2 = FGVec3(s_Data.camTransform[3]) - p2.n_[0].Position;
+		std::sort((Block*)s_Data.TranslucentQuadVertexBufferBase, (Block*)s_Data.TranslucentQuadVertexBufferBasePtr,
+			[&](const Block& p1, const Block& p2) -> bool {
+				FGVec3 tmp = FGVec3(s_Data.CameraTransform[3]) - p1.n_[0].Position;
+				FGVec3 tmp2 = FGVec3(s_Data.CameraTransform[3]) - p2.n_[0].Position;
 				return p1.n_[0].Position[2] < p2.n_[0].Position[2];
 			});
 
-		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, data_size);
-		
-		Flush();
+		s_Data.QuadVertexBuffer->SetData(s_Data.TranslucentQuadVertexBufferBase, data_size);
+		FlushTranslucent();
 	}
 
-	void CRenderer2D::Flush()
+	void CRenderer2D::EndScene_Opaque()
 	{
 		ARC_PROFILE_FUNCTION();
-		if (s_Data.QuadIndexCount == 0)
-			return; // Nothing to draw
-		++s_Data.Statistics.DrawCalls;
+		auto data_size = uint32_t((uint8_t*)s_Data.OpaqueQuadVertexBufferBasePtr - (uint8_t*)s_Data.OpaqueQuadVertexBufferBase);
+		s_Data.QuadVertexBuffer->SetData(s_Data.OpaqueQuadVertexBufferBase, data_size);
+		FlushOpaque();
+	}
+	
+	void CRenderer2D::EndScene()
+	{
+		EndScene_Opaque();
+		EndScene_Translucent();
+	}
+
+	void CRenderer2D::FlushTranslucent()
+	{
+		ARC_PROFILE_FUNCTION();
 
 		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			s_Data.TextureSlots[i]->Bind(i);
-		
-		CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
-	}
 
-	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor4& _Color, const TRef<CTexture2D>& _Tex, const FVec2& _TextureScaling)
+		if (s_Data.TranslucentQuadIndexCount != 0) {
+			++s_Data.Statistics.DrawCalls;
+			CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.TranslucentQuadIndexCount);
+		}
+	}
+	void CRenderer2D::FlushOpaque()
 	{
 		ARC_PROFILE_FUNCTION();
 
-		if (s_Data.QuadIndexCount >= SRenderer2DData::MaxIndices)
+		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+			s_Data.TextureSlots[i]->Bind(i);
+
+		if (s_Data.OpaqueQuadIndexCount != 0) {
+			++s_Data.Statistics.DrawCalls;
+			CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.OpaqueQuadIndexCount);
+		}
+	}
+
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling)
+	{
+		ARC_PROFILE_FUNCTION();
+
+		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset();
 
 		float textureIndex = 0.0f;
 
-		if (_Tex != nullptr)
+		if (pTex != nullptr)
 		{
 			for (size_t i = 1; i < s_Data.TextureSlotIndex; i++)
 			{
-				if (*s_Data.TextureSlots[i].get() == *_Tex.get())
+				if (*s_Data.TextureSlots[i].get() == *pTex.get())
 				{
 					textureIndex = (float)i;
 					break;
@@ -207,43 +242,64 @@ namespace ARC {
 			if (textureIndex == 0.0f)
 			{
 				textureIndex = (float)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = _Tex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pTex;
 				s_Data.TextureSlotIndex++;
 			}
 		}
 
 		FGMat4 transform =
-			 	glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _Position.z)) *
-			 	glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
-			 	glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
+			 	glm::translate(FGMat4(1.0f), FGVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			 	glm::rotate(FGMat4(1.0f), pRotation, FGVec3(0, 0, 1)) *
+			 	glm::scale(FGMat4(1.0f), FGVec3(pSize.x, pSize.y, 1.0f));
 
-		for (size_t i = 0; i < 4; i++)
+		switch (pTransparencyLevel)
 		{
-			s_Data.QuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferBasePtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
-			s_Data.QuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
-			s_Data.QuadVertexBufferBasePtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferBasePtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
-			s_Data.QuadVertexBufferBasePtr++;
-		}
+		case ETransparencyType::Opaque:
+			for (size_t i = 0; i < 4; i++)
+			{
+				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr++;
+			}
+			s_Data.OpaqueQuadIndexCount += 6;
 
-		s_Data.QuadIndexCount += 6;
+			break;
+		case ETransparencyType::Translucent:
+			for (size_t i = 0; i < 4; i++)
+			{
+				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.TranslucentQuadVertexBufferBasePtr++;
+			}
+			s_Data.TranslucentQuadIndexCount += 6;
+
+			break;
+		}
 
 		++s_Data.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& _Position, const float _Rotation, const FVec2& _Size, const FColor4& _Color, const TRef<CSubTexture2D>& _SubTex, const FVec2& _TextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling)
 	{
-		if (s_Data.QuadIndexCount >= SRenderer2DData::MaxIndices)
-			FlushAndReset();
+
+		if (s_Data.OpaqueQuadIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset_Opaque();
+		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset_Translucent();
 
 		float textureIndex = 0.0f;
 
-		if (_SubTex != nullptr)
+		if (pSubTex != nullptr)
 		{
 			for (size_t i = 1; i < s_Data.TextureSlotIndex; i++)
 			{
-				if (*s_Data.TextureSlots[i].get() == *_SubTex->GetTexture().get())
+				if (*s_Data.TextureSlots[i].get() == *pSubTex->GetTexture().get())
 				{
 					textureIndex = (float)i;
 					break;
@@ -252,27 +308,44 @@ namespace ARC {
 			if (textureIndex == 0.0f)
 			{
 				textureIndex = (float)s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = _SubTex->GetTexture();
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pSubTex->GetTexture();
 				s_Data.TextureSlotIndex++;
 			}
 		}
 
 		FGMat4 transform =
-			glm::translate(FGMat4(1.0f), FGVec3(_Position.x, _Position.y, _Position.z)) *
-			glm::rotate(FGMat4(1.0f), _Rotation, FGVec3(0, 0, 1)) *
-			glm::scale(FGMat4(1.0f), FGVec3(_Size.x, _Size.y, 1.0f));
-
-		for (size_t i = 0; i < 4; i++)
+			glm::translate(FGMat4(1.0f), FGVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			glm::rotate(FGMat4(1.0f), pRotation, FGVec3(0, 0, 1)) *
+			glm::scale(FGMat4(1.0f), FGVec3(pSize.x, pSize.y, 1.0f));
+		
+		switch (pTransparencyLevel)
 		{
-			s_Data.QuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-			s_Data.QuadVertexBufferBasePtr->Color = FGVec4(_Color.r, _Color.g, _Color.b, _Color.a);
-			s_Data.QuadVertexBufferBasePtr->TexCoord = _SubTex->GetTexCoords()[i];
-			s_Data.QuadVertexBufferBasePtr->TexIndex = textureIndex;
-			s_Data.QuadVertexBufferBasePtr->TexScaling = FGVec2(_TextureScaling.x, _TextureScaling.y);
-			s_Data.QuadVertexBufferBasePtr++;
-		}
+		case ETransparencyType::Opaque:
+			for (size_t i = 0; i < 4; i++)
+			{
+				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr++;
+			}
+			s_Data.OpaqueQuadIndexCount += 6;
+			break;
+		case ETransparencyType::Translucent:
+			for (size_t i = 0; i < 4; i++)
+			{
+				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
+				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.TranslucentQuadVertexBufferBasePtr++;
+			}
+			s_Data.TranslucentQuadIndexCount += 6;
 
-		s_Data.QuadIndexCount += 6;
+			break;
+		}
 
 		++s_Data.Statistics.QuadCount;
 	}
@@ -282,7 +355,7 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 
-		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
+		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
 	}
 
 	CRenderer2D::SStatistics CRenderer2D::GetStats()
@@ -295,11 +368,28 @@ namespace ARC {
 		memset(&s_Data.Statistics, 0, sizeof(SStatistics));
 	}
 
+	void CRenderer2D::FlushAndReset_Translucent()
+	{
+		EndScene_Translucent();
+		s_Data.TranslucentQuadIndexCount = 0;
+		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+	}
+	void CRenderer2D::FlushAndReset_Opaque()
+	{
+		EndScene_Opaque();
+		s_Data.OpaqueQuadIndexCount = 0;
+		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+	}
+
 	void CRenderer2D::FlushAndReset()
 	{
 		EndScene();
-		s_Data.QuadIndexCount = 0;
-		s_Data.QuadVertexBufferBasePtr = s_Data.QuadVertexBufferBase;
+		s_Data.TranslucentQuadIndexCount = 0;
+		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+
+		s_Data.OpaqueQuadIndexCount = 0;
+		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+
 		s_Data.TextureSlotIndex = 1;
 	}
 }

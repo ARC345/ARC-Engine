@@ -371,4 +371,14 @@ namespace ARC
 	using FVec2 = TVec2<float>;
 	using FVec3 = TVec3<float>;
 	using FVec4 = TVec4<float>;
+
+	using IVec1 = TVec1<int>;
+	using IVec2 = TVec2<int>;
+	using IVec3 = TVec3<int>;
+	using IVec4 = TVec4<int>;
+
+	using UIVec1 = TVec1<unsigned int>;
+	using UIVec2 = TVec2<unsigned int>;
+	using UIVec3 = TVec3<unsigned int>;
+	using UIVec4 = TVec4<unsigned int>;
 };

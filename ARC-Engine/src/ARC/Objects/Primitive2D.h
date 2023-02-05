@@ -1,9 +1,9 @@
 #pragma once
 #include "Object.h"
 #include "ARC/Types/Color.h"
-#include "ARC\Types\Vector.h"
-#include "ARC\Types\Transform2D.h"
-#include "ARC\Types\Pointer.h"
+#include "ARC/Types/Vector.h"
+#include "ARC/Types/Transform2D.h"
+#include "ARC/Types/Pointer.h"
 
 namespace ARC { class CSubTexture2D; }
 namespace ARC { class CTexture2D; }
@@ -27,8 +27,9 @@ namespace ARC {
 
 	public:
 		FTransform2D Transform;
+		ETransparencyType TransparencyLevel;
 		FColor4 Color = FColor4::White();
 		TRef<CTexture2D> Texture = nullptr;
-		FVec2 TextureScaling = {1, 1};
+		FVec2 TextureScaling = FVec2::OneVector();
 	};
 }

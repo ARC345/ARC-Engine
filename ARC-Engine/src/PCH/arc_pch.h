@@ -18,6 +18,7 @@
 
 #include "ARC/Types/Pointer.h"
 #include "ARC/Types/Vector.h"
+#include "ARC/Types/Color.h"
 #include "ARC/Types/Delegate.h"
 
 #include "ARC/Helpers/Helpers.h"

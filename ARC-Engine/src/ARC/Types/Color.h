@@ -3,6 +3,12 @@
 #include "Vector.h"
 
 namespace ARC {
+
+	enum ETransparencyType {
+		Opaque,
+		Translucent,
+		Transparent
+	};
 	class FColor4 : public FVec4
 	{
 	public:
