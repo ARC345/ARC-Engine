@@ -5,22 +5,30 @@ namespace ARC {
 	class COpenGLFrameBuffer : public CFrameBuffer
 	{
 	public:
-		COpenGLFrameBuffer(const SFrameBufferSpecifications& _Specs);
+		COpenGLFrameBuffer(const SFrameBufferSpecification& pSpecs);
 		virtual ~COpenGLFrameBuffer();
 
 		void Invalidate();
 
-		virtual inline const SFrameBufferSpecifications& GetSpecifications() const override { return m_Specifications; };
-		virtual inline uint32_t GetColorAttachmentRendererID() const override { return m_ColorAttachment; };
+		virtual inline const SFrameBufferSpecification& GetSpecifications() const override { return mSpecification; };
+		virtual inline TUInt32 GetColorAttachmentRendererID(TUInt32 pIndex=0) const override { ARC_CORE_ASSERT(pIndex<mColorAttachments.size()) return mColorAttachments[pIndex]; };
 
 		virtual void Bind() override;
 		virtual void UnBind() override;
 
-		virtual void Resize(const TVec2<uint32_t>& _) override;
+		virtual void Resize(const TVec2<TUInt32>& p) override;
+
+		virtual int ReadPixel(TUInt32 pAttachmentIndex, int pX, int pY) override;
 
 	private:
-		uint32_t m_RendererID=0;
-		uint32_t m_ColorAttachment=0, m_DepthAttachment=0;
-		SFrameBufferSpecifications m_Specifications;
+		TUInt32 mRendererID=0;
+		SFrameBufferSpecification mSpecification;
+
+		std::vector<EFrameBufferTextureFormat> mColorAttachmentSpecifications;
+		EFrameBufferTextureFormat mDepthAttachmentSpecification= EFrameBufferTextureFormat::None;
+
+		std::vector<TUInt32> mColorAttachments;
+		TUInt32 mDepthAttachment=0;
+
 	};
 }

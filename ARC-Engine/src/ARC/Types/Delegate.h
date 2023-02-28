@@ -79,49 +79,49 @@ namespace ARC {
 	public:
 		TMulticastDelegate() = default;
 		~TMulticastDelegate() {
-			for (auto& element : m_InvocationList) delete element;
-			m_InvocationList.clear();
+			for (auto& element : mInvocationList) delete element;
+			mInvocationList.clear();
 		};
 
-		[[nodiscard]] inline bool Contains(const DelegateClass& _) const { return (std::find(m_InvocationList.begin(), m_InvocationList.end(), _)); }
-		[[nodiscard]] inline auto Find(const DelegateClass& _) const { return std::find(m_InvocationList.begin(), m_InvocationList.end(), _); }
+		[[nodiscard]] inline bool Contains(const DelegateClass& _) const { return (std::find(mInvocationList.begin(), mInvocationList.end(), _)); }
+		[[nodiscard]] inline auto Find(const DelegateClass& _) const { return std::find(mInvocationList.begin(), mInvocationList.end(), _); }
 		
-		[[nodiscard]] inline bool IsEmpty() const { return m_InvocationList.size() < 1; }
-		[[nodiscard]] inline size_t Size() const { return m_InvocationList.size(); }
+		[[nodiscard]] inline bool IsEmpty() const { return mInvocationList.size() < 1; }
+		[[nodiscard]] inline size_t Size() const { return mInvocationList.size(); }
 
 		void Clear() {
-			for (auto& element : m_InvocationList)
+			for (auto& element : mInvocationList)
 				delete element;
-			m_InvocationList.clear();
+			mInvocationList.clear();
 		}
 
 		template<auto Candidate, typename Type>
 		void Bind(Type value_or_instance) {
 			auto newelem = new DelegateClass;
 			newelem->Bind<Candidate, Type>(value_or_instance);
-			m_InvocationList.push_back(newelem);
+			mInvocationList.push_back(newelem);
 		};
 		template<auto Function>
 		void Bind() {
 			auto newelem = new DelegateClass;
 			newelem->Bind<Function>();
-			m_InvocationList.push_back(newelem);
+			mInvocationList.push_back(newelem);
 		};
 		template<typename Invokable>
 		void Bind(Invokable invokable) {
 			auto newelem = new DelegateClass;
 			newelem->Bind<Invokable>(invokable);
-			m_InvocationList.push_back(newelem);
+			mInvocationList.push_back(newelem);
 		};
 
 		[[nodiscard]] inline void operator()(PARAMS... args) const { 
-			for (auto& element : m_InvocationList)
+			for (auto& element : mInvocationList)
 				element->operator ()(args...);
 		}
 		template<typename HANDLER>
 		[[nodiscard]] void operator()(PARAMS... args, HANDLER handler) const {
 			size_t index = 0;
-			for (auto& item : m_InvocationList) {
+			for (auto& item : mInvocationList) {
 				RET value = *item(args...);
 				handler(index, &value);
 				++index;
@@ -129,13 +129,13 @@ namespace ARC {
 		}
 		[[nodiscard]] inline explicit operator bool() const { return !IsEmpty(); }
 
-		typename InvocationListClass::iterator begin() { return m_InvocationList.begin(); }
-		typename InvocationListClass::iterator end() { return m_InvocationList.end(); }
-		typename InvocationListClass::const_iterator begin() const { return m_InvocationList.begin(); }
-		typename InvocationListClass::const_iterator end() const { return m_InvocationList.end(); }
+		typename InvocationListClass::iterator begin() { return mInvocationList.begin(); }
+		typename InvocationListClass::iterator end() { return mInvocationList.end(); }
+		typename InvocationListClass::const_iterator begin() const { return mInvocationList.begin(); }
+		typename InvocationListClass::const_iterator end() const { return mInvocationList.end(); }
 
 	private:
-		InvocationListClass m_InvocationList;
+		InvocationListClass mInvocationList;
 	};
 
 

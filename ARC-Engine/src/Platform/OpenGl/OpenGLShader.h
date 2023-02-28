@@ -17,7 +17,7 @@ namespace ARC {
 		virtual void Bind() const override;
 		virtual void UnBind() const override;
 
-		virtual inline const TString& GetName() const override { return m_Name; };
+		virtual inline const TString& GetName() const override { return mName; };
 
 	private:
 		static unsigned int ShaderTypeFromString(TString& _Type);
@@ -27,8 +27,8 @@ namespace ARC {
 		void Compile(const std::unordered_map<unsigned int, TString>& _ShaderSources);
 	private:
 		static TString s_Seperator;
-		TString m_Name;
-		uint32_t m_RendererID;
+		TString mName;
+		uint32_t mRendererID;
 	protected:
 		virtual void SetInt(const TString& _Name, const int* _Value) override;
 		virtual void SetInt2(const TString& _Name, const int* _Value) override;

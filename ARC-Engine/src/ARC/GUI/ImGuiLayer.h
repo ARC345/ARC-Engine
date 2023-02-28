@@ -16,10 +16,10 @@ namespace ARC {
 		void Begin();
 		void End();
 
-		void SetBlockEvents(bool _) {m_bBlockEvents = _; };
+		void SetBlockEvents(bool _) {mbBlockEvents = _; };
 		void SetDarkThemeColors();
 	private:
-		uint8_t m_bBlockEvents : 1;
-		float m_Time = 0.f;
+		uint8_t mbBlockEvents : 1;
+		float mTime = 0.f;
 	};
 }

@@ -6,8 +6,12 @@ namespace ARC
 	template <typename To, typename From>
 	struct SConvert
 	{
-		static To Conv(const From& p) {
-			return static_cast<To>(p);
-		}
+		static inline 
+		bool CanConv(const From& p)
+		{ return true; }
+		
+		static inline
+		To Conv(const From& p) 
+		{ return static_cast<To>(p); }
 	};
 }

@@ -22,8 +22,8 @@ public:
 	virtual void UnBind() const override;
 
 private:
-	uint32_t m_RendererId;
-	std::vector<TRef<CVertexBuffer>> m_VertexBuffers;
-	TRef<CIndexBuffer> m_IndexBuffer;
+	uint32_t mRendererId;
+	std::vector<TRef<CVertexBuffer>> mVertexBuffers;
+	TRef<CIndexBuffer> mIndexBuffer;
 };
 }

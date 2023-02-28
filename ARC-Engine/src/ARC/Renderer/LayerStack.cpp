@@ -9,7 +9,7 @@ namespace ARC {
 
 	LayerStack::~LayerStack()
 	{
-		for(CLayer* layer : m_Layers){
+		for(CLayer* layer : mLayers){
 			layer->OnDetach();
 			delete layer;
 		}
@@ -17,29 +17,29 @@ namespace ARC {
 
 	void LayerStack::PushLayer(CLayer* _layer)
 	{
-		m_Layers.emplace(m_Layers.begin() + m_LayerInsertIndex, _layer);
-		++m_LayerInsertIndex;
+		mLayers.emplace(mLayers.begin() + mLayerInsertIndex, _layer);
+		++mLayerInsertIndex;
 	}
 
 	void LayerStack::PushOverlay(CLayer* _overlay)
 	{
-		m_Layers.emplace_back(_overlay);
+		mLayers.emplace_back(_overlay);
 	}
 
 	void LayerStack::PopLayer(CLayer* _layer)
 	{
-		auto it = std::find(m_Layers.begin(), m_Layers.end(), _layer);
-		if (it != m_Layers.end()) {
-			m_Layers.erase(it);
-			--m_LayerInsertIndex;
+		auto it = std::find(mLayers.begin(), mLayers.end(), _layer);
+		if (it != mLayers.end()) {
+			mLayers.erase(it);
+			--mLayerInsertIndex;
 		}
 	}
 
 	void LayerStack::PopOverlay(CLayer* _overlay)
 	{
-		auto it = std::find(m_Layers.begin(), m_Layers.end(), _overlay);
-		if (it != m_Layers.end()) {
-			m_Layers.erase(it);
+		auto it = std::find(mLayers.begin(), mLayers.end(), _overlay);
+		if (it != mLayers.end()) {
+			mLayers.erase(it);
 		}
 	}
 }

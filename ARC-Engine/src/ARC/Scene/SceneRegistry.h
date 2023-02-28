@@ -10,22 +10,22 @@ namespace ARC {
 		static void SetupComponent(uint32_t pOverrideFlags = T::Flags)
 		{
 			const TString& compName = CComponentTraits::GetName<T>();
-			m_RegisteredComponentNames.push_back(compName);
+			mRegisteredComponentNames.push_back(compName);
 
 			if (pOverrideFlags & ECF::ShowInPropertiesPanel) {
-				m_TypeErasedGetComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
+				mTypeErasedGetComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
 					static_assert(CComponentTraits::IsComponent<T>());
 					if (pEntity && pEntity.HasComponent<T>())
 						return &pEntity.GetComponent<T>();
 					return nullptr;
 					});
-				m_TypeErasedAddComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
+				mTypeErasedAddComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
 					static_assert(CComponentTraits::IsComponent<T>());
 					if (pEntity && !pEntity.HasComponent<T>())
 						return &pEntity.AddComponent<T>();
 					return nullptr;
 					});
-				m_TypeErasedRemoveComponentFuncs[compName].Bind([](CEntity pEntity) {
+				mTypeErasedRemoveComponentFuncs[compName].Bind([](CEntity pEntity) {
 					static_assert(CComponentTraits::IsComponent<T>());
 					if (pEntity && pEntity.HasComponent<T>())
 						return pEntity.RemoveComponent<T>();
@@ -33,16 +33,16 @@ namespace ARC {
 			}
 		};
 
-		static auto& GetRegisteredComponentsNames() { return m_RegisteredComponentNames; }
-		static auto& GetTypeErasedGetComponentFuncs() { return m_TypeErasedGetComponentFuncs; }
-		static auto& GetTypeErasedAddComponentFuncs() { return m_TypeErasedAddComponentFuncs; }
-		static auto& GetTypeErasedRemoveComponentFuncs() { return m_TypeErasedRemoveComponentFuncs; }
+		static auto& GetRegisteredComponentsNames() { return mRegisteredComponentNames; }
+		static auto& GetTypeErasedGetComponentFuncs() { return mTypeErasedGetComponentFuncs; }
+		static auto& GetTypeErasedAddComponentFuncs() { return mTypeErasedAddComponentFuncs; }
+		static auto& GetTypeErasedRemoveComponentFuncs() { return mTypeErasedRemoveComponentFuncs; }
 
 	private:
 		// @Editor functionality @ TODO wrap around macro
-		static inline std::vector<TString> m_RegisteredComponentNames;
-		static inline std::unordered_map<TString, TDelegate<void(CEntity pEntity)>> m_TypeErasedRemoveComponentFuncs;
-		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> m_TypeErasedGetComponentFuncs;
-		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> m_TypeErasedAddComponentFuncs;
+		static inline std::vector<TString> mRegisteredComponentNames;
+		static inline std::unordered_map<TString, TDelegate<void(CEntity pEntity)>> mTypeErasedRemoveComponentFuncs;
+		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> mTypeErasedGetComponentFuncs;
+		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> mTypeErasedAddComponentFuncs;
 	};
 }

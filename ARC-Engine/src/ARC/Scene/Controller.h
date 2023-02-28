@@ -9,7 +9,7 @@ namespace ARC
 	public:
 		virtual ~CEntityController(){};
 
-		inline bool IsSetup() const { return m_ControlledEntity; }
+		inline bool IsSetup() const { return mControlledEntity; }
 		CEntity* GetControlledEntity();
 
 		virtual void Setup(CEntity* pEntity);
@@ -18,7 +18,7 @@ namespace ARC
 		virtual void OnDestroy() {};
 		virtual void OnUpdate(float pDeltaTime) {};
 	private:
-		CEntity* m_ControlledEntity;
+		CEntity* mControlledEntity;
 		friend class CScene;
 	};
 

@@ -14,10 +14,10 @@ namespace ARC {
 		void PopLayer(CLayer* _layer);
 		void PopOverlay(CLayer* _overlay);
 
-		std::vector<CLayer*>::iterator begin() { return m_Layers.begin(); }
-		std::vector<CLayer*>::iterator end() { return m_Layers.end(); }
+		std::vector<CLayer*>::iterator begin() { return mLayers.begin(); }
+		std::vector<CLayer*>::iterator end() { return mLayers.end(); }
 	private:
-		std::vector<CLayer*> m_Layers;
-		unsigned int m_LayerInsertIndex=0;
+		std::vector<CLayer*> mLayers;
+		unsigned int mLayerInsertIndex=0;
 	};
 }

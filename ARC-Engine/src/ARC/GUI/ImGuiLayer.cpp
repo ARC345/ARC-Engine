@@ -14,11 +14,12 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 #include "../Helpers/Helpers.h"
+#include "ImGuizmo.h"
 
 #include "ImGuizmo.h"
 
 namespace ARC {
-	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer"), m_bBlockEvents(1u) {}
+	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer"), mbBlockEvents(1u) {}
 	CImGuiLayer::~CImGuiLayer() {}
 	
 	void CImGuiLayer::OnAttach()
@@ -66,7 +67,7 @@ namespace ARC {
 
 	void CImGuiLayer::OnEvent(CEvent& _e)
 	{
-		if (!m_bBlockEvents) return;
+		if (!mbBlockEvents) return;
 		ImGuiIO& io = ImGui::GetIO();
 		_e.bHandled |= _e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 		_e.bHandled |= _e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;

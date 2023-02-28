@@ -18,10 +18,6 @@ namespace ARC { namespace Core { class CApplication; } }
 namespace ARC { class CEvent; }
 #define OUT
 
-using TUint = unsigned int;
-using TUchar = unsigned char;
-using TUlong = unsigned long;
-
 struct CounterId {};
 
 enum class EQuadCorner {

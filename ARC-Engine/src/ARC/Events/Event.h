@@ -46,7 +46,7 @@ namespace ARC {
 		virtual EEventType GetEventType() const override {return GetStaticType();}\
 		virtual const char* GetName() const override {return #type;}
 
-	#define EVENT_CLASS_CATEGORY(category) virtual TUint GetCategoryFlags() const override { return category; }
+	#define EVENT_CLASS_CATEGORY(category) virtual TUInt GetCategoryFlags() const override { return category; }
 
 	class ARC_API CEvent
 	{
@@ -56,7 +56,7 @@ namespace ARC {
 		virtual ~CEvent() = default;
 
 		virtual EEventType GetEventType() const = 0;
-		virtual TUint GetCategoryFlags() const = 0;
+		virtual TUInt GetCategoryFlags() const = 0;
 
 		// get event name
 		virtual const char* GetName() const = 0;
@@ -68,7 +68,7 @@ namespace ARC {
 			return GetCategoryFlags() & category;
 		}
 
-		TUint bHandled : 1;
+		TUInt bHandled : 1;
 	};
 
 	class CEventDispatcher
@@ -78,20 +78,20 @@ namespace ARC {
 		
 
 	public:
-		CEventDispatcher(CEvent& p_Event) : m_Event(p_Event) {}
+		CEventDispatcher(CEvent& p_Event) : mEvent(p_Event) {}
 
 		template<typename T, typename F>
 		bool Dispatch(const F& _Func)
 		{
-			if (m_Event.GetEventType() == T::GetStaticType())
+			if (mEvent.GetEventType() == T::GetStaticType())
 			{
-				m_Event.bHandled = _Func(static_cast<T&>(m_Event));
+				mEvent.bHandled = _Func(static_cast<T&>(mEvent));
 				return true;
 			}
 			return false;
 		}
 	private:
-		CEvent& m_Event;
+		CEvent& mEvent;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const CEvent& e) {

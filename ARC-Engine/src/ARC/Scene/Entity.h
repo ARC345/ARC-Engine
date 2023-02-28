@@ -16,43 +16,43 @@ namespace ARC {
 		CEntity(TEntityID pHandle, CScene* pScene);
 		CEntity(const CEntity&) = default;
 
-		TEntityID GetID() const { return m_Entity; }
+		TEntityID GetID() const { return mEntity; }
 		bool IsValid() const;
 
 		template<typename T>
 		void RemoveComponent() {
-			ARC_CORE_ASSERT(m_Scene && HasComponent<T>())
-			m_Scene->GetManager().remove<T>(m_Entity);
+			ARC_CORE_ASSERT(mScene && HasComponent<T>())
+			mScene->GetManager().remove<T>(mEntity);
 		}
 		template<typename T>
 		[[nodiscard]] inline bool HasComponent() const { 
-			ARC_CORE_ASSERT(m_Scene);
-			return m_Scene && m_Scene->GetManager().all_of<T>(m_Entity);
+			ARC_CORE_ASSERT(mScene);
+			return mScene && mScene->GetManager().all_of<T>(mEntity);
 		}
 		template<typename T>
 		[[nodiscard]] inline T& GetComponent() {
-			ARC_CORE_ASSERT(m_Scene && HasComponent<T>());
-			auto& rval = m_Scene->GetManager().get<T>(m_Entity);
+			ARC_CORE_ASSERT(mScene && HasComponent<T>());
+			auto& rval = mScene->GetManager().get<T>(mEntity);
 			return rval;
 		}
 		template<typename T, typename ... Ts>
 		inline T& AddComponent(Ts&&... pArgs) {
-			ARC_CORE_ASSERT(m_Scene)
-			auto& comp = m_Scene->GetManager().emplace<T>(m_Entity, std::forward<Ts>(pArgs)...);
+			ARC_CORE_ASSERT(mScene)
+			auto& comp = mScene->GetManager().emplace<T>(mEntity, std::forward<Ts>(pArgs)...);
 			comp.OnConstruct(*this);
 
 			return comp;
 		}
 		
-		operator bool() const { return m_Entity != entt::null; }
-		bool operator == (const CEntity _) const { return m_Entity == _.m_Entity && m_Scene == _.m_Scene; }
+		operator bool() const { return mEntity != entt::null; }
+		bool operator == (const CEntity _) const { return mEntity == _.mEntity && mScene == _.mScene; }
 		bool operator != (const CEntity _) const { return !(*this == _); }
 	protected:
 		virtual void OnKill();
 
 	private:
-		TEntityID m_Entity = entt::null;
-		CScene* m_Scene = nullptr;
+		TEntityID mEntity = entt::null;
+		CScene* mScene = nullptr;
 
 
 		friend class CScene;

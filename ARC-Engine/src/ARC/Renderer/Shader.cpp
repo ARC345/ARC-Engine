@@ -47,7 +47,7 @@ namespace ARC {
 	void CShaderLibrary::Add(const TString& _Name, const TRef<CShader>& _Shader)
 	{
 		ARC_CORE_ASSERT(!Exists(_Name), "Shader Already Exists");
-		m_Shaders[_Name] = _Shader;
+		mShaders[_Name] = _Shader;
 	}
 
 	TRef<CShader> CShaderLibrary::Load(const TString& _Path, const TString& _Name /*= ""*/)
@@ -62,12 +62,12 @@ namespace ARC {
 	TRef<CShader> CShaderLibrary::GetShader(const TString& _Name)
 	{
 		ARC_CORE_ASSERT(Exists(_Name), "Shader Not Found");
-		return m_Shaders[_Name];
+		return mShaders[_Name];
 	}
 
 	bool CShaderLibrary::Exists(const TString& _Name) const
 	{
-		return m_Shaders.find(_Name) != m_Shaders.end();
+		return mShaders.find(_Name) != mShaders.end();
 	}
 
 	template<typename T>
@@ -97,17 +97,17 @@ namespace ARC {
 		SetFloat4(_Name, _Value.Data());
 	}
 	template<>
-	void CShader::Set<FGVec4>(const TString& _Name, const glm::vec4& _Value)
+	void CShader::Set<FGLMVec4>(const TString& _Name, const glm::vec4& _Value)
 	{
 		SetFloat4(_Name, glm::value_ptr(_Value));
 	}
 	template<>
-	void CShader::Set<FGMat4>(const TString& _Name, const glm::mat4& _Value)
+	void CShader::Set<FGLMMat4>(const TString& _Name, const glm::mat4& _Value)
 	{
 		SetMat4(_Name, glm::value_ptr(_Value));
 	}
 	template<>
-	void CShader::Set<FGMat3>(const TString& _Name, const glm::mat3& _Value)
+	void CShader::Set<FGLMMat3>(const TString& _Name, const glm::mat3& _Value)
 	{
 		SetMat3(_Name, glm::value_ptr(_Value));
 	}

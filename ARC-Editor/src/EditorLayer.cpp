@@ -2,17 +2,17 @@
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
 #include "ARC/Objects/Primitive2D.h"
-#include "ARC/Types/Color.h"
 #include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Renderer/RenderCommand.h"
 #include "ARC/Scene/Scene.h"
 #include "ARC/Scene/Entity.h"
-#include "ARC/Wrappers/Glm.h"
-#include "glm/ext/matrix_clip_space.inl"
-#include "ARC/Core/PlatformUtils.h"
 #include "ARC/Renderer/FrameBuffer.h"
-#include "Atom/Atom.h"
+#include "LifeSim2D/LifeSim2D.h"
 #include "ImGuizmo.h"
+#include "glm/gtc/type_ptr.inl"
+#include "glm\gtx\transform.hpp"
+#include "ARC/Wrappers/Glm.h"
+#include "ARC/Scene/BasicComponents.h"
 
 namespace ARC {
 	static CEntity ESquare;
@@ -20,53 +20,71 @@ namespace ARC {
 
 	CEditorLayer::CEditorLayer() :
 		CLayer("EditorLayer"),
-		m_CameraController(1280.f / 780.f, true)
+		mCameraController(1280.f / 780.f, true)
 	{
 	}
 
 	void CEditorLayer::OnAttach()
 	{
-		SFrameBufferSpecifications frame_buffer_specs;
+		SFrameBufferSpecification frame_buffer_specs;
 		frame_buffer_specs.Width = 1280;
 		frame_buffer_specs.Height = 720;
-		m_FrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
+		frame_buffer_specs.Attachments = { EFrameBufferTextureFormat::RGBA8, EFrameBufferTextureFormat::RED_INTEGER, EFrameBufferTextureFormat::DEPTH24STENCIL8 };
+		mFrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
 
-		m_ActiveScene = CreateRef<CScene>();
-		m_AtomExp = CreateRef<CAtomExp>();
-		m_SceneHierachyPanel.SetContext(m_ActiveScene);
-		
-		m_AtomExp->OnAttach(m_ActiveScene);
+		mActiveScene = CreateRef<CScene>();
+		mLifeSim2D = CreateRef<CLifeSim2D>();
+		mSceneHierachyPanel.SetContext(mActiveScene);
+		mEditorCamera = CEditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+
+		mLifeSim2D->OnAttach(mActiveScene);
 	}
 
 	void CEditorLayer::OnDetach()
 	{
-		m_AtomExp->OnDetach();
+		mLifeSim2D->OnDetach();
 	}
 
 	void CEditorLayer::OnUpdate(float _DeltaTime)
 	{
-		if (SFrameBufferSpecifications spec = m_FrameBuffer->GetSpecifications();
-			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f && // zero sized framebuffer is invalid
-			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		if (SFrameBufferSpecification spec = mFrameBuffer->GetSpecifications();
+			mViewportSize.x > 0.0f && mViewportSize.y > 0.0f && // zero sized framebuffer is invalid
+			(spec.Width != mViewportSize.x || spec.Height != mViewportSize.y))
 		{
-			m_FrameBuffer->Resize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
-			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
-
-			m_ActiveScene->OnViewportResize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
+			mFrameBuffer->Resize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
+			mCameraController.OnResize(mViewportSize.x, mViewportSize.y);
+			mEditorCamera.SetViewportSize(mViewportSize.x, mViewportSize.y);
+			mActiveScene->OnViewportResize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
 		}
 
-		if (m_ViewportHovered && m_ViewportFocused)	m_CameraController.OnUpdate(_DeltaTime);
+		if (mViewportHovered && mViewportFocused)	mCameraController.OnUpdate(_DeltaTime);
 		
 		CRenderer2D::ResetStats();
 
-		m_FrameBuffer->Bind();
+		mFrameBuffer->Bind();
 
 		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 		CRenderCommand::Clear();
 
-		m_ActiveScene->OnUpdateRuntime(_DeltaTime);
-		m_AtomExp->OnUpdate(_DeltaTime);
-		m_FrameBuffer->UnBind();
+		mEditorCamera.OnUpdate(_DeltaTime);
+		mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
+
+		auto MousePos = (FVec2&)ImGui::GetMousePos() - mViewportMinBound;
+		MousePos.y = mViewportSize.y -MousePos.y;
+
+		FVec2 viewportSize = mViewportMaxBound-mViewportMinBound;
+
+		if(MousePos.IsWithinBounds(FVec2::ZeroVector() , mViewportSize)) {
+			ARC_CORE_WARN("PixId = {0}", mFrameBuffer->ReadPixel(1, MousePos.x, MousePos.y));
+		}
+
+		mLifeSim2D->OnUpdate(_DeltaTime);
+		mFrameBuffer->UnBind();
+	}
+
+	void CEditorLayer::OnEvent(CEvent& _Event)
+	{
+		mEditorCamera.OnEvent(_Event);
 	}
 
 	void CEditorLayer::OnGuiRender()
@@ -134,18 +152,18 @@ namespace ARC {
 						TString filepath = CFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
 						{
-							m_ActiveScene = CreateRef<CScene>();
-							m_ActiveScene->DeserializeFromText(filepath);
+							mActiveScene = CreateRef<CScene>();
+							mActiveScene->DeserializeFromText(filepath);
 
-							m_ActiveScene->OnViewportResize({ (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y });
-							m_SceneHierachyPanel.SetContext(m_ActiveScene);
+							mActiveScene->OnViewportResize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
+							mSceneHierachyPanel.SetContext(mActiveScene);
 						}
 					}
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					{
 						auto filepath = CFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
-							m_ActiveScene->SerializeToText(filepath);
+							mActiveScene->SerializeToText(filepath);
 					}
 					if (ImGui::MenuItem("Exit")) CApplication::Get().Shutdown();
 					ImGui::EndMenu();
@@ -154,7 +172,7 @@ namespace ARC {
 				ImGui::EndMenuBar();
 			}
 
-			m_SceneHierachyPanel.OnImGuiRender();
+			mSceneHierachyPanel.OnImGuiRender();
 
 			ImGui::Begin("Settings");
 
@@ -169,30 +187,48 @@ namespace ARC {
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 			ImGui::Begin("Viewport");
-			//@todo
-			m_ViewportFocused = ImGui::IsWindowFocused();
-			m_ViewportHovered = ImGui::IsWindowHovered();
-			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!m_ViewportFocused || !m_ViewportHovered);
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();
-			ImGui::Image((void*)textureID, ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 1, 0 }, ImVec2{ 0, 1 });
+
+			FVec2 viewportOffset = (FVec2&)ImGui::GetCursorPos(); // includes tab bar
+
+			mViewportFocused = ImGui::IsWindowFocused();
+			mViewportHovered = ImGui::IsWindowHovered();
 			
+			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!mViewportFocused || !mViewportHovered);
+			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
+			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+			TUInt32 textureID = mFrameBuffer->GetColorAttachmentRendererID();
+			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			
+			mViewportMinBound = (FVec2&)ImGui::GetWindowPos() + viewportOffset;
+			mViewportMaxBound = mViewportMinBound + (FVec2&)ImGui::GetWindowSize();
+
 			// Gizmos
-			const CEntity selectedEntity = m_SceneHierachyPanel.GetSelectedEntity();
+			CEntity selectedEntity = mSceneHierachyPanel.GetSelectedEntity();
 			if (selectedEntity)
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
-				//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y);
-
-
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(),ImGui::GetWindowHeight());
+				
+				if (selectedEntity.HasComponent<CTransform2DComponent>())
+				{
+					auto& entityTransform = selectedEntity.GetComponent<CTransform2DComponent>().Transform;
+					auto entityTransformMatrix = SConvert<FGLMMat4, FTransform2D>::Conv(entityTransform);
+					ImGuizmo::Manipulate(
+						glm::value_ptr(mEditorCamera.GetViewMatrix()),
+						glm::value_ptr(mEditorCamera.GetProjection()),
+						ImGuizmo::OPERATION::TRANSLATE,
+						ImGuizmo::LOCAL,
+						glm::value_ptr(entityTransformMatrix)
+					);
+					entityTransform = SConvert<FTransform2D, FGLMMat4>::Conv(entityTransformMatrix);
+				}
 			}
 
 			ImGui::End();
 			ImGui::PopStyleVar();
 
-			m_AtomExp->OnGuiRender();
+			mLifeSim2D->OnGuiRender();
 			ImGui::End();
 
 		}
