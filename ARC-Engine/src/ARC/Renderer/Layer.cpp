@@ -2,7 +2,7 @@
 #include "Layer.h"
 
 namespace ARC {
-	CLayer::CLayer(const std::string& _name/*="Layer"*/) : m_DebugName(_name)
+	CLayer::CLayer(const std::string& _name/*="Layer"*/) : mDebugName(_name)
 	{
 	}
 

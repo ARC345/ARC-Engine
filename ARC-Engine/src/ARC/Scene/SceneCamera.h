@@ -11,43 +11,43 @@ namespace ARC
 		CSceneCamera();
 		virtual ~CSceneCamera() = default;
 
-		EProjectionType GetProjectionType() const { return m_CurrentProjectionType; }
+		EProjectionType GetProjectionType() const { return mCurrentProjectionType; }
 		void SetViewportSize(TVec2<uint32_t> p_NewSize);
 
 		void SetOrthographic(float pSize, float pNearClip, float pFarClip);
 		void SetPerspective(float pFOV, float pNearClip, float pFarClip);
 
-		float GetOrthographicSize() const { return m_OrthographicSize; }
-		float GetOrthographicNearClip() const { return m_OrthographicNear; }
-		float GetOrthographicFarClip() const { return m_OrthographicFar; }
+		float GetOrthographicSize() const { return mOrthographicSize; }
+		float GetOrthographicNearClip() const { return mOrthographicNear; }
+		float GetOrthographicFarClip() const { return mOrthographicFar; }
 		
-		float GetPerspectiveFOV() const { return m_PerspectiveFOV; }
-		float GetPerspectiveNearClip() const { return m_PerspectiveNear; }
-		float GetPerspectiveFarClip() const { return m_PerspectiveFar; }
+		float GetPerspectiveFOV() const { return mPerspectiveFOV; }
+		float GetPerspectiveNearClip() const { return mPerspectiveNear; }
+		float GetPerspectiveFarClip() const { return mPerspectiveFar; }
 		
-		void SetProjectionType(EProjectionType pProjectionType) { m_CurrentProjectionType = pProjectionType; RecalculateProjection(); }
+		void SetProjectionType(EProjectionType pProjectionType) { mCurrentProjectionType = pProjectionType; RecalculateProjection(); }
 
-		void SetOrthographicSize(float _) { m_OrthographicSize = _;	RecalculateProjection(); }
-		void SetOrthographicNearClip(float _) { m_OrthographicNear = _;	RecalculateProjection(); }
-		void SetOrthographicFarClip(float _) { m_OrthographicFar = _; RecalculateProjection(); }
+		void SetOrthographicSize(float _) { mOrthographicSize = _;	RecalculateProjection(); }
+		void SetOrthographicNearClip(float _) { mOrthographicNear = _;	RecalculateProjection(); }
+		void SetOrthographicFarClip(float _) { mOrthographicFar = _; RecalculateProjection(); }
 		
-		void SetPerspectiveFOV(float _) { m_PerspectiveFOV = _; RecalculateProjection(); }
-		void SetPerspectiveNearClip(float _) { m_PerspectiveNear = _; RecalculateProjection(); }
-		void SetPerspectiveFarClip(float _) { m_PerspectiveFar = _; RecalculateProjection(); }
+		void SetPerspectiveFOV(float _) { mPerspectiveFOV = _; RecalculateProjection(); }
+		void SetPerspectiveNearClip(float _) { mPerspectiveNear = _; RecalculateProjection(); }
+		void SetPerspectiveFarClip(float _) { mPerspectiveFar = _; RecalculateProjection(); }
 
 	private:
 		void RecalculateProjection();
 	private:
-		EProjectionType m_CurrentProjectionType = EProjectionType::Orthographic;
+		EProjectionType mCurrentProjectionType = EProjectionType::Orthographic;
 
-		float m_OrthographicSize = 16.0f;
-		float m_OrthographicNear = -1.0f;
-		float m_OrthographicFar = 1.0f;
+		float mOrthographicSize = 16.0f;
+		float mOrthographicNear = -1.0f;
+		float mOrthographicFar = 1.0f;
 
-		float m_PerspectiveFOV = SMath::Conv<ERotType::Degrees, ERotType::Radians>(45.f);
-		float m_PerspectiveNear = 0.01f;
-		float m_PerspectiveFar = 1.f;
+		float mPerspectiveFOV = SMath::Conv<ERotType::Degrees, ERotType::Radians>(45.f);
+		float mPerspectiveNear = 0.01f;
+		float mPerspectiveFar = 1.f;
 
-		float m_AspectRatio = 0.f;
+		float mAspectRatio = 0.f;
 	};
 }

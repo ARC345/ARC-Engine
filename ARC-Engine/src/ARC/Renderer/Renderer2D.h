@@ -1,6 +1,9 @@
 #pragma once
 #include "ARC/Types/Color.h"
 #include "ARC/Types/Transform2D.h"
+#include "../Scene/Entity.h"
+
+namespace ARC { class CEditorCamera; }
 
 namespace ARC { class CCamera; }
 
@@ -20,11 +23,8 @@ namespace ARC {
 			static void Shutdown();
 
 			static void BeginScene(const COrthographicCamera& pCamera);
+			static void BeginScene(const CEditorCamera& pCamera);
 			static void BeginScene(const CCamera& pCamera, const FTransform2D& pTransform);
-
-			//static void EditorBeginScene(const CEditorCamera& pCamera);
-			static void EditorBeginScene(const CCamera& pCamera, const FTransform2D& pTransform);
-
 
 			static void EndScene_Translucent();
 			static void EndScene_Opaque();
@@ -41,7 +41,7 @@ namespace ARC {
 			*	@param pTexture: Texture of quad.
 			*	@param pTextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& pPosition, const float pRotation = 0.f, const FVec2& pSize = FVec2::OneVector(), const ETransparencyType pTransparencyLevel = ETransparencyType::Translucent, const FColor4& pColor = FColor4::White(), const TRef<CTexture2D>& pTex = nullptr, const FVec2& pTextureScaling = FVec2::OneVector());
+			static void DrawQuad(const FVec3& pPosition, const float pRotation = 0.f, const FVec2& pSize = FVec2::OneVector(), const ETransparencyType pTransparencyLevel = ETransparencyType::Translucent, const FColor4& pColor = FColor4::White(), const TRef<CTexture2D>& pTex = nullptr, const FVec2& pTextureScaling = FVec2::OneVector(), const TEntityID& pId = TEntityID(-1));
 			/*
 			*	@param pPosition: Center location of quad.
 			*	@param pRotation: Rotation of quad in radians.
@@ -50,8 +50,8 @@ namespace ARC {
 			*	@param pTexture: Texture of quad.
 			*	@param pTextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pTex, const FVec2& pTextureScaling);
-			static void DrawQuad(const CPrimitive2D& Quad);
+			static void DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pTex, const FVec2& pTextureScaling, const TEntityID& pId = TEntityID(-1));
+			static void DrawQuad(const CPrimitive2D& Quad, const TEntityID& pId = TEntityID(-1));
 
 			struct SStatistics
 			{

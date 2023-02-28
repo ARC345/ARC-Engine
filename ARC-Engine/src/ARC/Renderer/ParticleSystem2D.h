@@ -45,12 +45,12 @@ namespace ARC {
 		void OnUpdate(float _DeltaTime);
 		void OnRender();
 
-		void AddParticleModifier(EVariationApplicationTime VAP, CParticleModifier2D* Variation) { m_Modifiers[VAP].push_back(Variation); };
+		void AddParticleModifier(EVariationApplicationTime VAP, CParticleModifier2D* Variation) { mModifiers[VAP].push_back(Variation); };
 
 		CParticle2D Defaults;
 	private:
-		std::unordered_map<EVariationApplicationTime, std::vector<CParticleModifier2D*>> m_Modifiers;
-		std::vector<CParticle2D> m_ParticlePool;
-		uint32_t m_PoolIndex;
+		std::unordered_map<EVariationApplicationTime, std::vector<CParticleModifier2D*>> mModifiers;
+		std::vector<CParticle2D> mParticlePool;
+		uint32_t mPoolIndex;
 	};
 }

@@ -8,8 +8,8 @@ namespace ARC {
 		COrthographicCamera(float _Left, float _Right, float _Bottom, float _Top);
 		void SetProjection(float _Left, float _Right, float _Bottom, float _Top);
 		
-		inline const FGMat4& GetViewMatrix() const { return m_ViewMatrix; }
-		inline const FGMat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+		inline const FGLMMat4& GetViewMatrix() const { return mViewMatrix; }
+		inline const FGLMMat4& GetViewProjectionMatrix() const { return mViewProjectionMatrix; }
 		void RecalculateViewProjectionMatrix();
 
 	public:
@@ -17,8 +17,8 @@ namespace ARC {
 		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 		float Rotation = 0.0f;
 	private:
-		FGMat4 m_ProjectionMatrix;
-		FGMat4 m_ViewMatrix;
-		FGMat4 m_ViewProjectionMatrix;
+		FGLMMat4 mProjectionMatrix;
+		FGLMMat4 mViewMatrix;
+		FGLMMat4 mViewProjectionMatrix;
 	};
 }

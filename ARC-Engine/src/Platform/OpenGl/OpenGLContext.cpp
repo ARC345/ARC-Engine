@@ -5,14 +5,14 @@
 
 namespace ARC {
 
-	COpenGLContext::COpenGLContext(GLFWwindow* _WindowHandle) : m_WindowHandle(_WindowHandle)
+	COpenGLContext::COpenGLContext(GLFWwindow* _WindowHandle) : mWindowHandle(_WindowHandle)
 	{
-		ARC_CORE_ASSERT(m_WindowHandle, "Window handle is null")
+		ARC_CORE_ASSERT(mWindowHandle, "Window handle is null")
 	}
 	void COpenGLContext::Init()
 	{
 		ARC_PROFILE_FUNCTION();
-		glfwMakeContextCurrent(m_WindowHandle);
+		glfwMakeContextCurrent(mWindowHandle);
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		ARC_CORE_ASSERT(status, "Failed to load GLAD!")
@@ -34,6 +34,6 @@ namespace ARC {
 
 	void COpenGLContext::SwapBuffers()
 	{
-		glfwSwapBuffers(m_WindowHandle);
+		glfwSwapBuffers(mWindowHandle);
 	}
 }

@@ -154,7 +154,7 @@ namespace ARC {
 		}
 		template<typename T>
 			[[nodiscard]] inline constexpr static
-			decltype(auto) Equal(const T& _1, const T& _2, float _Tollerance) {
+			decltype(auto) IsEqual(const T& _1, const T& _2, T _Tollerance) {
 			return SMath::Abs(_1 - _2) <= _Tollerance;
 		}
 		/*

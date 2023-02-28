@@ -12,6 +12,6 @@ namespace ARC {
 		virtual void SwapBuffers() override;
 
 	private:
-		GLFWwindow* m_WindowHandle;
+		GLFWwindow* mWindowHandle;
 	};
 }

@@ -7,7 +7,7 @@
 #include <functional>
 #include <random>
 #include <cmath>
-//#include <ranges>
+#include <ranges>
 
 #include <sstream>
 #include <array>
@@ -24,6 +24,8 @@
 #include "ARC/Helpers/Helpers.h"
 #include "ARC/Core/Log.h"
 #include "ARC/Core/Macros.h"
+#include "ARC/Core/PlatformUtils.h"
+#include "ARC/Core/Yaml.h"
 
 #include "ARC/Profiling/Timer.h"
 #ifdef ARC_PLATFORM_WINDOWS

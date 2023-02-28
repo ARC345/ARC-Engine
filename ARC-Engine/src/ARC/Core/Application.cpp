@@ -19,7 +19,7 @@ namespace ARC
 {
 	CApplication* CApplication::s_Instance=nullptr;
 	CApplication::CApplication(const TString& _Name /*= "ARC-Engine"*/) :
-		m_bRunning(1u)
+		mbRunning(1u)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -30,14 +30,14 @@ namespace ARC
 		ARC_CORE_INFO("Counter: {0}", SHPR::Counter::Next());
 		s_Instance= this;
 
-		m_Window = std::unique_ptr<CWindow>(CWindow::Create(_Name));
+		mWindow = std::unique_ptr<CWindow>(CWindow::Create(_Name));
 			
 		CRenderer::Init();
 
-		m_ImGuiLayer = new CImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
+		mImGuiLayer = new CImGuiLayer();
+		PushOverlay(mImGuiLayer);
 			
-		m_Window->SetEventCallback(BIND_FN(&CApplication::OnEvent));
+		mWindow->SetEventCallback(BIND_FN(&CApplication::OnEvent));
 	}
 
 	CApplication::~CApplication() {}
@@ -45,22 +45,22 @@ namespace ARC
 	void CApplication::Run()
 	{
 		ARC_PROFILE_FUNCTION();
-		while (m_bRunning)
+		while (mbRunning)
 		{
 			//@TEMP
 			auto time = (float)glfwGetTime();
-			m_DeltaTime = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+			mDeltaTime = time - mLastFrameTime;
+			mLastFrameTime = time;
 
-			if(!m_bMinimized) {
-				for (CLayer* layer : m_LayerStack)
-					layer->OnUpdate(m_DeltaTime);
+			if(!mbMinimized) {
+				for (CLayer* layer : mLayerStack)
+					layer->OnUpdate(mDeltaTime);
 			}
-			m_ImGuiLayer->Begin();
-			for (CLayer* layer : m_LayerStack)
+			mImGuiLayer->Begin();
+			for (CLayer* layer : mLayerStack)
 				layer->OnGuiRender();
-			m_ImGuiLayer->End();
-			m_Window->OnUpdate();
+			mImGuiLayer->End();
+			mWindow->OnUpdate();
 		}
 	}
 
@@ -70,7 +70,7 @@ namespace ARC
 		dispatcher.Dispatch<CWindowCloseEvent>(BIND_FN(&CApplication::OnWindowClose));
 		dispatcher.Dispatch<CWindowResizeEvent>(BIND_FN(&CApplication::OnWindowResize));
 
-		for (auto it = m_LayerStack.end(); it!= m_LayerStack.begin();)
+		for (auto it = mLayerStack.end(); it!= mLayerStack.begin();)
 		{
 			(*--it)->OnEvent(_e);
 			if (_e.bHandled) break;
@@ -79,32 +79,32 @@ namespace ARC
 
 	void CApplication::PushLayer(CLayer* _layer)
 	{
-		m_LayerStack.PushLayer(_layer);
+		mLayerStack.PushLayer(_layer);
 		_layer->OnAttach();
 	}
 	void CApplication::PushOverlay(CLayer* _overlay)
 	{
-		m_LayerStack.PushOverlay(_overlay);
+		mLayerStack.PushOverlay(_overlay);
 		_overlay->OnAttach();
 	}
 
 	void CApplication::Shutdown()
 	{
-		m_bRunning=false;
+		mbRunning=false;
 	}
 
 	bool CApplication::OnWindowClose(CWindowCloseEvent& _e)
 	{
-		m_bRunning = false;
+		mbRunning = false;
 		return true;
 	}
 	bool CApplication::OnWindowResize(CWindowResizeEvent& _e)
 	{
 		if(_e.GetX() == 0 || _e.GetY() == 0){
-			m_bMinimized = true;
+			mbMinimized = true;
 			return false;
 		}
-		m_bMinimized = false;
+		mbMinimized = false;
 		GetWindow().SetWidth(_e.GetX());
 		GetWindow().SetHeight(_e.GetY());
 		CRenderer::OnWindowResize(TVec2<uint32_t>(_e.GetX(), _e.GetY()));

@@ -118,6 +118,10 @@ namespace ARC {
 	{
 		FVec3 Velocity = FVec3::ZeroVector();
 
+		CVelocityComponent() = default;
+		CVelocityComponent(const CVelocityComponent&) = default;
+		CVelocityComponent(const FVec3& pVelocity) : Velocity(pVelocity) {};
+
 		virtual void DrawPropertiesUI(CEntity& pEntity) override;
 		virtual void Serialize(YAML::Emitter& pOut) override;
 		virtual void Deserialize(YAML::Node& pData) override;

@@ -60,27 +60,27 @@ namespace ARC
 		using type_float = typename std::common_type<value_type, float>::type;
 		using size_type = size_t;
 
-		TVec() : m_Data() {};
-		TVec(const value_type* _) : m_Data(_)
+		TVec() : mData() {};
+		TVec(const value_type* _) : mData(_)
 		{
 		};
-		TVec(const value_type _)
+		TVec(const value_type& _)
 		{
 			for (auto& iv : *this)
 				iv=_;
 		};
 
 		TVec(value_type Data[N])
-			: m_Data(Data)
+			: mData(Data)
 		{}
 
 		value_type& operator[](size_type _)
 		{
-			return m_Data[_];
+			return mData[_];
 		};
 		const value_type& operator[](size_type _) const
 		{
-			return m_Data[_];
+			return mData[_];
 		};
 
 		constexpr bool operator==(const type& _)
@@ -123,21 +123,21 @@ namespace ARC
 				rval[i] = this->Data()[i] / _.Data()[i];
 			return rval;
 		}
-		constexpr void operator+=(const value_type _) { *this += type(_); }
-		constexpr void operator-=(const value_type _) { *this -= type(_); }
-		constexpr void operator*=(const value_type _) { *this *= type(_); }
-		constexpr void operator/=(const value_type _) { *this /= type(_); }
+		constexpr void operator+=(const value_type& _) { *this += type(_); }
+		constexpr void operator-=(const value_type& _) { *this -= type(_); }
+		constexpr void operator*=(const value_type& _) { *this *= type(_); }
+		constexpr void operator/=(const value_type& _) { *this /= type(_); }
 
-		constexpr type operator+(const value_type _) const { return *this+type(_); }
-		constexpr type operator-(const value_type _) const { return *this-type(_); }
-		constexpr type operator*(const value_type _) const { return *this*type(_); }
-		constexpr type operator/(const value_type _) const { return *this/type(_); }
+		constexpr type operator+(const value_type& _) const { return *this+type(_); }
+		constexpr type operator-(const value_type& _) const { return *this-type(_); }
+		constexpr type operator*(const value_type& _) const { return *this*type(_); }
+		constexpr type operator/(const value_type& _) const { return *this/type(_); }
 
-		inline value_type* Data() { return m_Data; }
-		inline const value_type* Data() const { return m_Data; }
+		inline value_type* Data() { return mData; }
+		inline const value_type* Data() const { return mData; }
 
 	private:
-		value_type m_Data[N];
+		value_type mData[N];
 	};
 
 	template <class T>
@@ -161,7 +161,7 @@ namespace ARC
 		VM_FUNC type_float Dist(const type& _) const { return SMath::Abs(_-*this); }
 		VM_FUNC type_float Length() const { return *this; }
 		VM_FUNC type Normalize() const { return this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::Equal(this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::IsEqual(this, _, _Tollerance); }
 
 		[[nodiscard]] static
 		const type& ZeroVector() { static type rval = type(0); return rval; }
@@ -219,11 +219,16 @@ namespace ARC
 		VM_FUNC value_type MinComponent() const { return SMath::Min(x, y); }
 		VM_FUNC value_type MaxComponent() const { return SMath::Max(x, y); }
 
+		VM_FUNC bool IsWithinBounds(const type& pMin, const type& pMax)
+		{
+			return SMath::IsInRange(x, pMin.x, pMax.x) && SMath::IsInRange(y, pMin.y, pMax.y);
+		}
+
 		VM_FUNC type_float Dist(const type& _) const { return SMath::Dist(*this, _); }
 		VM_FUNC type_float DistSqr(const type& _) const { return SMath::DistSqr(*this, _); }
 		VM_FUNC type_float Length() const { return Dist(ZeroVector()); }
 		VM_FUNC type Normalize() const { return this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::Equal(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::IsEqual(*this, _, _Tollerance); }
 		[[nodiscard]] static
 		const type& ZeroVector() { static type rval = type(0); return rval; }
 		[[nodiscard]] static
@@ -290,7 +295,7 @@ namespace ARC
 		}
 
 		VM_FUNC type Normalize() const { return *this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::Equal(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::IsEqual(*this, _, _Tollerance); }
 
 		VM_FUNC type Mask(type _) { return *this * _; }
 		[[nodiscard]] static
@@ -351,7 +356,7 @@ namespace ARC
 		VM_FUNC type_float DistSqr(const type& _) const { return SMath::DistSqr(*this, _); }
 		VM_FUNC type_float Length() const { return Dist(ZeroVector()); }
 		VM_FUNC type Normalize() const { return this / Length(); }
-		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::Equal(*this, _, _Tollerance); }
+		VM_FUNC bool AlmostEqual(const type& _, float _Tollerance) const { return SMath::IsEqual(*this, _, _Tollerance); }
 
 		[[nodiscard]] static
 		const type& ZeroVector() { static type rval = type(0); return rval; }

@@ -28,12 +28,12 @@ namespace ARC {
 
 	COpenGLVertexArray::COpenGLVertexArray()
 	{
-		glCreateVertexArrays(1, &m_RendererId);
+		glCreateVertexArrays(1, &mRendererId);
 	}
 
 	COpenGLVertexArray::~COpenGLVertexArray()
 	{
-		glDeleteVertexArrays(1, &m_RendererId);
+		glDeleteVertexArrays(1, &mRendererId);
 	}
 	
 	void COpenGLVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
@@ -52,7 +52,7 @@ namespace ARC {
 			++index;
 		}
 
-		m_VertexBuffers.push_back(_VertexBuffer);
+		mVertexBuffers.push_back(_VertexBuffer);
 	}
 
 	void COpenGLVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
@@ -60,21 +60,21 @@ namespace ARC {
 		Bind();
 		_IndexBuffer->Bind();
 
-		m_IndexBuffer = _IndexBuffer;
+		mIndexBuffer = _IndexBuffer;
 	}
 
 	const std::vector<TRef<CVertexBuffer>>& COpenGLVertexArray::GetVertexBuffers() const
 	{
-		return m_VertexBuffers;
+		return mVertexBuffers;
 	}
 
 	const TRef<CIndexBuffer>& COpenGLVertexArray::GetIndexBuffer() const
 	{
-		return m_IndexBuffer;
+		return mIndexBuffer;
 	}
 	void COpenGLVertexArray::Bind() const
 	{
-		glBindVertexArray(m_RendererId);
+		glBindVertexArray(mRendererId);
 	}
 
 	void COpenGLVertexArray::UnBind() const

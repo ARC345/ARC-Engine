@@ -11,9 +11,9 @@
 #include "glm/trigonometric.hpp"
 namespace ARC {
 	COrthographicCameraController::COrthographicCameraController(float _AspectRatio, bool _bCanRotate) :
-		m_AspectRatio(_AspectRatio),
-		m_Camera(-m_AspectRatio *  m_ZoomLevel, m_AspectRatio *  m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel),
-		m_bCanRotate(_bCanRotate)
+		mAspectRatio(_AspectRatio),
+		mCamera(-mAspectRatio *  mZoomLevel, mAspectRatio *  mZoomLevel, -mZoomLevel, mZoomLevel),
+		mbCanRotate(_bCanRotate)
 	{
 	}
 
@@ -23,69 +23,69 @@ namespace ARC {
 
 		if (CInput::IsKeyPressed(ARC_KEY_A))
 		{
-			m_Camera.Position.x -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_Camera.Position.y -= sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mCamera.Position.y -= sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 		else if (CInput::IsKeyPressed(ARC_KEY_D))
 		{
-			m_Camera.Position.x += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_Camera.Position.y += sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mCamera.Position.y += sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 
 		if (CInput::IsKeyPressed(ARC_KEY_W))
 		{
-			m_Camera.Position.x += -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_Camera.Position.y += cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x += -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mCamera.Position.y += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 		else if (CInput::IsKeyPressed(ARC_KEY_S))
 		{
-			m_Camera.Position.x -= -sin(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed  * _DeltaTime;
-			m_Camera.Position.y -= cos(glm::radians(m_Camera.Rotation)) * m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x -= -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed  * _DeltaTime;
+			mCamera.Position.y -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 
 		if (CInput::IsKeyPressed(ARC_KEY_A))
 		{
-			m_Camera.Position.x -= m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x -= mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 		if (CInput::IsKeyPressed(ARC_KEY_D))
 		{
-			m_Camera.Position.x += m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.x += mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 		if (CInput::IsKeyPressed(ARC_KEY_W))
 		{
-			m_Camera.Position.y += m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.y += mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 		if (CInput::IsKeyPressed(ARC_KEY_S))
 		{
-			m_Camera.Position.y -= m_CamMoveSpeed * _DeltaTime;
-			m_bNeedsRecalculation = 1u;
+			mCamera.Position.y -= mCamMoveSpeed * _DeltaTime;
+			mbNeedsRecalculation = 1u;
 		}
 
-		if(m_bCanRotate) {
+		if(mbCanRotate) {
 			if (CInput::IsKeyPressed(ARC_KEY_Q))
 			{
-				m_Camera.Rotation += m_CamRotSpeed * _DeltaTime;
-				m_bNeedsRecalculation = 1u;
+				mCamera.Rotation += mCamRotSpeed * _DeltaTime;
+				mbNeedsRecalculation = 1u;
 			}
 			if (CInput::IsKeyPressed(ARC_KEY_E))
 			{
-				m_Camera.Rotation -= m_CamRotSpeed * _DeltaTime;
-				m_bNeedsRecalculation = 1u;
+				mCamera.Rotation -= mCamRotSpeed * _DeltaTime;
+				mbNeedsRecalculation = 1u;
 			}
 		}
 
-		m_CamMoveSpeed = m_ZoomLevel;
+		mCamMoveSpeed = mZoomLevel;
 
-		if (m_bNeedsRecalculation)
+		if (mbNeedsRecalculation)
 		{
-			m_Camera.RecalculateViewProjectionMatrix();
+			mCamera.RecalculateViewProjectionMatrix();
 		}
 
 	}
@@ -100,20 +100,20 @@ namespace ARC {
 
 	void COrthographicCameraController::OnResize(float width, float height)
 	{
-		m_AspectRatio = width / height;
+		mAspectRatio = width / height;
 		CalculateView();
 	}
 
 	void COrthographicCameraController::CalculateView()
 	{
-		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
 	}
 
 	bool COrthographicCameraController::OnMouseScrolledEvent(CMouseScrolledEvent& _Event)
 	{
 		ARC_PROFILE_FUNCTION();
-		m_ZoomLevel -= _Event.GetYOffset() * 0.25f;
-		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		mZoomLevel -= _Event.GetYOffset() * 0.25f;
+		mZoomLevel = std::max(mZoomLevel, 0.25f);
 		CalculateView();
 		return false;
 	}

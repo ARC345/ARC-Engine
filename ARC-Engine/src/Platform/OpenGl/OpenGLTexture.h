@@ -16,26 +16,26 @@ namespace ARC {
 			virtual void Bind(uint32_t _Slot = 0) const override;
 			virtual void ClearData() override;
 
-			virtual const TString& GetPath() const override { return m_Path; };
+			virtual const TString& GetPath() const override { return mPath; };
 
 			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) override;
 
 			virtual bool operator==(const CTexture& _Tex) const override {
-				return m_RendererID == ((COpenGLTexture2D&)_Tex).m_RendererID;
+				return mRendererID == ((COpenGLTexture2D&)_Tex).mRendererID;
 			};
 
-			uint32_t GetRendererID() override { return m_RendererID; };
+			uint32_t GetRendererID() override { return mRendererID; };
 
 	private:
 			TVec2<uint32_t> Load(const TVec2<uint32_t>& _Dimentions);
 			TVec2<uint32_t> Load(const std::string& _Path);
 		private:
-			uint32_t m_BytesPerPixel;
+			uint32_t mBytesPerPixel;
 
-			unsigned int m_InternalFormat; //GLenum 
-			unsigned int m_DataFormat; //GLenum 
-			unsigned char* m_Data;
-			TString m_Path;
-			uint32_t m_RendererID;
+			unsigned int mInternalFormat; //GLenum 
+			unsigned int mDataFormat; //GLenum 
+			unsigned char* mData;
+			TString mPath;
+			uint32_t mRendererID;
 	};
 }

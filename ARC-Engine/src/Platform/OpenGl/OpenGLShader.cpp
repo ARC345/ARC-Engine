@@ -10,7 +10,7 @@ namespace ARC {
 	TString COpenGLShader::s_Seperator = "#type";
 
 	COpenGLShader::COpenGLShader(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc) :
-		m_Name(_Name)
+		mName(_Name)
 	{
 		std::unordered_map<GLenum, TString> sources;
 		sources[GL_VERTEX_SHADER] = _VertexSrc;
@@ -24,17 +24,17 @@ namespace ARC {
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
-		m_Name = SHPR::ExtractFileNameFromPath(_Path);
+		mName = SHPR::ExtractFileNameFromPath(_Path);
 	}
 
 	COpenGLShader::~COpenGLShader()
 	{
-		glDeleteProgram(m_RendererID);
+		glDeleteProgram(mRendererID);
 	}
 
 	void COpenGLShader::Bind() const
 	{
-		glUseProgram(m_RendererID);
+		glUseProgram(mRendererID);
 	}
 
 	void COpenGLShader::UnBind() const
@@ -167,7 +167,7 @@ namespace ARC {
 			return;
 		}
 
-		m_RendererID = program;
+		mRendererID = program;
 
 		// Always detach shaders after a successful link.
 		for (auto& shaderHandle : shaderHandles)
@@ -179,72 +179,72 @@ namespace ARC {
 
 	void COpenGLShader::SetMat4(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, _Value);
 	}
 
 	void COpenGLShader::SetMat3(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniformMatrix3fv(location, 1, GL_FALSE, _Value);
 	}
 
 	void COpenGLShader::SetInt(const TString& _Name, const int* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform1iv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetInt2(const TString& _Name, const int* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform2iv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetInt3(const TString& _Name, const int* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform3iv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetInt4(const TString& _Name, const int* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform4iv(location, 1, _Value);
 	}
 	void COpenGLShader::SetFloat(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform1fv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetFloat2(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform2fv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetFloat3(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform3fv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetFloat4(const TString& _Name, const float* _Value)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform4fv(location, 1, _Value);
 	}
 
 	void COpenGLShader::SetIntArray(const TString& _Name, const int* _Values, uint32_t _Count)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform1iv(location, _Count, _Values);
 	}
 
 	void COpenGLShader::SetFloatArray(const TString& _Name, const float* _Values, uint32_t _Count)
 	{
-		GLint location = glGetUniformLocation(m_RendererID, _Name.c_str());
+		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
 		glUniform1fv(location, _Count, _Values);
 	}
 }
