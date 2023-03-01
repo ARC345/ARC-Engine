@@ -1,4 +1,4 @@
-﻿#include "PCH/arc_pch.h"
+#include "PCH/arc_pch.h"
 #include "EditorLayer.h"
 #include "imgui/imgui.h"
 #include "ARC/Objects/Primitive2D.h"
@@ -219,6 +219,7 @@ namespace ARC {
 			TUInt32 textureID = mFrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
+
 			// Gizmos
 			CEntity selectedEntity = mSceneHierachyPanel.GetSelectedEntity();
 			if (selectedEntity)
@@ -226,6 +227,7 @@ namespace ARC {
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(mViewportMinBound.x, mViewportMinBound.y, mViewportMaxBound.x-mViewportMinBound.x, mViewportMaxBound.y - mViewportMinBound.y);
+
 				
 				if (selectedEntity.HasComponent<CTransform2DComponent>())
 				{

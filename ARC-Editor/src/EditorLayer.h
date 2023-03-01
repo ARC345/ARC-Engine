@@ -37,7 +37,6 @@ namespace ARC {
 		FVec2 mViewportMaxBound;
 
 		CEntity mHoveredEntity;
-
 		TRef<CFrameBuffer> mFrameBuffer;
 		TRef<CScene> mActiveScene;
 		TRef<CLifeSim2D> mLifeSim2D;

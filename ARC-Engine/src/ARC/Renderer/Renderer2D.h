@@ -1,6 +1,9 @@
 #pragma once
 #include "ARC/Types/Color.h"
 #include "ARC/Types/Transform2D.h"
+#include "../Scene/Entity.h"
+
+namespace ARC { class CEditorCamera; }
 
 namespace ARC { class CEditorCamera; }
 

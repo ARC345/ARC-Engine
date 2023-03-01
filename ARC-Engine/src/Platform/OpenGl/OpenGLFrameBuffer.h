@@ -20,7 +20,7 @@ namespace ARC {
 
 		virtual int ReadPixel(TUInt32 pAttachmentIndex, int pX, int pY) override;
 
-		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue) override;
+    virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue) override;
 		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue) override;
 
 	private:

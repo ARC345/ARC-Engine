@@ -249,6 +249,7 @@ namespace ARC {
 	}
 
 	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
+
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -291,6 +292,7 @@ namespace ARC {
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
 				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
+
 				s_Data.OpaqueQuadVertexBufferBasePtr++;
 			}
 			s_Data.OpaqueQuadIndexCount += 6;
@@ -316,6 +318,7 @@ namespace ARC {
 	}
 
 	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
+
 	{
 		if (s_Data.OpaqueQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset_Opaque();

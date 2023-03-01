@@ -269,7 +269,6 @@ namespace ARC {
 
 		return pixelData;
 	}
-
 	void COpenGLFrameBuffer::ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue)
 	{
 		ARC_CORE_ASSERT(pAttachmentIndex < mColorAttachments.size());
