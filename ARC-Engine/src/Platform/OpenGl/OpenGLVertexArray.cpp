@@ -45,11 +45,61 @@ namespace ARC {
 
 		uint32_t index = 0;
 		const auto& layout = _VertexBuffer->GetLayout();
-		for (const auto& x : layout)
+		for (const auto& ielement : layout)
 		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index, SShaderHelper::GetComponentCount(x.Type), SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(x.Type), x.bNormalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(uint64_t)x.Offset);
-			++index;
+			switch (ielement.Type)
+			{
+			case EShaderDataType::Float:
+			case EShaderDataType::Float2:
+			case EShaderDataType::Float3:
+			case EShaderDataType::Float4:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribPointer(index,
+					SShaderHelper::GetComponentCount(ielement.Type),
+					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
+					ielement.bNormalized ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
+					(const void*)ielement.Offset);
+				index++;
+				break;
+			}
+			case EShaderDataType::Int:
+			case EShaderDataType::Int2:
+			case EShaderDataType::Int3:
+			case EShaderDataType::Int4:
+			case EShaderDataType::Bool:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribIPointer(index,
+					SShaderHelper::GetComponentCount(ielement.Type),
+					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
+					layout.GetStride(),
+					(const void*)ielement.Offset);
+				index++;
+				break;
+			}
+			case EShaderDataType::Mat3:
+			case EShaderDataType::Mat4:
+			{
+				uint8_t count = SShaderHelper::GetComponentCount(ielement.Type);
+				for (uint8_t i = 0; i < count; i++)
+				{
+					glEnableVertexAttribArray(index);
+					glVertexAttribPointer(index,
+						count,
+						SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
+						ielement.bNormalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						(const void*)(ielement.Offset + sizeof(float) * count * i));
+					glVertexAttribDivisor(index, 1);
+					index++;
+				}
+				break;
+			}
+			default:
+				ARC_CORE_ASSERT(false, "Unknown EShaderDataType!");
+			}
 		}
 
 		mVertexBuffers.push_back(_VertexBuffer);

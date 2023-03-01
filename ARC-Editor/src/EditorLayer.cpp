@@ -13,6 +13,7 @@
 #include "glm\gtx\transform.hpp"
 #include "ARC/Wrappers/Glm.h"
 #include "ARC/Scene/BasicComponents.h"
+#include "ARC/Events/MouseEvent.h"
 
 namespace ARC {
 	static CEntity ESquare;
@@ -66,18 +67,19 @@ namespace ARC {
 		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
 		CRenderCommand::Clear();
 
+		mFrameBuffer->ClearColorAttachment(1, -1);
+
 		mEditorCamera.OnUpdate(_DeltaTime);
 		mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
 
+		auto viewportSize = mViewportMaxBound-mViewportMinBound;
 		auto MousePos = (FVec2&)ImGui::GetMousePos() - mViewportMinBound;
-		MousePos.y = mViewportSize.y -MousePos.y;
+		MousePos.y = viewportSize.y - MousePos.y;
 
-		FVec2 viewportSize = mViewportMaxBound-mViewportMinBound;
-
-		if(MousePos.IsWithinBounds(FVec2::ZeroVector() , mViewportSize)) {
-			ARC_CORE_WARN("PixId = {0}", mFrameBuffer->ReadPixel(1, MousePos.x, MousePos.y));
+		if (MousePos.x >= 0 && MousePos.y >= 0 && MousePos.x < viewportSize.x && MousePos.y < viewportSize.y) {
+			auto readPixel = mFrameBuffer->ReadPixel(1, MousePos.x, MousePos.y);
+			mHoveredEntity =  readPixel == -1 ? CEntity{} : CEntity{ TEntityID(readPixel), mActiveScene.get() };
 		}
-
 		mLifeSim2D->OnUpdate(_DeltaTime);
 		mFrameBuffer->UnBind();
 	}
@@ -85,6 +87,16 @@ namespace ARC {
 	void CEditorLayer::OnEvent(CEvent& _Event)
 	{
 		mEditorCamera.OnEvent(_Event);
+		CEventDispatcher dispatcher(_Event);
+		dispatcher.Dispatch<CMouseButtonPressedEvent>(BIND_FN(&CEditorLayer::OnMousePressedEvent));
+	}
+
+	bool CEditorLayer::OnMousePressedEvent(const CMouseButtonPressedEvent& pE)
+	{
+		if (pE.GetMouseButton() == ARC_MOUSE_BUTTON_LEFT)
+			if (mViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(ARC_KEY_LEFT_ALT))
+				mSceneHierachyPanel.SetSelectedEntity(mHoveredEntity);
+		return false;
 	}
 
 	void CEditorLayer::OnGuiRender()
@@ -182,13 +194,21 @@ namespace ARC {
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			std::string name = "None";
+			if (mHoveredEntity)
+				name = mHoveredEntity.GetComponent<CNameComponent>().Name;
+			ImGui::Text("Hovered Entity: %s", name.c_str());
 
 			ImGui::End();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
 			ImGui::Begin("Viewport");
+			auto viewportMinRegion = (FVec2&)ImGui::GetWindowContentRegionMin();
+			auto viewportMaxRegion = (FVec2&)ImGui::GetWindowContentRegionMax();
+			auto viewportOffset = (FVec2&)ImGui::GetWindowPos();
 
-			FVec2 viewportOffset = (FVec2&)ImGui::GetCursorPos(); // includes tab bar
+			mViewportMinBound = viewportMinRegion + viewportOffset;
+			mViewportMaxBound = viewportMaxRegion + viewportOffset;
 
 			mViewportFocused = ImGui::IsWindowFocused();
 			mViewportHovered = ImGui::IsWindowHovered();
@@ -198,9 +218,6 @@ namespace ARC {
 			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			TUInt32 textureID = mFrameBuffer->GetColorAttachmentRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-			
-			mViewportMinBound = (FVec2&)ImGui::GetWindowPos() + viewportOffset;
-			mViewportMaxBound = mViewportMinBound + (FVec2&)ImGui::GetWindowSize();
 
 			// Gizmos
 			CEntity selectedEntity = mSceneHierachyPanel.GetSelectedEntity();
@@ -208,7 +225,7 @@ namespace ARC {
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
-				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(),ImGui::GetWindowHeight());
+				ImGuizmo::SetRect(mViewportMinBound.x, mViewportMinBound.y, mViewportMaxBound.x-mViewportMinBound.x, mViewportMaxBound.y - mViewportMinBound.y);
 				
 				if (selectedEntity.HasComponent<CTransform2DComponent>())
 				{

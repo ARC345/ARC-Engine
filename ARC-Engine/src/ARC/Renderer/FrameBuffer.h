@@ -43,6 +43,9 @@ namespace ARC {
 		virtual const SFrameBufferSpecification& GetSpecifications() const = 0;
 		virtual TUInt32 GetColorAttachmentRendererID(TUInt32 pIndex = 0) const =0;
 
+		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue) = 0;
+		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue) = 0;
+
 		static TRef<CFrameBuffer> Create(const SFrameBufferSpecification& pSpec);
 
 	};

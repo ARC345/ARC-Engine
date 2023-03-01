@@ -53,7 +53,7 @@ namespace ARC {
 				Quad.TextureScaling = spriteRendererComp.TextureScaling;
 				Quad.Transform = transformComp;
 				Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
-				CRenderer2D::DrawQuad(Quad, entity);
+				CRenderer2D::DrawQuad(Quad, int(entity));
 			});
 
 		CRenderer2D::EndScene();
@@ -97,7 +97,7 @@ namespace ARC {
 					Quad.TextureScaling = spriteRendererComp.TextureScaling;
 					Quad.Transform = transformComp;
 					Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
-					CRenderer2D::DrawQuad(Quad, entity);
+					CRenderer2D::DrawQuad(Quad, int(entity));
 				});
 
 			CRenderer2D::EndScene();

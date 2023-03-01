@@ -26,7 +26,7 @@ namespace ARC {
 		FGLMVec2 TexCoord;
 		FGLMVec2 TexScaling;
 		float TexIndex;
-		float EntityId;
+		int EntityId;
 	};
 
 	struct SRenderer2DData {
@@ -83,7 +83,7 @@ namespace ARC {
 			{ EShaderDataType::Float2, "a_TexCoord" },
 			{ EShaderDataType::Float2, "a_TexScaling" },
 			{ EShaderDataType::Float, "a_TexIndex" },
-			{ EShaderDataType::Float, "a_EntityId" }
+			{ EShaderDataType::Int, "a_EntityId" }
 			});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 		s_Data.OpaqueQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
@@ -248,7 +248,7 @@ namespace ARC {
 		}
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const TEntityID& pId)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -290,7 +290,7 @@ namespace ARC {
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
 				s_Data.OpaqueQuadVertexBufferBasePtr++;
 			}
 			s_Data.OpaqueQuadIndexCount += 6;
@@ -304,7 +304,7 @@ namespace ARC {
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.TranslucentQuadVertexBufferBasePtr->EntityId = float(pId);
+				s_Data.TranslucentQuadVertexBufferBasePtr->EntityId = pId;
 				s_Data.TranslucentQuadVertexBufferBasePtr++;
 			}
 			s_Data.TranslucentQuadIndexCount += 6;
@@ -315,7 +315,7 @@ namespace ARC {
 		++s_Data.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const TEntityID& pId)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
 	{
 		if (s_Data.OpaqueQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset_Opaque();
@@ -357,7 +357,7 @@ namespace ARC {
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
 				s_Data.OpaqueQuadVertexBufferBasePtr++;
 			}
 			s_Data.OpaqueQuadIndexCount += 6;
@@ -370,7 +370,7 @@ namespace ARC {
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
 				s_Data.TranslucentQuadVertexBufferBasePtr++;
 			}
 			s_Data.TranslucentQuadIndexCount += 6;
@@ -382,7 +382,7 @@ namespace ARC {
 	}
 
 
-	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad, const TEntityID& pId)
+	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad, const int& pId)
 	{
 		ARC_PROFILE_FUNCTION();
 

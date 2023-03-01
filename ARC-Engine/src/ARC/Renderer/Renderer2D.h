@@ -1,7 +1,6 @@
 #pragma once
 #include "ARC/Types/Color.h"
 #include "ARC/Types/Transform2D.h"
-#include "../Scene/Entity.h"
 
 namespace ARC { class CEditorCamera; }
 
@@ -41,7 +40,7 @@ namespace ARC {
 			*	@param pTexture: Texture of quad.
 			*	@param pTextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& pPosition, const float pRotation = 0.f, const FVec2& pSize = FVec2::OneVector(), const ETransparencyType pTransparencyLevel = ETransparencyType::Translucent, const FColor4& pColor = FColor4::White(), const TRef<CTexture2D>& pTex = nullptr, const FVec2& pTextureScaling = FVec2::OneVector(), const TEntityID& pId = TEntityID(-1));
+			static void DrawQuad(const FVec3& pPosition, const float pRotation = 0.f, const FVec2& pSize = FVec2::OneVector(), const ETransparencyType pTransparencyLevel = ETransparencyType::Translucent, const FColor4& pColor = FColor4::White(), const TRef<CTexture2D>& pTex = nullptr, const FVec2& pTextureScaling = FVec2::OneVector(), const int& pId = -1);
 			/*
 			*	@param pPosition: Center location of quad.
 			*	@param pRotation: Rotation of quad in radians.
@@ -50,8 +49,8 @@ namespace ARC {
 			*	@param pTexture: Texture of quad.
 			*	@param pTextureScaling: Scaling applied to the texture.
 			*/
-			static void DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pTex, const FVec2& pTextureScaling, const TEntityID& pId = TEntityID(-1));
-			static void DrawQuad(const CPrimitive2D& Quad, const TEntityID& pId = TEntityID(-1));
+			static void DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId = -1);
+			static void DrawQuad(const CPrimitive2D& Quad, const int& pId = -1);
 
 			struct SStatistics
 			{

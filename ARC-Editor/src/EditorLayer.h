@@ -9,6 +9,8 @@ namespace ARC { class CLifeSim2D; }
 
 namespace ARC { class CFrameBuffer; }
 namespace ARC { class CScene; }
+namespace ARC { class CMouseButtonPressedEvent; }
+namespace ARC { class CMouseButtonReleasedEvent; }
 
 namespace ARC {
 	class CEditorLayer : public CLayer
@@ -23,13 +25,19 @@ namespace ARC {
 
 		virtual void OnUpdate(float _DeltaTime) override;
 		virtual void OnEvent(CEvent& _Event) override;
+
+		bool OnMousePressedEvent(const CMouseButtonPressedEvent& pE);
+
 	protected:
 	private:
-		uint8_t mViewportFocused : 1;
-		uint8_t mViewportHovered : 1;
+		TUInt8 mViewportFocused : 1;
+		TUInt8 mViewportHovered : 1;
 		FVec2 mViewportSize;
 		FVec2 mViewportMinBound;
 		FVec2 mViewportMaxBound;
+
+		CEntity mHoveredEntity;
+
 		TRef<CFrameBuffer> mFrameBuffer;
 		TRef<CScene> mActiveScene;
 		TRef<CLifeSim2D> mLifeSim2D;

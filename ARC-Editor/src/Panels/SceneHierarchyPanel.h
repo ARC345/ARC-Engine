@@ -14,13 +14,14 @@ namespace ARC {
 		void SetContext(const TRef<CScene>& pScene);
 		void OnImGuiRender();
 
-		CEntity GetSelectedEntity() const { return m_SelectedEntity; }
+		CEntity GetSelectedEntity() const { return mSelectedEntity; }
+		void SetSelectedEntity(CEntity p) { mSelectedEntity = p; }
 
 	private:
 		void DrawEntityNode(CEntity pEntity);
 
 	private:
-		TRef<CScene> m_Context;
-		CEntity m_SelectedEntity;
+		TRef<CScene> mContext;
+		CEntity mSelectedEntity;
 	};
 }
