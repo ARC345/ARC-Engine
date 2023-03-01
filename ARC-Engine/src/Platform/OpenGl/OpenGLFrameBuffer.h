@@ -20,6 +20,9 @@ namespace ARC {
 
 		virtual int ReadPixel(TUInt32 pAttachmentIndex, int pX, int pY) override;
 
+    virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue) override;
+		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue) override;
+
 	private:
 		TUInt32 mRendererID=0;
 		SFrameBufferSpecification mSpecification;

@@ -6,7 +6,7 @@ layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCoord;
 layout(location = 3) in vec2 a_TexScaling;
 layout(location = 4) in float a_TexIndex;
-layout(location = 5) in float a_EntityId;
+layout(location = 5) in int a_EntityId;
 
 uniform mat4 u_ViewProjection;
 
@@ -14,11 +14,11 @@ out vec4 v_Color;
 out vec2 v_TexCoord;
 out flat float v_TexIndex;
 out vec2 v_TexScaling;
-out flat float v_EntityId;
+out flat int v_EntityId;
 
 void main()
 {
-	v_Color = a_Color;
+	v_Color = a_Color; 
 	v_TexCoord = a_TexCoord;
 	v_TexIndex = a_TexIndex;
 	v_TexScaling = a_TexScaling;
@@ -36,7 +36,7 @@ in vec4 v_Color;
 in vec2 v_TexCoord;
 in flat float v_TexIndex;
 in vec2 v_TexScaling;
-in flat float v_EntityId;
+in flat int v_EntityId;
 
 uniform sampler2D u_Textures[32];
 
@@ -81,5 +81,5 @@ void main()
 	}
 	
 	o_Color = texColor;
-	o_EntityId = int(v_EntityId);
+	o_EntityId = v_EntityId;
 }

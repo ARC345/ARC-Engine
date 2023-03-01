@@ -5,20 +5,20 @@
 #include "ARC/Core/Window.h"
 
 namespace ARC {
-	bool CInput::IsKeyPressed(int _keycode)
+	bool SInput::IsKeyPressed(int _keycode)
 	{
 		auto state	= GetKey(_keycode); 
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool CInput::IsMouseButtonPressed(int _button)
+	bool SInput::IsMouseButtonPressed(int _button)
 	{
 		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		auto state = glfwGetMouseButton(window, _button);
 		return state == GLFW_PRESS;
 	}
 
-	FVec2 CInput::GetMouseXY()
+	FVec2 SInput::GetMouseXY()
 	{
 		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		TVec2<double> mousexy;
@@ -26,7 +26,7 @@ namespace ARC {
 		return FVec2((float)mousexy.x, (float)mousexy.y);
 	}
 
-	int CInput::GetKey(int _keycode)
+	int SInput::GetKey(int _keycode)
 	{
 		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
 		return glfwGetKey(window, _keycode);

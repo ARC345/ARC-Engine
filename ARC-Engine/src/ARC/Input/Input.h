@@ -4,7 +4,7 @@
 
 
 namespace ARC {
-	class ARC_API CInput {
+	class ARC_API SInput {
 	public:
 		static bool IsKeyPressed(int _keycode);
 		static bool IsMouseButtonPressed(int _button);

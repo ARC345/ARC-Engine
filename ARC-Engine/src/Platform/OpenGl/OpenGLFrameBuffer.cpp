@@ -106,6 +106,29 @@ namespace ARC {
 			);
 	}
 
+	static GLenum ARCFBTextureFormatToGL(EFrameBufferTextureFormat pFormat)
+	{
+		switch (pFormat)
+		{
+			case EFrameBufferTextureFormat::RGBA8: return GL_RGBA8;
+			case EFrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+		}
+
+		ARC_CORE_ASSERT(false);
+		return 0;
+	}
+	static GLenum GLDataType(EFrameBufferTextureFormat pFormat)
+	{
+		switch (pFormat)
+		{
+		case EFrameBufferTextureFormat::RGBA8: return GL_UNSIGNED_BYTE;
+		case EFrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+		}
+
+		ARC_CORE_ASSERT(false);
+		return 0;
+	}
+
 	COpenGLFrameBuffer::COpenGLFrameBuffer(const SFrameBufferSpecification& pSpecs) :
 		mSpecification(pSpecs)
 	{
@@ -245,5 +268,29 @@ namespace ARC {
 		glReadPixels(pX,pY,1,1,GL_RED_INTEGER,GL_INT, &pixelData);
 
 		return pixelData;
+	}
+	void COpenGLFrameBuffer::ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue)
+	{
+		ARC_CORE_ASSERT(pAttachmentIndex < mColorAttachments.size());
+
+		glClearTexImage(
+			mColorAttachments[pAttachmentIndex],
+			0,
+			ARCFBTextureFormatToGL(mColorAttachmentSpecifications[pAttachmentIndex]),
+			GL_INT,
+			&pValue
+		);
+	}
+	void COpenGLFrameBuffer::ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue)
+	{
+		ARC_CORE_ASSERT(pAttachmentIndex < mColorAttachments.size());
+
+		glClearTexImage(
+			mColorAttachments[pAttachmentIndex],
+			0,
+			ARCFBTextureFormatToGL(mColorAttachmentSpecifications[pAttachmentIndex]),
+			GL_FLOAT,
+			&pValue
+		);
 	}
 }

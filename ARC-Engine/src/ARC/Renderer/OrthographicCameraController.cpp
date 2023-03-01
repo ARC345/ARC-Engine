@@ -21,60 +21,60 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 
-		if (CInput::IsKeyPressed(ARC_KEY_A))
+		if (SInput::IsKeyPressed(ARC_KEY_A))
 		{
 			mCamera.Position.x -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mCamera.Position.y -= sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
-		else if (CInput::IsKeyPressed(ARC_KEY_D))
+		else if (SInput::IsKeyPressed(ARC_KEY_D))
 		{
 			mCamera.Position.x += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mCamera.Position.y += sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
 
-		if (CInput::IsKeyPressed(ARC_KEY_W))
+		if (SInput::IsKeyPressed(ARC_KEY_W))
 		{
 			mCamera.Position.x += -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mCamera.Position.y += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
-		else if (CInput::IsKeyPressed(ARC_KEY_S))
+		else if (SInput::IsKeyPressed(ARC_KEY_S))
 		{
 			mCamera.Position.x -= -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed  * _DeltaTime;
 			mCamera.Position.y -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
 
-		if (CInput::IsKeyPressed(ARC_KEY_A))
+		if (SInput::IsKeyPressed(ARC_KEY_A))
 		{
 			mCamera.Position.x -= mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
-		if (CInput::IsKeyPressed(ARC_KEY_D))
+		if (SInput::IsKeyPressed(ARC_KEY_D))
 		{
 			mCamera.Position.x += mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
-		if (CInput::IsKeyPressed(ARC_KEY_W))
+		if (SInput::IsKeyPressed(ARC_KEY_W))
 		{
 			mCamera.Position.y += mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
-		if (CInput::IsKeyPressed(ARC_KEY_S))
+		if (SInput::IsKeyPressed(ARC_KEY_S))
 		{
 			mCamera.Position.y -= mCamMoveSpeed * _DeltaTime;
 			mbNeedsRecalculation = 1u;
 		}
 
 		if(mbCanRotate) {
-			if (CInput::IsKeyPressed(ARC_KEY_Q))
+			if (SInput::IsKeyPressed(ARC_KEY_Q))
 			{
 				mCamera.Rotation += mCamRotSpeed * _DeltaTime;
 				mbNeedsRecalculation = 1u;
 			}
-			if (CInput::IsKeyPressed(ARC_KEY_E))
+			if (SInput::IsKeyPressed(ARC_KEY_E))
 			{
 				mCamera.Rotation -= mCamRotSpeed * _DeltaTime;
 				mbNeedsRecalculation = 1u;

@@ -36,13 +36,13 @@ namespace ARC
 		auto& trans = GetControlledEntity()->GetComponent<CTransform2DComponent>().Transform;
 		float speed = 5.f;
 
-		if (CInput::IsKeyPressed(ARC_KEY_W))
+		if (SInput::IsKeyPressed(ARC_KEY_W))
 			trans.Location.y -= speed * pDeltaTime;
-		if (CInput::IsKeyPressed(ARC_KEY_A))
+		if (SInput::IsKeyPressed(ARC_KEY_A))
 			trans.Location.x += speed * pDeltaTime;
-		if (CInput::IsKeyPressed(ARC_KEY_S))
+		if (SInput::IsKeyPressed(ARC_KEY_S))
 			trans.Location.y += speed * pDeltaTime;
-		if (CInput::IsKeyPressed(ARC_KEY_D))
+		if (SInput::IsKeyPressed(ARC_KEY_D))
 			trans.Location.x -= speed * pDeltaTime;
 	}
 

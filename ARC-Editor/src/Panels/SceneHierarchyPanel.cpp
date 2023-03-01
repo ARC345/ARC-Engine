@@ -18,8 +18,8 @@ namespace ARC {
 
 	void CSceneHierarchyPanel::SetContext(const TRef<CScene>& pScene)
 	{
-		m_Context = pScene;
-		m_SelectedEntity = {};
+		mContext = pScene;
+		mSelectedEntity = {};
 	}
 	
 	void CSceneHierarchyPanel::OnImGuiRender()
@@ -29,18 +29,19 @@ namespace ARC {
 		
 		ImGui::Begin("Scene Hierarchy");
 		
-		m_Context->GetManager().each([&](auto pID) {
-			DrawEntityNode(CEntity(pID, m_Context.get()));
+		mContext->GetManager().each([&](auto pID) {
+			DrawEntityNode(CEntity(pID, mContext.get()));
 			});
 
+
 		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
-			m_SelectedEntity = {};
+			mSelectedEntity = {};
 
 		// right click on a blank space
 		if (ImGui::BeginPopupContextWindow(nullptr, 1, false))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
-				m_Context->CreateEntity("Empty Entity");
+				mContext->CreateEntity("Empty Entity");
 			ImGui::EndPopup();
 		}
 
@@ -48,18 +49,18 @@ namespace ARC {
 
 		ImGui::Begin("Properties");
 		
-		if(m_SelectedEntity)
+		if(mSelectedEntity)
 		{
-			if (CComponentBase* comp = SSceneRegistry::GetTypeErasedGetComponentFuncs()[CComponentTraits::GetName<CNameComponent>()](m_SelectedEntity)) {
+			if (CComponentBase* comp = SSceneRegistry::GetTypeErasedGetComponentFuncs()[CComponentTraits::GetName<CNameComponent>()](mSelectedEntity)) {
 				ImGui::Text("Name:");
 				ImGui::SameLine(100.f, 20.f);
-				comp->DrawPropertiesUI(m_SelectedEntity);
+				comp->DrawPropertiesUI(mSelectedEntity);
 			}
 
 			bool bNameCompFound = false;
 
 			for(auto& _ : SSceneRegistry::GetTypeErasedGetComponentFuncs()) {
-				if (auto* comp = _.second(m_SelectedEntity)) {
+				if (auto* comp = _.second(mSelectedEntity)) {
 					bool bDeleteComponent = false;
 
 					if (!bNameCompFound && _.first == CComponentTraits::GetName<CNameComponent>()) {
@@ -75,12 +76,12 @@ namespace ARC {
 								bDeleteComponent = true;
 							ImGui::EndPopup();
 						}
-						comp->DrawPropertiesUI(m_SelectedEntity);
+						comp->DrawPropertiesUI(mSelectedEntity);
 
 						ImGui::TreePop();
 					}
 					if (bDeleteComponent)
-						SSceneRegistry::GetTypeErasedRemoveComponentFuncs()[_.first](m_SelectedEntity);
+						SSceneRegistry::GetTypeErasedRemoveComponentFuncs()[_.first](mSelectedEntity);
 				}
 			}
 
@@ -91,9 +92,9 @@ namespace ARC {
 			{
 				for(auto& comp : SSceneRegistry::GetTypeErasedGetComponentFuncs())
 				{
-					if (!comp.second(m_SelectedEntity) && ImGui::MenuItem(comp.first.c_str()))
+					if (!comp.second(mSelectedEntity) && ImGui::MenuItem(comp.first.c_str()))
 					{
-						SSceneRegistry::GetTypeErasedAddComponentFuncs()[comp.first](m_SelectedEntity);
+						SSceneRegistry::GetTypeErasedAddComponentFuncs()[comp.first](mSelectedEntity);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -167,11 +168,11 @@ namespace ARC {
 			ImGuiTreeNodeFlags_OpenOnArrow
 			| ImGuiTreeNodeFlags_SpanAvailWidth
 			| ImGuiTreeNodeFlags_OpenOnDoubleClick
-			| ((m_SelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
+			| ((mSelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
 		bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
 
 		if (ImGui::IsItemClicked())
-			m_SelectedEntity = pEntity;
+			mSelectedEntity = pEntity;
 
 		bool bDeleteEntity = false;
 
@@ -186,8 +187,8 @@ namespace ARC {
 			ImGui::TreePop();
 		if (bDeleteEntity)
 		{
-			m_Context->RemoveEntity(pEntity);
-			m_SelectedEntity = {};
+			mContext->RemoveEntity(pEntity);
+			mSelectedEntity = {};
 		}
 	}
 }
