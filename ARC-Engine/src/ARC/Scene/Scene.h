@@ -7,6 +7,9 @@
 namespace ARC {
 
 	using SManager = entt::registry;
+
+	class CEditorCamera;
+
 	class CEntity;
 
 	class CScene
@@ -18,12 +21,12 @@ namespace ARC {
 		CEntity CreateEntity(const TString& pName = "Entity");
 		void RemoveEntity(CEntity Entity);
 	
-		inline size_t GetEntityCount() const { return m_Manager.alive(); }
+		inline size_t GetEntityCount() const { return mManager.alive(); }
 	
-		inline SManager& GetManager() { return m_Manager; }
-		inline const SManager& GetManager() const { return m_Manager; }
+		inline SManager& GetManager() { return mManager; }
+		inline const SManager& GetManager() const { return mManager; }
 		
-		//void OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera);
+		void OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera);
 		void OnUpdateRuntime(float DeltaTime);
 		void OnViewportResize(TVec2<uint32_t> pNewSize);
 	
@@ -33,20 +36,20 @@ namespace ARC {
 		bool DeserializeFromBinary(const TString& pFilepath);
 
 		template<typename... Ts>
-		decltype(auto) FilterByComponents() { return m_Manager.view<Ts...>(); }
+		decltype(auto) FilterByComponents() { return mManager.view<Ts...>(); }
 
 	private:
 		void SerializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 		void DeserializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 	
 	private:
-		TVec2<uint32_t> m_ViewportSize;
+		TVec2<uint32_t> mViewportSize;
 		
-		SManager m_Manager;
+		SManager mManager;
 
-		TDelegate<bool(const TString&)> m_TreeNodeBeginFunc; 
-		TDelegate<void()> m_TreeNodeEndFunc;
-	
+		TDelegate<bool(const TString&)> mTreeNodeBeginFunc; 
+		TDelegate<void()> mTreeNodeEndFunc;
+		
 		friend class CSceneHierarchyPanel;
 	};
 }

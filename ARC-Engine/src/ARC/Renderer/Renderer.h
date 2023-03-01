@@ -16,18 +16,18 @@ namespace ARC {
 		static void BeginScene(COrthographicCamera& _Cam);
 		static void EndScene();
 
-		static FGMat4 GetViewProjectionMatrix() { return m_SceneData->ViewProjectionMatrix; }
+		static FGLMMat4 GetViewProjectionMatrix() { return mSceneData->ViewProjectionMatrix; }
 
-		static void Submit(const TRef<CShader>& _Shader, const TRef<CVertexArray>& _VertexArray, const FGMat4& _Transform = FGMat4(1.f));
+		static void Submit(const TRef<CShader>& _Shader, const TRef<CVertexArray>& _VertexArray, const FGLMMat4& _Transform = FGLMMat4(1.f));
 
 		inline static CRendererAPI::ERendererAPI GetCurrentAPI() { return CRendererAPI::GetAPI(); }
 
 	private:
 		struct SSceneData
 		{
-			FGMat4 ViewProjectionMatrix;
+			FGLMMat4 ViewProjectionMatrix;
 		};
 
-		static SSceneData* m_SceneData;
+		static SSceneData* mSceneData;
 	};	
 }

@@ -72,37 +72,37 @@ namespace ARC {
 	public:
 		CBufferLayout(){};
 		CBufferLayout(const std::initializer_list<CBufferElement>& _Elem)
-			: m_BufferElements(_Elem)
+			: mBufferElements(_Elem)
 		{
 			CalculateOffsetAndStride();
 		};
 		[[nodiscard]] inline const
-		std::vector<CBufferElement>& GetElements() const { return m_BufferElements; }
+		std::vector<CBufferElement>& GetElements() const { return mBufferElements; }
 		[[nodiscard]] inline
-		uint32_t GetStride() const { return m_Stride; }
+		uint32_t GetStride() const { return mStride; }
 
 
-		std::vector<CBufferElement>::iterator begin() { return m_BufferElements.begin(); }
-		std::vector<CBufferElement>::iterator end() { return m_BufferElements.end(); }
+		std::vector<CBufferElement>::iterator begin() { return mBufferElements.begin(); }
+		std::vector<CBufferElement>::iterator end() { return mBufferElements.end(); }
 
-		std::vector<CBufferElement>::const_iterator begin() const { return m_BufferElements.begin(); }
-		std::vector<CBufferElement>::const_iterator end() const { return m_BufferElements.end(); }
+		std::vector<CBufferElement>::const_iterator begin() const { return mBufferElements.begin(); }
+		std::vector<CBufferElement>::const_iterator end() const { return mBufferElements.end(); }
 
 	private:
 		void CalculateOffsetAndStride() {
 			uint32_t offset=0;
-			m_Stride = 0;
-			for (auto& elem : m_BufferElements)
+			mStride = 0;
+			for (auto& elem : mBufferElements)
 			{
 				elem.Offset=offset;
 				offset+=elem.Size;
-				m_Stride+=elem.Size;
+				mStride+=elem.Size;
 			}
 		}
 
 	private:
-		std::vector<CBufferElement> m_BufferElements;
-		uint32_t m_Stride=0;
+		std::vector<CBufferElement> mBufferElements;
+		uint32_t mStride=0;
 	};
 
 	class CVertexBuffer

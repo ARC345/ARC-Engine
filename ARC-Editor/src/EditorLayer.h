@@ -3,8 +3,9 @@
 #include "ARC/Renderer/Layer.h"
 #include "ARC/Renderer/OrthographicCameraController.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "ARC/Scene/EditorCamera.h"
 
-namespace ARC { class CAtomExp; }
+namespace ARC { class CLifeSim2D; }
 
 namespace ARC { class CFrameBuffer; }
 namespace ARC { class CScene; }
@@ -21,16 +22,20 @@ namespace ARC {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate(float _DeltaTime) override;
+		virtual void OnEvent(CEvent& _Event) override;
 	protected:
 	private:
-		uint8_t m_ViewportFocused : 1;
-		uint8_t m_ViewportHovered : 1;
-		FVec2 m_ViewportSize;
-		TRef<CFrameBuffer> m_FrameBuffer;
-		TRef<CScene> m_ActiveScene;
-		TRef<CAtomExp> m_AtomExp;
+		uint8_t mViewportFocused : 1;
+		uint8_t mViewportHovered : 1;
+		FVec2 mViewportSize;
+		FVec2 mViewportMinBound;
+		FVec2 mViewportMaxBound;
+		TRef<CFrameBuffer> mFrameBuffer;
+		TRef<CScene> mActiveScene;
+		TRef<CLifeSim2D> mLifeSim2D;
 
-		COrthographicCameraController m_CameraController;
-		CSceneHierarchyPanel m_SceneHierachyPanel;
+		CEditorCamera mEditorCamera;
+		COrthographicCameraController mCameraController;
+		CSceneHierarchyPanel mSceneHierachyPanel;
 	};
 }

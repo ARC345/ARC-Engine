@@ -4,7 +4,7 @@
 
 namespace ARC {
 
-	TRef<CFrameBuffer> CFrameBuffer::Create(const SFrameBufferSpecifications& spec)
+	TRef<CFrameBuffer> CFrameBuffer::Create(const SFrameBufferSpecification& spec)
 	{
 		switch (CRenderer::GetCurrentAPI())
 		{

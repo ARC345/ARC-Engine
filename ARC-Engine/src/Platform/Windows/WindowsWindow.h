@@ -15,15 +15,15 @@ namespace ARC{
 
 			void OnUpdate() override;
 
-			inline unsigned int GetWidth() const override { return m_Data.Width; }
-			inline unsigned int GetHeight() const override { return m_Data.Height; }
-			inline void SetWidth(unsigned int _) override {m_Data.Width = _; };
-			inline void SetHeight(unsigned int _) override { m_Data.Height = _; };
+			inline unsigned int GetWidth() const override { return mData.Width; }
+			inline unsigned int GetHeight() const override { return mData.Height; }
+			inline void SetWidth(unsigned int _) override {mData.Width = _; };
+			inline void SetHeight(unsigned int _) override { mData.Height = _; };
 
-			inline void SetEventCallback(const EventCallbackFn& _callback) override { m_Data.EventCallback = _callback; }
+			inline void SetEventCallback(const EventCallbackFn& _callback) override { mData.EventCallback = _callback; }
 
 			virtual void SetVSync(bool _bEnabled) override;
-			virtual bool IsVSync() const override {return m_Data.bVSync;}
+			virtual bool IsVSync() const override {return mData.bVSync;}
 
 			virtual void* GetNativeWindow() const override;
 
@@ -37,8 +37,8 @@ namespace ARC{
 		public:
 		protected:
 		private:
-			GLFWwindow* m_Window;
-			CGraphicsContext* m_Context;
+			GLFWwindow* mWindow;
+			CGraphicsContext* mContext;
 			struct SWindowData
 			{
 				std::string Title;
@@ -47,7 +47,7 @@ namespace ARC{
 
 				EventCallbackFn EventCallback; 
 			};
-			SWindowData m_Data;
+			SWindowData mData;
 
 		/*---------------------------------*/
 	};

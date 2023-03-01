@@ -13,7 +13,7 @@ namespace ARC
 	{
 		/*--------------FUNCS--------------*/
 		public:
-			TArray(size_t p_cap = 5u) : m_Cap(p_cap);
+			TArray(size_t p_cap = 5u) : mCap(p_cap);
 			~TArray();
 			TArray(const TArray& p_obj)
 
@@ -29,7 +29,7 @@ namespace ARC
 			void Remove();
 
 			virtual __forceinline const size_t& GetSize() const override {
-				return m_Len;
+				return mLen;
 			}
 		protected:
 		private:
@@ -39,9 +39,9 @@ namespace ARC
 		public:
 		protected:
 		private:
-			size_t m_Len;
-			size_t m_Cap;
-			T** m_Arr;
+			size_t mLen;
+			size_t mCap;
+			T** mArr;
 		/*---------------------------------*/
 	};
 };

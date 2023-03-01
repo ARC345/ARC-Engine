@@ -5,18 +5,18 @@
 namespace ARC
 {
 
-	CEntity::CEntity(TEntityID pHandle, CScene* pScene) : m_Entity(pHandle), m_Scene(pScene)
+	CEntity::CEntity(TEntityID pHandle, CScene* pScene) : mEntity(pHandle), mScene(pScene)
 	{
 	}
 
 	void CEntity::OnKill()
 	{
-		m_Entity = entt::null;
-		m_Scene = nullptr;
+		mEntity = entt::null;
+		mScene = nullptr;
 	}
 
 	bool CEntity::IsValid() const
 	{
-		return m_Entity != entt::null && m_Scene != nullptr;
+		return mEntity != entt::null && mScene != nullptr;
 	}
 }

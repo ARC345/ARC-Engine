@@ -11,11 +11,11 @@ namespace ARC
 		static int Init();
 		//inline static void SetPattern(std::string& newPattern, pattern_time_type newTimeType = pattern_time_type::local ){ spdlog::set_pattern(newPattern, newTimeType);};
 	public:
-		static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_CoreLogger; };
-		static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_ClientLogger; };
+		static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return mCoreLogger; };
+		static std::shared_ptr<spdlog::logger>& GetClientLogger() { return mClientLogger; };
 	private:
-		static std::shared_ptr<spdlog::logger> m_CoreLogger;
-		static std::shared_ptr<spdlog::logger> m_ClientLogger;
+		static std::shared_ptr<spdlog::logger> mCoreLogger;
+		static std::shared_ptr<spdlog::logger> mClientLogger;
 	};
 }
 

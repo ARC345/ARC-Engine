@@ -2,11 +2,12 @@
 #include "Scene.h"
 #include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Objects/Primitive2D.h"
-#include "Utils/MPL/Interface.hpp"
 #include "ARC/Core/Yaml.h"
 #include "Entity.h"
 #include "BasicComponents.h"
 #include "SceneRegistry.h"
+#include "../Helpers/Math.h"
+#include "ColliderComponents.h"
 
 namespace ARC {
 	CScene::CScene()
@@ -18,6 +19,7 @@ namespace ARC {
 		SSceneRegistry::SetupComponent<CNativeScriptComponent>();
 		SSceneRegistry::SetupComponent<CMassComponent>();
 		SSceneRegistry::SetupComponent<CVelocityComponent>();
+		SSceneRegistry::SetupComponent<CCircleColliderComponent>();
 	}
 
 	CScene::~CScene()
@@ -27,7 +29,7 @@ namespace ARC {
 
 	CEntity CScene::CreateEntity(const TString& pName)
 	{
-		CEntity entity(m_Manager.create(), this);
+		CEntity entity(mManager.create(), this);
 
 		entity.AddComponent<CNameComponent>(pName);
 
@@ -36,36 +38,30 @@ namespace ARC {
 
 	void CScene::RemoveEntity(CEntity Entity)
 	{
-		m_Manager.destroy(Entity.GetID());
+		mManager.destroy(Entity.GetID());
 		Entity.OnKill();
 	}
 
-	//void CScene::OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera)
-	//{
-	//	CRenderer2D::EditorBeginScene(*mainCam, *camTransform);
-	//
-	//	if (m_Manager.view<CCameraComponent>().size() != 1)
-	//	{
-	//		static CPrimitive2D Quad;
-	//		CRenderer2D::DrawQuad(Quad);
-	//	}
-	//
-	//	m_Manager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
-	//		{
-	//			static CPrimitive2D Quad;
-	//			Quad.Color = spriteRendererComp.Color;
-	//			Quad.Texture = spriteRendererComp.Texture;
-	//			Quad.TextureScaling = spriteRendererComp.TextureScaling;
-	//			Quad.Transform = transformComp;
-	//			CRenderer2D::DrawQuad(Quad);
-	//		});
-	//
-	//	CRenderer2D::EditorEndScene();
-	//}
+	void CScene::OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera)
+	{
+		CRenderer2D::BeginScene(pCamera);
+		mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+			{
+				static CPrimitive2D Quad;
+				Quad.Color = spriteRendererComp.Color;
+				Quad.Texture = spriteRendererComp.Texture;
+				Quad.TextureScaling = spriteRendererComp.TextureScaling;
+				Quad.Transform = transformComp;
+				Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
+				CRenderer2D::DrawQuad(Quad, entity);
+			});
+
+		CRenderer2D::EndScene();
+	}
 
 	void CScene::OnUpdateRuntime(float DeltaTime)
 	{
-		m_Manager.view<CNativeScriptComponent>().each([=](auto entity, auto& nativeScriptcomp)
+		mManager.view<CNativeScriptComponent>().each([=](auto entity, auto& nativeScriptcomp)
 			{
 				if (!nativeScriptcomp.Controller)
 				{
@@ -80,7 +76,7 @@ namespace ARC {
 		CCamera* mainCam = nullptr;
 		FTransform2D* camTransform = nullptr;
 		
-		m_Manager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
+		mManager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
 			{
 				if (cameraComp.bPrimary)
 				{
@@ -93,27 +89,21 @@ namespace ARC {
 		if (mainCam)
 		{
 			CRenderer2D::BeginScene(*mainCam, *camTransform);
-
-			if (m_Manager.view<CCameraComponent>().size()!=1)
-			{
-				static CPrimitive2D Quad;
-				CRenderer2D::DrawQuad(Quad);
-			}
-
-			m_Manager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+			mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
 				{
 					static CPrimitive2D Quad;
 					Quad.Color = spriteRendererComp.Color;
 					Quad.Texture = spriteRendererComp.Texture;
 					Quad.TextureScaling = spriteRendererComp.TextureScaling;
 					Quad.Transform = transformComp;
-					CRenderer2D::DrawQuad(Quad);
+					Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
+					CRenderer2D::DrawQuad(Quad, entity);
 				});
 
 			CRenderer2D::EndScene();
 		}
 
-		m_Manager.view<CTransform2DComponent, CVelocityComponent>().each([](auto entity, auto& transformComp, auto& velocityComp)
+		mManager.view<CTransform2DComponent, CVelocityComponent>().each([](auto entity, auto& transformComp, auto& velocityComp)
 			{
 				transformComp.Transform.Location += velocityComp.Velocity;
 			});
@@ -121,14 +111,12 @@ namespace ARC {
 
 	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
 	{
-		m_ViewportSize = pNewSize;
+		mViewportSize = pNewSize;
 
-		m_Manager.view<CCameraComponent>().each([=](auto entity, auto& cameraComp)
+		mManager.view<CCameraComponent>().each([=](auto entity, auto& cameraComp)
 			{
-				if (!cameraComp.bFixedAspectRatio)
-				{
-					cameraComp.Camera.SetViewportSize(pNewSize);
-				}
+				if (cameraComp.bFixedAspectRatio) return
+				cameraComp.Camera.SetViewportSize(pNewSize);
 			});
 	}
 
@@ -161,7 +149,7 @@ namespace ARC {
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		m_Manager.each([&](const TEntityID pEID)
+		mManager.each([&](const TEntityID pEID)
 			{
 				CEntity entity = { pEID, this };
 				if (!entity) return;
@@ -189,24 +177,21 @@ namespace ARC {
 		TString SceneName = data["Scene"].as<TString>();
 
 		auto entities = data["Entities"];
-		if (entities)
+		for (auto entity : entities)
 		{
-			for (auto entity : entities)
+			uint64_t uuid = entity["Entity"].as<uint64_t>();
+			CEntity deserializedEntity = CreateEntity();
+
+			for (auto compData : entity["Components"])
 			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>();
-				CEntity deserializedEntity = CreateEntity();
-				
-				for (auto compData : entity["Components"])
-				{
-					auto Node = compData["Data"];
+				auto Node = compData["Data"];
 
-					if (compData["Name"].as<TString>() == CComponentTraits::GetName<CNameComponent>()) {
-						deserializedEntity.GetComponent<CNameComponent>().Deserialize(Node);
-						continue;
-					}
-
-					SSceneRegistry::GetTypeErasedAddComponentFuncs()[compData["Name"].as<TString>()](deserializedEntity)->Deserialize(Node);
+				if (compData["Name"].as<TString>() == CComponentTraits::GetName<CNameComponent>()) {
+					deserializedEntity.GetComponent<CNameComponent>().Deserialize(Node);
+					continue;
 				}
+
+				SSceneRegistry::GetTypeErasedAddComponentFuncs()[compData["Name"].as<TString>()](deserializedEntity)->Deserialize(Node);
 			}
 		}
 		return true;

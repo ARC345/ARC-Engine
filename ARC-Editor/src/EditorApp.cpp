@@ -4,7 +4,6 @@
 #include <ARC.h>
 #include "EditorApp.h"
 #include "EditorLayer.h"
-#include "Atom/Atom.h"
 
 namespace ARC {
 	CApplication* CreateApplication()

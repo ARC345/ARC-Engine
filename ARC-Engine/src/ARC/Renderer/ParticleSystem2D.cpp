@@ -6,33 +6,33 @@
 namespace ARC {
 	CParticleSystem2D::CParticleSystem2D(uint32_t _PoolSize)
 	{
-		m_ParticlePool.resize(_PoolSize);
+		mParticlePool.resize(_PoolSize);
 
-		m_PoolIndex = _PoolSize-1;
+		mPoolIndex = _PoolSize-1;
 	}
 
 	CParticleSystem2D::~CParticleSystem2D()
 	{
-		m_Modifiers.clear();
+		mModifiers.clear();
 	}
 
 	void CParticleSystem2D::Emit()
 	{
-		CParticle2D& particle = m_ParticlePool[m_PoolIndex];
+		CParticle2D& particle = mParticlePool[mPoolIndex];
 		particle = Defaults;
 		particle.bIsActive = true;
 		particle.bInitial = true;
 		
-		for (auto& i : m_Modifiers[EVariationApplicationTime::OnEmit])
+		for (auto& i : mModifiers[EVariationApplicationTime::OnEmit])
 		{
 			i->ApplyModifier(particle);
 		}
-		m_PoolIndex = --m_PoolIndex % m_ParticlePool.size();
+		mPoolIndex = --mPoolIndex % mParticlePool.size();
 	}
 
 	void CParticleSystem2D::OnUpdate(float _DeltaTime)
 	{
-		for (auto& particle : m_ParticlePool)
+		for (auto& particle : mParticlePool)
 		{
 			if (!particle.bIsActive)
 				continue;
@@ -45,7 +45,7 @@ namespace ARC {
 
 			if (particle.bInitial)
 			{
-				for (auto& i : m_Modifiers[EVariationApplicationTime::OnUpdate])
+				for (auto& i : mModifiers[EVariationApplicationTime::OnUpdate])
 				{
 					i->ApplyInitialModifier(particle);
 				}
@@ -53,7 +53,7 @@ namespace ARC {
 			}
 			else
 			{
-				for (auto& i : m_Modifiers[EVariationApplicationTime::OnUpdate])
+				for (auto& i : mModifiers[EVariationApplicationTime::OnUpdate])
 				{
 					i->ApplyModifier(particle);
 				}
@@ -67,7 +67,7 @@ namespace ARC {
 
 	void CParticleSystem2D::OnRender()
 	{
-		for (auto& particle : m_ParticlePool)
+		for (auto& particle : mParticlePool)
 		{
 			if (!particle.bIsActive)
 				continue;

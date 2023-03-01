@@ -16,11 +16,11 @@ namespace ARC {
 		void OnEvent(CEvent& _Event);
 		void OnResize(float width, float height);
 
-		COrthographicCamera& GetCamera() { return m_Camera; }
-		const COrthographicCamera& GetCamera() const { return m_Camera; }
-		inline float GetZoomLevel() const { return m_ZoomLevel; }
+		COrthographicCamera& GetCamera() { return mCamera; }
+		const COrthographicCamera& GetCamera() const { return mCamera; }
+		inline float GetZoomLevel() const { return mZoomLevel; }
 		inline void SetZoomLevel(float _val) { 
-			m_ZoomLevel = _val;
+			mZoomLevel = _val;
 			CalculateView();
 		}
 	private:
@@ -29,14 +29,14 @@ namespace ARC {
 		bool OnMouseScrolledEvent(CMouseScrolledEvent& _Event);
 		bool OnWindowResized(CWindowResizeEvent& _Event);
 	private:
-		uint8_t m_bCanRotate : 1;
-		uint8_t m_bNeedsRecalculation : 1;
+		uint8_t mbCanRotate : 1;
+		uint8_t mbNeedsRecalculation : 1;
 
-		float m_CamMoveSpeed = 10.f;
-		float m_CamRotSpeed = 180.f;
+		float mCamMoveSpeed = 10.f;
+		float mCamRotSpeed = 180.f;
 
-		float m_AspectRatio;
-		float m_ZoomLevel = 1;
-		COrthographicCamera m_Camera;
+		float mAspectRatio;
+		float mZoomLevel = 1;
+		COrthographicCamera mCamera;
 	};
 }

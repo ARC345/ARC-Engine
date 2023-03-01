@@ -47,6 +47,6 @@ namespace ARC {
 		TRef<CShader> GetShader(const TString& _Name); 
 		bool Exists(const TString& _Name) const; 
 	private:
-		std::unordered_map<TString, TRef<CShader>> m_Shaders;
+		std::unordered_map<TString, TRef<CShader>> mShaders;
 	};
 }

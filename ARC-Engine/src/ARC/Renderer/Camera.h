@@ -8,11 +8,11 @@ namespace ARC
 	{
 	public:
 		CCamera() = default;
-		CCamera(const FGMat4& pProjection) : m_Projection(pProjection){};
+		CCamera(const FGLMMat4& pProjection) : mProjection(pProjection){};
 
-		const FGMat4& GetProjection() const { return m_Projection; }
+		const FGLMMat4& GetProjection() const { return mProjection; }
 
 	protected:
-		FGMat4 m_Projection = FGMat4(1.0f);
+		FGLMMat4 mProjection = FGLMMat4(1.0f);
 	};
 }

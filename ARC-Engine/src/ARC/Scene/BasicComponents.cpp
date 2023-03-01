@@ -165,8 +165,9 @@ namespace ARC
 	{
 		pOut << YAML::Key << "Color" << YAML::Value << Color;
 		if (Texture)
-			pOut << YAML::Key << "TexturePath" << YAML::Value << Texture->GetPath();
-		pOut << YAML::Key << "TextureScaling" << YAML::Value << TextureScaling;
+			pOut << 
+			YAML::Key << "TexturePath" << YAML::Value << Texture->GetPath() <<
+			YAML::Key << "TextureScaling" << YAML::Value << TextureScaling;
 	}
 
 	void CSpriteRendererComponent::Deserialize(YAML::Node& pData)

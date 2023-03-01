@@ -29,31 +29,31 @@ namespace ARC{
 		void PushLayer(CLayer* _layer);
 		void PushOverlay(CLayer* _overlay);
 
-		inline CWindow& GetWindow() const { return *m_Window; }
+		inline CWindow& GetWindow() const { return *mWindow; }
 
 		void Shutdown();
-		CImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; };
+		CImGuiLayer* GetImGuiLayer() { return mImGuiLayer; };
 
 		inline static CApplication& Get() { return *s_Instance; }
 		inline virtual TString GetAppName() =0;
 		inline const TString& GetEngineName() { static TString rval = "ARC_Engine"; return rval; };
-		inline float GetDeltaTime() const { return m_DeltaTime; }
+		inline float GetDeltaTime() const { return mDeltaTime; }
 
 	private:
-		bool OnWindowClose(CWindowCloseEvent& _e);
-		bool OnWindowResize(CWindowResizeEvent& _e);
+		bool OnWindowClose(CWindowCloseEvent& pE);
+		bool OnWindowResize(CWindowResizeEvent& pE);
 		
 	private:
 		
-		float m_DeltaTime;
-		float m_LastFrameTime = 0;
+		float mDeltaTime;
+		float mLastFrameTime = 0;
 		
-		std::unique_ptr<CWindow> m_Window;
+		std::unique_ptr<CWindow> mWindow;
 		
-		CImGuiLayer* m_ImGuiLayer;
-		uint8_t m_bRunning : 1;
-		uint8_t m_bMinimized: 1;
-		LayerStack m_LayerStack;
+		CImGuiLayer* mImGuiLayer;
+		uint8_t mbRunning : 1;
+		uint8_t mbMinimized: 1;
+		LayerStack mLayerStack;
 		static CApplication* s_Instance;
 	};
 

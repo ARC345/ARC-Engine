@@ -9,7 +9,7 @@
 #include "Renderer2D.h"
 
 namespace ARC {
-	CRenderer::SSceneData* CRenderer::m_SceneData = new CRenderer::SSceneData;
+	CRenderer::SSceneData* CRenderer::mSceneData = new CRenderer::SSceneData;
 
 	void CRenderer::Init()
 	{
@@ -27,7 +27,7 @@ namespace ARC {
 	void CRenderer::BeginScene(COrthographicCamera& _Cam)
 	{
 		// Submit View Projection Matrix
-		m_SceneData->ViewProjectionMatrix = _Cam.GetViewProjectionMatrix();
+		mSceneData->ViewProjectionMatrix = _Cam.GetViewProjectionMatrix();
 	}
 
 	void CRenderer::EndScene()
@@ -35,11 +35,11 @@ namespace ARC {
 
 	}
 
-	void CRenderer::Submit(const TRef<CShader>& _Shader, const TRef<CVertexArray>& _VertexArray, const FGMat4& _Transform)
+	void CRenderer::Submit(const TRef<CShader>& _Shader, const TRef<CVertexArray>& _VertexArray, const FGLMMat4& _Transform)
 	{
 		_Shader->Bind();
-		_Shader->Set<FGMat4>("u_ViewProjection", m_SceneData->ViewProjectionMatrix);
-		_Shader->Set<FGMat4>("u_Transform", _Transform);
+		_Shader->Set<FGLMMat4>("u_ViewProjection", mSceneData->ViewProjectionMatrix);
+		_Shader->Set<FGLMMat4>("u_Transform", _Transform);
 		_VertexArray->Bind();
 		CRenderCommand::DrawIndexed(_VertexArray);
 	}

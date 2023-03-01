@@ -11,10 +11,10 @@ namespace ARC
 {
 	void CEntityController::Setup(CEntity* pEntity)
 	{
-		m_ControlledEntity = pEntity;
+		mControlledEntity = pEntity;
 	}
 
-	CEntity* CEntityController::GetControlledEntity() {	return m_ControlledEntity; }
+	CEntity* CEntityController::GetControlledEntity() {	return mControlledEntity; }
 
 	//----------------------------------------------------------------------------//
 

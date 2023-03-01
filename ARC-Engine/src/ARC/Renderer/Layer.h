@@ -16,8 +16,8 @@ namespace ARC {
 		virtual void OnGuiRender(){}
 		virtual void OnEvent(CEvent& _event){}
 
-		inline const std::string& GetName() const { return m_DebugName; }
+		inline const std::string& GetName() const { return mDebugName; }
 	protected:
-		std::string m_DebugName;
+		std::string mDebugName;
 	};
 }

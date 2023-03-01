@@ -7,41 +7,41 @@ namespace ARC {
 	class ARC_API CKeyEvent : public CEvent
 	{
 		public:
-			inline int GetKeyCode() const { return m_KeyCode; }
+			inline int GetKeyCode() const { return mKeyCode; }
 
 			EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 		protected:
-			CKeyEvent() : m_KeyCode(0) {}
-			int m_KeyCode = 0;
+			CKeyEvent() : mKeyCode(0) {}
+			int mKeyCode = 0;
 	};
 	class ARC_API CKeyPressedEvent : public CKeyEvent
 	{
 		public:
-			CKeyPressedEvent(int p_KeyCode, TUint p_RepeatCount) : 
-				m_RepeatCount() {
-					m_KeyCode = p_KeyCode;
+			CKeyPressedEvent(int p_KeyCode, TUInt p_RepeatCount) : 
+				mRepeatCount() {
+					mKeyCode = p_KeyCode;
 				}
 		
 			virtual TString ToString() const override {
 				std::stringstream ss;
-				ss << GetName() << " [" << m_KeyCode << "]: Repeated Count= " << m_RepeatCount;
+				ss << GetName() << " [" << mKeyCode << "]: Repeated Count= " << mRepeatCount;
 				return ss.str();
 			}
 			EVENT_CLASS_TYPE(KeyPressed);
 		private:	
-			TUint m_RepeatCount = 0;
+			TUInt mRepeatCount = 0;
 	};
 	class ARC_API CKeyReleasedEvent : public CKeyEvent
 	{
 		public:
 			CKeyReleasedEvent(int p_KeyCode)
 			{
-				m_KeyCode = p_KeyCode;
+				mKeyCode = p_KeyCode;
 			}
 
 			virtual TString ToString() const override {
 				std::stringstream ss;
-				ss << GetName() << " [" << m_KeyCode << "]";
+				ss << GetName() << " [" << mKeyCode << "]";
 				return ss.str();
 			}
 			EVENT_CLASS_TYPE(KeyReleased);
@@ -51,12 +51,12 @@ namespace ARC {
 		public:
 			CKeyTypedEvent(int p_KeyCode)
 			{
-				m_KeyCode = p_KeyCode;
+				mKeyCode = p_KeyCode;
 			}
 
 			virtual TString ToString() const override {
 				std::stringstream ss;
-				ss << GetName() << " [" << m_KeyCode << "]";
+				ss << GetName() << " [" << mKeyCode << "]";
 				return ss.str();
 			}
 			EVENT_CLASS_TYPE(KeyTyped);

@@ -13,15 +13,20 @@
 #include "glm/gtx/transform.hpp"
 #include <algorithm>
 #include "ARC/Wrappers/Glm.h"
+#include "../Scene/EditorCamera.h"
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+#include "../Scene/Entity.h"
 namespace ARC {
 	struct SQuadVertex
 	{
-		FGVec3 Position;
-		FGVec4 Color;
-		FGVec2 TexCoord;
-		FGVec2 TexScaling;
+		FGLMVec3 Position;
+		FGLMVec4 Color;
+		FGLMVec2 TexCoord;
+		FGLMVec2 TexScaling;
 		float TexIndex;
+		float EntityId;
 	};
 
 	struct SRenderer2DData {
@@ -48,8 +53,8 @@ namespace ARC {
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
 		uint32_t TextureSlotIndex = 1;
 
-		FGVec4 QuadVertexPositions[4];
-		FGMat4 CameraTransform;
+		FGLMVec4 QuadVertexPositions[4];
+		FGLMMat4 CameraTransform;
 
 		CRenderer2D::SStatistics Statistics;
 
@@ -78,6 +83,7 @@ namespace ARC {
 			{ EShaderDataType::Float2, "a_TexCoord" },
 			{ EShaderDataType::Float2, "a_TexScaling" },
 			{ EShaderDataType::Float, "a_TexIndex" },
+			{ EShaderDataType::Float, "a_EntityId" }
 			});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 		s_Data.OpaqueQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
@@ -130,10 +136,10 @@ namespace ARC {
 
 	void CRenderer2D::BeginScene(const COrthographicCamera& pCamera)
 	{
-		FGMat4 Trans = pCamera.GetViewProjectionMatrix();
+		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", pCamera.GetViewProjectionMatrix());
+		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", pCamera.GetViewProjectionMatrix());
 		
 		s_Data.TranslucentQuadIndexCount = 0;
 		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
@@ -146,12 +152,30 @@ namespace ARC {
 		s_Data.CameraTransform = Trans;
 	}
 
-	void CRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
+	void CRenderer2D::BeginScene(const CEditorCamera& pCamera)
 	{
-		FGMat4 Trans = pCamera.GetProjection() * glm::inverse(SHPR::Conv<FGMat4>(pTransform));
+		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
 		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGMat4>("u_ViewProjection", Trans);
+		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", Trans);
+
+		s_Data.TranslucentQuadIndexCount = 0;
+		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+
+		s_Data.OpaqueQuadIndexCount = 0;
+		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+
+		s_Data.TextureSlotIndex = 1;
+
+		s_Data.CameraTransform = glm::translate(glm::mat4(1.0f), pCamera.GetPosition()) * glm::toMat4(pCamera.GetOrientation());
+	}
+
+	void CRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
+	{
+		FGLMMat4 Trans = pCamera.GetProjection() * glm::inverse(SHPR::Conv<FGLMMat4>(pTransform));
+
+		s_Data.TextureShader->Bind();
+		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", Trans);
 		
 		s_Data.TranslucentQuadIndexCount = 0;
 		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
@@ -160,23 +184,24 @@ namespace ARC {
 		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
-		s_Data.CameraTransform = Trans;
+		//s_Data.CameraTransform = pTransform;
 	}
 
 	void CRenderer2D::EndScene_Translucent()
 	{
 		ARC_PROFILE_FUNCTION();
 		auto data_size = uint32_t((uint8_t*)s_Data.TranslucentQuadVertexBufferBasePtr - (uint8_t*)s_Data.TranslucentQuadVertexBufferBase);
+		if (!data_size) return;
 
 		struct Block { SQuadVertex n_[4]; };
 
 		std::sort((Block*)s_Data.TranslucentQuadVertexBufferBase, (Block*)s_Data.TranslucentQuadVertexBufferBasePtr,
 			[&](const Block& p1, const Block& p2) -> bool {
-				FGVec3 tmp = FGVec3(s_Data.CameraTransform[3]) - p1.n_[0].Position;
-				FGVec3 tmp2 = FGVec3(s_Data.CameraTransform[3]) - p2.n_[0].Position;
+				FGLMVec3 tmp = FGLMVec3(s_Data.CameraTransform[3]) - p1.n_[0].Position;
+				FGLMVec3 tmp2 = FGLMVec3(s_Data.CameraTransform[3]) - p2.n_[0].Position;
 				return p1.n_[0].Position[2] < p2.n_[0].Position[2];
 			});
-
+		Block* _ = (Block*)s_Data.TranslucentQuadVertexBufferBase;
 		s_Data.QuadVertexBuffer->SetData(s_Data.TranslucentQuadVertexBufferBase, data_size);
 		FlushTranslucent();
 	}
@@ -185,6 +210,9 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 		auto data_size = uint32_t((uint8_t*)s_Data.OpaqueQuadVertexBufferBasePtr - (uint8_t*)s_Data.OpaqueQuadVertexBufferBase);
+		if (!data_size) return;
+		struct Block { SQuadVertex n_[4]; };
+		Block* _ = (Block*)s_Data.OpaqueQuadVertexBufferBase;
 		s_Data.QuadVertexBuffer->SetData(s_Data.OpaqueQuadVertexBufferBase, data_size);
 		FlushOpaque();
 	}
@@ -220,7 +248,7 @@ namespace ARC {
 		}
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const TEntityID& pId)
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -247,10 +275,10 @@ namespace ARC {
 			}
 		}
 
-		FGMat4 transform =
-			 	glm::translate(FGMat4(1.0f), FGVec3(pPosition.x, pPosition.y, pPosition.z)) *
-			 	glm::rotate(FGMat4(1.0f), pRotation, FGVec3(0, 0, 1)) *
-			 	glm::scale(FGMat4(1.0f), FGVec3(pSize.x, pSize.y, 1.0f));
+		FGLMMat4 transform =
+			 	glm::translate(FGLMMat4(1.0f), FGLMVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			 	glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
+			 	glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
 
 		switch (pTransparencyLevel)
 		{
@@ -258,10 +286,11 @@ namespace ARC {
 			for (size_t i = 0; i < 4; i++)
 			{
 				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
 				s_Data.OpaqueQuadVertexBufferBasePtr++;
 			}
 			s_Data.OpaqueQuadIndexCount += 6;
@@ -271,10 +300,11 @@ namespace ARC {
 			for (size_t i = 0; i < 4; i++)
 			{
 				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.TranslucentQuadVertexBufferBasePtr->EntityId = float(pId);
 				s_Data.TranslucentQuadVertexBufferBasePtr++;
 			}
 			s_Data.TranslucentQuadIndexCount += 6;
@@ -285,9 +315,8 @@ namespace ARC {
 		++s_Data.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const TEntityID& pId)
 	{
-
 		if (s_Data.OpaqueQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset_Opaque();
 		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
@@ -313,10 +342,10 @@ namespace ARC {
 			}
 		}
 
-		FGMat4 transform =
-			glm::translate(FGMat4(1.0f), FGVec3(pPosition.x, pPosition.y, pPosition.z)) *
-			glm::rotate(FGMat4(1.0f), pRotation, FGVec3(0, 0, 1)) *
-			glm::scale(FGMat4(1.0f), FGVec3(pSize.x, pSize.y, 1.0f));
+		FGLMMat4 transform =
+			glm::translate(FGLMMat4(1.0f), FGLMVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
+			glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
 		
 		switch (pTransparencyLevel)
 		{
@@ -324,10 +353,11 @@ namespace ARC {
 			for (size_t i = 0; i < 4; i++)
 			{
 				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
 				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
 				s_Data.OpaqueQuadVertexBufferBasePtr++;
 			}
 			s_Data.OpaqueQuadIndexCount += 6;
@@ -336,10 +366,11 @@ namespace ARC {
 			for (size_t i = 0; i < 4; i++)
 			{
 				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
 				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = float(pId);
 				s_Data.TranslucentQuadVertexBufferBasePtr++;
 			}
 			s_Data.TranslucentQuadIndexCount += 6;
@@ -351,11 +382,11 @@ namespace ARC {
 	}
 
 
-	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad)
+	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad, const TEntityID& pId)
 	{
 		ARC_PROFILE_FUNCTION();
 
-		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling);
+		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling, pId);
 	}
 
 	CRenderer2D::SStatistics CRenderer2D::GetStats()

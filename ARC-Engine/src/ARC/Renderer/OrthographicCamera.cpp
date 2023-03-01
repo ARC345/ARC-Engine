@@ -5,24 +5,25 @@
 
 namespace ARC {
 	COrthographicCamera::COrthographicCamera(float _Left, float _Right, float _Bottom, float _Top) :
-		m_ProjectionMatrix(glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f)),
-		m_ViewMatrix(1.0f)
+		mProjectionMatrix(glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f)),
+		mViewMatrix(1.0f)
 	{
-		m_ViewProjectionMatrix = m_ProjectionMatrix * GetViewMatrix();
+		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
 	}
 
 	void COrthographicCamera::SetProjection(float _Left, float _Right, float _Bottom, float _Top)
 	{
-		m_ProjectionMatrix = glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f);
-		m_ViewProjectionMatrix = m_ProjectionMatrix * GetViewMatrix();
+		mProjectionMatrix = glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f);
+		
+		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
 	}
 
 	void COrthographicCamera::RecalculateViewProjectionMatrix()
 	{
-		FGMat4 transform = glm::translate(FGMat4(1.0f), Position) *
-			glm::rotate(FGMat4(1.0f), glm::radians(Rotation), glm::vec3(0, 0, 1));
+		FGLMMat4 transform = glm::translate(FGLMMat4(1.0f), Position) *
+			glm::rotate(FGLMMat4(1.0f), glm::radians(Rotation), glm::vec3(0, 0, 1));
 
-		m_ViewMatrix = glm::inverse(transform);
-		m_ViewProjectionMatrix = m_ProjectionMatrix * GetViewMatrix();
+		mViewMatrix = glm::inverse(transform);
+		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
 	}		
 }
