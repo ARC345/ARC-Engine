@@ -32,7 +32,7 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\imgui_tables.cpp">
-      <Filter>sources</Filter>
+      <Filter>imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,7 +55,7 @@
   <ItemGroup>
     <None Include="..\README.txt" />
     <None Include="..\..\misc\debuggers\imgui.natvis">
-      <Filter>sources</Filter>
+      <Filter>imgui</Filter>
     </None>
   </ItemGroup>
 </Project>
