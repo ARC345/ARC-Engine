@@ -10,7 +10,7 @@
 
 namespace ARC
 {
-	std::string CFileDialogs::OpenFile(const char* _Filter)
+	std::filesystem::path SFileDialogs::OpenFile(const char* _Filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -29,9 +29,9 @@ namespace ARC
 		if (GetOpenFileNameA(&ofn) == TRUE)
 			return ofn.lpstrFile;
 
-		return std::string();
+		return std::filesystem::path();
 	}
-	std::string CFileDialogs::SaveFile(const char* _Filter)
+	std::filesystem::path SFileDialogs::SaveFile(const char* _Filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
@@ -45,6 +45,7 @@ namespace ARC
 			ofn.lpstrInitialDir = currentDir;
 		ofn.lpstrFilter = _Filter;
 		ofn.nFilterIndex = 1;
+		ofn.lpstrDefExt = std::strchr(_Filter, '\0') + 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
 		if (GetSaveFileNameA(&ofn) == TRUE)

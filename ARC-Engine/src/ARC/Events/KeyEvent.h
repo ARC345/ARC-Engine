@@ -27,6 +27,9 @@ namespace ARC {
 				ss << GetName() << " [" << mKeyCode << "]: Repeated Count= " << mRepeatCount;
 				return ss.str();
 			}
+
+			auto GetRepeatCount() const { return mRepeatCount; }
+
 			EVENT_CLASS_TYPE(KeyPressed);
 		private:	
 			TUInt mRepeatCount = 0;

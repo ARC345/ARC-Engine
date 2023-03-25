@@ -1,18 +1,15 @@
 #include "arc_pch.h"
 #include "Application.h"
-#include "ARC/Types/vector.h"
 #include "ARC/Events/ApplicationEvent.h"
 #include "Window.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "ARC/Input\Input.h"
+#include "ARC/Input/Input.h"
 #include "ARC/Renderer/Shader.h"
 #include "ARC/Renderer/Buffer.h"
 #include "ARC/Renderer/VertexArray.h"
 #include "ARC/Renderer/Renderer.h"
 #include "ARC/GUI/ImGuiLayer.h"
-#include "Macros.h"
-#include "ARC/Profiling/Timer.h"
 #include "ARC/Helpers/Math.h"
 
 namespace ARC
@@ -23,11 +20,8 @@ namespace ARC
 	{
 		ARC_PROFILE_FUNCTION();
 
-		ARC_CORE_ASSERT(!s_Instance, "Application already exists")
-		ARC_CORE_INFO("{0}", &CApplication::OnEvent);
-		ARC_CORE_INFO("{0}", ARC::SMath::Conv<long double, ETimeType::Day, ETimeType::Minute>(1));
-			
-		ARC_CORE_INFO("Counter: {0}", SHPR::Counter::Next());
+		ARC_CORE_ASSERT(!s_Instance, "Application already exists");
+		
 		s_Instance= this;
 
 		mWindow = std::unique_ptr<CWindow>(CWindow::Create(_Name));

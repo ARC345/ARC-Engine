@@ -2,21 +2,15 @@
 #include "Component.h"
 
 namespace ARC {
-	struct CCircleColliderComponent : public CComponentBase
+	struct CCircleCollider
 	{
-		FVec3 Location; // World
-		float Radius;
-
-		CCircleColliderComponent() = default;
-		CCircleColliderComponent(const CCircleColliderComponent&) = default;
-		CCircleColliderComponent(const FVec3& pLocation, float pRadius) : Location(pLocation), Radius(pRadius) {};
-
-		virtual void OnConstruct(CEntity& pOwningEntity) override;
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual uint32_t GetFlags() override { return Flags; };
-
-		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		FVec3 Location=FVec3::ZeroVector(); // relative // conv to FVec2 //
+		float Radius=1.f;
+		float Restitution=1.f;
+	};
+	struct CPolyCollider
+	{
+		std::vector<FVec3> Vertices; // inOrder // conv to FVec2 //
+		float Restitution = 1.f;
 	};
 }

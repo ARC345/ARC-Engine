@@ -6,8 +6,9 @@
 #include "Entity.h"
 #include "BasicComponents.h"
 #include "SceneRegistry.h"
-#include "../Helpers/Math.h"
+#include "ARC/Helpers/Math.h"
 #include "ColliderComponents.h"
+#include "PhysicsHandler.h"
 
 namespace ARC {
 	CScene::CScene()
@@ -19,7 +20,11 @@ namespace ARC {
 		SSceneRegistry::SetupComponent<CNativeScriptComponent>();
 		SSceneRegistry::SetupComponent<CMassComponent>();
 		SSceneRegistry::SetupComponent<CVelocityComponent>();
+		SSceneRegistry::SetupComponent<CAngularVelocityComponent>();
+		SSceneRegistry::SetupComponent<CAccelerationComponent>();
+		SSceneRegistry::SetupComponent<CAngularAccelerationComponent>();
 		SSceneRegistry::SetupComponent<CCircleColliderComponent>();
+		SSceneRegistry::SetupComponent<CPolyColliderComponent>();
 	}
 
 	CScene::~CScene()
@@ -59,7 +64,7 @@ namespace ARC {
 		CRenderer2D::EndScene();
 	}
 
-	void CScene::OnUpdateRuntime(float DeltaTime)
+	void CScene::OnUpdateRuntime(float pDeltaTime)
 	{
 		mManager.view<CNativeScriptComponent>().each([=](auto entity, auto& nativeScriptcomp)
 			{
@@ -70,9 +75,13 @@ namespace ARC {
 					nativeScriptcomp.Controller->OnCreate();
 				}
 
-				nativeScriptcomp.Controller->OnUpdate(DeltaTime);
+				nativeScriptcomp.Controller->OnUpdate(pDeltaTime);
 			});
-		
+
+		HandleCircleXCircleCollision();
+		HandleCircleXPolyCollision();
+		HandlePolyXPolyCollision();
+
 		CCamera* mainCam = nullptr;
 		FTransform2D* camTransform = nullptr;
 		
@@ -103,10 +112,257 @@ namespace ARC {
 			CRenderer2D::EndScene();
 		}
 
-		mManager.view<CTransform2DComponent, CVelocityComponent>().each([](auto entity, auto& transformComp, auto& velocityComp)
+		//std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&view](auto entity) {
+		//	// ...
+		//	}); 
+		mManager.view<CTransform2DComponent, CVelocityComponent>().each([pDeltaTime](auto entity, auto& transformComp, auto& velocityComp)
 			{
-				transformComp.Transform.Location += velocityComp.Velocity;
+				SPhysyicsHandler::UpdateFrameLinearVelocity(transformComp.Transform, velocityComp.Velocity, pDeltaTime);
 			});
+		mManager.view<CTransform2DComponent, CAngularVelocityComponent>().each([pDeltaTime](auto entity, auto& transformComp, auto& angularVelocityComp)
+			{
+				SPhysyicsHandler::UpdateFrameAngularVelocity(transformComp.Transform, angularVelocityComp.AngularVelocity, pDeltaTime);
+			});
+		mManager.view<CVelocityComponent, CAccelerationComponent>().each([pDeltaTime](auto entity, auto& velocityComp, auto& accelerationComp)
+			{
+				SPhysyicsHandler::UpdateFrameAcceleration(velocityComp.Velocity, accelerationComp.Acceleration, pDeltaTime);
+			});
+		mManager.view<CAngularVelocityComponent, CAngularAccelerationComponent>().each([pDeltaTime](auto entity, auto& angularVelocityComp, auto& angularAccelerationComp)
+			{
+				SPhysyicsHandler::UpdateFrameAngularAcceleration(angularVelocityComp.AngularVelocity, angularAccelerationComp.AngularAcceleration, pDeltaTime);
+			});
+	}
+
+	void CScene::HandleCircleXCircleCollision()
+	{
+		auto View = mManager.view<CCircleColliderComponent, CTransform2DComponent>();
+		auto filterC = View.each();
+		static FVec3 Mask = { 1, 1, 0 };
+
+		if (View.size_hint() <= 1) return;
+		
+		for (auto i = filterC.begin(); i != filterC.end(); i++)
+		{
+			auto&& [e0_id, e0_ccc, e0_ctc] = *i;
+			auto e0 = CEntity(e0_id, this);
+			FVec3 CurrLoc = (e0_ctc.Transform.Location + e0_ccc.Location) * Mask;
+
+			for (auto i2 = ++i; i2 != filterC.end(); i2++)
+			{
+				auto&& [e1_id, e1_ccc, e1_ctc] = *i2;
+				auto e1 = CEntity(e1_id, this);
+
+				if (e0_id == e1_id) continue;
+
+				FVec3 CurrLoc1 = (e1_ctc.Transform.Location + e1_ccc.Location) * Mask;
+				float depth;
+				FVec3 normal;
+
+				if (!SPhysyicsHandler::IsCollidingSphere(CurrLoc, CurrLoc1, e0_ccc.Radius + e1_ccc.Radius, normal, depth)) continue;
+				SPhysyicsHandler::ClearOverlap(e0_ctc.Transform.Location, e1_ctc.Transform.Location, normal, depth);
+
+				if (!(e0.HasComponent<CMassComponent>() && e1.HasComponent<CMassComponent>())) continue;
+				if (!(e0.HasComponent<CVelocityComponent>() || e1.HasComponent<CVelocityComponent>())) continue;
+
+				FVec3 ZeroVector = FVec3::ZeroVector();
+				FVec3* CurrVel0;
+				FVec3* CurrVel1;
+				float CurrMass0;
+				float CurrMass1;
+
+				if (e0.HasComponent<CVelocityComponent>())
+				{
+					CurrVel0 = &e0.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass0 = e0.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel0 = &ZeroVector;
+					CurrMass0 = std::numeric_limits<float>::infinity();
+				}
+				if (e1.HasComponent<CVelocityComponent>())
+				{
+					CurrVel1 = &e1.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass1 = e1.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel1 = &ZeroVector;
+					CurrMass1 = std::numeric_limits<float>::infinity();
+				}
+
+				// resolve collision
+				SPhysyicsHandler::HandleLinearCollisionResponse(*CurrVel0, *CurrVel1, CurrMass0, CurrMass1, normal, SMath::Clamp(SMath::Min(e0_ccc.Restitution, e1_ccc.Restitution), 0.f, 1.f));
+			}
+		}
+	}
+
+	void CScene::HandleCircleXPolyCollision()
+	{
+		static FVec3 Mask = { 1, 1, 0 };
+
+		for (auto&& [e0_id, e0_cpc, e0_ctc] : mManager.view<CPolyColliderComponent, CTransform2DComponent>().each())
+		{
+			auto e0 = CEntity(e0_id, this);
+			auto translatedVerts = e0_cpc.Vertices;
+
+			auto cs0 = SMath::Cos(e0_ctc.Transform.Rotation);
+			auto sn0 = SMath::Sin(e0_ctc.Transform.Rotation);
+
+			std::for_each(translatedVerts.begin(), translatedVerts.end(), [&](auto& d) {
+				d = {
+					cs0 * d.x - sn0 * d.y + e0_ctc.Transform.Location.x,
+					sn0 * d.x + cs0 * d.y + e0_ctc.Transform.Location.y,
+					0
+				};
+
+				});
+			for (auto&& [e1_id, e1_ccc, e1_ctc] : mManager.view<CCircleColliderComponent, CTransform2DComponent>().each())
+			{
+				auto e1 = CEntity(e1_id, this);
+				FVec3 CurrLoc = (e1_ctc.Transform.Location + e1_ccc.Location) * Mask;
+				
+				FVec3 normal;
+				float depth = 0.f;
+
+				if (!SPhysyicsHandler::IsCollidingPolygon2DVsSphere(translatedVerts, CurrLoc, e1_ccc.Radius, normal, depth)) continue;
+				SPhysyicsHandler::ClearOverlap(e0_ctc.Transform.Location, e1_ctc.Transform.Location, normal, depth);
+
+				if (!(e0.HasComponent<CMassComponent>() && e1.HasComponent<CMassComponent>())) continue;
+				if (!(e0.HasComponent<CVelocityComponent>() || e1.HasComponent<CVelocityComponent>())) continue;
+
+				FVec3 ZeroVector = FVec3::ZeroVector();
+				FVec3* CurrVel0;
+				FVec3* CurrVel1;
+				float CurrMass0;
+				float CurrMass1;
+
+				if (e0.HasComponent<CVelocityComponent>())
+				{
+					CurrVel0 = &e0.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass0 = e0.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel0 = &ZeroVector;
+					CurrMass0 = std::numeric_limits<float>::infinity();
+				}
+				if (e1.HasComponent<CVelocityComponent>())
+				{
+					CurrVel1 = &e1.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass1 = e1.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel1 = &ZeroVector;
+					CurrMass1 = std::numeric_limits<float>::infinity();
+				}
+
+				// resolve collision
+				SPhysyicsHandler::HandleLinearCollisionResponse(
+					*CurrVel0,
+					*CurrVel1,
+					CurrMass0,
+					CurrMass1,
+					normal,
+					SMath::Clamp(SMath::Min(e0_cpc.Restitution, e1_ccc.Restitution),
+						0.f,
+						1.f
+					));
+			}
+		}
+	}
+
+	void CScene::HandlePolyXPolyCollision()
+	{
+		auto View = mManager.view<CPolyColliderComponent, CTransform2DComponent>();
+		auto filterC = View.each();
+		static FVec3 Mask = { 1, 1, 0 };
+
+		if (View.size_hint() <= 1) return;
+		for (auto i = filterC.begin(); i != filterC.end(); i++)
+		{
+			auto&& [e0_id, e0_cpc, e0_ctc] = *i;
+			auto e0 = CEntity(e0_id, this);
+			auto translatedVerts = e0_cpc.Vertices;
+
+			auto cs0 = SMath::Cos(e0_ctc.Transform.Rotation);
+			auto sn0 = SMath::Sin(e0_ctc.Transform.Rotation);
+
+			std::for_each(translatedVerts.begin(), translatedVerts.end(), [&](auto& d) {
+				d = {
+					cs0 * d.x - sn0 * d.y + e0_ctc.Transform.Location.x,
+					sn0 * d.x + cs0 * d.y + e0_ctc.Transform.Location.y,
+					0
+				};
+
+				});
+			for (auto i2 = ++i; i2 != filterC.end(); i2++)
+			{
+				auto&& [e1_id, e1_cpc, e1_ctc] = *i2;
+				auto e1 = CEntity(e1_id, this);
+				auto translatedVerts1 = e1_cpc.Vertices;
+
+				auto cs1 = SMath::Cos(e1_ctc.Transform.Rotation);
+				auto sn1 = SMath::Sin(e1_ctc.Transform.Rotation);
+				std::for_each(translatedVerts1.begin(), translatedVerts1.end(), [&](auto& d) {
+					d = {
+						cs1 * d.x - sn1 * d.y + e1_ctc.Transform.Location.x,
+						sn1 * d.x + cs1 * d.y + e1_ctc.Transform.Location.y,
+						0
+					};
+					});
+				if (e0_id == e1_id) continue;
+				
+				FVec3 normal;
+				float depth = 0.f;
+
+				if (!SPhysyicsHandler::IsCollidingPolygon2D(translatedVerts, translatedVerts1, normal, depth)) continue;
+				SPhysyicsHandler::ClearOverlap(e0_ctc.Transform.Location, e1_ctc.Transform.Location, normal, depth);
+
+				if (!(e0.HasComponent<CMassComponent>() && e1.HasComponent<CMassComponent>())) continue;
+				if (!(e0.HasComponent<CVelocityComponent>() || e1.HasComponent<CVelocityComponent>())) continue;
+
+				FVec3 ZeroVector = FVec3::ZeroVector();
+				FVec3* CurrVel0;
+				FVec3* CurrVel1;
+				float CurrMass0;
+				float CurrMass1;
+
+				if (e0.HasComponent<CVelocityComponent>())
+				{
+					CurrVel0 = &e0.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass0 = e0.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel0 = &ZeroVector;
+					CurrMass0 = std::numeric_limits<float>::infinity();
+				}
+				if (e1.HasComponent<CVelocityComponent>())
+				{
+					CurrVel1 = &e1.GetComponent<CVelocityComponent>().Velocity;
+					CurrMass1 = e1.GetComponent<CMassComponent>().Mass;
+				}
+				else
+				{
+					CurrVel1 = &ZeroVector;
+					CurrMass1 = std::numeric_limits<float>::infinity();
+				}
+
+				// resolve collision
+				SPhysyicsHandler::HandleLinearCollisionResponse(
+					*CurrVel0,
+					*CurrVel1,
+					CurrMass0,
+					CurrMass1,
+					normal,
+					SMath::Clamp(SMath::Min(e0_cpc.Restitution, e1_cpc.Restitution),
+						0.f,
+						1.f
+					));
+			}
+		}
 	}
 
 	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
@@ -115,7 +371,7 @@ namespace ARC {
 
 		mManager.view<CCameraComponent>().each([=](auto entity, auto& cameraComp)
 			{
-				if (cameraComp.bFixedAspectRatio) return
+				//if (cameraComp.bFixedAspectRatio) return @todo
 				cameraComp.Camera.SetViewportSize(pNewSize);
 			});
 	}
@@ -142,7 +398,7 @@ namespace ARC {
 		pOut << YAML::EndMap;
 	}
 
-	void CScene::SerializeToText(const TString& pFilepath)
+	void CScene::SerializeToText(const std::filesystem::path& pFilepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
@@ -164,14 +420,14 @@ namespace ARC {
 		fout << out.c_str();
 	}
 
-	void CScene::SerializeToBinary(const TString& pFilepath)
+	void CScene::SerializeToBinary(const std::filesystem::path& pFilepath)
 	{
 		
 	}
 
-	bool CScene::DeserializeFromText(const TString& pFilepath)
+	bool CScene::DeserializeFromText(const std::filesystem::path& pFilepath)
 	{
-		YAML::Node data = YAML::LoadFile(pFilepath.c_str());
+		YAML::Node data = YAML::LoadFile(pFilepath.string());
 		if (!data["Scene"]) return false;
 
 		TString SceneName = data["Scene"].as<TString>();
@@ -197,7 +453,7 @@ namespace ARC {
 		return true;
 	}
 
-	bool CScene::DeserializeFromBinary(const TString& pFilepath)
+	bool CScene::DeserializeFromBinary(const std::filesystem::path& pFilepath)
 	{
 		return false;
 	}

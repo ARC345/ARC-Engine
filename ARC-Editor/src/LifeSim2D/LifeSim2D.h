@@ -5,16 +5,6 @@
 namespace ARC { class CScene; }
 namespace ARC { class CEvent; }
 
-namespace ARC {
-	struct CNetForceComponent : public CComponentBase
-	{
-		FVec3 NetForce = FVec3::ZeroVector();
-		virtual uint32_t GetFlags() override { return Flags; };
-
-		static constexpr uint32_t Flags = ECF::DefaultComponentFlags;
-	};
-}
-
 namespace ARC
 {
 	class CLifeSim2D

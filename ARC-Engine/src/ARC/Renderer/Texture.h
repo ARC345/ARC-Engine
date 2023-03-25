@@ -10,7 +10,7 @@ namespace ARC {
 			virtual ~CTexture() = default;
 
 			virtual void ClearData() = 0;
-			virtual const TString& GetPath() const = 0;
+			virtual const std::filesystem::path& GetPath() const = 0;
 			virtual void SetData(void*, uint32_t _Size) = 0;
 			virtual void Bind(uint32_t _Slot = 0) const = 0;
 
@@ -23,7 +23,7 @@ namespace ARC {
 	{
 		public:
 			static TRef<CTexture2D> Create(const TVec2<uint32_t> _Dimentions);
-			static TRef<CTexture2D> Create(const std::string& _Path, bool bManualClear = false);
+			static TRef<CTexture2D> Create(const std::filesystem::path& _Path, bool bManualClear = false);
 
 			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) = 0;
 			

@@ -129,4 +129,49 @@ namespace ARC {
 
 		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 	};
+	struct CAngularVelocityComponent : public CComponentBase
+	{
+		FVec3 AngularVelocity = FVec3::ZeroVector();
+
+		CAngularVelocityComponent() = default;
+		CAngularVelocityComponent(const CAngularVelocityComponent&) = default;
+		CAngularVelocityComponent(const FVec3& pAngularVelocity) : AngularVelocity(pAngularVelocity) {};
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+		virtual uint32_t GetFlags() override { return Flags; };
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+	};
+	struct CAccelerationComponent : public CComponentBase
+	{
+		FVec3 Acceleration = FVec3::ZeroVector();
+
+		CAccelerationComponent() = default;
+		CAccelerationComponent(const CAccelerationComponent&) = default;
+		CAccelerationComponent(const FVec3& pAcceleration) : Acceleration(pAcceleration) {};
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+		virtual uint32_t GetFlags() override { return Flags; };
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+	};
+	struct CAngularAccelerationComponent : public CComponentBase
+	{
+		FVec3 AngularAcceleration = FVec3::ZeroVector();
+
+		CAngularAccelerationComponent() = default;
+		CAngularAccelerationComponent(const CAngularAccelerationComponent&) = default;
+		CAngularAccelerationComponent(const FVec3& pAngularAcceleration) : AngularAcceleration(pAngularAcceleration) {};
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+		virtual uint32_t GetFlags() override { return Flags; };
+
+		static constexpr uint32_t Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+	};
 }

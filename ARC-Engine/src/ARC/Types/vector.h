@@ -22,24 +22,15 @@ namespace ARC
 			using size_type = size_t;
 			using type = TVec_Base<value_type, N>;
 
-			value_type& operator[](size_type _)
-			{
-				return begin()[_];
-			};
-			const value_type& operator[](size_type _)const
-			{
-				return begin()[_];
-			};
-
-			VM_FUNC size_type Size() {
-				return N;
-			}
-
+			value_type& operator[](size_type _)	{ return begin()[_]; };
+			const value_type& operator[](size_type _) const	{ return begin()[_]; };
+			
+			VM_FUNC size_type size() { return N; }
 			value_type* begin() { return (value_type*)this; }
-			value_type* end() {	return begin() + N - 1;	}
+			value_type* end() {	return begin() + N;	}
 
 			const value_type* begin() const { return (value_type*)this; }
-			const value_type* end() const { return begin() + N - 1; }
+			const value_type* end() const { return begin() + N; }
 			TString ToString() {
 				TString x = fmt::format("{}", *begin()) ;
 				for (size_t i = 1; i < N; i++)
@@ -61,27 +52,13 @@ namespace ARC
 		using size_type = size_t;
 
 		TVec() : mData() {};
-		TVec(const value_type* _) : mData(_)
-		{
-		};
-		TVec(const value_type& _)
-		{
-			for (auto& iv : *this)
-				iv=_;
-		};
+		TVec(const value_type* _) : mData(_) {};
+		TVec(const value_type& _) {	for (auto& iv : *this)	iv=_; };
 
-		TVec(value_type Data[N])
-			: mData(Data)
-		{}
+		TVec(value_type Data[N]) : mData(Data) {}
 
-		value_type& operator[](size_type _)
-		{
-			return mData[_];
-		};
-		const value_type& operator[](size_type _) const
-		{
-			return mData[_];
-		};
+		value_type& operator[](size_type _)	{ return mData[_]; };
+		const value_type& operator[](size_type _) const { return mData[_]; };
 
 		constexpr bool operator==(const type& _)
 		{

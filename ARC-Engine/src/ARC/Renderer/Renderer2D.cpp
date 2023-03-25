@@ -25,7 +25,7 @@ namespace ARC {
 		FGLMVec4 Color;
 		FGLMVec2 TexCoord;
 		FGLMVec2 TexScaling;
-		float TexIndex;
+		int TexIndex;
 		int EntityId;
 	};
 
@@ -82,7 +82,7 @@ namespace ARC {
 			{ EShaderDataType::Float4, "a_Color" },
 			{ EShaderDataType::Float2, "a_TexCoord" },
 			{ EShaderDataType::Float2, "a_TexScaling" },
-			{ EShaderDataType::Float, "a_TexIndex" },
+			{ EShaderDataType::Int, "a_TexIndex" },
 			{ EShaderDataType::Int, "a_EntityId" }
 			});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
@@ -184,7 +184,7 @@ namespace ARC {
 		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
 
 		s_Data.TextureSlotIndex = 1;
-		//s_Data.CameraTransform = pTransform;
+		s_Data.CameraTransform = SHPR::Conv<glm::mat4>(pTransform);
 	}
 
 	void CRenderer2D::EndScene_Translucent()
@@ -256,7 +256,7 @@ namespace ARC {
 		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset();
 
-		float textureIndex = 0.0f;
+		TUInt32 textureIndex = 0;
 
 		if (pTex != nullptr)
 		{
@@ -264,13 +264,13 @@ namespace ARC {
 			{
 				if (*s_Data.TextureSlots[i].get() == *pTex.get())
 				{
-					textureIndex = (float)i;
+					textureIndex = i;
 					break;
 				}
 			}
-			if (textureIndex == 0.0f)
+			if (!textureIndex)
 			{
-				textureIndex = (float)s_Data.TextureSlotIndex;
+				textureIndex = s_Data.TextureSlotIndex;
 				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pTex;
 				s_Data.TextureSlotIndex++;
 			}
@@ -325,7 +325,7 @@ namespace ARC {
 		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset_Translucent();
 
-		float textureIndex = 0.0f;
+		TUInt32 textureIndex = 0;
 
 		if (pSubTex != nullptr)
 		{
@@ -333,13 +333,13 @@ namespace ARC {
 			{
 				if (*s_Data.TextureSlots[i].get() == *pSubTex->GetTexture().get())
 				{
-					textureIndex = (float)i;
+					textureIndex = i;
 					break;
 				}
 			}
-			if (textureIndex == 0.0f)
+			if (!textureIndex)
 			{
-				textureIndex = (float)s_Data.TextureSlotIndex;
+				textureIndex = s_Data.TextureSlotIndex;
 				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pSubTex->GetTexture();
 				s_Data.TextureSlotIndex++;
 			}

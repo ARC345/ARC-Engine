@@ -14,6 +14,8 @@ namespace ARC {
 		TVec3<T> Location;
 		T Rotation;
 		TVec2<T> Scale;
+
+		static const TTransform2D<T>& DefaultTransform() { static TTransform2D<T> s;  return s; };
 	};
 
 	using FTransform2D = TTransform2D<float>;

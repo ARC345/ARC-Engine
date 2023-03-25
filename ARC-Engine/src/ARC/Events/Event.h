@@ -85,7 +85,7 @@ namespace ARC {
 		{
 			if (mEvent.GetEventType() == T::GetStaticType())
 			{
-				mEvent.bHandled = _Func(static_cast<T&>(mEvent));
+				mEvent.bHandled |= _Func(static_cast<T&>(mEvent));
 				return true;
 			}
 			return false;

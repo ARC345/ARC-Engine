@@ -14,6 +14,7 @@
 #include "ARC/Wrappers/Glm.h"
 #include "ARC/Scene/BasicComponents.h"
 #include "ARC/Events/MouseEvent.h"
+#include "ARC/Events/KeyEvent.h"
 
 namespace ARC {
 	static CEntity ESquare;
@@ -27,6 +28,10 @@ namespace ARC {
 
 	void CEditorLayer::OnAttach()
 	{
+		mPlayButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PlayButton.png"));
+		mStopButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/StopButton.png"));
+		mPauseButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PauseButton.png"));
+
 		SFrameBufferSpecification frame_buffer_specs;
 		frame_buffer_specs.Width = 1280;
 		frame_buffer_specs.Height = 720;
@@ -70,7 +75,14 @@ namespace ARC {
 		mFrameBuffer->ClearColorAttachment(1, -1);
 
 		mEditorCamera.OnUpdate(_DeltaTime);
-		mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
+		switch (mSceneState) {
+		case ESceneState::Edit:
+			mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
+			break;
+		case ESceneState::Play:
+			mActiveScene->OnUpdateRuntime(_DeltaTime);
+			break;
+		}
 
 		auto viewportSize = mViewportMaxBound-mViewportMinBound;
 		auto MousePos = (FVec2&)ImGui::GetMousePos() - mViewportMinBound;
@@ -88,13 +100,72 @@ namespace ARC {
 	{
 		mEditorCamera.OnEvent(_Event);
 		CEventDispatcher dispatcher(_Event);
+		dispatcher.Dispatch<CKeyPressedEvent>(BIND_FN(&CEditorLayer::OnKeyPressed));
 		dispatcher.Dispatch<CMouseButtonPressedEvent>(BIND_FN(&CEditorLayer::OnMousePressedEvent));
 	}
-
-	bool CEditorLayer::OnMousePressedEvent(const CMouseButtonPressedEvent& pE)
+	bool CEditorLayer::OnKeyPressed(CKeyPressedEvent& pE)
 	{
-		if (pE.GetMouseButton() == ARC_MOUSE_BUTTON_LEFT)
-			if (mViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(ARC_KEY_LEFT_ALT))
+		if (pE.GetRepeatCount() > 0)
+			return false;
+
+		bool control = SInput::IsKeyPressed(EKey::LeftControl) || SInput::IsKeyPressed(EKey::RightControl);
+		bool shift = SInput::IsKeyPressed(EKey::LeftShift) || SInput::IsKeyPressed(EKey::RightShift);
+
+		switch (pE.GetKeyCode())
+		{
+		case EKey::N:
+		{
+			if (control)
+				NewScene();
+
+			break;
+		}
+		case EKey::O:
+		{
+			if (control)
+				OpenScene();
+
+			break;
+		}
+		case EKey::S:
+		{
+			if (control && shift)
+				SaveSceneAs();
+
+			break;
+		}
+
+		// Gizmos
+		case EKey::Q:
+		{
+			if (!ImGuizmo::IsUsing())
+				mGuizmoType = -1;
+			break;
+		}
+		case EKey::W:
+		{
+			if (!ImGuizmo::IsUsing())
+				mGuizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+		}
+		case EKey::E:
+		{
+			if (!ImGuizmo::IsUsing())
+				mGuizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+		}
+		case EKey::R:
+		{
+			if (!ImGuizmo::IsUsing())
+				mGuizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+		}
+		}
+	}
+	bool CEditorLayer::OnMousePressedEvent(CMouseButtonPressedEvent& pE)
+	{
+		if (pE.GetMouseButton() == EMouse::ButtonLeft)
+			if (mViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(EKey::LeftAlt))
 				mSceneHierachyPanel.SetSelectedEntity(mHoveredEntity);
 		return false;
 	}
@@ -161,7 +232,7 @@ namespace ARC {
 					if (ImGui::MenuItem("Save")) {}
 					if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					{
-						TString filepath = CFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						auto filepath = SFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
 						{
 							mActiveScene = CreateRef<CScene>();
@@ -173,7 +244,7 @@ namespace ARC {
 					}
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					{
-						auto filepath = CFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						auto filepath = SFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
 							mActiveScene->SerializeToText(filepath);
 					}
@@ -185,6 +256,7 @@ namespace ARC {
 			}
 
 			mSceneHierachyPanel.OnImGuiRender();
+			mContentBrowserPanel.OnImGuiRender();
 
 			ImGui::Begin("Settings");
 
@@ -194,9 +266,12 @@ namespace ARC {
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-			std::string name = "None";
-			if (mHoveredEntity)
+			
+			TString name = "None";
+			
+			if (mHoveredEntity && mHoveredEntity.HasComponent<CNameComponent>())
 				name = mHoveredEntity.GetComponent<CNameComponent>().Name;
+
 			ImGui::Text("Hovered Entity: %s", name.c_str());
 
 			ImGui::End();
@@ -217,39 +292,120 @@ namespace ARC {
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			TUInt32 textureID = mFrameBuffer->GetColorAttachmentRendererID();
+			
 			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const auto* path = (const wchar_t*)payload->Data;
+					OpenScene(std::filesystem::path("assets")/std::filesystem::path(path));
+				}
+				ImGui::EndDragDropTarget();
+			}
 
 			// Gizmos
 			CEntity selectedEntity = mSceneHierachyPanel.GetSelectedEntity();
-			if (selectedEntity)
+			if (selectedEntity && mGuizmoType != -1)
 			{
 				ImGuizmo::SetOrthographic(false);
 				ImGuizmo::SetDrawlist();
 				ImGuizmo::SetRect(mViewportMinBound.x, mViewportMinBound.y, mViewportMaxBound.x-mViewportMinBound.x, mViewportMaxBound.y - mViewportMinBound.y);
-
 				
 				if (selectedEntity.HasComponent<CTransform2DComponent>())
 				{
+					// Snapping
+					bool snap = SInput::IsKeyPressed(EKey::LeftControl);
+					float snapValue = 0.5f; // Snap to 0.5m for translation/scale
+
+					// Snap to 45 degrees for rotation
+					if (mGuizmoType == ImGuizmo::OPERATION::ROTATE)
+						snapValue = 45.0f;
+
+					float snapValues[3] = { snapValue, snapValue, snapValue };
+
 					auto& entityTransform = selectedEntity.GetComponent<CTransform2DComponent>().Transform;
 					auto entityTransformMatrix = SConvert<FGLMMat4, FTransform2D>::Conv(entityTransform);
 					ImGuizmo::Manipulate(
 						glm::value_ptr(mEditorCamera.GetViewMatrix()),
 						glm::value_ptr(mEditorCamera.GetProjection()),
-						ImGuizmo::OPERATION::TRANSLATE,
+						(ImGuizmo::OPERATION)mGuizmoType,
 						ImGuizmo::LOCAL,
-						glm::value_ptr(entityTransformMatrix)
+						glm::value_ptr(entityTransformMatrix),
+						nullptr,
+						snap ? snapValues : nullptr
 					);
-					entityTransform = SConvert<FTransform2D, FGLMMat4>::Conv(entityTransformMatrix);
+					if (ImGuizmo::IsUsing())
+						entityTransform = SConvert<FTransform2D, FGLMMat4>::Conv(entityTransformMatrix);
 				}
 			}
 
 			ImGui::End();
 			ImGui::PopStyleVar();
 
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 2));
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0.1));
+			const auto& tmp = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { tmp.x,tmp.y,tmp.z,tmp.w / 2 });
+			const auto& tmp2 = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, { tmp2.x,tmp2.y,tmp2.z,tmp2.w / 2 });
+			ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
+			auto buttonSize = ImGui::GetWindowHeight()-10;
+			ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x-buttonSize)*0.5f);
+			switch (mSceneState) {
+				case ESceneState::Edit:
+					if (ImGui::ImageButton((ImTextureID)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+						SetSceneState(ESceneState::Play);
+					}
+					break;
+				case ESceneState::Play:
+					if (ImGui::ImageButton((ImTextureID)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+						SetSceneState(ESceneState::Edit);
+					}
+					break;
+			}
+			ImGui::End();
+			ImGui::PopStyleVar(2);
+			ImGui::PopStyleColor(3);
 			mLifeSim2D->OnGuiRender();
 			ImGui::End();
 
 		}
+	}
+
+	void CEditorLayer::NewScene()
+	{
+		mActiveScene = CreateRef<CScene>();
+		mActiveScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
+		mSceneHierachyPanel.SetContext(mActiveScene);
+	}
+
+	void CEditorLayer::OpenScene()
+	{
+		OpenScene(SFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0"));
+	}
+
+	void CEditorLayer::OpenScene(const std::filesystem::path& pFilepath)
+	{
+		if (pFilepath.empty()) return;
+
+		mActiveScene = CreateRef<CScene>();
+		mActiveScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
+		mSceneHierachyPanel.SetContext(mActiveScene);
+
+		mActiveScene->DeserializeFromText(pFilepath);
+	}
+
+	void CEditorLayer::SaveSceneAs()
+	{
+		auto filepath = SFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+		if (filepath.empty()) return;
+		mActiveScene->DeserializeFromText(filepath);
+	}
+
+	void CEditorLayer::SetSceneState(ESceneState pNewState)
+	{
+		mSceneState = pNewState;
 	}
 }

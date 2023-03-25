@@ -61,17 +61,17 @@ namespace ARC {
 
 	void CEditorCamera::OnUpdate(float ts)
 	{
-		if (SInput::IsKeyPressed(ARC_KEY_LEFT_ALT))
+		if (SInput::IsKeyPressed(EKey::LeftAlt))
 		{
 			const FGLMVec2& mouse =  (const FGLMVec2&)SInput::GetMouseXY();
 			FGLMVec2 delta = (mouse - mInitialMousePosition) * 0.003f;
 			mInitialMousePosition = mouse;
 
-			if (SInput::IsMouseButtonPressed(ARC_MOUSE_BUTTON_MIDDLE))
+			if (SInput::IsMouseButtonPressed(EMouse::ButtonMiddle))
 				MousePan(delta);
-			else if (SInput::IsMouseButtonPressed(ARC_MOUSE_BUTTON_LEFT))
+			else if (SInput::IsMouseButtonPressed(EMouse::ButtonLeft))
 				MouseRotate(delta);
-			else if (SInput::IsMouseButtonPressed(ARC_MOUSE_BUTTON_RIGHT))
+			else if (SInput::IsMouseButtonPressed(EMouse::ButtonRight))
 				MouseZoom(delta.y);
 		}
 

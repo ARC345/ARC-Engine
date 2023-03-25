@@ -57,11 +57,11 @@ namespace ARC {
 
 			struct SStatistics
 			{
-				uint32_t DrawCalls = 0;
-				uint32_t QuadCount = 0;
-
-				uint32_t GetTotalVertexCount() { return QuadCount * 4; }
-				uint32_t GetTotalIndexCount() { return QuadCount * 6; }
+				TUInt32 DrawCalls = 0;
+				TUInt32 QuadCount = 0;
+				
+				TUInt32 GetTotalVertexCount() const { return QuadCount * 4; }
+				TUInt32 GetTotalIndexCount() const{ return QuadCount * 6; }
 			};
 			static SStatistics GetStats();
 			static void ResetStats();

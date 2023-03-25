@@ -6,7 +6,7 @@ namespace ARC {
 	class CVertexArray
 	{
 	public:
-		virtual ~CVertexArray() {};
+		virtual ~CVertexArray() = default;
 		static TRef<CVertexArray> Create();
 
 		virtual void AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer) = 0;

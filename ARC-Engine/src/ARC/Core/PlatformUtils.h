@@ -1,13 +1,12 @@
 #pragma once
-#include <string>
 
 namespace ARC
 {
-	struct CFileDialogs
+	struct SFileDialogs
 	{
 		[[nodiscard]] 
-		static TString OpenFile(const char* _Filter);
+		static std::filesystem::path OpenFile(const char* _Filter);
 		[[nodiscard]] 
-		static TString SaveFile(const char* _Filter);
+		static std::filesystem::path SaveFile(const char* _Filter);
 	};
 }

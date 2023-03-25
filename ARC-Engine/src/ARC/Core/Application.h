@@ -51,8 +51,8 @@ namespace ARC{
 		std::unique_ptr<CWindow> mWindow;
 		
 		CImGuiLayer* mImGuiLayer;
-		uint8_t mbRunning : 1;
-		uint8_t mbMinimized: 1;
+		TUInt8 mbRunning : 1;
+		TUInt8 mbMinimized: 1;
 		LayerStack mLayerStack;
 		static CApplication* s_Instance;
 	};

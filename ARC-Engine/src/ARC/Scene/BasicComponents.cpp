@@ -6,7 +6,7 @@
 #include "Scene.h"
 #include "ARC/Core/Yaml.h"
 #include "ARC/GUI/ImGuiHelper.h"
-#include "../Core/PlatformUtils.h"
+#include "ARC/Core/PlatformUtils.h"
 
 namespace ARC
 {
@@ -147,18 +147,37 @@ namespace ARC
 
 	void CSpriteRendererComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		if (Texture)
+			strcpy_s(buffer, Texture->GetPath().string().c_str());
 		SGuiHelper::DrawGuiControl(Color, "Color", 100.f, FColor4::Black());
-		ImGui::Text("TexturePath   "); // @TODO allow text edit
-		ImGui::SameLine();
-		ImGui::Text(Texture ? Texture->GetPath().c_str() : "");
+		
+		ImGui::InputText("TexturePath   ", buffer, 256);
+		if (ImGui::IsItemDeactivatedAfterEdit() && 
+		   (!Texture || Texture->GetPath() != buffer))
+		{
+			Texture = CTexture2D::Create(std::filesystem::path(buffer));
+		}
+		
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				const auto* path = (const wchar_t*)payload->Data;
+				Texture = CTexture2D::Create(std::filesystem::path("assets") / std::filesystem::path(path)); // todo replace assets path 
+			}
+			ImGui::EndDragDropTarget();
+		}
 		ImGui::SameLine();
 		if(ImGui::Button("...")) {
-			TString filepath = CFileDialogs::OpenFile("ARC-Engine Texture (*.png)\0*.png\0");
+			auto filepath = SFileDialogs::OpenFile("ARC-Engine Texture (*.png)\0*.png\0");
 			if (!filepath.empty())
 			{
 				Texture = CTexture2D::Create(filepath);
 			}
 		}
+		SGuiHelper::DrawGuiControl(TextureScaling, "Scaling", 100.f, FVec2::OneVector());
 	}
 
 	void CSpriteRendererComponent::Serialize(YAML::Emitter& pOut)
@@ -166,7 +185,7 @@ namespace ARC
 		pOut << YAML::Key << "Color" << YAML::Value << Color;
 		if (Texture)
 			pOut << 
-			YAML::Key << "TexturePath" << YAML::Value << Texture->GetPath() <<
+			YAML::Key << "TexturePath" << YAML::Value << Texture->GetPath().string() <<
 			YAML::Key << "TextureScaling" << YAML::Value << TextureScaling;
 	}
 
@@ -183,7 +202,9 @@ namespace ARC
 
 	void CVelocityComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
 		ImGui::DragFloat3("Velocity", Velocity.Data());
+		ImGui::PopItemWidth();
 	}
 
 	void CVelocityComponent::Serialize(YAML::Emitter& pOut)
@@ -194,6 +215,57 @@ namespace ARC
 	void CVelocityComponent::Deserialize(YAML::Node& pData)
 	{
 		Velocity = pData["Velocity"].as<FVec3>();
+	}
+
+	void CAngularVelocityComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f); 
+		ImGui::DragFloat3("AngularVelocity", AngularVelocity.Data());
+		ImGui::PopItemWidth();
+	}
+
+	void CAngularVelocityComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut << YAML::Key << "AngularVelocity" << YAML::Value << AngularVelocity;
+	}
+
+	void CAngularVelocityComponent::Deserialize(YAML::Node& pData)
+	{
+		AngularVelocity = pData["AngularVelocity"].as<FVec3>();
+	}
+
+	void CAccelerationComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
+		ImGui::DragFloat3("Acceleration", Acceleration.Data());
+		ImGui::PopItemWidth();
+	}
+
+	void CAccelerationComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut << YAML::Key << "Acceleration" << YAML::Value << Acceleration;
+	}
+
+	void CAccelerationComponent::Deserialize(YAML::Node& pData)
+	{
+		Acceleration = pData["Acceleration"].as<FVec3>();
+	}
+
+	void CAngularAccelerationComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
+		ImGui::DragFloat3("AngularAcceleration", AngularAcceleration.Data());
+		ImGui::PopItemWidth();
+	}
+
+	void CAngularAccelerationComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut << YAML::Key << "AngularAcceleration" << YAML::Value << AngularAcceleration;
+	}
+
+	void CAngularAccelerationComponent::Deserialize(YAML::Node& pData)
+	{
+		AngularAcceleration = pData["AngularAcceleration"].as<FVec3>();
 	}
 
 	void CMassComponent::DrawPropertiesUI(CEntity& pEntity)

@@ -28,16 +28,22 @@ namespace ARC {
 		
 		void OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera);
 		void OnUpdateRuntime(float DeltaTime);
+
+		void HandleCircleXCircleCollision();
+		void HandleCircleXPolyCollision();
+		void HandlePolyXPolyCollision();
+
 		void OnViewportResize(TVec2<uint32_t> pNewSize);
 	
-		void SerializeToText(const TString& pFilepath);
-		void SerializeToBinary(const TString& pFilepath);
-		bool DeserializeFromText(const TString& pFilepath);
-		bool DeserializeFromBinary(const TString& pFilepath);
+		void SerializeToText(const std::filesystem::path& pFilepath);
+		void SerializeToBinary(const std::filesystem::path& pFilepath);
+		bool DeserializeFromText(const std::filesystem::path& pFilepath);
+		bool DeserializeFromBinary(const std::filesystem::path& pFilepath);
 
 		template<typename... Ts>
 		decltype(auto) FilterByComponents() { return mManager.view<Ts...>(); }
 
+		inline decltype(auto) GetViewportSize() { return mViewportSize; }
 	private:
 		void SerializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 		void DeserializeEntity(YAML::Emitter& pOut, CEntity pEntity);

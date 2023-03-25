@@ -242,7 +242,7 @@ namespace ARC {
 		ImGui::Columns(1);
 	}
 
-	void SGuiHelper::DrawGuiControl(FColor4& pVec, const char* pID, float pColumnWidth, const FColor4& pDefaults /*= FColor4::White()*/)
+	void SGuiHelper::DrawGuiControl(FColor4& pColor, const char* pID, float pColumnWidth, const FColor4& pDefaults /*= FColor4::White()*/)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		auto BoldFont = io.Fonts->Fonts[0];
@@ -265,11 +265,11 @@ namespace ARC {
 
 		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("R"))
-			pVec.x = pDefaults.x;
+			pColor.x = pDefaults.x;
 		ImGui::PopFont();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##R", &pVec.x, 0.1f);
+		ImGui::DragFloat("##R", &pColor.x, 0.1f);
 		ImGui::PopStyleColor(3);
 		ImGui::PopItemWidth();
 
@@ -281,11 +281,11 @@ namespace ARC {
 
 		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("G"))
-			pVec.y = pDefaults.y;
+			pColor.y = pDefaults.y;
 		ImGui::PopFont();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##G", &pVec.y, 0.1f);
+		ImGui::DragFloat("##G", &pColor.y, 0.1f);
 		ImGui::PopStyleColor(3);
 		ImGui::PopItemWidth();
 
@@ -297,11 +297,11 @@ namespace ARC {
 
 		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("B"))
-			pVec.z = pDefaults.z;
+			pColor.z = pDefaults.z;
 		ImGui::PopFont();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##B", &pVec.z, 0.1f);
+		ImGui::DragFloat("##B", &pColor.z, 0.1f);
 		ImGui::PopStyleColor(3);
 		ImGui::PopItemWidth();
 
@@ -312,16 +312,19 @@ namespace ARC {
 		ImGui::SameLine();
 		ImGui::PushFont(BoldFont);
 		if (ImGui::Button("A"))
-			pVec.w = pDefaults.w;
+			pColor.w = pDefaults.w;
 		ImGui::PopFont();
 
 		ImGui::SameLine();
-		ImGui::DragFloat("##A", &pVec.w, 0.1f);
+		ImGui::DragFloat("##A", &pColor.w, 0.1f);
 		ImGui::PopStyleColor(3);
 		ImGui::PopItemWidth();
 
 		ImGui::PopStyleVar();
 		ImGui::PopID();
 		ImGui::Columns(1);
+
+		ImGui::SameLine();
+		ImGui::ColorEdit4("##ColorPicker", &pColor.x, ImGuiColorEditFlags_NoInputs);
 	}
 }

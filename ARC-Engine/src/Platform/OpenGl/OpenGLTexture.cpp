@@ -5,7 +5,7 @@
 #include "glad\glad.h"
 
 namespace ARC {
-	COpenGLTexture2D::COpenGLTexture2D(const std::string& _Path, bool bManualClear) : 
+	COpenGLTexture2D::COpenGLTexture2D(const std::filesystem::path& _Path, bool bManualClear) :
 		CTexture2D(Load(_Path)),
 		mPath(_Path)
 	{
@@ -56,12 +56,12 @@ namespace ARC {
 		return rval;
 	}
 
-	TVec2<uint32_t> COpenGLTexture2D::Load(const std::string& _Path)
+	TVec2<uint32_t> COpenGLTexture2D::Load(const std::filesystem::path& _Path)
 	{
 		ARC_PROFILE_FUNCTION();
 		int channels, width, height;
 		stbi_set_flip_vertically_on_load(1);
-		mData = stbi_load(_Path.c_str(), &width, &height, &channels, 0);
+		mData = stbi_load(_Path.string().c_str(), &width, &height, &channels, 0);
 		ARC_CORE_ASSERT(mData, "Error loading texture from file");
 
 		mInternalFormat = 0;
@@ -95,7 +95,7 @@ namespace ARC {
 		glTextureStorage2D(mRendererID, 1, mInternalFormat, width, height);
 
 		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 

@@ -12,6 +12,8 @@ namespace YAML
 			Node node;
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
+
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 		static bool decode(const Node& node, ARC::FVec2& rhs) {
@@ -31,6 +33,8 @@ namespace YAML
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
+
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 		static bool decode(const Node& node, ARC::FVec3& rhs) {
@@ -52,6 +56,8 @@ namespace YAML
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
 			node.push_back(rhs.w);
+
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 		static bool decode(const Node& node, ARC::FVec4& rhs) {
@@ -75,6 +81,8 @@ namespace YAML
 			node.push_back(rhs.g);
 			node.push_back(rhs.b);
 			node.push_back(rhs.a);
+
+			node.SetStyle(EmitterStyle::Flow);
 			return node;
 		}
 		static bool decode(const Node& node, ARC::FColor4& rhs) {

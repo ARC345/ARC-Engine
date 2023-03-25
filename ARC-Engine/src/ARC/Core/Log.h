@@ -1,5 +1,9 @@
 #pragma once
+
+#pragma warning(push, 0)
 #include "spdlog/spdlog.h"
+#pragma warning(pop)
+
 #include "ARC/Helpers/helpers.h"
 #include "Macros.h"
 

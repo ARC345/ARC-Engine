@@ -8,6 +8,7 @@
 #include <random>
 #include <cmath>
 #include <ranges>
+#include <limits>
 
 #include <sstream>
 #include <array>
@@ -15,6 +16,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <filesystem>
 
 #include "ARC/Types/Pointer.h"
 #include "ARC/Types/Vector.h"

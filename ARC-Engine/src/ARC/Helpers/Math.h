@@ -71,7 +71,7 @@ namespace ARC {
 		[[nodiscard]] inline constexpr static
 		decltype(auto) Dot(const T& _1, const T& _2) {
 			auto tmp = _1 * _2;
-			return std::accumulate(tmp.begin(), tmp.end(), 0);
+			return std::accumulate(tmp.begin(), tmp.end(), T::value_type(0.0f));
 		}
 		
 		template<typename T>
@@ -122,6 +122,7 @@ namespace ARC {
 		}
 
 		template<typename T0, typename T1, typename... Ts>
+		[[nodiscard]] inline constexpr static
 		typename std::common_type<T0, T1, Ts...>::type Min(T0&& val1, T1&& val2, Ts&&... vs)
 		{
 			if (val1 < val2)
@@ -132,12 +133,20 @@ namespace ARC {
 		
 
 		template<typename T0, typename T1, typename... Ts>
+		[[nodiscard]] inline constexpr static
 		typename std::common_type<T0, T1, Ts...>::type Max(T0&& val1, T1&& val2, Ts&&... vs)
 		{
 			if (val1 > val2)
 				return Max(val1, std::forward<Ts>(vs)...);
 			else
 				return Max(val2, std::forward<Ts>(vs)...);
+		}
+
+		template<typename T>
+		[[nodiscard]] inline constexpr static
+		auto Mean(const T& tmp)
+		{
+			return std::accumulate(tmp.begin(), tmp.end(), T::value_type(0)) / std::size(tmp);
 		}
 
 		template<typename T>
@@ -178,8 +187,19 @@ namespace ARC {
 		template<ERotType From, ERotType To> 
 		[[nodiscard]] inline constexpr static
 		decltype(auto) Conv(float _) {
-			if constexpr (From == ERotType::Degrees && To == ERotType::Radians) return float(_ * PI / 180.f);
-			if constexpr (From == ERotType::Radians && To == ERotType::Degrees) return float(_ / (PI / 180.f));
+			
+			if constexpr (From == ERotType::Degrees && To == ERotType::Radians) { 
+				_ = fmod(_, 360);
+				if (_ < 0)
+					_ += 360;
+				return float(_ * PI / 180.f);
+			}
+			if constexpr (From == ERotType::Radians && To == ERotType::Degrees){  
+				_ = fmod(_, PI*2);
+				if (_ < 0)
+					_ += PI * 2;
+				return float(_ / (PI / 180.f)); 
+			}
 		}
 		template<typename T, ETimeType From, ETimeType To>
 		[[nodiscard]] inline constexpr static

@@ -56,7 +56,7 @@ namespace ARC {
 	public:
 		inline TUInt GetMouseButton() const { return mMouseButton; }
 
-		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
+		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput | EventCategoryMouseButton)
 	protected:
 		CMouseButtonEvent(TUInt p_Button) : mMouseButton(p_Button) {}
 		TUInt mMouseButton;

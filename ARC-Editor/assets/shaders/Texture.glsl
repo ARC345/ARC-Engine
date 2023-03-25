@@ -5,14 +5,14 @@ layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
 layout(location = 2) in vec2 a_TexCoord;
 layout(location = 3) in vec2 a_TexScaling;
-layout(location = 4) in float a_TexIndex;
+layout(location = 4) in int a_TexIndex;
 layout(location = 5) in int a_EntityId;
 
 uniform mat4 u_ViewProjection;
 
 out vec4 v_Color;
 out vec2 v_TexCoord;
-out flat float v_TexIndex;
+out flat int v_TexIndex;
 out vec2 v_TexScaling;
 out flat int v_EntityId;
 
@@ -34,7 +34,7 @@ layout(location = 1) out int o_EntityId;
 
 in vec4 v_Color;
 in vec2 v_TexCoord;
-in flat float v_TexIndex;
+in flat int v_TexIndex;
 in vec2 v_TexScaling;
 in flat int v_EntityId;
 
@@ -44,7 +44,7 @@ void main()
 {
 
 	vec4 texColor = v_Color;
-	switch(int(v_TexIndex))
+	switch(v_TexIndex)
 	{
 		case 0: texColor *= texture(u_Textures[0], v_TexCoord * v_TexScaling); break;
 		case 1: texColor *= texture(u_Textures[1], v_TexCoord * v_TexScaling); break;
