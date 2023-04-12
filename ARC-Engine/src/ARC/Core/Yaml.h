@@ -1,5 +1,7 @@
 #pragma once
+#pragma warning(push, 0)
 #include "yaml-cpp/yaml.h"
+#pragma warning(pop)
 #include "ARC/Types/Color.h"
 #include "ARC/Types/Vector.h"
 

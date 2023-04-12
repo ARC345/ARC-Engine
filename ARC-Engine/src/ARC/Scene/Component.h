@@ -34,40 +34,7 @@ namespace ARC {
 		virtual void Deserialize(YAML::Node& pData) {};
 		virtual uint32_t GetFlags()=0;
 
-		static constexpr uint32_t Flags = ECF::DefaultComponentFlags;
-		static constexpr int32_t OnTopPriority = 0; // >1 top priority, <1 means bottom priority in scene heirachy panel @TODO implemeant
-	};
-
-	struct CComponentTraits
-	{
-		template<typename T>
-		static constexpr bool IsComponent()
-		{
-			return std::is_base_of_v<CComponentBase, T>;
-		}
-		template<typename T>
-		static constexpr decltype(auto) GetName()
-		{
-			static_assert(IsComponent<T>());
-			return SHPR::GetClassName<T>();
-		}
-		template<typename T>
-		static constexpr decltype(auto) GetFlags()
-		{
-			static_assert(IsComponent<T>());
-			return T::Flags;
-		}
-		template<typename T>
-		static constexpr decltype(auto) GetID() noexcept {
-			static const std::size_t value = ItrlCounter();
-			return value;
-		}
-
-	private:
-		static std::size_t ItrlCounter() noexcept {
-			static std::size_t value = 0;
-			return value++;
-		}
-
+		static inline uint32_t Flags = ECF::DefaultComponentFlags;
+		static inline int32_t OnTopPriority = 0; // >1 top priority, <1 means bottom priority in scene heirachy panel @TODO implemeant
 	};
 }

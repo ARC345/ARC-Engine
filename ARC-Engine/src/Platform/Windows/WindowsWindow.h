@@ -1,7 +1,9 @@
 #pragma once
 
 #include "ARC/Core/Window.h"
+#pragma warning(push, 0)
 #include "GLFW/glfw3.h"
+#pragma warning(pop)
 
 namespace ARC { class CGraphicsContext; }
 

@@ -4,7 +4,6 @@
 #include "imgui/imgui.h"
 #include "ARC/Scene/Entity.h"
 #include "ARC/Scene/BasicComponents.h"
-#include "ARC/Scene/ColliderComponents.h"
 #include "ARC/Scene/SceneRegistry.h"
 #include "ARC/Helpers/Random.h"
 
@@ -46,30 +45,21 @@ namespace ARC {
 			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(-10, 0, 0);
 			
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Yellow(), tex0, FVec2::OneVector());
-			electron.AddComponent<CVelocityComponent>(FVec3(1.f, 0.f, 0.f));
-			electron.AddComponent<CAngularVelocityComponent>(FVec3(1.f, 0.f, 0.f));
 			electron.AddComponent<CMassComponent>();
-			electron.AddComponent<CPolyColliderComponent>().Vertices = verts;
 		}
 		{
 			auto electron = m_ActiveScene->CreateEntity("Atom2");
 			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(10, 0, 0);
 
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Blue(), tex0, FVec2::OneVector());
-			electron.AddComponent<CVelocityComponent>(FVec3(-1.f, 0.f, 0.f));
-			electron.AddComponent<CAngularVelocityComponent>(FVec3(1.f, 0.f, 0.f));
 			electron.AddComponent<CMassComponent>();
-			electron.AddComponent<CPolyColliderComponent>().Vertices = verts;
 		}
 		{
 			auto electron = m_ActiveScene->CreateEntity("Atom3");
 			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(0, -10, 0);
 
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Green(), tex1, FVec2::OneVector());
-			electron.AddComponent<CVelocityComponent>(FVec3(0.f, 1.f, 0.f));
-			electron.AddComponent<CAngularVelocityComponent>(FVec3(1.f, 0.f, 0.f));
 			electron.AddComponent<CMassComponent>();
-			electron.AddComponent<CCircleColliderComponent>().Radius = 0.5;
 		}
 	}
 

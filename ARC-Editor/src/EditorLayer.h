@@ -40,6 +40,7 @@ namespace ARC {
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& pFilepath);
 		void SaveSceneAs();
+		void SaveScene();
 
 		void SetSceneState(ESceneState pNewState);
 	protected:
@@ -51,11 +52,13 @@ namespace ARC {
 		FVec2 mViewportMaxBound;
 
 		int mGuizmoType = -1;
-
 		CEntity mHoveredEntity;
 		TRef<CFrameBuffer> mFrameBuffer;
 		TRef<CScene> mActiveScene;
+		TRef<CScene> mEditorScene;
 		TRef<CLifeSim2D> mLifeSim2D;
+		
+		std::filesystem::path mEditorScenePath;
 
 		CEditorCamera mEditorCamera;
 		COrthographicCameraController mCameraController;

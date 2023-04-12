@@ -39,6 +39,9 @@ namespace ARC {
 		mFrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
 
 		mActiveScene = CreateRef<CScene>();
+
+		mEditorScene = mActiveScene;
+
 		mLifeSim2D = CreateRef<CLifeSim2D>();
 		mSceneHierachyPanel.SetContext(mActiveScene);
 		mEditorCamera = CEditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
@@ -113,6 +116,7 @@ namespace ARC {
 
 		switch (pE.GetKeyCode())
 		{
+		// Scene
 		case EKey::N:
 		{
 			if (control)
@@ -129,12 +133,26 @@ namespace ARC {
 		}
 		case EKey::S:
 		{
-			if (control && shift)
-				SaveSceneAs();
-
+			if (control) {
+				if (shift)
+					SaveSceneAs();
+				else
+					SaveScene();
+			}
 			break;
 		}
-
+		// Editor
+		case EKey::D:
+		{
+			switch (mSceneState) {
+			case ESceneState::Edit:
+				if (control && mSceneHierachyPanel.GetSelectedEntity()) mSceneHierachyPanel.GetSelectedEntity().Duplicate();
+				
+				break;
+			};
+			break;
+		}
+		
 		// Gizmos
 		case EKey::Q:
 		{
@@ -234,13 +252,7 @@ namespace ARC {
 					{
 						auto filepath = SFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
-						{
-							mActiveScene = CreateRef<CScene>();
-							mActiveScene->DeserializeFromText(filepath);
-
-							mActiveScene->OnViewportResize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
-							mSceneHierachyPanel.SetContext(mActiveScene);
-						}
+							OpenScene(filepath);
 					}
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					{
@@ -276,7 +288,7 @@ namespace ARC {
 
 			ImGui::End();
 
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 5, 5 });
 			ImGui::Begin("Viewport");
 			auto viewportMinRegion = (FVec2&)ImGui::GetWindowContentRegionMin();
 			auto viewportMaxRegion = (FVec2&)ImGui::GetWindowContentRegionMax();
@@ -291,7 +303,7 @@ namespace ARC {
 			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!mViewportFocused || !mViewportHovered);
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			TUInt32 textureID = mFrameBuffer->GetColorAttachmentRendererID();
+			TUInt64 textureID = mFrameBuffer->GetColorAttachmentRendererID();
 			
 			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			if (ImGui::BeginDragDropTarget())
@@ -355,12 +367,12 @@ namespace ARC {
 			ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x-buttonSize)*0.5f);
 			switch (mSceneState) {
 				case ESceneState::Edit:
-					if (ImGui::ImageButton((ImTextureID)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					if (ImGui::ImageButton((ImTextureID)(uint64_t)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
 						SetSceneState(ESceneState::Play);
 					}
 					break;
 				case ESceneState::Play:
-					if (ImGui::ImageButton((ImTextureID)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					if (ImGui::ImageButton((ImTextureID)(uint64_t)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
 						SetSceneState(ESceneState::Edit);
 					}
 					break;
@@ -379,6 +391,7 @@ namespace ARC {
 		mActiveScene = CreateRef<CScene>();
 		mActiveScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
 		mSceneHierachyPanel.SetContext(mActiveScene);
+		mEditorScenePath = std::filesystem::path();
 	}
 
 	void CEditorLayer::OpenScene()
@@ -388,24 +401,48 @@ namespace ARC {
 
 	void CEditorLayer::OpenScene(const std::filesystem::path& pFilepath)
 	{
+		if(mSceneState!=ESceneState::Edit) SetSceneState(ESceneState::Edit);
+
 		if (pFilepath.empty()) return;
+		if (pFilepath.extension().string() != ".arc") return;
 
-		mActiveScene = CreateRef<CScene>();
-		mActiveScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
-		mSceneHierachyPanel.SetContext(mActiveScene);
+		mEditorScene = CreateRef<CScene>();
+		mEditorScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
+		mSceneHierachyPanel.SetContext(mEditorScene);
 
-		mActiveScene->DeserializeFromText(pFilepath);
+		mEditorScene->DeserializeFromText(pFilepath);
+		mActiveScene = mEditorScene;
+		mEditorScenePath = pFilepath;
 	}
 
 	void CEditorLayer::SaveSceneAs()
 	{
 		auto filepath = SFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
 		if (filepath.empty()) return;
-		mActiveScene->DeserializeFromText(filepath);
+		mEditorScenePath = filepath;
+		mActiveScene->SerializeToText(filepath);
+	}
+
+	void CEditorLayer::SaveScene()
+	{
+		if (mEditorScenePath.empty()) SaveSceneAs();
+		else mActiveScene->SerializeToText(mEditorScenePath);
 	}
 
 	void CEditorLayer::SetSceneState(ESceneState pNewState)
 	{
-		mSceneState = pNewState;
+		if (mSceneState == pNewState) return;
+	
+		if (mSceneState == ESceneState::Play) {
+			mSceneState = pNewState;
+			mActiveScene->OnRuntimeEnd();
+			mActiveScene = mEditorScene;
+		}
+		else if (pNewState == ESceneState::Play)  { 
+			mSceneState = pNewState;
+			mActiveScene = CScene::Copy(mEditorScene);
+			mActiveScene->OnRuntimeBegin();
+		}
+		mSceneHierachyPanel.SetContext(mActiveScene);
 	}
 }

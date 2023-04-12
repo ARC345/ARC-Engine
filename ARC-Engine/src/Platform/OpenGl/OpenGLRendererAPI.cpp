@@ -32,8 +32,8 @@ namespace ARC {
 	void COpenGLRendererAPI::DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count)
 	{
 		ARC_PROFILE_FUNCTION();
+		_VertexArray->Bind();
 		uint32_t count = _Count ? _Count : _VertexArray->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

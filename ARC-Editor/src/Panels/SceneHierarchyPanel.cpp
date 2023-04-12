@@ -21,7 +21,6 @@ namespace ARC {
 		mContext = pScene;
 		mSelectedEntity = {};
 	}
-	
 	void CSceneHierarchyPanel::OnImGuiRender()
 	{
 		static bool bDraw = true;
@@ -51,7 +50,7 @@ namespace ARC {
 		
 		if(mSelectedEntity)
 		{
-			if (CComponentBase* comp = SSceneRegistry::GetTypeErasedGetComponentFuncs()[CComponentTraits::GetName<CNameComponent>()](mSelectedEntity)) {
+			if (CComponentBase* comp = SSceneRegistry::GetMetaComponents()[SComponentTraits::GetID<CNameComponent>()].GetComponent(mSelectedEntity)) {
 				ImGui::Text("Name:");
 				ImGui::SameLine(100.f, 20.f);
 				comp->DrawPropertiesUI(mSelectedEntity);
@@ -59,17 +58,17 @@ namespace ARC {
 
 			bool bNameCompFound = false;
 
-			for(auto& _ : SSceneRegistry::GetTypeErasedGetComponentFuncs()) {
-				if (auto* comp = _.second(mSelectedEntity)) {
+			for(auto& _ : SSceneRegistry::GetMetaComponents()) {
+				if (auto* comp = _.second.GetComponent(mSelectedEntity)) {
 					bool bDeleteComponent = false;
 
-					if (!bNameCompFound && _.first == CComponentTraits::GetName<CNameComponent>()) {
+					if (!bNameCompFound && _.first == SComponentTraits::GetID<CNameComponent>()) {
 						bNameCompFound = true;
 						continue;
 					}
 
 					if (comp->GetFlags() & ECF::EComponentFlags::ShowInPropertiesPanel
-						&& ImGui::TreeNodeEx(_.first.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, _.first.c_str())) {
+						&& ImGui::TreeNodeEx(_.second.GetName().c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth, _.second.GetName().c_str())) {
 						if (ImGui::BeginPopupContextItem())
 						{
 							if (ImGui::MenuItem("Delete Component"))
@@ -81,7 +80,7 @@ namespace ARC {
 						ImGui::TreePop();
 					}
 					if (bDeleteComponent)
-						SSceneRegistry::GetTypeErasedRemoveComponentFuncs()[_.first](mSelectedEntity);
+						_.second.RemoveComponent(mSelectedEntity);
 				}
 			}
 
@@ -90,11 +89,11 @@ namespace ARC {
 
 			if (ImGui::BeginPopup("AddComponent"))
 			{
-				for(auto& comp : SSceneRegistry::GetTypeErasedGetComponentFuncs())
+				for(auto& compMeta : SSceneRegistry::GetMetaComponents())
 				{
-					if (!comp.second(mSelectedEntity) && ImGui::MenuItem(comp.first.c_str()))
+					if (!compMeta.second.GetComponent(mSelectedEntity) && ImGui::MenuItem(compMeta.second.GetName().c_str()))
 					{
-						SSceneRegistry::GetTypeErasedAddComponentFuncs()[comp.first](mSelectedEntity);
+						compMeta.second.AddComponent(mSelectedEntity);
 						ImGui::CloseCurrentPopup();
 					}
 				}
@@ -169,7 +168,7 @@ namespace ARC {
 			| ImGuiTreeNodeFlags_SpanAvailWidth
 			| ImGuiTreeNodeFlags_OpenOnDoubleClick
 			| ((mSelectedEntity == pEntity) ? ImGuiTreeNodeFlags_Selected : 0);
-		bool bOpened = ImGui::TreeNodeEx((void*)(uint32_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
+		bool bOpened = ImGui::TreeNodeEx((void*)(uint64_t)pEntity.GetID(), TreeFlags, name.Name.c_str());
 
 		if (ImGui::IsItemClicked())
 			mSelectedEntity = pEntity;

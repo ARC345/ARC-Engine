@@ -55,14 +55,14 @@ namespace ARC {
 			};
 		};
 
-		#define TDELEGATEFUNC [[nodiscard]] inline
-
-		TDELEGATEFUNC RET operator()(PARAMS... args) const { return fn(storage, args...); }
-		TDELEGATEFUNC explicit operator bool() const { return fn != nullptr; }
-		TDELEGATEFUNC bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn; }
-		TDELEGATEFUNC bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn; }
-
-		#undef TDELEGATEFUNC
+		inline
+		RET operator()(PARAMS... args) const { return fn(storage, args...); }
+		[[nodiscard]] inline explicit 
+		operator bool() const { return fn != nullptr; }
+		[[nodiscard]] inline 
+		bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn; }
+		[[nodiscard]] inline 
+		bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn; }
 	private:
 	protected:
 		using storage_type = std::aligned_storage_t<sizeof(void*), alignof(void*)>;
@@ -114,12 +114,12 @@ namespace ARC {
 			mInvocationList.push_back(newelem);
 		};
 
-		[[nodiscard]] inline void operator()(PARAMS... args) const { 
+		inline void operator()(PARAMS... args) const { 
 			for (auto& element : mInvocationList)
 				element->operator ()(args...);
 		}
 		template<typename HANDLER>
-		[[nodiscard]] void operator()(PARAMS... args, HANDLER handler) const {
+		void operator()(PARAMS... args, HANDLER handler) const {
 			size_t index = 0;
 			for (auto& item : mInvocationList) {
 				RET value = *item(args...);

@@ -6,7 +6,9 @@
 #include "ARC\Events\KeyEvent.h"
 #include "ARC\Events\MouseEvent.h"
 
+#pragma warning(push, 0)
 #include "glad\glad.h"
+#pragma warning(pop)
 #include "Platform\OpenGl\OpenGLContext.h"
 #include "ARC/Core/Macros.h"
 

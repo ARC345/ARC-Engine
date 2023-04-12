@@ -8,15 +8,12 @@
 #include "ARC/Events/KeyEvent.h"
 #include "ARC/Events/ApplicationEvent.h"
 #include "glad/glad.h"
-
 #define IMGUI_IMPL_API
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
-#include "../Helpers/Helpers.h"
 #include "ImGuizmo.h"
 
-#include "ImGuizmo.h"
 
 namespace ARC {
 	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer"), mbBlockEvents(1u) {}

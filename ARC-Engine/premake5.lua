@@ -24,11 +24,12 @@ project "ARC-Engine"
 		"out/ordered-map/include/tsl/**.h",
 		"out/ordered-map/include/tsl/**.h",
 		"out/entt/include/**.hpp",
-		"out/meta/**.hpp"
+		"out/meta/**.hpp",
 	}
 
 	links
 	{
+		"Box2D",
 		"GLFW",
 		"GLAD",
 		"ImGui",
@@ -50,6 +51,7 @@ project "ARC-Engine"
 		"out/spdlog/include",
 		"out/inifile_cpp/include",
 		"out/yaml-cpp/include",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLAD}",
 		"%{IncludeDir.ImGui}",

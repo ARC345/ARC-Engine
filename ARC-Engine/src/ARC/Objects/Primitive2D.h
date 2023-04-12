@@ -27,7 +27,7 @@ namespace ARC {
 
 	public:
 		FTransform2D Transform;
-		ETransparencyType TransparencyLevel;
+		TTransparencyType TransparencyLevel;
 		FColor4 Color = FColor4::White();
 		TRef<CTexture2D> Texture = nullptr;
 		FVec2 TextureScaling = FVec2::OneVector();

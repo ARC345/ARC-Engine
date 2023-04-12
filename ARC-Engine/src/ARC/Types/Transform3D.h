@@ -18,17 +18,4 @@ namespace ARC {
 	};
 	
 	using FTransform3D = TTransform3D<float>;
-
-// 	template <>
-// 	struct SConvert<FTransform3D, FTransform2D>
-// 	{
-// 		static 
-// 		FTransform3D Conv(const FTransform2D& p) 
-// 		{ return FTransform3D(p.Location, pScale) }
-// 	};
-// 	template <>
-// 	struct SConvert<FTransform2D, FTransform3D>
-// 	{
-// 		static FTransform2D Conv(const FTransform3D& p);
-// 	};
 }

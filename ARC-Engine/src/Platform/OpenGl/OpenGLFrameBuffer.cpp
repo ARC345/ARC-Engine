@@ -170,9 +170,9 @@ namespace ARC {
 		if (mColorAttachmentSpecifications.size())
 		{
 			mColorAttachments.resize(mColorAttachmentSpecifications.size());
-			CreateTextures(bmultisample, mColorAttachments.data(), mColorAttachments.size());
+			CreateTextures(bmultisample, mColorAttachments.data(), (TUInt32)mColorAttachments.size());
 
-			for (size_t i=0; i < mColorAttachments.size(); i++) {
+			for (int i=0; i < mColorAttachments.size(); i++) {
 				BindTexture(bmultisample, mColorAttachments[i]);
 
 				switch (mColorAttachmentSpecifications[i]) {

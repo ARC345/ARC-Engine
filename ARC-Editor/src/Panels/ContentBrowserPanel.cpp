@@ -28,7 +28,7 @@ namespace ARC {
 		int columnCount = int(panelWidth/(padding+thumbnailSize));
 		
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15,0.17,0.16,1));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.15f,0.17f,0.16f,1.f));
 		ImGui::Columns(SMath::Max(columnCount, 1), 0, false);
 		
 		for (auto& i : std::filesystem::directory_iterator(mCurrentDir))
@@ -40,7 +40,7 @@ namespace ARC {
 			ImGui::PushID(filename.c_str());
 			auto icon = i.is_directory() ? mDirectoryIcon : mFileIcon;
 			
-			ImGui::ImageButton((ImTextureID)icon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize), {0,1}, {1,0});
+			ImGui::ImageButton((ImTextureID)(TUInt64)icon->GetRendererID(), ImVec2(thumbnailSize, thumbnailSize), {0,1}, {1,0});
 
 			if (ImGui::BeginDragDropSource())
 			{

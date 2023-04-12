@@ -28,56 +28,76 @@ namespace ARC {
 		int TexIndex;
 		int EntityId;
 	};
+	struct SCircleVertex
+	{
+		FGLMVec3 WorldPosition;
+		FGLMVec3 LocalPosition;
+		FGLMVec4 Color;
+		float Thickness;
+		float Sharpness;
+		int EntityId;
+	};
 
 	struct SRenderer2DData {
 		//@TODO : Load from ini file
-		static constexpr uint32_t MaxQuads = 1000;
-		static constexpr uint32_t MaxVertices = MaxQuads * 4;
-		static constexpr uint32_t MaxIndices = MaxQuads * 6;
-		static constexpr uint32_t MaxTextureSlots = 32;
-		TRef<CVertexArray> QuadVertexArray;
+		static constexpr TUInt32 MaxQuads = 1000;
+		static constexpr TUInt32 MaxVertices = MaxQuads * 4;
+		static constexpr TUInt32 MaxIndices = MaxQuads * 6;
+		static constexpr TUInt32 MaxTextureSlots = 32;
+		
+		struct SQuadData {
+			TRef<CVertexArray> VertexArray;
+			TRef<CVertexBuffer> VertexBuffer;
+			TRef<CShader> Shader;
+
+			TUInt32 TranslucentIndexCount = 0;
+			SQuadVertex* TranslucentVertexBufferBase = nullptr;
+			SQuadVertex* TranslucentVertexBufferBasePtr = nullptr;
+
+			TUInt32 OpaqueIndexCount = 0;
+			SQuadVertex* OpaqueVertexBufferBase = nullptr;
+			SQuadVertex* OpaqueVertexBufferBasePtr = nullptr;
+
+			FGLMVec4 VertexPositions[4];
+		} Quad;
+		struct SCircleData {
+			TRef<CVertexArray> VertexArray;
+			TRef<CVertexBuffer> VertexBuffer;
+			TRef<CShader> Shader;
+
+			TUInt32 TranslucentIndexCount = 0;
+			SCircleVertex* TranslucentVertexBufferBase = nullptr;
+			SCircleVertex* TranslucentVertexBufferBasePtr = nullptr;
+
+			FGLMVec4 VertexPositions[4];
+		} Circle;
 		TRef<CTexture2D> WhiteTexture;
-
-		TRef<CVertexBuffer> QuadVertexBuffer;
-
-		TRef<CShader> TextureShader;
-
-		uint32_t TranslucentQuadIndexCount = 0;
-		SQuadVertex* TranslucentQuadVertexBufferBase=nullptr;
-		SQuadVertex* TranslucentQuadVertexBufferBasePtr=nullptr;
-
-		uint32_t OpaqueQuadIndexCount = 0;
-		SQuadVertex* OpaqueQuadVertexBufferBase = nullptr;
-		SQuadVertex* OpaqueQuadVertexBufferBasePtr = nullptr;
-
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
-		uint32_t TextureSlotIndex = 1;
+		TUInt32 TextureSlotIndex = 1;
 
-		FGLMVec4 QuadVertexPositions[4];
 		FGLMMat4 CameraTransform;
 
 		CRenderer2D::SStatistics Statistics;
 
 	};
-	static SRenderer2DData s_Data;
+	static SRenderer2DData sData;
 
 	void CRenderer2D::Init()
 	{
 		ARC_PROFILE_FUNCTION();
 
-		//--------------------------------+[Code for square]+--------------------------------//
+		sData.WhiteTexture = CTexture2D::Create(TVec2<TUInt32>(1, 1));
+		TUInt32 whiteTextureData = 0xffffffff;
+		sData.WhiteTexture->SetData(&whiteTextureData, sizeof(TUInt32));
 
-		//float squarepverts[5 * 4] = {
-		//	- 0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-		//	 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		//	 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-		//	-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-		//};
-		//unsigned int quadpindices[] = { 0, 1, 2, 2, 3, 0 };
+		int32_t samplers[sData.MaxTextureSlots];
+		for (int32_t i = 0; i < sData.MaxTextureSlots; i++)
+			samplers[i] = i;
+		//--------------------------------+[Code for Quad]+--------------------------------//
 		
-		s_Data.QuadVertexArray = CVertexArray::Create();
-		s_Data.QuadVertexBuffer = CVertexBuffer::Create(s_Data.MaxVertices * sizeof(SQuadVertex));
-		s_Data.QuadVertexBuffer->SetLayout({
+		sData.Quad.VertexArray = CVertexArray::Create();
+		sData.Quad.VertexBuffer = CVertexBuffer::Create(sData.MaxVertices * sizeof(SQuadVertex));
+		sData.Quad.VertexBuffer->SetLayout({
 			{ EShaderDataType::Float3, "a_Position" },
 			{ EShaderDataType::Float4, "a_Color" },
 			{ EShaderDataType::Float2, "a_TexCoord" },
@@ -85,49 +105,66 @@ namespace ARC {
 			{ EShaderDataType::Int, "a_TexIndex" },
 			{ EShaderDataType::Int, "a_EntityId" }
 			});
-		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
-		s_Data.OpaqueQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
-		s_Data.TranslucentQuadVertexBufferBase = new SQuadVertex[s_Data.MaxVertices];
+		sData.Quad.VertexArray->AddVertexBuffer(sData.Quad.VertexBuffer);
+		sData.Quad.OpaqueVertexBufferBase = new SQuadVertex[sData.MaxVertices];
+		sData.Quad.TranslucentVertexBufferBase = new SQuadVertex[sData.MaxVertices];
 		
-		auto* quad_indices = new uint32_t[s_Data.MaxIndices];
+		auto* quad_indices = new TUInt32[sData.MaxIndices];
 
-		uint32_t offset = 0;
-		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
+		TUInt32 offset = 0;
+		for (TUInt32 i = 0; i < sData.MaxIndices; i += 6)
 		{
-			quad_indices[i + 0] = offset + 0;
-			quad_indices[i + 1] = offset + 1;
-			quad_indices[i + 2] = offset + 2;
+			quad_indices[i+ 0] = offset + 0;
+			quad_indices[i+ 1] = offset + 1;
+			quad_indices[i+ 2] = offset + 2;
 
-			quad_indices[i + 3] = offset + 2;
-			quad_indices[i + 4] = offset + 3;
-			quad_indices[i + 5] = offset + 0;
+			quad_indices[i+ 3] = offset + 2;
+			quad_indices[i+ 4] = offset + 3;
+			quad_indices[i+ 5] = offset + 0;
 
 			offset += 4;
 		}
-		TRef<CIndexBuffer> quad_ib = CIndexBuffer::Create(quad_indices, s_Data.MaxIndices);
-		s_Data.QuadVertexArray->SetIndexBuffer(quad_ib);
+		TRef<CIndexBuffer> quad_ib = CIndexBuffer::Create(quad_indices, sData.MaxIndices);
+		sData.Quad.VertexArray->SetIndexBuffer(quad_ib);
 		
 		// @TODO make thread safe
 		delete[] quad_indices;
 
-		s_Data.WhiteTexture	= CTexture2D::Create(TVec2<uint32_t>(1, 1));
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		sData.Quad.Shader = CShader::Create("assets/shaders/R2D_Quad.glsl");
+		sData.Quad.Shader->Bind();
+		sData.Quad.Shader->SetArray<int>("u_Textures", samplers, sData.MaxTextureSlots);
 
-		int32_t samplers[s_Data.MaxTextureSlots];
-		for (int32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
+		sData.TextureSlots[0] = sData.WhiteTexture;
+		sData.Quad.VertexPositions[0] = { -0.5f, -0.5f,  0.0f,  1.0f};
+		sData.Quad.VertexPositions[1] = {  0.5f, -0.5f,  0.0f,  1.0f};
+		sData.Quad.VertexPositions[2] = {  0.5f,  0.5f,  0.0f,  1.0f};
+		sData.Quad.VertexPositions[3] = { -0.5f,  0.5f,  0.0f,  1.0f}; 
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-[Code for Quad]-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+		//-------------------------------+[Code for Circle]+-------------------------------//
+		sData.Circle.VertexArray = CVertexArray::Create();
+		sData.Circle.VertexBuffer = CVertexBuffer::Create(sData.MaxVertices * sizeof(SCircleVertex));
+		sData.Circle.VertexBuffer->SetLayout({
+			{ EShaderDataType::Float3, "a_WorldPosition" },
+			{ EShaderDataType::Float3, "a_LocalPosition" },
+			{ EShaderDataType::Float4, "a_Color" },
+			{ EShaderDataType::Float, "a_Thickness" },
+			{ EShaderDataType::Float, "a_Sharpness" },
+			{ EShaderDataType::Int, "a_EntityId" }
+			});
+		sData.Circle.VertexArray->AddVertexBuffer(sData.Circle.VertexBuffer);
+		sData.Circle.TranslucentVertexBufferBase = new SCircleVertex[sData.MaxVertices];
+		sData.Circle.VertexArray->SetIndexBuffer(quad_ib); // reuse quad one as same
 
-		s_Data.TextureShader = CShader::Create("assets/shaders/Texture.glsl");
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetArray<int>("u_Textures", samplers, s_Data.MaxTextureSlots);
-		//--------------------------------~[Code for square]~--------------------------------//
+		sData.Circle.Shader = CShader::Create("assets/shaders/R2D_Circle.glsl");
+		sData.Circle.Shader->Bind();
 
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
-		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f,  0.0f,  1.0f};
-		s_Data.QuadVertexPositions[1] = {  0.5f, -0.5f,  0.0f,  1.0f};
-		s_Data.QuadVertexPositions[2] = {  0.5f,  0.5f,  0.0f,  1.0f};
-		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f,  0.0f,  1.0f};
+		sData.Circle.VertexPositions[0] = { -0.5f, -0.5f,  0.0f,  1.0f };
+		sData.Circle.VertexPositions[1] = { 0.5f, -0.5f,  0.0f,  1.0f };
+		sData.Circle.VertexPositions[2] = { 0.5f,  0.5f,  0.0f,  1.0f };
+		sData.Circle.VertexPositions[3] = { -0.5f,  0.5f,  0.0f,  1.0f };
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-[Code for Circle]-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
+
 	}
 
 	void CRenderer2D::Shutdown()
@@ -138,131 +175,184 @@ namespace ARC {
 	{
 		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", pCamera.GetViewProjectionMatrix());
+		sData.Quad.Shader->Bind();
+		sData.Quad.Shader->Set<FGLMMat4>("u_ViewProjection", pCamera.GetViewProjectionMatrix());
 		
-		s_Data.TranslucentQuadIndexCount = 0;
-		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+		sData.Quad.TranslucentIndexCount = 0;
+		sData.Quad.TranslucentVertexBufferBasePtr = sData.Quad.TranslucentVertexBufferBase;
 
-		s_Data.OpaqueQuadIndexCount = 0;
-		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+		sData.Quad.OpaqueIndexCount = 0;
+		sData.Quad.OpaqueVertexBufferBasePtr = sData.Quad.OpaqueVertexBufferBase;
 
-		s_Data.TextureSlotIndex = 1;
+		sData.Circle.Shader->Bind();
+		sData.Circle.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
 
-		s_Data.CameraTransform = Trans;
+		sData.Circle.TranslucentIndexCount = 0;
+		sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
+
+		sData.TextureSlotIndex = 1;
+		sData.CameraTransform = Trans;
 	}
 
 	void CRenderer2D::BeginScene(const CEditorCamera& pCamera)
 	{
 		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", Trans);
+		sData.Quad.Shader->Bind();
+		sData.Quad.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
 
-		s_Data.TranslucentQuadIndexCount = 0;
-		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+		sData.Quad.TranslucentIndexCount = 0;
+		sData.Quad.TranslucentVertexBufferBasePtr = sData.Quad.TranslucentVertexBufferBase;
 
-		s_Data.OpaqueQuadIndexCount = 0;
-		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+		sData.Quad.OpaqueIndexCount = 0;
+		sData.Quad.OpaqueVertexBufferBasePtr = sData.Quad.OpaqueVertexBufferBase;
 
-		s_Data.TextureSlotIndex = 1;
+		sData.Circle.Shader->Bind();
+		sData.Circle.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
 
-		s_Data.CameraTransform = glm::translate(glm::mat4(1.0f), pCamera.GetPosition()) * glm::toMat4(pCamera.GetOrientation());
+		sData.Circle.TranslucentIndexCount = 0;
+		sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
+
+		sData.TextureSlotIndex = 1;
+		sData.CameraTransform = glm::translate(glm::mat4(1.0f), pCamera.GetPosition()) * glm::toMat4(pCamera.GetOrientation());
 	}
 
 	void CRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
 	{
 		FGLMMat4 Trans = pCamera.GetProjection() * glm::inverse(SHPR::Conv<FGLMMat4>(pTransform));
 
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->Set<FGLMMat4>("u_ViewProjection", Trans);
+		sData.Quad.Shader->Bind();
+		sData.Quad.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
 		
-		s_Data.TranslucentQuadIndexCount = 0;
-		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
+		sData.Quad.TranslucentIndexCount = 0;
+		sData.Quad.TranslucentVertexBufferBasePtr = sData.Quad.TranslucentVertexBufferBase;
+		 
+		sData.Quad.OpaqueIndexCount = 0;
+		sData.Quad.OpaqueVertexBufferBasePtr = sData.Quad.OpaqueVertexBufferBase;
 
-		s_Data.OpaqueQuadIndexCount = 0;
-		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
+		sData.Circle.Shader->Bind();
+		sData.Circle.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
 
-		s_Data.TextureSlotIndex = 1;
-		s_Data.CameraTransform = SHPR::Conv<glm::mat4>(pTransform);
+		sData.Circle.TranslucentIndexCount = 0;
+		sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
+
+		sData.TextureSlotIndex = 1;
+		sData.CameraTransform = SHPR::Conv<glm::mat4>(pTransform);
 	}
 
-	void CRenderer2D::EndScene_Translucent()
+	constexpr void CRenderer2D::EndScene(TGeometery pG, TTransparencyType pT)
 	{
 		ARC_PROFILE_FUNCTION();
-		auto data_size = uint32_t((uint8_t*)s_Data.TranslucentQuadVertexBufferBasePtr - (uint8_t*)s_Data.TranslucentQuadVertexBufferBase);
-		if (!data_size) return;
+		
+		if (pG & EGeometery::Quad)
+		{
+			if (pT & ETransparencyType::Opaque)
+			{
+				if (sData.Quad.OpaqueIndexCount) {
+					auto data_size = TUInt32((uint8_t*)sData.Quad.OpaqueVertexBufferBasePtr - (uint8_t*)sData.Quad.OpaqueVertexBufferBase);
+					if (data_size) {
+						sData.Quad.VertexBuffer->SetData(sData.Quad.OpaqueVertexBufferBase, data_size);
+						Flush(EGeometery::Quad, ETransparencyType::Opaque);
+					}
+				}
+			}
+			if (pT & ETransparencyType::Translucent)
+			{
+				if (sData.Quad.TranslucentIndexCount)
+				{
+					auto data_size = TUInt32((uint8_t*)sData.Quad.TranslucentVertexBufferBasePtr - (uint8_t*)sData.Quad.TranslucentVertexBufferBase);
+					if (data_size) {
+						struct Block { SQuadVertex n_[4]; };
 
-		struct Block { SQuadVertex n_[4]; };
+						std::sort((Block*)sData.Quad.TranslucentVertexBufferBase, (Block*)sData.Quad.TranslucentVertexBufferBasePtr,
+							[&](const Block& p1, const Block& p2) -> bool {
+								FGLMVec3 tmp = FGLMVec3(sData.CameraTransform[3]) - p1.n_[0].Position;
+								FGLMVec3 tmp2 = FGLMVec3(sData.CameraTransform[3]) - p2.n_[0].Position;
+								return p1.n_[0].Position[2] < p2.n_[0].Position[2];
+							});
+						Block* _ = (Block*)sData.Quad.TranslucentVertexBufferBase;
+						sData.Quad.VertexBuffer->SetData(sData.Quad.TranslucentVertexBufferBase, data_size);
+						Flush(EGeometery::Quad, ETransparencyType::Translucent);
+					}
+				}
+			}
+		}
+		if (pG & EGeometery::Circle)
+		{
+			if (sData.Circle.TranslucentIndexCount)
+			{
+				auto data_size = TUInt32((uint8_t*)sData.Circle.TranslucentVertexBufferBasePtr - (uint8_t*)sData.Circle.TranslucentVertexBufferBase);
+				if (data_size)
+				{
+					struct Block { SCircleVertex n_[4]; };
 
-		std::sort((Block*)s_Data.TranslucentQuadVertexBufferBase, (Block*)s_Data.TranslucentQuadVertexBufferBasePtr,
-			[&](const Block& p1, const Block& p2) -> bool {
-				FGLMVec3 tmp = FGLMVec3(s_Data.CameraTransform[3]) - p1.n_[0].Position;
-				FGLMVec3 tmp2 = FGLMVec3(s_Data.CameraTransform[3]) - p2.n_[0].Position;
-				return p1.n_[0].Position[2] < p2.n_[0].Position[2];
-			});
-		Block* _ = (Block*)s_Data.TranslucentQuadVertexBufferBase;
-		s_Data.QuadVertexBuffer->SetData(s_Data.TranslucentQuadVertexBufferBase, data_size);
-		FlushTranslucent();
-	}
-
-	void CRenderer2D::EndScene_Opaque()
-	{
-		ARC_PROFILE_FUNCTION();
-		auto data_size = uint32_t((uint8_t*)s_Data.OpaqueQuadVertexBufferBasePtr - (uint8_t*)s_Data.OpaqueQuadVertexBufferBase);
-		if (!data_size) return;
-		struct Block { SQuadVertex n_[4]; };
-		Block* _ = (Block*)s_Data.OpaqueQuadVertexBufferBase;
-		s_Data.QuadVertexBuffer->SetData(s_Data.OpaqueQuadVertexBufferBase, data_size);
-		FlushOpaque();
-	}
-	
-	void CRenderer2D::EndScene()
-	{
-		EndScene_Opaque();
-		EndScene_Translucent();
-	}
-
-	void CRenderer2D::FlushTranslucent()
-	{
-		ARC_PROFILE_FUNCTION();
-
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-			s_Data.TextureSlots[i]->Bind(i);
-
-		if (s_Data.TranslucentQuadIndexCount != 0) {
-			++s_Data.Statistics.DrawCalls;
-			CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.TranslucentQuadIndexCount);
+					std::sort((Block*)sData.Circle.TranslucentVertexBufferBase, (Block*)sData.Circle.TranslucentVertexBufferBasePtr,
+						[&](const Block& p1, const Block& p2) -> bool {
+							FGLMVec3 tmp = FGLMVec3(sData.CameraTransform[3]) - p1.n_[0].WorldPosition;
+							FGLMVec3 tmp2 = FGLMVec3(sData.CameraTransform[3]) - p2.n_[0].WorldPosition;
+							return p1.n_[0].WorldPosition[2] < p2.n_[0].WorldPosition[2];
+						});
+					Block* _ = (Block*)sData.Circle.TranslucentVertexBufferBase;
+					sData.Circle.VertexBuffer->SetData(sData.Circle.TranslucentVertexBufferBase, data_size);
+					Flush(EGeometery::Circle, ETransparencyType::Translucent);
+				}
+			}
 		}
 	}
-	void CRenderer2D::FlushOpaque()
+
+	constexpr void CRenderer2D::Flush(TGeometery pG, TTransparencyType pT)
 	{
-		ARC_PROFILE_FUNCTION();
+		if (pG & EGeometery::Quad)
+		{
+			for (TUInt32 i = 0; i < sData.TextureSlotIndex; i++)
+				sData.TextureSlots[i]->Bind(i);
 
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
-			s_Data.TextureSlots[i]->Bind(i);
+			if (pT & ETransparencyType::Opaque)
+			{
+				if (sData.Quad.OpaqueIndexCount) {
+					++sData.Statistics.DrawCalls;
+					sData.Quad.Shader->Bind();
+					CRenderCommand::DrawIndexed(sData.Quad.VertexArray, sData.Quad.OpaqueIndexCount);
+				}
+			}
+			if (pT & ETransparencyType::Translucent)
+			{
+				if (sData.Quad.TranslucentIndexCount) {
+					++sData.Statistics.DrawCalls;
+					sData.Quad.Shader->Bind();
+					CRenderCommand::DrawIndexed(sData.Quad.VertexArray, sData.Quad.TranslucentIndexCount);
+				}
+			}
 
-		if (s_Data.OpaqueQuadIndexCount != 0) {
-			++s_Data.Statistics.DrawCalls;
-			CRenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.OpaqueQuadIndexCount);
+		}
+		if (pG & EGeometery::Circle)
+		{
+			if (sData.Circle.TranslucentIndexCount) {
+				++sData.Statistics.DrawCalls;
+				sData.Circle.Shader->Bind();
+				CRenderCommand::DrawIndexed(sData.Circle.VertexArray, sData.Circle.TranslucentIndexCount);
+			}
 		}
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
 
 	{
 		ARC_PROFILE_FUNCTION();
 
-		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
-			FlushAndReset();
+		if (sData.Quad.OpaqueIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset(EGeometery::Quad, ETransparencyType::Opaque);
+
+		if (sData.Quad.TranslucentIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset(EGeometery::Quad, ETransparencyType::Translucent);
 
 		TUInt32 textureIndex = 0;
 
 		if (pTex != nullptr)
 		{
-			for (size_t i = 1; i < s_Data.TextureSlotIndex; i++)
+			for (size_t i = 1; i < sData.TextureSlotIndex; i++)
 			{
-				if (*s_Data.TextureSlots[i].get() == *pTex.get())
+				if (*sData.TextureSlots[i].get() == *pTex.get())
 				{
 					textureIndex = i;
 					break;
@@ -270,9 +360,9 @@ namespace ARC {
 			}
 			if (!textureIndex)
 			{
-				textureIndex = s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pTex;
-				s_Data.TextureSlotIndex++;
+				textureIndex = sData.TextureSlotIndex;
+				sData.TextureSlots[sData.TextureSlotIndex] = pTex;
+				sData.TextureSlotIndex++;
 			}
 		}
 
@@ -281,57 +371,50 @@ namespace ARC {
 			 	glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
 			 	glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
 
-		switch (pTransparencyLevel)
-		{
-		case ETransparencyType::Opaque:
+		if (pTransparencyLevel & ETransparencyType::Opaque) {
 			for (size_t i = 0; i < 4; i++)
 			{
-				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
-
-				s_Data.OpaqueQuadVertexBufferBasePtr++;
+				sData.Quad.OpaqueVertexBufferBasePtr->Position = transform * sData.Quad.VertexPositions[i];
+				sData.Quad.OpaqueVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				sData.Quad.OpaqueVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
+				sData.Quad.OpaqueVertexBufferBasePtr->TexIndex = textureIndex;
+				sData.Quad.OpaqueVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				sData.Quad.OpaqueVertexBufferBasePtr->EntityId = pId;
+				sData.Quad.OpaqueVertexBufferBasePtr++;
 			}
-			s_Data.OpaqueQuadIndexCount += 6;
-
-			break;
-		case ETransparencyType::Translucent:
-			for (size_t i = 0; i < 4; i++)
-			{
-				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.TranslucentQuadVertexBufferBasePtr->EntityId = pId;
-				s_Data.TranslucentQuadVertexBufferBasePtr++;
-			}
-			s_Data.TranslucentQuadIndexCount += 6;
-
-			break;
+			sData.Quad.OpaqueIndexCount += 6;
 		}
-
-		++s_Data.Statistics.QuadCount;
+		else if (pTransparencyLevel & ETransparencyType::Translucent) {
+			for (size_t i = 0; i < 4; i++)
+			{
+				sData.Quad.TranslucentVertexBufferBasePtr->Position = transform * sData.Quad.VertexPositions[i];
+				sData.Quad.TranslucentVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				sData.Quad.TranslucentVertexBufferBasePtr->TexCoord = CTexture2D::TexCoords[i];
+				sData.Quad.TranslucentVertexBufferBasePtr->TexIndex = textureIndex;
+				sData.Quad.TranslucentVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				sData.Quad.TranslucentVertexBufferBasePtr->EntityId = pId;
+				sData.Quad.TranslucentVertexBufferBasePtr++;
+			}
+			sData.Quad.TranslucentIndexCount += 6;
+		}
+		++sData.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const ETransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
+	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
 
 	{
-		if (s_Data.OpaqueQuadIndexCount >= SRenderer2DData::MaxIndices)
-			FlushAndReset_Opaque();
-		if (s_Data.TranslucentQuadIndexCount >= SRenderer2DData::MaxIndices)
-			FlushAndReset_Translucent();
+		if (sData.Quad.OpaqueIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset(EGeometery::Quad, ETransparencyType::Opaque);
+		if (sData.Quad.TranslucentIndexCount >= SRenderer2DData::MaxIndices)
+			FlushAndReset(EGeometery::Quad, ETransparencyType::Translucent);
 
 		TUInt32 textureIndex = 0;
 
 		if (pSubTex != nullptr)
 		{
-			for (size_t i = 1; i < s_Data.TextureSlotIndex; i++)
+			for (size_t i = 1; i < sData.TextureSlotIndex; i++)
 			{
-				if (*s_Data.TextureSlots[i].get() == *pSubTex->GetTexture().get())
+				if (*sData.TextureSlots[i].get() == *pSubTex->GetTexture().get())
 				{
 					textureIndex = i;
 					break;
@@ -339,9 +422,9 @@ namespace ARC {
 			}
 			if (!textureIndex)
 			{
-				textureIndex = s_Data.TextureSlotIndex;
-				s_Data.TextureSlots[s_Data.TextureSlotIndex] = pSubTex->GetTexture();
-				s_Data.TextureSlotIndex++;
+				textureIndex = sData.TextureSlotIndex;
+				sData.TextureSlots[sData.TextureSlotIndex] = pSubTex->GetTexture();
+				sData.TextureSlotIndex++;
 			}
 		}
 
@@ -350,38 +433,34 @@ namespace ARC {
 			glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
 			glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
 		
-		switch (pTransparencyLevel)
-		{
-		case ETransparencyType::Opaque:
+		if (pTransparencyLevel & ETransparencyType::Opaque) {
 			for (size_t i = 0; i < 4; i++)
 			{
-				s_Data.OpaqueQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.OpaqueQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
-				s_Data.OpaqueQuadVertexBufferBasePtr++;
+				sData.Quad.OpaqueVertexBufferBasePtr->Position = transform * sData.Quad.VertexPositions[i];
+				sData.Quad.OpaqueVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				sData.Quad.OpaqueVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
+				sData.Quad.OpaqueVertexBufferBasePtr->TexIndex = textureIndex;
+				sData.Quad.OpaqueVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				sData.Quad.OpaqueVertexBufferBasePtr->EntityId = pId;
+				sData.Quad.OpaqueVertexBufferBasePtr++;
 			}
-			s_Data.OpaqueQuadIndexCount += 6;
-			break;
-		case ETransparencyType::Translucent:
+			sData.Quad.OpaqueIndexCount += 6;
+		}
+		else if (pTransparencyLevel & ETransparencyType::Translucent) {
 			for (size_t i = 0; i < 4; i++)
 			{
-				s_Data.TranslucentQuadVertexBufferBasePtr->Position = transform * s_Data.QuadVertexPositions[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexIndex = textureIndex;
-				s_Data.TranslucentQuadVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
-				s_Data.OpaqueQuadVertexBufferBasePtr->EntityId = pId;
-				s_Data.TranslucentQuadVertexBufferBasePtr++;
+				sData.Quad.TranslucentVertexBufferBasePtr->Position = transform * sData.Quad.VertexPositions[i];
+				sData.Quad.TranslucentVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+				sData.Quad.TranslucentVertexBufferBasePtr->TexCoord = pSubTex->GetTexCoords()[i];
+				sData.Quad.TranslucentVertexBufferBasePtr->TexIndex = textureIndex;
+				sData.Quad.TranslucentVertexBufferBasePtr->TexScaling = FGLMVec2(pTextureScaling.x, pTextureScaling.y);
+				sData.Quad.TranslucentVertexBufferBasePtr->EntityId = pId;
+				sData.Quad.TranslucentVertexBufferBasePtr++;
 			}
-			s_Data.TranslucentQuadIndexCount += 6;
-
-			break;
+			sData.Quad.TranslucentIndexCount += 6;
 		}
 
-		++s_Data.Statistics.QuadCount;
+		++sData.Statistics.QuadCount;
 	}
 
 
@@ -389,41 +468,70 @@ namespace ARC {
 	{
 		ARC_PROFILE_FUNCTION();
 
-		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : s_Data.WhiteTexture, Quad.TextureScaling, pId);
+		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : sData.WhiteTexture, Quad.TextureScaling, pId);
+	}
+
+	void CRenderer2D::DrawCircle(const FVec3& pPosition, const float pRotation /*= 0.f*/, const FVec2& pSize /*= FVec2::OneVector()*/, const FColor4& pColor /*= FColor4::White()*/, const float pThickness /*= 1.f*/, const float pSharpness /*= 0.995f*/, const int& pId /*= -1*/)
+	{
+		ARC_PROFILE_FUNCTION();
+		
+		if (sData.Circle.TranslucentIndexCount >= SRenderer2DData::MaxIndices){}
+			FlushAndReset(EGeometery::Circle, ETransparencyType::Translucent);
+
+		FGLMMat4 transform =
+			glm::translate(FGLMMat4(1.0f), FGLMVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
+			glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
+
+		for (size_t i = 0; i < 4; i++)
+		{
+			sData.Circle.TranslucentVertexBufferBasePtr->WorldPosition = transform * sData.Circle.VertexPositions[i];
+			sData.Circle.TranslucentVertexBufferBasePtr->LocalPosition = sData.Circle.VertexPositions[i] * 2.f;
+			sData.Circle.TranslucentVertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+			sData.Circle.TranslucentVertexBufferBasePtr->Thickness = pThickness;
+			sData.Circle.TranslucentVertexBufferBasePtr->Sharpness = pSharpness;
+			sData.Circle.TranslucentVertexBufferBasePtr->EntityId = pId;
+			sData.Circle.TranslucentVertexBufferBasePtr++;
+		}
+		sData.Circle.TranslucentIndexCount += 6;
+
+		++sData.Statistics.QuadCount;
 	}
 
 	CRenderer2D::SStatistics CRenderer2D::GetStats()
 	{
-		return s_Data.Statistics;
+		return sData.Statistics;
 	}
 
 	void CRenderer2D::ResetStats()
 	{
-		memset(&s_Data.Statistics, 0, sizeof(SStatistics));
+		memset(&sData.Statistics, 0, sizeof(SStatistics));
 	}
 
-	void CRenderer2D::FlushAndReset_Translucent()
-	{
-		EndScene_Translucent();
-		s_Data.TranslucentQuadIndexCount = 0;
-		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
-	}
-	void CRenderer2D::FlushAndReset_Opaque()
-	{
-		EndScene_Opaque();
-		s_Data.OpaqueQuadIndexCount = 0;
-		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
-	}
+	
+	constexpr void CRenderer2D::FlushAndReset(TGeometery pG, TTransparencyType pT) {
+		
+		EndScene(pG, pT);
 
-	void CRenderer2D::FlushAndReset()
-	{
-		EndScene();
-		s_Data.TranslucentQuadIndexCount = 0;
-		s_Data.TranslucentQuadVertexBufferBasePtr = s_Data.TranslucentQuadVertexBufferBase;
-
-		s_Data.OpaqueQuadIndexCount = 0;
-		s_Data.OpaqueQuadVertexBufferBasePtr = s_Data.OpaqueQuadVertexBufferBase;
-
-		s_Data.TextureSlotIndex = 1;
+		if (pG & EGeometery::Quad)
+		{
+			if (pT & ETransparencyType::Translucent)
+			{
+				sData.Quad.TranslucentIndexCount = 0;
+				sData.Quad.TranslucentVertexBufferBasePtr = sData.Quad.TranslucentVertexBufferBase;
+			}
+			if (pT & ETransparencyType::Opaque) {
+				sData.Quad.OpaqueIndexCount = 0;
+				sData.Quad.OpaqueVertexBufferBasePtr = sData.Quad.OpaqueVertexBufferBase;
+			}
+		}
+		if (pG & EGeometery::Circle)
+		{
+			if (pT & ETransparencyType::Translucent)
+			{
+				sData.Circle.TranslucentIndexCount = 0;
+				sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
+			}
+		}
 	}
 }

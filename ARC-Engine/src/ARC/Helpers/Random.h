@@ -23,21 +23,10 @@ namespace ARC {
 		static T Get() {
 			return (T)s_Distribution(s_RandomEngine32);
 		}
-		template<ERandom T>
-		static auto Get() {
-			if constexpr (T == ERandom::Normal) {
-				return (float)s_Distribution(s_RandomEngine32) / (float)randclass::max();
-			}
-			else
-				return uint32_t(10);
-		}
-
 		template<typename T>
 		static T Get(T _Min, T _Max) {
 			return _Min + ((T)s_Distribution(s_RandomEngine32) / ((T)randclass::max() / (_Max - _Min)));
 		}
-
-		static inline float Normal() { return SRandom::Get<ERandom::Normal>(); }
 
 		static inline float Float() { return SRandom::Get<float>(); }
 		static inline float Float(float _Min, float _Max) { return SRandom::Get(_Min, _Max); }

@@ -4,11 +4,14 @@
 
 namespace ARC {
 
-	enum ETransparencyType {
-		Opaque,
-		Translucent,
-		Transparent
-	};
+	namespace ETransparencyType {
+		enum ETransparencyType {
+			Opaque=1,
+			Translucent=2,
+			Transparent=3
+		};
+	}
+	using TTransparencyType = TUInt8;
 	class FColor4 : public FVec4
 	{
 	public:

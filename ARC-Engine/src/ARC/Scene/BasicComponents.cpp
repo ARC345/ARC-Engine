@@ -200,74 +200,6 @@ namespace ARC
 		TextureScaling = pData["TextureScaling"].as<FVec2>();
 	}
 
-	void CVelocityComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
-		ImGui::DragFloat3("Velocity", Velocity.Data());
-		ImGui::PopItemWidth();
-	}
-
-	void CVelocityComponent::Serialize(YAML::Emitter& pOut)
-	{
-		pOut << YAML::Key << "Velocity" << YAML::Value << Velocity;
-	}
-
-	void CVelocityComponent::Deserialize(YAML::Node& pData)
-	{
-		Velocity = pData["Velocity"].as<FVec3>();
-	}
-
-	void CAngularVelocityComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f); 
-		ImGui::DragFloat3("AngularVelocity", AngularVelocity.Data());
-		ImGui::PopItemWidth();
-	}
-
-	void CAngularVelocityComponent::Serialize(YAML::Emitter& pOut)
-	{
-		pOut << YAML::Key << "AngularVelocity" << YAML::Value << AngularVelocity;
-	}
-
-	void CAngularVelocityComponent::Deserialize(YAML::Node& pData)
-	{
-		AngularVelocity = pData["AngularVelocity"].as<FVec3>();
-	}
-
-	void CAccelerationComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
-		ImGui::DragFloat3("Acceleration", Acceleration.Data());
-		ImGui::PopItemWidth();
-	}
-
-	void CAccelerationComponent::Serialize(YAML::Emitter& pOut)
-	{
-		pOut << YAML::Key << "Acceleration" << YAML::Value << Acceleration;
-	}
-
-	void CAccelerationComponent::Deserialize(YAML::Node& pData)
-	{
-		Acceleration = pData["Acceleration"].as<FVec3>();
-	}
-
-	void CAngularAccelerationComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.65f);
-		ImGui::DragFloat3("AngularAcceleration", AngularAcceleration.Data());
-		ImGui::PopItemWidth();
-	}
-
-	void CAngularAccelerationComponent::Serialize(YAML::Emitter& pOut)
-	{
-		pOut << YAML::Key << "AngularAcceleration" << YAML::Value << AngularAcceleration;
-	}
-
-	void CAngularAccelerationComponent::Deserialize(YAML::Node& pData)
-	{
-		AngularAcceleration = pData["AngularAcceleration"].as<FVec3>();
-	}
-
 	void CMassComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
 		ImGui::DragFloat("Mass", &Mass);
@@ -281,5 +213,97 @@ namespace ARC
 	void CMassComponent::Deserialize(YAML::Node & pData)
 	{
 		Mass = pData["Mass"].as<float>();
+	}
+
+	void CBoxCollider2DComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		ImGui::DragFloat2("Offset", Offset.Data());
+		ImGui::DragFloat2("Size", Size.Data());
+		ImGui::DragFloat("Density", &Density);
+		ImGui::DragFloat("Friction", &Friction);
+		ImGui::DragFloat("Restitution", &Restitution);
+		ImGui::DragFloat("RestitutionThreshhold", &RestitutionThreshhold);
+	}
+
+	void CBoxCollider2DComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut 
+			<< YAML::Key << "Offset" << YAML::Value << Offset
+			<< YAML::Key << "Size" << YAML::Value << Size
+			<< YAML::Key << "Density" << YAML::Value << Density
+			<< YAML::Key << "Friction" << YAML::Value << Friction
+			<< YAML::Key << "Restitution" << YAML::Value << Restitution
+			<< YAML::Key << "RestitutionThreshhold" << YAML::Value << RestitutionThreshhold;
+	}
+
+	void CBoxCollider2DComponent::Deserialize(YAML::Node& pData)
+	{
+		Offset = pData["Offset"].as<FVec2>();
+		Size = pData["Size"].as<FVec2>();
+		Density = pData["Density"].as<float>();
+		Friction = pData["Friction"].as<float>();
+		Restitution = pData["Restitution"].as<float>();
+		RestitutionThreshhold = pData["RestitutionThreshhold"].as<float>();
+
+	}
+
+	void CRigidBody2DComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		static const char* bodyTypeStrings[] = { "Static", "Kinematic", "Dynamic" };
+		const char* currentBodyTypeString = bodyTypeStrings[(int)Type];
+
+		if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+				if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+				{
+					currentBodyTypeString = bodyTypeStrings[i];
+					Type = CRigidBody2DComponent::EBodyType(i);
+				}
+				if (isSelected)
+					ImGui::SetItemDefaultFocus();
+			}
+
+			ImGui::EndCombo();
+		}
+
+		ImGui::Checkbox("Fixed Rotation", &bFixedRotation);
+	}
+
+	void CRigidBody2DComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut << YAML::Key << "Type" << YAML::Value << (int)Type <<
+			YAML::Key << "bFixedRotation" << YAML::Value << bool(bFixedRotation);
+	}
+
+	void CRigidBody2DComponent::Deserialize(YAML::Node& pData)
+	{
+		Type = (EBodyType)pData["Type"].as<int>();
+		bFixedRotation = pData["bFixedRotation"].as<bool>();
+	}
+
+	void CCircleRendererComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		SGuiHelper::DrawGuiControl(Color, "Color", 100.f, FColor4::Black());
+		ImGui::DragFloat("Thickness", &Thickness, 0.025f, 0.0f, 1.0f);
+		ImGui::DragFloat("Sharpness", &Sharpness, 0.0005f, 0.0f, 1.0f);
+	}
+
+	void CCircleRendererComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut << 
+			YAML::Key << "Color" << YAML::Value << Color <<
+			YAML::Key << "Thickness" << YAML::Value << Thickness <<
+			YAML::Key << "Sharpness" << YAML::Value << Sharpness;
+
+	}
+
+	void CCircleRendererComponent::Deserialize(YAML::Node& pData)
+	{
+		Color = pData["Color"].as<FColor4>();
+		Thickness = pData["Thickness"].as<float>();
+		Sharpness = pData["Sharpness"].as<float>();
 	}
 }

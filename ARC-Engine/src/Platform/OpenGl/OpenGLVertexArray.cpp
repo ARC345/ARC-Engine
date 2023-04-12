@@ -60,7 +60,7 @@ namespace ARC {
 					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
 					ielement.bNormalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
-					(const void*)ielement.Offset);
+					(const void*)(const TUInt64)ielement.Offset);
 				index++;
 				break;
 			}
@@ -75,7 +75,7 @@ namespace ARC {
 					SShaderHelper::GetComponentCount(ielement.Type),
 					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
 					layout.GetStride(),
-					(const void*)ielement.Offset);
+					(const void*)(const TUInt64)ielement.Offset);
 				index++;
 				break;
 			}

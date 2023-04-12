@@ -24,7 +24,10 @@ namespace ARC
 
 			value_type& operator[](size_type _)	{ return begin()[_]; };
 			const value_type& operator[](size_type _) const	{ return begin()[_]; };
-			
+
+			inline value_type* Data() { return (value_type*)this; }
+			inline const value_type* Data() const { return (value_type*)this; }
+
 			VM_FUNC size_type size() { return N; }
 			value_type* begin() { return (value_type*)this; }
 			value_type* end() {	return begin() + N;	}
@@ -55,7 +58,7 @@ namespace ARC
 		TVec(const value_type* _) : mData(_) {};
 		TVec(const value_type& _) {	for (auto& iv : *this)	iv=_; };
 
-		TVec(value_type Data[N]) : mData(Data) {}
+		TVec(value_type pData[N]) : mData(pData) {}
 
 		value_type& operator[](size_type _)	{ return mData[_]; };
 		const value_type& operator[](size_type _) const { return mData[_]; };
@@ -63,7 +66,7 @@ namespace ARC
 		constexpr bool operator==(const type& _)
 		{
 			for (size_type i = 0; i < N; i++)
-				if (Data()[i] != _.Data()[i])
+				if (this->Data()[i] != _.Data()[i])
 					return false;
 			return true;
 		}
@@ -187,9 +190,6 @@ namespace ARC
 		constexpr void operator-=(const value_type _) { x -= _; y -= _; }
 		constexpr void operator/=(const value_type _) { x /= _; y /= _; }
 		constexpr void operator*=(const value_type _) { x *= _; y *= _; }
-
-		inline value_type* Data() { return &x; }
-		inline const value_type* Data() const { return &x; }
 
 		void DrawGuiControl(const char* pID, float pColumnWidth, type pDefaults);
 		

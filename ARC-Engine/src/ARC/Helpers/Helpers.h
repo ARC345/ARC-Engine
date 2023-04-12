@@ -27,11 +27,6 @@ enum class EQuadCorner {
 	BottomRight
 };
 
-enum class ERandom {
-	Normal,
-	None
-};
-
 namespace ARC {
 	struct SHPR {
 		template<typename T, bool TbIncludeNamespace = false>

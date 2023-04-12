@@ -3,6 +3,7 @@
 #include <numeric>
 
 #define PI 3.14159265358979323
+#define PIf 3.14159265358979323f
 
 enum class ERotType : uint8_t{
 	Degrees,
@@ -189,16 +190,16 @@ namespace ARC {
 		decltype(auto) Conv(float _) {
 			
 			if constexpr (From == ERotType::Degrees && To == ERotType::Radians) { 
-				_ = fmod(_, 360);
+				_ = (float)fmod(_, 360.f);
 				if (_ < 0)
-					_ += 360;
-				return float(_ * PI / 180.f);
+					_ += 360.f;
+				return float(_ * PIf / 180.f);
 			}
 			if constexpr (From == ERotType::Radians && To == ERotType::Degrees){  
-				_ = fmod(_, PI*2);
-				if (_ < 0)
-					_ += PI * 2;
-				return float(_ / (PI / 180.f)); 
+				_ = (float)fmod(_, PIf*2.f);
+				if (_ < 0.f)
+					_ += PIf * 2.f;
+				return float(_ / (PIf / 180.f)); 
 			}
 		}
 		template<typename T, ETimeType From, ETimeType To>

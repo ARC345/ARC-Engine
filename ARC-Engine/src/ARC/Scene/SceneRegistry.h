@@ -4,45 +4,113 @@
 #include "ARC/Scene/Entity.h"
 
 namespace ARC {
-	struct SSceneRegistry
+
+	struct SComponentTraits
 	{
 		template<typename T>
-		static void SetupComponent(uint32_t pOverrideFlags = T::Flags)
-		{
-			const TString& compName = CComponentTraits::GetName<T>();
-			mRegisteredComponentNames.push_back(compName);
+		static constexpr inline
+		bool IsComponent() { return std::is_base_of_v<CComponentBase, T>; }
 
-			if (pOverrideFlags & ECF::ShowInPropertiesPanel) {
-				mTypeErasedGetComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
-					static_assert(CComponentTraits::IsComponent<T>());
-					if (pEntity && pEntity.HasComponent<T>())
-						return &pEntity.GetComponent<T>();
-					return nullptr;
+		template<typename T>
+		static constexpr inline
+		decltype(auto) GetName()
+		{
+			static_assert(IsComponent<T>());
+			return SHPR::GetClassName<T>();
+		}
+
+		template<typename T>
+		static inline
+		auto& GetFlags()
+		{
+			static_assert(IsComponent<T>());
+			return T::Flags;
+		}
+
+		template<typename T>
+		static constexpr const inline
+		auto GetID() noexcept {
+			static const auto value = ItrlCounter();
+			return value;
+		}
+
+	private:
+		static inline
+			auto ItrlCounter() noexcept {
+			static TUInt32 value = 0;
+			return value++;
+		}
+	};
+
+	struct SSceneRegistry
+	{
+		struct SMetaComponent {
+			TDelegate<void(CEntity pEntity)> RemoveComponent;
+			TDelegate<CComponentBase* (CEntity pEntity)> GetComponent;
+			TDelegate<CComponentBase* (CEntity pEntity)> AddComponent;
+			TDelegate<CComponentBase* (CEntity pDstEntity, const CEntity pSrcEntity)> CopyComponent;
+			TDelegate<TUInt32& ()> GetFlags;
+			TDelegate<TString ()> GetName;
+		};
+
+		template<typename T>
+		static void SetupComponent()
+		{
+			static bool bRet = false;
+			if(bRet) return;
+			bRet = true;
+
+			const TString& compName = SComponentTraits::GetName<T>();
+			const auto compID = SComponentTraits::GetID<T>();
+			mRegisteredComponentNames.push_back(compName);
+			mRegisteredComponentNameIDMap[compName] = compID;
+			
+			auto& mc = mMetaComponents.emplace(compID, SMetaComponent()).first->second;
+			mc.GetComponent.Bind([](CEntity pEntity) -> CComponentBase* {
+				static_assert(SComponentTraits::IsComponent<T>());
+				if (pEntity && pEntity.HasComponent<T>())
+					return &pEntity.GetComponent<T>();
+				return nullptr;
 					});
-				mTypeErasedAddComponentFuncs[compName].Bind([](CEntity pEntity) -> CComponentBase* {
-					static_assert(CComponentTraits::IsComponent<T>());
-					if (pEntity && !pEntity.HasComponent<T>())
-						return &pEntity.AddComponent<T>();
-					return nullptr;
-					});
-				mTypeErasedRemoveComponentFuncs[compName].Bind([](CEntity pEntity) {
-					static_assert(CComponentTraits::IsComponent<T>());
-					if (pEntity && pEntity.HasComponent<T>())
-						return pEntity.RemoveComponent<T>();
-					});
-			}
+			mc.AddComponent.Bind([](CEntity pEntity) -> CComponentBase* {
+				static_assert(SComponentTraits::IsComponent<T>());
+				if (pEntity && !pEntity.HasComponent<T>())
+					return &pEntity.AddComponent<T>();
+				return nullptr;
+				});
+			mc.RemoveComponent.Bind([](CEntity pEntity) {
+				static_assert(SComponentTraits::IsComponent<T>());
+				if (pEntity && pEntity.HasComponent<T>())
+					pEntity.RemoveComponent<T>();
+				});
+			mc.CopyComponent.Bind([](CEntity pDstEntity, const CEntity pSrcEntity) -> CComponentBase* {
+				static_assert(SComponentTraits::IsComponent<T>());
+				if (pDstEntity && pSrcEntity && pSrcEntity.HasComponent<T>())
+					return &pDstEntity.AddComponent<T>(pSrcEntity.GetComponent<T>());
+				return nullptr;
+				});
+			mc.GetFlags.Bind([]() -> TUInt32& {
+				static_assert(SComponentTraits::IsComponent<T>());
+				return SComponentTraits::GetFlags<T>();
+				});
+			mc.GetName.Bind([]() {
+				static_assert(SComponentTraits::IsComponent<T>());
+				return SComponentTraits::GetName<T>();
+				});
 		};
 
 		static auto& GetRegisteredComponentsNames() { return mRegisteredComponentNames; }
-		static auto& GetTypeErasedGetComponentFuncs() { return mTypeErasedGetComponentFuncs; }
-		static auto& GetTypeErasedAddComponentFuncs() { return mTypeErasedAddComponentFuncs; }
-		static auto& GetTypeErasedRemoveComponentFuncs() { return mTypeErasedRemoveComponentFuncs; }
+		static auto& GetRegisteredComponentsIDFlagMap() { return mRegisteredComponentNames; }
+		static auto& GetRegisteredComponentNameIDMap() { return mRegisteredComponentNameIDMap; }
+		static auto& GetMetaComponents() { return mMetaComponents; }
 
 	private:
 		// @Editor functionality @ TODO wrap around macro
+	
 		static inline std::vector<TString> mRegisteredComponentNames;
-		static inline std::unordered_map<TString, TDelegate<void(CEntity pEntity)>> mTypeErasedRemoveComponentFuncs;
-		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> mTypeErasedGetComponentFuncs;
-		static inline std::unordered_map<TString, TDelegate<CComponentBase* (CEntity pEntity)>> mTypeErasedAddComponentFuncs;
+		static inline std::unordered_map<TString, TUInt32> mRegisteredComponentNameIDMap;
+		static inline std::unordered_map<TUInt32, SMetaComponent> mMetaComponents;
+
 	};
+
 }
