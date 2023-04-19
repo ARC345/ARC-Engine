@@ -23,6 +23,10 @@ namespace ARC {
 	CEditorLayer::CEditorLayer() :
 		CLayer("EditorLayer"),
 		mCameraController(1280.f / 780.f, true)
+		#ifdef ARC_DRAW_DEBUG_SHAPES
+		, DrawDebugShapes(1u)
+		#endif // ARC_DRAW_DEBUG_SHAPES
+		
 	{
 	}
 
@@ -31,6 +35,7 @@ namespace ARC {
 		mPlayButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PlayButton.png"));
 		mStopButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/StopButton.png"));
 		mPauseButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PauseButton.png"));
+		mSimulateButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/SimulateButton.png"));
 
 		SFrameBufferSpecification frame_buffer_specs;
 		frame_buffer_specs.Width = 1280;
@@ -66,9 +71,9 @@ namespace ARC {
 			mActiveScene->OnViewportResize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
 		}
 
-		if (mViewportHovered && mViewportFocused)	mCameraController.OnUpdate(_DeltaTime);
+		if (mIsViewportHovered && mIsViewportFocused)	mCameraController.OnUpdate(_DeltaTime);
 		
-		CRenderer2D::ResetStats();
+		SRenderer2D::ResetStats();
 
 		mFrameBuffer->Bind();
 
@@ -77,13 +82,15 @@ namespace ARC {
 
 		mFrameBuffer->ClearColorAttachment(1, -1);
 
-		mEditorCamera.OnUpdate(_DeltaTime);
 		switch (mSceneState) {
 		case ESceneState::Edit:
 			mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
 			break;
 		case ESceneState::Play:
 			mActiveScene->OnUpdateRuntime(_DeltaTime);
+			break;
+		case ESceneState::Simulate:
+			mActiveScene->OnUpdateSimulation(_DeltaTime, mEditorCamera);
 			break;
 		}
 
@@ -96,7 +103,12 @@ namespace ARC {
 			mHoveredEntity =  readPixel == -1 ? CEntity{} : CEntity{ TEntityID(readPixel), mActiveScene.get() };
 		}
 		mLifeSim2D->OnUpdate(_DeltaTime);
+		OnOverlayRender();
 		mFrameBuffer->UnBind();
+
+		mEditorCamera.OnUpdate(_DeltaTime);
+
+
 	}
 
 	void CEditorLayer::OnEvent(CEvent& _Event)
@@ -146,7 +158,8 @@ namespace ARC {
 		{
 			switch (mSceneState) {
 			case ESceneState::Edit:
-				if (control && mSceneHierachyPanel.GetSelectedEntity()) mSceneHierachyPanel.GetSelectedEntity().Duplicate();
+				if (control && mSceneHierachyPanel.GetSelectedEntity()) 
+					mSceneHierachyPanel.GetSelectedEntity().Duplicate(); // @TODO: Rename
 				
 				break;
 			};
@@ -183,7 +196,7 @@ namespace ARC {
 	bool CEditorLayer::OnMousePressedEvent(CMouseButtonPressedEvent& pE)
 	{
 		if (pE.GetMouseButton() == EMouse::ButtonLeft)
-			if (mViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(EKey::LeftAlt))
+			if (mIsViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(EKey::LeftAlt))
 				mSceneHierachyPanel.SetSelectedEntity(mHoveredEntity);
 		return false;
 	}
@@ -272,19 +285,39 @@ namespace ARC {
 
 			ImGui::Begin("Settings");
 
-			auto stats = CRenderer2D::GetStats();
+			auto stats = SRenderer2D::GetStats();
 			ImGui::Text("Renderer2D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
 			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
 			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-			
+
 			TString name = "None";
-			
+
 			if (mHoveredEntity && mHoveredEntity.HasComponent<CNameComponent>())
 				name = mHoveredEntity.GetComponent<CNameComponent>().Name;
 
 			ImGui::Text("Hovered Entity: %s", name.c_str());
+
+			if (ImGui::TreeNode("Debug"))
+			{
+				if (ImGui::TreeNode("Colliders"))
+				{
+					ImGui::Checkbox("Draw Debug Colliders", &DrawDebugShapes);
+					ImGui::Separator();
+
+
+					ImGui::ColorEdit4("Circle Line Color", DebugCircleColliderColor.Data());
+					ImGui::DragFloat("Circle Line Thickness", &DebugCircleColliderThickness);
+					ImGui::Separator();
+
+					ImGui::ColorEdit4("Box Line Color", DebugBoxColliderColor.Data());
+					ImGui::DragFloat("Box Line Thickness", &DebugBoxColliderThickness);
+
+					ImGui::TreePop();
+				}
+				ImGui::TreePop();
+			}
 
 			ImGui::End();
 
@@ -297,10 +330,10 @@ namespace ARC {
 			mViewportMinBound = viewportMinRegion + viewportOffset;
 			mViewportMaxBound = viewportMaxRegion + viewportOffset;
 
-			mViewportFocused = ImGui::IsWindowFocused();
-			mViewportHovered = ImGui::IsWindowHovered();
+			mIsViewportFocused = ImGui::IsWindowFocused();
+			mIsViewportHovered = ImGui::IsWindowHovered();
 			
-			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!mViewportFocused || !mViewportHovered);
+			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!mIsViewportFocused || !mIsViewportHovered);
 			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 			TUInt64 textureID = mFrameBuffer->GetColorAttachmentRendererID();
@@ -364,19 +397,26 @@ namespace ARC {
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, { tmp2.x,tmp2.y,tmp2.z,tmp2.w / 2 });
 			ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
 			auto buttonSize = ImGui::GetWindowHeight()-10;
-			ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x-buttonSize)*0.5f);
 			switch (mSceneState) {
-				case ESceneState::Edit:
-					if (ImGui::ImageButton((ImTextureID)(uint64_t)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-						SetSceneState(ESceneState::Play);
-					}
-					break;
-				case ESceneState::Play:
-					if (ImGui::ImageButton((ImTextureID)(uint64_t)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-						SetSceneState(ESceneState::Edit);
-					}
-					break;
+			case ESceneState::Edit:
+				ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x) * 0.5f - buttonSize);
+
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					SetSceneState(ESceneState::Play);
+				}
+				ImGui::SameLine();
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)mSimulateButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					SetSceneState(ESceneState::Simulate);
+				}
+				break;
+			case ESceneState::Play: case ESceneState::Simulate:
+				ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x - buttonSize) * 0.5f);
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					SetSceneState(ESceneState::Edit);
+				}
+				break;
 			}
+
 			ImGui::End();
 			ImGui::PopStyleVar(2);
 			ImGui::PopStyleColor(3);
@@ -401,17 +441,15 @@ namespace ARC {
 
 	void CEditorLayer::OpenScene(const std::filesystem::path& pFilepath)
 	{
-		if(mSceneState!=ESceneState::Edit) SetSceneState(ESceneState::Edit);
-
 		if (pFilepath.empty()) return;
 		if (pFilepath.extension().string() != ".arc") return;
 
 		mEditorScene = CreateRef<CScene>();
 		mEditorScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
-		mSceneHierachyPanel.SetContext(mEditorScene);
-
 		mEditorScene->DeserializeFromText(pFilepath);
-		mActiveScene = mEditorScene;
+
+		SetSceneState(ESceneState::Edit);
+
 		mEditorScenePath = pFilepath;
 	}
 
@@ -431,18 +469,52 @@ namespace ARC {
 
 	void CEditorLayer::SetSceneState(ESceneState pNewState)
 	{
-		if (mSceneState == pNewState) return;
-	
-		if (mSceneState == ESceneState::Play) {
-			mSceneState = pNewState;
-			mActiveScene->OnRuntimeEnd();
-			mActiveScene = mEditorScene;
+		if (mSceneState == ESceneState::Play || mSceneState == ESceneState::Simulate) {
+			mActiveScene->OnSetSceneState((TUInt8)mSceneState, 0);
 		}
-		else if (pNewState == ESceneState::Play)  { 
-			mSceneState = pNewState;
-			mActiveScene = CScene::Copy(mEditorScene);
-			mActiveScene->OnRuntimeBegin();
-		}
+
+		mActiveScene = CScene::Copy(mEditorScene);
+		mActiveScene->OnSetSceneState(0, (TUInt8)pNewState);
+		mSceneState = pNewState;
+
 		mSceneHierachyPanel.SetContext(mActiveScene);
+	}
+
+	void CEditorLayer::OnOverlayRender()
+	{
+		#ifdef ARC_DRAW_DEBUG_SHAPES
+		SRenderer2D::EndScene();
+		switch (mSceneState) {
+		case ESceneState::Edit: case ESceneState::Simulate:
+			SRenderer2D::BeginScene(mEditorCamera);
+			break;
+		case ESceneState::Play:
+			if (auto e = mActiveScene->GetPrimaryCameraEntity())
+				SRenderer2D::BeginScene(e.GetComponent<CCameraComponent>().Camera, e.GetComponent<CTransform2DComponent>().Transform);
+			break;
+		}
+		mActiveScene->FilterByComponents<CTransform2DComponent, CCircleCollider2DComponent>().each([&](auto e, auto& transformComponent, auto& circleColliderComponent) {
+			if (DrawDebugShapes)
+			{
+				SRenderer2D::DrawCircle(transformComponent.Transform.Location+FVec3(circleColliderComponent.Offset.x, circleColliderComponent.Offset.y, 0.001), transformComponent.Transform.Rotation, FVec2(circleColliderComponent.Radius) * transformComponent.Transform.Scale.x * 2.f, DebugCircleColliderColor, DebugCircleColliderThickness, 0.995, (int)e);
+			}
+			});
+		mActiveScene->FilterByComponents<CTransform2DComponent, CBoxCollider2DComponent>().each([&](auto e, auto& transformComponent, auto& boxColliderComponent) {
+			if (DrawDebugShapes)
+			{
+				float lT = SRenderer2D::GetLineThickness();
+				SRenderer2D::SetLineThickness(DebugBoxColliderThickness);
+				SRenderer2D::DrawRect(
+					transformComponent.Transform.Location + FVec3(boxColliderComponent.Offset.x, boxColliderComponent.Offset.y, 0.001),
+					transformComponent.Transform.Rotation,
+					boxColliderComponent.Size * transformComponent.Transform.Scale * 2.f,
+					DebugBoxColliderColor,
+					(int)e);
+				SRenderer2D::SetLineThickness(lT);
+			}
+			});
+		SRenderer2D::EndScene();
+		#endif // ARC_DRAW_DEBUG_SHAPES
+		
 	}
 }

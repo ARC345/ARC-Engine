@@ -81,7 +81,7 @@ namespace ARC {
 			Quad.TextureScaling = { 1.f, 1.f };
 			Quad.Transform.Rotation = SMath::Radians(particle.Rotation);
 
-			CRenderer2D::DrawQuad(Quad);
+			SRenderer2D::DrawQuad(Quad);
 		}
 	}
 }

@@ -179,6 +179,8 @@ namespace ARC {
 		{
 			if (ImGui::MenuItem("Delete Entity"))
 				bDeleteEntity = true;
+			if (ImGui::MenuItem("Duplicate Entity"))
+				mSelectedEntity = mSelectedEntity.Duplicate();
 			ImGui::EndPopup();
 		}
 

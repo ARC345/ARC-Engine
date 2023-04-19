@@ -1,142 +1,226 @@
 #pragma once
 #include <type_traits>
 #include "Utils\MPL\Interface.hpp"
+#include <list>
+#include <functional>
 
 namespace ARC {
+	template<typename RET>
+	class TDelegateBase;
 	template<typename RET>
 	class TDelegate;
 	template<typename RET>
 	class TMulticastDelegate;
 
-	// @TODO rewrite
 	template<typename RET, typename ...PARAMS>
-	class TDelegate<RET(PARAMS...)> {
-	public:
-		using Params = MPL::TypeList<PARAMS...>;
-		using RVal = RET;
-
-		TDelegate() : fn(nullptr) {}
-
-		template<auto Candidate, typename Type>
-		void Bind(Type value_or_instance) {
-			static_assert(sizeof(Type) <= sizeof(void*));
-			static_assert(std::is_trivially_copyable_v<Type> && std::is_trivially_destructible_v<Type>);
-			static_assert(std::is_invocable_r_v<RET, decltype(Candidate), Type&, PARAMS...>);
-
-			new (&storage) Type{ value_or_instance };
-
-			fn = [](storage_type& storage, PARAMS... args) -> RET {
-				Type value_or_instance = *reinterpret_cast<Type*>(&storage);
-				return std::invoke(Candidate, value_or_instance, args...);
-			};
-		};
-		template<auto Function>
-		void Bind() {
-			static_assert(std::is_invocable_r_v<RET, decltype(Function), PARAMS...>);
-
-			new (&storage) void* { nullptr };
-
-			fn = [](storage_type&, PARAMS... args) -> RET {
-				return std::invoke(Function, args...);
-			};
-		};
-		template<typename Invokable>
-		void Bind(Invokable invokable) {
-			static_assert(sizeof(Invokable) < sizeof(void*), "capture list not supported currently");
-			static_assert(std::is_class_v<Invokable>);
-			static_assert(std::is_trivially_destructible_v<Invokable>);
-			static_assert(std::is_invocable_r_v<RET, Invokable, PARAMS...>);
-
-			new (&storage) Invokable{ std::move(invokable) };
-
-			fn = [](storage_type& storage, PARAMS... args) -> RET {
-				Invokable& invokable = *reinterpret_cast<Invokable*>(&storage);
-				return std::invoke(invokable, args...);
-			};
-		};
-
-		inline
-		RET operator()(PARAMS... args) const { return fn(storage, args...); }
-		[[nodiscard]] inline explicit 
-		operator bool() const { return fn != nullptr; }
-		[[nodiscard]] inline 
-		bool operator==(const TDelegate<RET(PARAMS...)>& _) const { return fn == _.fn; }
-		[[nodiscard]] inline 
-		bool operator!=(const TDelegate<RET(PARAMS...)>& _) const { return fn != _.fn; }
-	private:
+	class TDelegateBase<RET(PARAMS...)> {
 	protected:
-		using storage_type = std::aligned_storage_t<sizeof(void*), alignof(void*)>;
-		using proto_fn_type = RET(storage_type&, PARAMS...);
-		mutable storage_type storage;
-		proto_fn_type* fn;
-	};
-	
-	template<typename RET, typename ...PARAMS>
-	class TMulticastDelegate<RET(PARAMS...)> {
-		using DelegateClass = TDelegate<RET(PARAMS...)>;
-		using InvocationListClass = std::list<DelegateClass*>;
+		using stub_type = RET(*)(void* this_ptr, PARAMS...);
 
+		struct InvocationElement {
+			InvocationElement() = default;
+			InvocationElement(void* this_ptr, stub_type aStub) : Object(this_ptr), Stub(aStub) {}
+			void Clone(InvocationElement& target) const {
+				target.Stub = Stub;
+				target.Object = Object;
+			}
+			bool operator ==(const InvocationElement& another) const {
+				return another.Stub == Stub && another.Object == Object;
+			}
+			bool operator !=(const InvocationElement& another) const {
+				return another.Stub != Stub || another.Object != Object;
+			}
+			void* Object = nullptr;
+			stub_type Stub = nullptr;
+		}; 
+
+	};
+
+	template<typename RET, typename ...PARAMS>
+	class TDelegate<RET(PARAMS...)> final : private TDelegateBase<RET(PARAMS...)> {
 	public:
+
+		TDelegate() = default;
+
+		operator bool() const { return invocation.Stub == nullptr; }
+		bool operator ==(void* ptr) const {
+			return (ptr == nullptr) && this->IsNull();
+		} //operator ==
+		bool operator !=(void* ptr) const {
+			return (ptr != nullptr) || (!this->IsNull());
+		} //operator !=
+
+		TDelegate(const TDelegate& another) { another.invocation.Clone(invocation); }
+
+		template <typename LAMBDA>
+		TDelegate(const LAMBDA& lambda) {
+			Bind((void*)(&lambda), LambdaStub<LAMBDA>);
+		} //TDelegate
+
+		TDelegate& operator =(const TDelegate& another) {
+			another.invocation.Clone(invocation);
+			return *this;
+		} //operator =
+
+		template <typename LAMBDA> // template instantiation is not needed, will be deduced (inferred):
+		TDelegate& operator =(const LAMBDA& instance) {
+			Bind((void*)(&instance), LambdaStub<LAMBDA>);
+			return *this;
+		} //operator =
+
+		bool operator == (const TDelegate& another) const { return invocation == another.invocation; }
+		bool operator != (const TDelegate& another) const { return invocation != another.invocation; }
+
+		bool operator ==(const TMulticastDelegate<RET(PARAMS...)>& another) const { return another == (*this); }
+		bool operator !=(const TMulticastDelegate<RET(PARAMS...)>& another) const { return another != (*this); }
+
+		template <class T, RET(T::* TMethod)(PARAMS...)>
+		static TDelegate Create(T* instance) {
+			return TDelegate(instance, MethodStub<T, TMethod>);
+		}
+
+		template <class T, RET(T::* TMethod)(PARAMS...) const>
+		static TDelegate Create(T const* instance) {
+			return TDelegate(const_cast<T*>(instance), ConstMethodStub<T, TMethod>);
+		}
+
+		template <RET(*TMethod)(PARAMS...)>
+		static TDelegate Create() {
+			return TDelegate(nullptr, FunctionStub<TMethod>);
+		}
+
+		template <typename LAMBDA>
+		static TDelegate Create(const LAMBDA& instance) {
+			return TDelegate((void*)(&instance), LambdaStub<LAMBDA>);
+		} 
+
+		RET operator()(PARAMS... arg) const {
+			return (*invocation.Stub)(invocation.Object, arg...);
+		}
+
+	private:
+
+		TDelegate(void* anObject, typename TDelegateBase<RET(PARAMS...)>::stub_type aStub) {
+			invocation.Object = anObject;
+			invocation.Stub = aStub;
+		} 
+
+		void Bind(void* anObject, typename TDelegateBase<RET(PARAMS...)>::stub_type aStub) {
+			this->invocation.Object = anObject;
+			this->invocation.Stub = aStub;
+		} 
+
+		template <class T, RET(T::* TMethod)(PARAMS...)>
+		static RET MethodStub(void* this_ptr, PARAMS... params) {
+			T* p = static_cast<T*>(this_ptr);
+			return (p->*TMethod)(params...);
+		} 
+
+		template <class T, RET(T::* TMethod)(PARAMS...) const>
+		static RET ConstMethodStub(void* this_ptr, PARAMS... params) {
+			T* const p = static_cast<T*>(this_ptr);
+			return (p->*TMethod)(params...);
+		} 
+
+		template <RET(*TMethod)(PARAMS...)>
+		static RET FunctionStub(void* this_ptr, PARAMS... params) {
+			return (TMethod)(params...);
+		} 
+
+		template <typename LAMBDA>
+		static RET LambdaStub(void* this_ptr, PARAMS... arg) {
+			LAMBDA* p = static_cast<LAMBDA*>(this_ptr);
+			return (p->operator())(arg...);
+		} 
+
+		friend class TMulticastDelegate<RET(PARAMS...)>;
+		typename TDelegateBase<RET(PARAMS...)>::InvocationElement invocation;
+
+	}; 
+	template<typename RET, typename ...PARAMS>
+	class TMulticastDelegate<RET(PARAMS...)> final : private TDelegateBase<RET(PARAMS...)> {
+	public:
+
 		TMulticastDelegate() = default;
 		~TMulticastDelegate() {
-			for (auto& element : mInvocationList) delete element;
-			mInvocationList.clear();
-		};
+			for (auto& element : invocationList) delete element;
+			invocationList.clear();
+		} //~TMulticastDelegate
 
-		[[nodiscard]] inline bool Contains(const DelegateClass& _) const { return (std::find(mInvocationList.begin(), mInvocationList.end(), _)); }
-		[[nodiscard]] inline auto Find(const DelegateClass& _) const { return std::find(mInvocationList.begin(), mInvocationList.end(), _); }
-		
-		[[nodiscard]] inline bool IsEmpty() const { return mInvocationList.size() < 1; }
-		[[nodiscard]] inline size_t Size() const { return mInvocationList.size(); }
+		operator bool() const { return invocationList.size() < 1; }
+		bool operator ==(void* ptr) const {
+			return (ptr == nullptr) && *this;
+		} //operator ==
+		bool operator !=(void* ptr) const {
+			return (ptr != nullptr) || (!*this);
+		} //operator !=
 
-		void Clear() {
-			for (auto& element : mInvocationList)
-				delete element;
-			mInvocationList.clear();
-		}
+		size_t size() const { return invocationList.size(); }
 
-		template<auto Candidate, typename Type>
-		void Bind(Type value_or_instance) {
-			auto newelem = new DelegateClass;
-			newelem->Bind<Candidate, Type>(value_or_instance);
-			mInvocationList.push_back(newelem);
-		};
-		template<auto Function>
-		void Bind() {
-			auto newelem = new DelegateClass;
-			newelem->Bind<Function>();
-			mInvocationList.push_back(newelem);
-		};
-		template<typename Invokable>
-		void Bind(Invokable invokable) {
-			auto newelem = new DelegateClass;
-			newelem->Bind<Invokable>(invokable);
-			mInvocationList.push_back(newelem);
-		};
+		TMulticastDelegate& operator =(const TMulticastDelegate&) = delete;
+		TMulticastDelegate(const TMulticastDelegate&) = delete;
 
-		inline void operator()(PARAMS... args) const { 
-			for (auto& element : mInvocationList)
-				element->operator ()(args...);
-		}
+		bool operator ==(const TMulticastDelegate& another) const {
+			if (invocationList.size() != another.invocationList.size()) return false;
+			auto anotherIt = another.invocationList.begin();
+			for (auto it = invocationList.begin(); it != invocationList.end(); ++it)
+				if (**it != **anotherIt) return false;
+			return true;
+		} //==
+		bool operator !=(const TMulticastDelegate& another) const { return !(*this == another); }
+
+		bool operator ==(const TDelegate<RET(PARAMS...)>& another) const {
+			if (*this && another) return true;
+			if (another || (size() != 1)) return false;
+			return (another.invocation == **invocationList.begin());
+		} //==
+		bool operator !=(const TDelegate<RET(PARAMS...)>& another) const { return !(*this == another); }
+
+		TMulticastDelegate& operator +=(const TMulticastDelegate& another) {
+			for (auto& item : another.invocationList) // clone, not copy; flattens hierarchy:
+				this->invocationList.push_back(new typename TDelegateBase<RET(PARAMS...)>::InvocationElement(item->Object, item->Stub));
+			return *this;
+		} //operator +=
+
+		template <typename LAMBDA> // template instantiation is not neededm, will be deduced/inferred:
+		TMulticastDelegate& operator +=(const LAMBDA& lambda) {
+			TDelegate<RET(PARAMS...)> d = TDelegate<RET(PARAMS...)>::template create<LAMBDA>(lambda);
+			return *this += d;
+		} //operator +=
+
+		TMulticastDelegate& operator +=(const TDelegate<RET(PARAMS...)>& another) {
+			if (another) return *this;
+			this->invocationList.push_back(new typename TDelegateBase<RET(PARAMS...)>::InvocationElement(another.invocation.Object, another.invocation.Stub));
+			return *this;
+		} //operator +=
+
+		// will work even if RET is void, return values are ignored:
+		// (for handling return values, see operator(..., handler))
+		void operator()(PARAMS... arg) const {
+			for (auto& item : invocationList)
+				(*(item->Stub))(item->Object, arg...);
+		} //operator()
+
 		template<typename HANDLER>
-		void operator()(PARAMS... args, HANDLER handler) const {
+		void operator()(PARAMS... arg, HANDLER handler) const {
 			size_t index = 0;
-			for (auto& item : mInvocationList) {
-				RET value = *item(args...);
+			for (auto& item : invocationList) {
+				RET value = (*(item->Stub))(item->Object, arg...);
 				handler(index, &value);
 				++index;
 			} //loop
-		}
-		[[nodiscard]] inline explicit operator bool() const { return !IsEmpty(); }
+		} //operator()
 
-		typename InvocationListClass::iterator begin() { return mInvocationList.begin(); }
-		typename InvocationListClass::iterator end() { return mInvocationList.end(); }
-		typename InvocationListClass::const_iterator begin() const { return mInvocationList.begin(); }
-		typename InvocationListClass::const_iterator end() const { return mInvocationList.end(); }
+		void operator()(PARAMS... arg, TDelegate<void(size_t, RET*)> handler) const {
+			operator() < decltype(handler) > (arg..., handler);
+		} //operator()
+		void operator()(PARAMS... arg, std::function<void(size_t, RET*)> handler) const {
+			operator() < decltype(handler) > (arg..., handler);
+		} //operator()
 
 	private:
-		InvocationListClass mInvocationList;
-	};
 
+		std::list<typename TDelegateBase<RET(PARAMS...)>::InvocationElement*> invocationList;
 
+	}; //class TMulticastDelegate
 }

@@ -30,14 +30,13 @@ namespace ARC {
 		inline SManager& GetManager() { return mManager; }
 		inline const SManager& GetManager() const { return mManager; }
 		
-		void OnRuntimeBegin();
-		void OnRuntimeEnd(); // report cause
-		
 		void OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera);
 		void OnUpdateRuntime(float DeltaTime);
+		void OnUpdateSimulation(float pDeltaTime, CEditorCamera& pCamera);
 
 		void OnViewportResize(TVec2<uint32_t> pNewSize);
-	
+		void OnSetSceneState(TUInt8 pCurrentSceneState, TUInt8 pNewSceneState); // Raw ESceneState
+		
 		void SerializeToText(const std::filesystem::path& pFilepath);
 		void SerializeToBinary(const std::filesystem::path& pFilepath);
 		bool DeserializeFromText(const std::filesystem::path& pFilepath);
@@ -48,20 +47,24 @@ namespace ARC {
 
 		inline decltype(auto) GetViewportSize() { return mViewportSize; }
 
+		CEntity GetPrimaryCameraEntity();
 		CEntity DuplicateEntity(CEntity pSrcEntity);
 
 	private:
+		void BeginPhysics();
+		void EndPhysics();
+		
+		void RenderScene();
+		void UpdatePhysics(float pDeltaTime);
+
 		void SerializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 		void DeserializeEntity(YAML::Emitter& pOut, CEntity pEntity);
 	public:
-		TDelegate<void()> dOnRuntimeBegin;
-		TDelegate<void()> dOnRuntimeEnd;
-
 	private:
-		TVec2<uint32_t> mViewportSize;
+		TVec2<TUInt32> mViewportSize;
 		
 		SManager mManager;
-		b2World* mWorld;
+		b2World* mPhysicsWorld = nullptr;
 
 		TDelegate<bool(const TString&)> mTreeNodeBeginFunc;
 		TDelegate<void()> mTreeNodeEndFunc;

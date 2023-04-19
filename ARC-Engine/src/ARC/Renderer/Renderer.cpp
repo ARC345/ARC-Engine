@@ -16,7 +16,7 @@ namespace ARC {
 		ARC_PROFILE_FUNCTION();
 
 		CRenderCommand::Init();
-		CRenderer2D::Init();
+		SRenderer2D::Init();
 	}
 
 	void CRenderer::OnWindowResize(TVec2<uint32_t> _Dimentions)

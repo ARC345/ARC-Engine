@@ -10,5 +10,7 @@ namespace ARC {
 		virtual void SetClearColour(const FColor4 _Colour) override;
 		virtual void Clear() override;
 		virtual void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) override;
+		virtual void DrawLine(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) override;
+		virtual void SetLineThickness(float pThickness) override;
 	};
 }
