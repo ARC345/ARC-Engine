@@ -8,9 +8,6 @@
 [submodule "ARC-Engine/out/inifile_cpp"]
 	path = ARC-Engine/out/inifile_cpp
 	url = https://github.com/Hellboy434/inifile-cpp
-[submodule "ARC-Engine/out/GLFW"]
-	path = ARC-Engine/out/GLFW
-	url = https://github.com/TheCherno/glfw.git
 [submodule "ARC-Engine/out/glm"]
 	path = ARC-Engine/out/glm
 	url = https://github.com/g-truc/glm.git

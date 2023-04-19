@@ -120,49 +120,49 @@ namespace ARC {
 		OnViewportResize(mViewportSize);
 		mPhysicsWorld = new b2World({ 0.0f, -9.8f });
 		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rigidBody2dComponent) {
-		CEntity entity = { e, this };
-		b2BodyDef bodyDef;
-		bodyDef.type = (b2BodyType)rigidBody2dComponent.Type;
-		bodyDef.position.Set(transformComponent.Transform.Location.x, transformComponent.Transform.Location.y);
-		bodyDef.angle = transformComponent.Transform.Rotation;
-		bodyDef.fixedRotation = rigidBody2dComponent.bFixedRotation;
-		auto* body = mPhysicsWorld->CreateBody(&bodyDef);
-		rigidBody2dComponent.RuntimeBody = body;
-		if (entity.HasComponent<CBoxCollider2DComponent>())
-		{
-			auto& colliderComponent = entity.GetComponent<CBoxCollider2DComponent>();
-			b2PolygonShape boxShape;
-			boxShape.SetAsBox(
-				transformComponent.Transform.Scale.x * colliderComponent.Size.x,
-				transformComponent.Transform.Scale.y * colliderComponent.Size.y
-			);
+			CEntity entity = { e, this };
+			b2BodyDef bodyDef;
+			bodyDef.type = (b2BodyType)rigidBody2dComponent.Type;
+			bodyDef.position.Set(transformComponent.Transform.Location.x, transformComponent.Transform.Location.y);
+			bodyDef.angle = transformComponent.Transform.Rotation;
+			bodyDef.fixedRotation = rigidBody2dComponent.bFixedRotation;
+			auto* body = mPhysicsWorld->CreateBody(&bodyDef);
+			rigidBody2dComponent.RuntimeBody = body;
+			if (entity.HasComponent<CBoxCollider2DComponent>())
+			{
+				auto& colliderComponent = entity.GetComponent<CBoxCollider2DComponent>();
+				b2PolygonShape boxShape;
+				boxShape.SetAsBox(
+					transformComponent.Transform.Scale.x * colliderComponent.Size.x,
+					transformComponent.Transform.Scale.y * colliderComponent.Size.y
+				);
 
-			b2FixtureDef fixureDef;
-			fixureDef.shape = &boxShape;
-			fixureDef.density = colliderComponent.Density;
-			fixureDef.friction = colliderComponent.Friction;
-			fixureDef.restitution = colliderComponent.Restitution;
-			fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
+				b2FixtureDef fixureDef;
+				fixureDef.shape = &boxShape;
+				fixureDef.density = colliderComponent.Density;
+				fixureDef.friction = colliderComponent.Friction;
+				fixureDef.restitution = colliderComponent.Restitution;
+				fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
 
-			colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
-		}
-		if (entity.HasComponent<CCircleCollider2DComponent>())
-		{
-			auto& colliderComponent = entity.GetComponent<CCircleCollider2DComponent>();
-			b2CircleShape circleShape;
-			circleShape.m_p.Set(colliderComponent.Offset.x, colliderComponent.Offset.y);
-			circleShape.m_radius = colliderComponent.Radius * transformComponent.Transform.Scale.x;
+				colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
+			}
+			if (entity.HasComponent<CCircleCollider2DComponent>())
+			{
+				auto& colliderComponent = entity.GetComponent<CCircleCollider2DComponent>();
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(colliderComponent.Offset.x, colliderComponent.Offset.y);
+				circleShape.m_radius = colliderComponent.Radius * transformComponent.Transform.Scale.x;
 
-			b2FixtureDef fixureDef;
-			fixureDef.shape = &circleShape;
-			fixureDef.density = colliderComponent.Density;
-			fixureDef.friction = colliderComponent.Friction;
-			fixureDef.restitution = colliderComponent.Restitution;
-			fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
+				b2FixtureDef fixureDef;
+				fixureDef.shape = &circleShape;
+				fixureDef.density = colliderComponent.Density;
+				fixureDef.friction = colliderComponent.Friction;
+				fixureDef.restitution = colliderComponent.Restitution;
+				fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
 
-			colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
-		}
-			});
+				colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
+			}
+		});
 	}
 
 	void CScene::EndPhysics()

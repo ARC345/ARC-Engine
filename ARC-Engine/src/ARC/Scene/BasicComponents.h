@@ -212,5 +212,4 @@ namespace ARC {
 
 		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 	};
-
 }
