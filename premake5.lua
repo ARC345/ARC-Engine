@@ -22,7 +22,7 @@ workspace "ARC-Engine"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
-IncludeDir["GLFW"] = "%{wks.location}/ARC-Engine/out/GLFW/include"
+IncludeDir["GLFW"] = "%{wks.location}/ARC-Engine/out/glfw/include"
 IncludeDir["GLAD"] = "%{wks.location}/ARC-Engine/out/GLAD/include"
 IncludeDir["ImGui"] = "%{wks.location}/ARC-Engine/out/imgui"
 IncludeDir["yaml_cpp"] = "%{wks.location}/ARC-Engine/out/yaml-cpp/include"

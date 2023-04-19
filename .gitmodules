@@ -29,3 +29,6 @@
 [submodule "ARC-Engine/out/box2d"]
 	path = ARC-Engine/out/box2d
 	url = https://github.com/ARC345/box2d.git
+[submodule "ARC-Engine/out/glfw"]
+	path = ARC-Engine/out/glfw
+	url = https://github.com/glfw/glfw.git
