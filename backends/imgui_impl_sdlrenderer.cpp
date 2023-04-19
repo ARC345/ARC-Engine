@@ -33,6 +33,12 @@
 #include <stdint.h>     // intptr_t
 #endif
 
+// Clang warnings with -Weverything
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wsign-conversion"    // warning: implicit conversion changes signedness
+#endif
+
 // SDL
 #include <SDL.h>
 #if !SDL_VERSION_ATLEAST(2,0,17)
@@ -82,6 +88,7 @@ void ImGui_ImplSDLRenderer_Shutdown()
 
     io.BackendRendererName = nullptr;
     io.BackendRendererUserData = nullptr;
+    io.BackendFlags &= ~ImGuiBackendFlags_RendererHasVtxOffset;
     IM_DELETE(bd);
 }
 
@@ -250,3 +257,7 @@ void ImGui_ImplSDLRenderer_DestroyDeviceObjects()
 {
     ImGui_ImplSDLRenderer_DestroyFontsTexture();
 }
+
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
