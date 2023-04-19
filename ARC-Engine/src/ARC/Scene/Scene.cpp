@@ -11,6 +11,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace ARC {
 	CScene::CScene()
@@ -24,12 +25,13 @@ namespace ARC {
 		SSceneRegistry::SetupComponent<CMassComponent>();
 		SSceneRegistry::SetupComponent<CRigidBody2DComponent>();
 		SSceneRegistry::SetupComponent<CBoxCollider2DComponent>();
+		SSceneRegistry::SetupComponent<CCircleCollider2DComponent>();
 		SSceneRegistry::SetupComponent<CCircleRendererComponent>();
 	}
 
 	CScene::~CScene()
 	{
-
+		if (mPhysicsWorld) EndPhysics(); // just in case
 	}
 
 	TRef<CScene> CScene::Copy(const TRef<CScene> p)
@@ -60,73 +62,11 @@ namespace ARC {
 		Entity.OnKill();
 	}
 
-	void CScene::OnRuntimeBegin()
-	{
-		if(dOnRuntimeBegin) dOnRuntimeBegin();
-		mWorld = new b2World({0.0f, -9.8f});
-		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rigidBody2dComponent) {
-				CEntity entity = {e, this};
-				b2BodyDef bodyDef;
-				bodyDef.type = (b2BodyType)rigidBody2dComponent.Type;
-				bodyDef.position.Set(transformComponent.Transform.Location.x, transformComponent.Transform.Location.y);
-				bodyDef.angle = transformComponent.Transform.Rotation;
-				bodyDef.fixedRotation = rigidBody2dComponent.bFixedRotation;
-				auto* body = mWorld->CreateBody(&bodyDef);
-				rigidBody2dComponent.RuntimeBody = body;
-				if (entity.HasComponent<CBoxCollider2DComponent>())
-				{
-					auto& colliderComponent = entity.GetComponent<CBoxCollider2DComponent>();
-					b2PolygonShape boxShape;
-					boxShape.SetAsBox(
-						transformComponent.Transform.Scale.x * colliderComponent.Size.x,
-						transformComponent.Transform.Scale.y * colliderComponent.Size.y
-						);
-
-					b2FixtureDef fixureDef;
-					fixureDef.shape = &boxShape;
-					fixureDef.density = colliderComponent.Density;
-					fixureDef.friction = colliderComponent.Friction;
-					fixureDef.restitution = colliderComponent.Restitution;
-					fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
-
-					colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
-				}
-			});
-	}
-
-	void CScene::OnRuntimeEnd()
-	{
-		if(dOnRuntimeEnd) dOnRuntimeEnd();
-		delete mWorld;
-		mWorld = nullptr;
-	}
-
 	void CScene::OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera)
 	{
-		CRenderer2D::BeginScene(pCamera);
-		mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
-			{
-				static CPrimitive2D Quad;
-				Quad.Color = spriteRendererComp.Color;
-				Quad.Texture = spriteRendererComp.Texture;
-				Quad.TextureScaling = spriteRendererComp.TextureScaling;
-				Quad.Transform = transformComp;
-				Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
-				CRenderer2D::DrawQuad(Quad, int(entity));
-			});
-		mManager.view<CTransform2DComponent, CCircleRendererComponent>().each([](auto entity, auto& transformComp, auto& circleRendererComp)
-			{
-				CRenderer2D::DrawCircle(
-					transformComp.Transform.Location,
-					transformComp.Transform.Rotation,
-					transformComp.Transform.Scale,
-					circleRendererComp.Color,
-					circleRendererComp.Thickness,
-					circleRendererComp.Sharpness,
-					int(entity));
-			});
-
-		CRenderer2D::EndScene();
+		SRenderer2D::BeginScene(pCamera);
+		RenderScene();
+		SRenderer2D::EndScene();
 	}
 
 	void CScene::OnUpdateRuntime(float pDeltaTime)
@@ -143,59 +83,26 @@ namespace ARC {
 				nativeScriptcomp.Controller->OnUpdate(pDeltaTime);
 			});
 
-		{
-			mWorld->Step(pDeltaTime, 6, 2); /// expose to editor
-			mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rb2dComponent) {
-					CEntity entity = {e, this};
-					b2Body* body = (b2Body*)rb2dComponent.RuntimeBody;
-					transformComponent.Transform.Location.x = body->GetPosition().x;
-					transformComponent.Transform.Location.y = body->GetPosition().y;
-					transformComponent.Transform.Rotation = body->GetAngle();
-				});
-		}
-		CCamera* mainCam = nullptr;
-		FTransform2D* camTransform = nullptr;
-		
-		mManager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
-			{
-				if (cameraComp.bPrimary)
-				{
-					mainCam = &cameraComp.Camera;
-					camTransform = &transformComp.Transform;
-					return;
-				}
-			});
+		UpdatePhysics(pDeltaTime);
 
-		if (mainCam)
+		if (auto primaryCameraEntity = GetPrimaryCameraEntity())
 		{
-			CRenderer2D::BeginScene(*mainCam, *camTransform);
-			mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
-				{
-					static CPrimitive2D Quad;
-					Quad.Color = spriteRendererComp.Color;
-					Quad.Texture = spriteRendererComp.Texture;
-					Quad.TextureScaling = spriteRendererComp.TextureScaling;
-					Quad.Transform = transformComp;
-					Quad.TransparencyLevel = (Quad.Texture && !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
-					CRenderer2D::DrawQuad(Quad, int(entity));
-				});
-			mManager.view<CTransform2DComponent, CCircleRendererComponent>().each([](auto entity, auto& transformComp, auto& circleRendererComp)
-				{
-					CRenderer2D::DrawCircle(
-						transformComp.Transform.Location,
-						transformComp.Transform.Rotation,
-						transformComp.Transform.Scale,
-						circleRendererComp.Color,
-						circleRendererComp.Thickness,
-						circleRendererComp.Sharpness,
-						int(entity));
-				});
-			CRenderer2D::EndScene();
+			SRenderer2D::BeginScene(primaryCameraEntity.GetComponent<CCameraComponent>().Camera, primaryCameraEntity.GetComponent<CTransform2DComponent>().Transform);
+			RenderScene();
+			SRenderer2D::EndScene();
 		}
 
 		//std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&view](auto entity) {
 		//	// ...
 		//	}); 
+	}
+
+	void CScene::OnUpdateSimulation(float pDeltaTime, CEditorCamera& pCamera)
+	{
+		SRenderer2D::BeginScene(pCamera);
+		RenderScene();
+		UpdatePhysics(pDeltaTime);
+		SRenderer2D::EndScene();
 	}
 
 	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
@@ -207,6 +114,145 @@ namespace ARC {
 				//if (cameraComp.bFixedAspectRatio) return @todo
 				cameraComp.Camera.SetViewportSize(pNewSize);
 			});
+	}
+
+	void CScene::BeginPhysics(){
+		OnViewportResize(mViewportSize);
+		mPhysicsWorld = new b2World({ 0.0f, -9.8f });
+		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rigidBody2dComponent) {
+		CEntity entity = { e, this };
+		b2BodyDef bodyDef;
+		bodyDef.type = (b2BodyType)rigidBody2dComponent.Type;
+		bodyDef.position.Set(transformComponent.Transform.Location.x, transformComponent.Transform.Location.y);
+		bodyDef.angle = transformComponent.Transform.Rotation;
+		bodyDef.fixedRotation = rigidBody2dComponent.bFixedRotation;
+		auto* body = mPhysicsWorld->CreateBody(&bodyDef);
+		rigidBody2dComponent.RuntimeBody = body;
+		if (entity.HasComponent<CBoxCollider2DComponent>())
+		{
+			auto& colliderComponent = entity.GetComponent<CBoxCollider2DComponent>();
+			b2PolygonShape boxShape;
+			boxShape.SetAsBox(
+				transformComponent.Transform.Scale.x * colliderComponent.Size.x,
+				transformComponent.Transform.Scale.y * colliderComponent.Size.y
+			);
+
+			b2FixtureDef fixureDef;
+			fixureDef.shape = &boxShape;
+			fixureDef.density = colliderComponent.Density;
+			fixureDef.friction = colliderComponent.Friction;
+			fixureDef.restitution = colliderComponent.Restitution;
+			fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
+
+			colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
+		}
+		if (entity.HasComponent<CCircleCollider2DComponent>())
+		{
+			auto& colliderComponent = entity.GetComponent<CCircleCollider2DComponent>();
+			b2CircleShape circleShape;
+			circleShape.m_p.Set(colliderComponent.Offset.x, colliderComponent.Offset.y);
+			circleShape.m_radius = colliderComponent.Radius * transformComponent.Transform.Scale.x;
+
+			b2FixtureDef fixureDef;
+			fixureDef.shape = &circleShape;
+			fixureDef.density = colliderComponent.Density;
+			fixureDef.friction = colliderComponent.Friction;
+			fixureDef.restitution = colliderComponent.Restitution;
+			fixureDef.restitutionThreshold = colliderComponent.RestitutionThreshhold;
+
+			colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
+		}
+			});
+	}
+
+	void CScene::EndPhysics()
+	{
+		delete mPhysicsWorld;
+		mPhysicsWorld = nullptr;
+	}
+
+	void CScene::RenderScene()
+	{
+		mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+			{
+				static CPrimitive2D Quad;
+				Quad.Color = spriteRendererComp.Color;
+				Quad.Texture = spriteRendererComp.Texture;
+				Quad.TextureScaling = spriteRendererComp.TextureScaling;
+				Quad.Transform = transformComp;
+				Quad.TransparencyLevel = (Quad.Texture || !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
+				SRenderer2D::DrawQuad(Quad, int(entity));
+			});
+		mManager.view<CTransform2DComponent, CCircleRendererComponent>().each([](auto entity, auto& transformComp, auto& circleRendererComp)
+			{
+				SRenderer2D::DrawCircle(
+					transformComp.Transform.Location,
+					transformComp.Transform.Rotation,
+					transformComp.Transform.Scale,
+					circleRendererComp.Color,
+					circleRendererComp.Thickness,
+					circleRendererComp.Sharpness,
+					int(entity));
+			});
+	}
+
+	void CScene::UpdatePhysics(float pDeltaTime)
+	{
+		mPhysicsWorld->Step(pDeltaTime, 6, 2); /// expose to editor
+		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rb2dComponent) {
+				CEntity entity = {e, this};
+				b2Body* body = (b2Body*)rb2dComponent.RuntimeBody;
+				transformComponent.Transform.Location.x = body->GetPosition().x;
+				transformComponent.Transform.Location.y = body->GetPosition().y;
+				transformComponent.Transform.Rotation = body->GetAngle();
+			});
+	}
+
+	/*
+	* None = 0,
+	* Edit=1,
+	* Play=2,
+	* Simulate=3
+	*/
+	void CScene::OnSetSceneState(TUInt8 pCurrentSceneState, TUInt8 pNewSceneState)
+	{
+		switch (pCurrentSceneState)
+		{
+		case 0:
+			break;
+		case 1:
+			//End Edit
+			break;
+		case 2:
+			//End Play
+			EndPhysics();
+			break;
+		case 3:
+			//End Simulate
+			EndPhysics();
+		default:
+			ARC_CORE_ASSERT("Invalid (Current) Scene State");
+		}
+		switch (pNewSceneState)
+		{
+		case 0:
+			break;
+		case 1:
+			//Start Edit
+			break;
+		case 2:
+			//Start Play
+			BeginPhysics();
+
+			break;
+		case 3:
+			//Start Simulate
+			BeginPhysics();
+			
+			break;
+		default:
+			ARC_CORE_ASSERT("Invalid (New) Scene State");
+		}
 	}
 
 	void CScene::SerializeEntity(YAML::Emitter& pOut, CEntity pEntity)
@@ -278,8 +324,8 @@ namespace ARC {
 					deserializedEntity.GetComponent<CNameComponent>().Deserialize(Node);
 					continue;
 				}
-
-				SSceneRegistry::GetMetaComponents()[SSceneRegistry::GetRegisteredComponentNameIDMap()[compData["Name"].as<TString>()]].GetComponent(deserializedEntity)->Deserialize(Node);
+				
+				SSceneRegistry::GetMetaComponents()[SSceneRegistry::GetRegisteredComponentNameIDMap()[compData["Name"].as<TString>()]].AddComponent(deserializedEntity)->Deserialize(Node);
 			}
 		}
 		return true;
@@ -288,6 +334,20 @@ namespace ARC {
 	bool CScene::DeserializeFromBinary(const std::filesystem::path& pFilepath)
 	{
 		return false;
+	}
+
+	CEntity CScene::GetPrimaryCameraEntity()
+	{
+		CEntity rval;
+		mManager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
+			{
+				if (cameraComp.bPrimary)
+				{
+					rval = { entity, this };
+					return;
+				}
+			});
+		return rval;
 	}
 
 	CEntity CScene::DuplicateEntity(CEntity pSrcEntity)

@@ -196,8 +196,8 @@ namespace ARC
 		{
 			TString texturePath = pData["TexturePath"].as<TString>();
 			Texture = CTexture2D::Create(texturePath);
+			TextureScaling = pData["TextureScaling"].as<FVec2>();
 		}
-		TextureScaling = pData["TextureScaling"].as<FVec2>();
 	}
 
 	void CMassComponent::DrawPropertiesUI(CEntity& pEntity)
@@ -240,6 +240,38 @@ namespace ARC
 	{
 		Offset = pData["Offset"].as<FVec2>();
 		Size = pData["Size"].as<FVec2>();
+		Density = pData["Density"].as<float>();
+		Friction = pData["Friction"].as<float>();
+		Restitution = pData["Restitution"].as<float>();
+		RestitutionThreshhold = pData["RestitutionThreshhold"].as<float>();
+
+	}
+
+	void CCircleCollider2DComponent::DrawPropertiesUI(CEntity& pEntity)
+	{
+		ImGui::DragFloat2("Offset", Offset.Data());
+		ImGui::DragFloat("Radius", &Radius);
+		ImGui::DragFloat("Density", &Density);
+		ImGui::DragFloat("Friction", &Friction);
+		ImGui::DragFloat("Restitution", &Restitution);
+		ImGui::DragFloat("RestitutionThreshhold", &RestitutionThreshhold);
+	}
+
+	void CCircleCollider2DComponent::Serialize(YAML::Emitter& pOut)
+	{
+		pOut
+			<< YAML::Key << "Offset" << YAML::Value << Offset
+			<< YAML::Key << "Radius" << YAML::Value << Radius
+			<< YAML::Key << "Density" << YAML::Value << Density
+			<< YAML::Key << "Friction" << YAML::Value << Friction
+			<< YAML::Key << "Restitution" << YAML::Value << Restitution
+			<< YAML::Key << "RestitutionThreshhold" << YAML::Value << RestitutionThreshhold;
+	}
+
+	void CCircleCollider2DComponent::Deserialize(YAML::Node& pData)
+	{
+		Offset = pData["Offset"].as<FVec2>();
+		Radius = pData["Radius"].as<float>();
 		Density = pData["Density"].as<float>();
 		Friction = pData["Friction"].as<float>();
 		Restitution = pData["Restitution"].as<float>();

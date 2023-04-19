@@ -189,4 +189,28 @@ namespace ARC {
 
 		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 	};
+
+	struct CCircleCollider2DComponent : public CComponentBase
+	{
+		FVec2 Offset = FVec2::ZeroVector();
+		float Radius = 0.5f;
+
+		float Density = 1.f;
+		float Friction = 0.5f;
+		float Restitution = 0.0f;
+		float RestitutionThreshhold = 0.5f;
+
+		void* RuntimeFixture = nullptr;
+
+		CCircleCollider2DComponent() = default;
+		CCircleCollider2DComponent(const CCircleCollider2DComponent&) = default;
+
+		virtual void DrawPropertiesUI(CEntity& pEntity) override;
+		virtual void Serialize(YAML::Emitter& pOut) override;
+		virtual void Deserialize(YAML::Node& pData) override;
+		virtual TUInt32 GetFlags() override { return Flags; };
+
+		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+	};
+
 }

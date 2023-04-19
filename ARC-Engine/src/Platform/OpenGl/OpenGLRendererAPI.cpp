@@ -14,7 +14,7 @@ namespace ARC {
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void COpenGLRendererAPI::SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions)
+	void COpenGLRendererAPI::SetViewport(const TVec2<TUInt32> _BottemLeftCoord, const TVec2<TUInt32> _Dimentions)
 	{
 		glViewport(_BottemLeftCoord.x, _BottemLeftCoord.y, _Dimentions.x, _Dimentions.y);
 	}
@@ -29,11 +29,23 @@ namespace ARC {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void COpenGLRendererAPI::DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count)
+	void COpenGLRendererAPI::DrawIndexed(const TRef<CVertexArray>& _VertexArray, TUInt32 _Count)
 	{
 		ARC_PROFILE_FUNCTION();
 		_VertexArray->Bind();
-		uint32_t count = _Count ? _Count : _VertexArray->GetIndexBuffer()->GetCount();
+		TUInt32 count = _Count ? _Count : _VertexArray->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+	}
+
+	void COpenGLRendererAPI::DrawLine(const TRef<CVertexArray>& _VertexArray, TUInt32 _Count)
+	{
+		ARC_PROFILE_FUNCTION();
+		_VertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, _Count);
+	}
+
+	void COpenGLRendererAPI::SetLineThickness(float pThickness)
+	{
+		glLineWidth(pThickness);
 	}
 }

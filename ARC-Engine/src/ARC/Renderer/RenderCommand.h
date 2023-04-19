@@ -8,24 +8,31 @@ namespace ARC {
 	{
 	public:
 		inline static void Init() {
-			s_RendererAPI->Init();
+			sRendererAPI->Init();
 		};
 
 		inline static void SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions) {
-			s_RendererAPI->SetViewport(_BottemLeftCoord, _Dimentions);
+			sRendererAPI->SetViewport(_BottemLeftCoord, _Dimentions);
 		}
 		inline static void SetClearColour(const FColor4 _Colour) {
-			s_RendererAPI->SetClearColour(_Colour);
+			sRendererAPI->SetClearColour(_Colour);
 		};
 		inline static void Clear() {
-			s_RendererAPI->Clear();
+			sRendererAPI->Clear();
 		};
 
 		// Draw All if _Count = 0
 		inline static void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count = 0) {
-			s_RendererAPI->DrawIndexed(_VertexArray, _Count);
+			sRendererAPI->DrawIndexed(_VertexArray, _Count);
 		}
+		inline static void DrawLine(const TRef<CVertexArray>& _VertexArray, uint32_t _Count = 0) {
+			sRendererAPI->DrawLine(_VertexArray, _Count);
+		}
+		inline static void SetLineThickness(float pThickness) {
+			sRendererAPI->SetLineThickness(pThickness);
+		}
+
 	private:
-		static CRendererAPI* s_RendererAPI;
+		static CRendererAPI* sRendererAPI;
 	};
 }

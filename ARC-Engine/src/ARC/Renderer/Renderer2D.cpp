@@ -37,7 +37,12 @@ namespace ARC {
 		float Sharpness;
 		int EntityId;
 	};
-
+	struct SLineVertex
+	{
+		FGLMVec3 Position;
+		FGLMVec4 Color;
+		int EntityId;
+	};
 	struct SRenderer2DData {
 		//@TODO : Load from ini file
 		static constexpr TUInt32 MaxQuads = 1000;
@@ -71,18 +76,30 @@ namespace ARC {
 
 			FGLMVec4 VertexPositions[4];
 		} Circle;
+		struct SLineData {
+			TRef<CVertexArray> VertexArray;
+			TRef<CVertexBuffer> VertexBuffer;
+			TRef<CShader> Shader;
+
+			float Thickness= 2;
+
+			TUInt32 IndexCount = 0;
+			SLineVertex* VertexBufferBase = nullptr;
+			SLineVertex* VertexBufferBasePtr = nullptr;
+		} Line;
+
 		TRef<CTexture2D> WhiteTexture;
 		std::array<TRef<CTexture2D>, MaxTextureSlots> TextureSlots;
 		TUInt32 TextureSlotIndex = 1;
 
 		FGLMMat4 CameraTransform;
 
-		CRenderer2D::SStatistics Statistics;
+		SRenderer2D::SStatistics Statistics;
 
 	};
 	static SRenderer2DData sData;
 
-	void CRenderer2D::Init()
+	void SRenderer2D::Init()
 	{
 		ARC_PROFILE_FUNCTION();
 
@@ -163,15 +180,29 @@ namespace ARC {
 		sData.Circle.VertexPositions[2] = { 0.5f,  0.5f,  0.0f,  1.0f };
 		sData.Circle.VertexPositions[3] = { -0.5f,  0.5f,  0.0f,  1.0f };
 		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-[Code for Circle]-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+		//--------------------------------+[Code for Line]+--------------------------------//
+		sData.Line.VertexArray = CVertexArray::Create();
+		sData.Line.VertexBuffer = CVertexBuffer::Create(sData.MaxVertices * sizeof(SLineVertex));
+		sData.Line.VertexBuffer->SetLayout({
+			{ EShaderDataType::Float3, "a_Position" },
+			{ EShaderDataType::Float4, "a_Color" },
+			{ EShaderDataType::Int, "a_EntityId" }
+			});
+		sData.Line.VertexArray->AddVertexBuffer(sData.Line.VertexBuffer);
+		sData.Line.VertexBufferBase = new SLineVertex[sData.MaxVertices];
+
+		sData.Line.Shader = CShader::Create("assets/shaders/R2D_Line.glsl");
+		sData.Line.Shader->Bind();
+		//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-[Code for Line]-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 
 	}
 
-	void CRenderer2D::Shutdown()
+	void SRenderer2D::Shutdown()
 	{
 	}
 
-	void CRenderer2D::BeginScene(const COrthographicCamera& pCamera)
+	void SRenderer2D::BeginScene(const COrthographicCamera& pCamera)
 	{
 		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
@@ -194,7 +225,7 @@ namespace ARC {
 		sData.CameraTransform = Trans;
 	}
 
-	void CRenderer2D::BeginScene(const CEditorCamera& pCamera)
+	void SRenderer2D::BeginScene(const CEditorCamera& pCamera)
 	{
 		FGLMMat4 Trans = pCamera.GetViewProjectionMatrix();
 
@@ -213,11 +244,17 @@ namespace ARC {
 		sData.Circle.TranslucentIndexCount = 0;
 		sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
 
+		sData.Line.Shader->Bind();
+		sData.Line.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
+		
+		sData.Line.IndexCount = 0;
+		sData.Line.VertexBufferBasePtr = sData.Line.VertexBufferBase;
+
 		sData.TextureSlotIndex = 1;
 		sData.CameraTransform = glm::translate(glm::mat4(1.0f), pCamera.GetPosition()) * glm::toMat4(pCamera.GetOrientation());
 	}
 
-	void CRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
+	void SRenderer2D::BeginScene(const CCamera& pCamera, const FTransform2D& pTransform)
 	{
 		FGLMMat4 Trans = pCamera.GetProjection() * glm::inverse(SHPR::Conv<FGLMMat4>(pTransform));
 
@@ -236,11 +273,17 @@ namespace ARC {
 		sData.Circle.TranslucentIndexCount = 0;
 		sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
 
+		sData.Line.Shader->Bind();
+		sData.Line.Shader->Set<FGLMMat4>("u_ViewProjection", Trans);
+
+		sData.Line.IndexCount = 0;
+		sData.Line.VertexBufferBasePtr = sData.Line.VertexBufferBase;
+
 		sData.TextureSlotIndex = 1;
 		sData.CameraTransform = SHPR::Conv<glm::mat4>(pTransform);
 	}
 
-	constexpr void CRenderer2D::EndScene(TGeometery pG, TTransparencyType pT)
+	constexpr void SRenderer2D::EndScene(TGeometery pG, TTransparencyType pT)
 	{
 		ARC_PROFILE_FUNCTION();
 		
@@ -249,8 +292,7 @@ namespace ARC {
 			if (pT & ETransparencyType::Opaque)
 			{
 				if (sData.Quad.OpaqueIndexCount) {
-					auto data_size = TUInt32((uint8_t*)sData.Quad.OpaqueVertexBufferBasePtr - (uint8_t*)sData.Quad.OpaqueVertexBufferBase);
-					if (data_size) {
+					if (auto data_size = TUInt32((TUInt8*)sData.Quad.OpaqueVertexBufferBasePtr - (TUInt8*)sData.Quad.OpaqueVertexBufferBase)) {
 						sData.Quad.VertexBuffer->SetData(sData.Quad.OpaqueVertexBufferBase, data_size);
 						Flush(EGeometery::Quad, ETransparencyType::Opaque);
 					}
@@ -260,10 +302,9 @@ namespace ARC {
 			{
 				if (sData.Quad.TranslucentIndexCount)
 				{
-					auto data_size = TUInt32((uint8_t*)sData.Quad.TranslucentVertexBufferBasePtr - (uint8_t*)sData.Quad.TranslucentVertexBufferBase);
-					if (data_size) {
+					if (auto data_size = TUInt32((TUInt8*)sData.Quad.TranslucentVertexBufferBasePtr - (TUInt8*)sData.Quad.TranslucentVertexBufferBase)) {
 						struct Block { SQuadVertex n_[4]; };
-
+						
 						std::sort((Block*)sData.Quad.TranslucentVertexBufferBase, (Block*)sData.Quad.TranslucentVertexBufferBasePtr,
 							[&](const Block& p1, const Block& p2) -> bool {
 								FGLMVec3 tmp = FGLMVec3(sData.CameraTransform[3]) - p1.n_[0].Position;
@@ -281,10 +322,11 @@ namespace ARC {
 		{
 			if (sData.Circle.TranslucentIndexCount)
 			{
-				auto data_size = TUInt32((uint8_t*)sData.Circle.TranslucentVertexBufferBasePtr - (uint8_t*)sData.Circle.TranslucentVertexBufferBase);
-				if (data_size)
+				if (auto data_size = TUInt32((TUInt8*)sData.Circle.TranslucentVertexBufferBasePtr - (TUInt8*)sData.Circle.TranslucentVertexBufferBase))
 				{
 					struct Block { SCircleVertex n_[4]; };
+
+					// @ BUG ZINDEXING NOT WORKING FOR QUAD VS CIRCLE if translucent
 
 					std::sort((Block*)sData.Circle.TranslucentVertexBufferBase, (Block*)sData.Circle.TranslucentVertexBufferBasePtr,
 						[&](const Block& p1, const Block& p2) -> bool {
@@ -298,9 +340,17 @@ namespace ARC {
 				}
 			}
 		}
+		if (pG & EGeometery::Line)
+		{
+			if (auto data_size = TUInt32((TUInt8*)sData.Line.VertexBufferBasePtr - (TUInt8*)sData.Line.VertexBufferBase))
+			{
+				sData.Line.VertexBuffer->SetData(sData.Line.VertexBufferBase, data_size);
+				Flush(EGeometery::Line, ETransparencyType::Translucent);
+			}
+		}
 	}
 
-	constexpr void CRenderer2D::Flush(TGeometery pG, TTransparencyType pT)
+	constexpr void SRenderer2D::Flush(TGeometery pG, TTransparencyType pT)
 	{
 		if (pG & EGeometery::Quad)
 		{
@@ -333,9 +383,18 @@ namespace ARC {
 				CRenderCommand::DrawIndexed(sData.Circle.VertexArray, sData.Circle.TranslucentIndexCount);
 			}
 		}
+		if (pG & EGeometery::Line)
+		{
+			if (sData.Line.IndexCount) {
+				++sData.Statistics.DrawCalls;
+				sData.Line.Shader->Bind();
+				CRenderCommand::SetLineThickness(sData.Line.Thickness);
+				CRenderCommand::DrawLine(sData.Line.VertexArray, sData.Line.IndexCount);
+			}
+		}
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
+	void SRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTextureScaling, const int& pId)
 
 	{
 		ARC_PROFILE_FUNCTION();
@@ -400,8 +459,7 @@ namespace ARC {
 		++sData.Statistics.QuadCount;
 	}
 
-	void CRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
-
+	void SRenderer2D::DrawQuad(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const TTransparencyType pTransparencyLevel, const FColor4& pColor, const TRef<CSubTexture2D>& pSubTex, const FVec2& pTextureScaling, const int& pId)
 	{
 		if (sData.Quad.OpaqueIndexCount >= SRenderer2DData::MaxIndices)
 			FlushAndReset(EGeometery::Quad, ETransparencyType::Opaque);
@@ -464,19 +522,21 @@ namespace ARC {
 	}
 
 
-	void CRenderer2D::DrawQuad(const CPrimitive2D& Quad, const int& pId)
+	void SRenderer2D::DrawQuad(const CPrimitive2D& Quad, const int& pId)
 	{
 		ARC_PROFILE_FUNCTION();
 
 		DrawQuad(Quad.GetLocation(), Quad.GetRotation(), Quad.GetScale(), Quad.TransparencyLevel, Quad.Color, Quad.Texture ? Quad.Texture : sData.WhiteTexture, Quad.TextureScaling, pId);
 	}
 
-	void CRenderer2D::DrawCircle(const FVec3& pPosition, const float pRotation /*= 0.f*/, const FVec2& pSize /*= FVec2::OneVector()*/, const FColor4& pColor /*= FColor4::White()*/, const float pThickness /*= 1.f*/, const float pSharpness /*= 0.995f*/, const int& pId /*= -1*/)
+	void SRenderer2D::DrawCircle(const FVec3& pPosition, const float pRotation /*= 0.f*/, const FVec2& pSize /*= FVec2::OneVector()*/, const FColor4& pColor /*= FColor4::White()*/, const float pThickness /*= 1.f*/, const float pSharpness /*= 0.995f*/, const int& pId /*= -1*/)
 	{
 		ARC_PROFILE_FUNCTION();
 		
 		if (sData.Circle.TranslucentIndexCount >= SRenderer2DData::MaxIndices){}
 			FlushAndReset(EGeometery::Circle, ETransparencyType::Translucent);
+
+		// multi batch z sorting bug
 
 		FGLMMat4 transform =
 			glm::translate(FGLMMat4(1.0f), FGLMVec3(pPosition.x, pPosition.y, pPosition.z)) *
@@ -498,18 +558,50 @@ namespace ARC {
 		++sData.Statistics.QuadCount;
 	}
 
-	CRenderer2D::SStatistics CRenderer2D::GetStats()
+	void SRenderer2D::DrawLine(const FVec3& pPositionStart, const FVec3& pPositionEnd, const FColor4& pColor /*= FColor4::White()*/, const int& pId /*= -1*/)
+	{
+		sData.Line.VertexBufferBasePtr->Position = FGLMVec3(pPositionStart.x, pPositionStart.y, pPositionStart.z);
+		sData.Line.VertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+		sData.Line.VertexBufferBasePtr->EntityId = pId;
+
+		sData.Line.VertexBufferBasePtr++;
+
+		sData.Line.VertexBufferBasePtr->Position = FGLMVec3(pPositionEnd.x, pPositionEnd.y, pPositionEnd.z);
+		sData.Line.VertexBufferBasePtr->Color = FGLMVec4(pColor.r, pColor.g, pColor.b, pColor.a);
+		sData.Line.VertexBufferBasePtr->EntityId = pId;
+
+		sData.Line.VertexBufferBasePtr++;
+
+		sData.Line.IndexCount+=2;
+	}
+
+	void SRenderer2D::DrawRect(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const FColor4& pColor, const int& pId /*= -1*/)
+	{
+		FGLMMat4 transform =
+			glm::translate(FGLMMat4(1.0f), FGLMVec3(pPosition.x, pPosition.y, pPosition.z)) *
+			glm::rotate(FGLMMat4(1.0f), pRotation, FGLMVec3(0, 0, 1)) *
+			glm::scale(FGLMMat4(1.0f), FGLMVec3(pSize.x, pSize.y, 1.0f));
+		
+		FGLMVec3 verts[4];
+
+		for (size_t i = 0; i < 4; i++)
+			verts[i] = transform * sData.Quad.VertexPositions[i];
+		for (size_t i = 0; i < 4; i++)
+			DrawLine(reinterpret_cast<FVec3&>(verts[i]), reinterpret_cast<FVec3&>(verts[(i+1)%4]), pColor, pId);
+
+	}
+
+	SRenderer2D::SStatistics SRenderer2D::GetStats()
 	{
 		return sData.Statistics;
 	}
 
-	void CRenderer2D::ResetStats()
+	void SRenderer2D::ResetStats()
 	{
 		memset(&sData.Statistics, 0, sizeof(SStatistics));
 	}
-
 	
-	constexpr void CRenderer2D::FlushAndReset(TGeometery pG, TTransparencyType pT) {
+	constexpr void SRenderer2D::FlushAndReset(TGeometery pG, TTransparencyType pT) {
 		
 		EndScene(pG, pT);
 
@@ -533,5 +625,21 @@ namespace ARC {
 				sData.Circle.TranslucentVertexBufferBasePtr = sData.Circle.TranslucentVertexBufferBase;
 			}
 		}
+		if (pG & EGeometery::Line)
+		{
+			sData.Line.IndexCount = 0;
+			sData.Line.VertexBufferBasePtr = sData.Line.VertexBufferBase;
+		}
 	}
+
+	void SRenderer2D::SetLineThickness(float pThickness)
+	{
+		sData.Line.Thickness = pThickness;
+	}
+
+	float SRenderer2D::GetLineThickness()
+	{
+		return sData.Line.Thickness;
+	}
+
 }

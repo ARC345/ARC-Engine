@@ -42,22 +42,19 @@ namespace ARC {
 
 		{
 			auto electron = m_ActiveScene->CreateEntity("Atom1");
-			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(-10, 0, 0);
-			
+			electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(0, 0, 0);
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Yellow(), tex0, FVec2::OneVector());
 			electron.AddComponent<CMassComponent>();
 		}
 		{
 			auto electron = m_ActiveScene->CreateEntity("Atom2");
-			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(10, 0, 0);
-
+			electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(10, 0, 0);
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Blue(), tex0, FVec2::OneVector());
 			electron.AddComponent<CMassComponent>();
 		}
 		{
 			auto electron = m_ActiveScene->CreateEntity("Atom3");
-			auto& _ = electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(0, -10, 0);
-
+			electron.AddComponent<CTransform2DComponent>().Transform.Location = FVec3(0, -10, 0);
 			electron.AddComponent<CSpriteRendererComponent>(FColor4::Green(), tex1, FVec2::OneVector());
 			electron.AddComponent<CMassComponent>();
 		}
@@ -78,7 +75,7 @@ namespace ARC {
 
 	void CLifeSim2D::OnGuiRender()
 	{
-		ImGui::Begin("Atomic");
+		ImGui::Begin("Null");
 		ImGui::DragFloat("Speed", &Time_Multiplier);
 		ImGui::DragFloat("Time Elapsed(World)", &TimeElapsed_World);
 		ImGui::Checkbox("Pause", &bPause);

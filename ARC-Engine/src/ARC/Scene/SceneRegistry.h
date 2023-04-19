@@ -66,41 +66,40 @@ namespace ARC {
 			mRegisteredComponentNameIDMap[compName] = compID;
 			
 			auto& mc = mMetaComponents.emplace(compID, SMetaComponent()).first->second;
-			mc.GetComponent.Bind([](CEntity pEntity) -> CComponentBase* {
+			mc.GetComponent = [](CEntity pEntity) -> CComponentBase* {
 				static_assert(SComponentTraits::IsComponent<T>());
 				if (pEntity && pEntity.HasComponent<T>())
 					return &pEntity.GetComponent<T>();
 				return nullptr;
-					});
-			mc.AddComponent.Bind([](CEntity pEntity) -> CComponentBase* {
+					};
+			mc.AddComponent = [](CEntity pEntity) -> CComponentBase* {
 				static_assert(SComponentTraits::IsComponent<T>());
 				if (pEntity && !pEntity.HasComponent<T>())
 					return &pEntity.AddComponent<T>();
 				return nullptr;
-				});
-			mc.RemoveComponent.Bind([](CEntity pEntity) {
+				};
+			mc.RemoveComponent = [](CEntity pEntity) {
 				static_assert(SComponentTraits::IsComponent<T>());
 				if (pEntity && pEntity.HasComponent<T>())
 					pEntity.RemoveComponent<T>();
-				});
-			mc.CopyComponent.Bind([](CEntity pDstEntity, const CEntity pSrcEntity) -> CComponentBase* {
+				};
+			mc.CopyComponent = [](CEntity pDstEntity, const CEntity pSrcEntity) -> CComponentBase* {
 				static_assert(SComponentTraits::IsComponent<T>());
 				if (pDstEntity && pSrcEntity && pSrcEntity.HasComponent<T>())
 					return &pDstEntity.AddComponent<T>(pSrcEntity.GetComponent<T>());
 				return nullptr;
-				});
-			mc.GetFlags.Bind([]() -> TUInt32& {
+				};
+			mc.GetFlags = []() -> TUInt32& {
 				static_assert(SComponentTraits::IsComponent<T>());
 				return SComponentTraits::GetFlags<T>();
-				});
-			mc.GetName.Bind([]() {
+				};
+			mc.GetName = []() {
 				static_assert(SComponentTraits::IsComponent<T>());
 				return SComponentTraits::GetName<T>();
-				});
+				};
 		};
 
 		static auto& GetRegisteredComponentsNames() { return mRegisteredComponentNames; }
-		static auto& GetRegisteredComponentsIDFlagMap() { return mRegisteredComponentNames; }
 		static auto& GetRegisteredComponentNameIDMap() { return mRegisteredComponentNameIDMap; }
 		static auto& GetMetaComponents() { return mMetaComponents; }
 

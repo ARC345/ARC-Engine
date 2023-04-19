@@ -4,5 +4,5 @@
 #include "Platform/OpenGl/OpenGLRendererAPI.h"
 
 namespace ARC {
-	CRendererAPI* CRenderCommand::s_RendererAPI = new COpenGLRendererAPI; 
+	CRendererAPI* CRenderCommand::sRendererAPI = new COpenGLRendererAPI; 
 }

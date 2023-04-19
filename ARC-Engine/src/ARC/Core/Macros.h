@@ -4,6 +4,7 @@
 
 #ifdef ARC_DEBUG
 #define ARC_ENABLE_ASSERTS
+#define ARC_DRAW_DEBUG_SHAPES
 #endif
 
 #ifdef ARC_ENABLE_ASSERTS

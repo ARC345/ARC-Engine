@@ -20,10 +20,10 @@ namespace ARC { class CShader; }
 namespace ARC {
 	
 	namespace EGeometery {
-		enum Geo { Quad = 1, Circle= 2, Line=3};
+		enum EGeometery { Quad = 1, Circle= 2, Line=3};
 	};
 	using TGeometery = TUInt8;
-	class CRenderer2D
+	class SRenderer2D
 	{
 		public:
 			static void Init();
@@ -56,6 +56,11 @@ namespace ARC {
 			static void DrawQuad(const CPrimitive2D& Quad, const int& pId = -1);
 
 			static void DrawCircle(const FVec3& pPosition, const float pRotation = 0.f, const FVec2& pSize = FVec2::OneVector(), const FColor4& pColor = FColor4::White(), const float pThickness = 1.f, const float pSharpness = 0.995f, const int& pId = -1);
+			static void DrawLine(const FVec3& pPositionStart, const FVec3& pPositionEnd, const FColor4& pColor = FColor4::White(), const int& pId = -1);
+			static void DrawRect(const FVec3& pPosition, const float pRotation, const FVec2& pSize, const FColor4& pColor, const int& pId = -1);
+			
+			static void SetLineThickness(float pThickness);
+			static float GetLineThickness();
 
 			struct SStatistics
 			{
