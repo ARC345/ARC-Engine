@@ -1,4 +1,4 @@
-include "./_vendor/premake/premake_customization/solution_items.lua"
+include "./Vendor/premake/premake_customization/solution_items.lua"
 
 workspace "ARC-Engine"
 	architecture "x86_64"
