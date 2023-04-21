@@ -1,0 +1,12 @@
+[module "44b85ab3-a9db-33a1-b93a-6b1c46e411fd"]
+	conflict = request-pull
+	path = ARC-Engine/out/imgui
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/docking
+	url = agnostic://gh/630185876
+[map "630d65b0-e96b-357f-a18f-ef83743ca040"]
+	object = dd4c395c194a79c14ee0988707f8741a07559689
+	path = ARC-Engine/out/imgui
+	stage = sync
+	type = extract module
