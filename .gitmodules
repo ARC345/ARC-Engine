@@ -3,11 +3,11 @@
 	url = https://github.com/gabime/spdlog
 [submodule "ARC-Engine/out/imgui"]
 	path = ARC-Engine/out/imgui
-	url = https://github.com/Hellboy434/imgui
+	url = https://github.com/ARC345/imgui
 	branch = docking
 [submodule "ARC-Engine/out/inifile_cpp"]
 	path = ARC-Engine/out/inifile_cpp
-	url = https://github.com/Hellboy434/inifile-cpp
+	url = https://github.com/ARC345/inifile-cpp
 [submodule "ARC-Engine/out/glm"]
 	path = ARC-Engine/out/glm
 	url = https://github.com/g-truc/glm.git
@@ -22,10 +22,10 @@
 	url = https://github.com/Tessil/ordered-map.git
 [submodule "ARC-Engine/out/yaml-cpp"]
 	path = ARC-Engine/out/yaml-cpp
-	url = https://github.com/Hellboy434/yaml-cpp
+	url = https://github.com/ARC345/yaml-cpp
 [submodule "ARC-Engine/out/ImGuizmo"]
 	path = ARC-Engine/out/ImGuizmo
-	url = https://github.com/Hellboy434/ImGuizmo
+	url = https://github.com/ARC345/ImGuizmo
 [submodule "ARC-Engine/out/box2d"]
 	path = ARC-Engine/out/box2d
 	url = https://github.com/ARC345/box2d.git
