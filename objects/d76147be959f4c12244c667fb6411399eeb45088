@@ -1,0 +1,84 @@
+[map "ae5b4958-a491-3b57-bc85-3e7a49f617e9"]
+	object = e852c021dbbe09476e814610c802a638f95c6d27
+	path = ARC-Engine/out/box2d
+	stage = sync
+	type = extract module
+[map "bde646ab-9ef8-33bc-9cc9-0b48a72c87f1"]
+	object = e5172a9240728cc271af7599c6f13580329f3618
+	path = ARC-Engine/out/entt
+	stage = sync
+	type = extract module
+[map "630d65b0-e96b-357f-a18f-ef83743ca040"]
+	object = dd4c395c194a79c14ee0988707f8741a07559689
+	path = ARC-Engine/out/imgui
+	stage = sync
+	type = extract module
+[map "31f24175-60ac-3919-995e-2812250b183d"]
+	object = e2ce9e2419b75f393c3e9c0739ad0b8e8582cc96
+	path = ARC-Engine/out/glfw
+	stage = sync
+	type = extract module
+[module "99bd23a3-45a8-37fa-9734-17d026100fc1"]
+	conflict = request-pull
+	path = ARC-Engine/out/box2d
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/619530796
+[module "e5b45680-8928-3925-87d0-3738ef4fd152"]
+	conflict = request-pull
+	path = ARC-Engine/out/entt
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/485490863
+[module "69357f7b-820a-3923-8573-8b797d51fa35"]
+	conflict = request-pull
+	path = ARC-Engine/out/glfw
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/630156332
+[module "44b85ab3-a9db-33a1-b93a-6b1c46e411fd"]
+	conflict = request-pull
+	path = ARC-Engine/out/imgui
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/docking
+	url = agnostic://gh/630185876
+[module "6c425ea1-6278-3ee6-8882-306b7693f588"]
+	conflict = request-pull
+	path = ARC-Engine/out/ImGuizmo
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/499967267
+[module "71f383c3-cebd-3547-9c69-4bacb54e98d0"]
+	conflict = request-pull
+	path = ARC-Engine/out/inifile_cpp
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/460585898
+[module "ff3bf2ce-d1ed-37a3-b5c8-329f9c8bf6e4"]
+	conflict = request-pull
+	path = ARC-Engine/out/yaml-cpp
+	pull = merge subtree
+	pull = squash never
+	ref = if refs/heads/main sync refs/heads/master
+	url = agnostic://gh/492195356
+[map "fc8eba70-61d5-3ad4-ae97-50034a9ee121"]
+	object = 551bf0e7d36323d3df1e6c089dd08d3b2715d01a
+	path = ARC-Engine/out/ImGuizmo
+	stage = sync
+	type = extract module
+[map "83ab2bb4-35c9-3401-a6a8-b3f40ef8a516"]
+	object = 47734f1ab4ed1964842e552dace0a3d970a83b4f
+	path = ARC-Engine/out/inifile_cpp
+	stage = sync
+	type = extract module
+[map "0f9dc652-8e43-31cd-bfaa-15d9a509624d"]
+	object = ddfb558c8eb6ad3f3a55f6f5b0db8595d2b98cc6
+	path = ARC-Engine/out/yaml-cpp
+	stage = sync
+	type = extract module

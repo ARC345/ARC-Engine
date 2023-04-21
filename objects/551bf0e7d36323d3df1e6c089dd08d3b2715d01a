@@ -1,0 +1,4 @@
+[map "340a2c2e-2b88-39cd-b5e2-bcaccf1de8d9"]
+	object = d76147be959f4c12244c667fb6411399eeb45088
+	path = ARC-Engine/out/ImGuizmo
+	type = expand module
