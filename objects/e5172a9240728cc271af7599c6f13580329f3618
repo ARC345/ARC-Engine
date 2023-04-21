@@ -1,0 +1,4 @@
+[map "bdae3e92-542f-3b69-9be3-7cbcac072cb8"]
+	object = 3caa4794dcf5a4298dc5b8ccf57fbacf44af541f
+	path = ARC-Engine/out/entt
+	type = expand module

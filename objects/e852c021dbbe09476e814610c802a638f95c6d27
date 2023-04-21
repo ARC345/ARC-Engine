@@ -1,0 +1,4 @@
+[map "69ff0599-3c46-3e64-89bf-f24b7f0cd71b"]
+	object = 3caa4794dcf5a4298dc5b8ccf57fbacf44af541f
+	path = ARC-Engine/out/box2d
+	type = expand module
