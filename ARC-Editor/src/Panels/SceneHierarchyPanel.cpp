@@ -4,7 +4,6 @@
 #include "imgui\imgui.h"
 #include "ARC\Scene\Scene.h"
 #include "ARC\Scene\SceneCamera.h"
-#include "Utils\MPL\Interface.hpp"
 #include "ARC\Scene\Component.h"
 #include "ARC\Scene\Entity.h"
 #include "ARC\Scene\BasicComponents.h"
@@ -37,7 +36,7 @@ namespace ARC {
 			mSelectedEntity = {};
 
 		// right click on a blank space
-		if (ImGui::BeginPopupContextWindow(nullptr, 1, false))
+		if (ImGui::BeginPopupContextWindow(nullptr))
 		{
 			if (ImGui::MenuItem("Create Empty Entity"))
 				mContext->CreateEntity("Empty Entity");
