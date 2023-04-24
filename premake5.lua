@@ -36,7 +36,7 @@ IncludeDir["ImGuizmo"] = "%{wks.location}/ARC-Engine/out/ImGuizmo"
 IncludeDir["Box2D"] = "%{wks.location}/ARC-Engine/out/Box2D/include"
 
 group "Dependencies"
-	include "_vendor/premake"
+	include "Vendor/premake"
 	include "ARC-Engine/out/GLFW"
 	include "ARC-Engine/out/GLAD"
 	include "ARC-Engine/out/imgui"
