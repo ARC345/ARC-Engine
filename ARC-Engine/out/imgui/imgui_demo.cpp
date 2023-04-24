@@ -3413,62 +3413,62 @@ static void ShowDemoWindowLayout()
         {
             static void VisibleSpring(float spring_weight)
             {
-                ImVec2 start_cursor_pos = ImGui::GetCursorScreenPos();
-                ImGui::Spring(spring_weight);
-                ImVec2 end_cursor_pos = ImGui::GetCursorScreenPos();
-
-                if (!draw_springs)
-                    return;
-
-                if (spring_weight <= 0.0f)
-                    return;
-
-                if (fabsf(start_cursor_pos.x - end_cursor_pos.x) < 1.0f && fabsf(start_cursor_pos.y - end_cursor_pos.y) < 1.0f)
-                    return;
-
-                // Draw zig-zag
-                ImDrawList* draw_list = ImGui::GetWindowDrawList();
-                ImVec2 rect_min = ImGui::GetItemRectMin();
-                ImVec2 rect_max = ImGui::GetItemRectMax();
-
-                draw_list->PushClipRect(rect_min, rect_max, true);
-
-                float width = 0.0f;
-                ImVec2 direction, origin;
-
-                if (horizontal)
-                {
-                    width     = rect_max.x - rect_min.x;
-                    origin    = ImVec2(floorf(rect_min.x), floorf(rect_min.y + (rect_max.y - rect_min.y) / 2));
-                    direction = ImVec2(1.0f, 0.0f);
-                }
-                else
-                {
-                    width     = rect_max.y - rect_min.y;
-                    origin    = ImVec2(floorf(rect_min.x + (rect_max.x - rect_min.x) / 2), floorf(rect_min.y));
-                    direction = ImVec2(0.0f, 1.0f);
-                }
-
-                draw_list->AddRectFilled(rect_min, rect_max, ImColor(255, 128, 255, 40));
-
-                const float zig_zag_size = 3;
-                ImVec2 normal = ImVec2(-direction.y, direction.x);
-
-                draw_list->PathClear();
-                origin.x += 0.5f;
-                origin.y += 0.5f;
-                draw_list->PathLineTo(origin);
-                for (float x = zig_zag_size * 0.5f; x <= width; x += zig_zag_size)
-                {
-                    ImVec2 p;
-                    p.x = origin.x + direction.x * x + normal.x * zig_zag_size;
-                    p.y = origin.y + direction.y * x + normal.y * zig_zag_size;
-                    draw_list->PathLineTo(p);
-                    normal = ImVec2(-normal.x, -normal.y);
-                }
-                draw_list->PathStroke(ImColor(255, 255, 255, 190), false, 1.0f);
-
-                draw_list->PopClipRect();
+                //ImVec2 start_cursor_pos = ImGui::GetCursorScreenPos();
+                //ImGui::Spring(spring_weight);
+                //ImVec2 end_cursor_pos = ImGui::GetCursorScreenPos();
+                //
+                //if (!draw_springs)
+                //    return;
+                //
+                //if (spring_weight <= 0.0f)
+                //    return;
+                //
+                //if (fabsf(start_cursor_pos.x - end_cursor_pos.x) < 1.0f && fabsf(start_cursor_pos.y - end_cursor_pos.y) < 1.0f)
+                //    return;
+                //
+                //// Draw zig-zag
+                //ImDrawList* draw_list = ImGui::GetWindowDrawList();
+                //ImVec2 rect_min = ImGui::GetItemRectMin();
+                //ImVec2 rect_max = ImGui::GetItemRectMax();
+                //
+                //draw_list->PushClipRect(rect_min, rect_max, true);
+                //
+                //float width = 0.0f;
+                //ImVec2 direction, origin;
+                //
+                //if (horizontal)
+                //{
+                //    width     = rect_max.x - rect_min.x;
+                //    origin    = ImVec2(floorf(rect_min.x), floorf(rect_min.y + (rect_max.y - rect_min.y) / 2));
+                //    direction = ImVec2(1.0f, 0.0f);
+                //}
+                //else
+                //{
+                //    width     = rect_max.y - rect_min.y;
+                //    origin    = ImVec2(floorf(rect_min.x + (rect_max.x - rect_min.x) / 2), floorf(rect_min.y));
+                //    direction = ImVec2(0.0f, 1.0f);
+                //}
+                //
+                //draw_list->AddRectFilled(rect_min, rect_max, ImColor(255, 128, 255, 40));
+                //
+                //const float zig_zag_size = 3;
+                //ImVec2 normal = ImVec2(-direction.y, direction.x);
+                //
+                //draw_list->PathClear();
+                //origin.x += 0.5f;
+                //origin.y += 0.5f;
+                //draw_list->PathLineTo(origin);
+                //for (float x = zig_zag_size * 0.5f; x <= width; x += zig_zag_size)
+                //{
+                //    ImVec2 p;
+                //    p.x = origin.x + direction.x * x + normal.x * zig_zag_size;
+                //    p.y = origin.y + direction.y * x + normal.y * zig_zag_size;
+                //    draw_list->PathLineTo(p);
+                //    normal = ImVec2(-normal.x, -normal.y);
+                //}
+                //draw_list->PathStroke(ImColor(255, 255, 255, 190), false, 1.0f);
+                //
+                //draw_list->PopClipRect();
             }
         };
 
@@ -3513,15 +3513,15 @@ static void ShowDemoWindowLayout()
 
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, item_spacing);
 
-        if (horizontal) { ImGui::BeginHorizontal("h1", layout_size, alignment); } else { ImGui::BeginVertical("v1", layout_size, alignment); }
-        if (spring_a)   { funcs::VisibleSpring(a_c_spring_weight); }
-        if (widget_a)   { ImGui::Button("Widget A", widget_size); }
-        if (spring_ab)  { funcs::VisibleSpring(ab_spring_weight); }
-        if (widget_b)   { ImGui::Button("Widget B", small_widget_size); }
-        if (spring_bc)  { funcs::VisibleSpring(1.0f - ab_spring_weight); }
-        if (widget_c)   { ImGui::Button("Widget C", widget_size); }
-        if (spring_c)   { funcs::VisibleSpring(a_c_spring_weight); }
-        if (horizontal) { ImGui::EndHorizontal(); } else { ImGui::EndVertical(); }
+        //if (horizontal) { ImGui::BeginHorizontal("h1", layout_size, alignment); } else { ImGui::BeginVertical("v1", layout_size, alignment); }
+        //if (spring_a)   { funcs::VisibleSpring(a_c_spring_weight); }
+        //if (widget_a)   { ImGui::Button("Widget A", widget_size); }
+        //if (spring_ab)  { funcs::VisibleSpring(ab_spring_weight); }
+        //if (widget_b)   { ImGui::Button("Widget B", small_widget_size); }
+        //if (spring_bc)  { funcs::VisibleSpring(1.0f - ab_spring_weight); }
+        //if (widget_c)   { ImGui::Button("Widget C", widget_size); }
+        //if (spring_c)   { funcs::VisibleSpring(a_c_spring_weight); }
+        //if (horizontal) { ImGui::EndHoizontal(); } else { ImGui::EndVertical(); }
 
         ImGui::PopStyleVar();
 
