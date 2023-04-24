@@ -9,6 +9,7 @@
 #include "ARC/Events/ApplicationEvent.h"
 #include "glad/glad.h"
 #define IMGUI_IMPL_API
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"

@@ -19,12 +19,7 @@ project "ARC-Engine"
 		"out/glm/glm/**.inl",
 		"out/ImGuizmo/ImGuizmo.h",
 		"out/ImGuizmo/ImGuizmo.cpp",
-		"out/sparse-map/include/tsl/**.h",
-		"out/sparse-map/include/tsl/**.h",
-		"out/ordered-map/include/tsl/**.h",
-		"out/ordered-map/include/tsl/**.h",
-		"out/entt/include/**.hpp",
-		"out/meta/**.hpp",
+		"out/entt/src/entt/**.hpp",
 	}
 
 	links
