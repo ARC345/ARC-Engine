@@ -2,3 +2,7 @@
 	object = ff39deb95680d5ea7ea6e9c13c8dbc7c42f89f1a
 	path = ARC345/out/Neat
 	type = expand module
+[map "0d249bfe-09bb-3948-9c3d-a5e44809cf68"]
+	object = 0367b7eb1c0be70bce4980571228aa59a9fce221
+	path = ARC-Engine/out/Neat
+	type = expand module
