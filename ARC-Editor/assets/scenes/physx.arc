@@ -10,9 +10,6 @@ Entities:
           Location: [1.39999998, 3.0999999, 0]
           Rotation: 0
           Scale: [1, 1]
-      - Name: CMassComponent
-        Data:
-          Mass: 1
       - Name: CRigidBody2DComponent
         Data:
           Type: 2
@@ -45,9 +42,6 @@ Entities:
           Color: [0, 0, 1, 1]
           TexturePath: C:\Users\Arnav\Documents\[ARC]\CPP\ARC-Engine\ARC-Editor\assets\textures\Checkerboard.png
           TextureScaling: [1, 1]
-      - Name: CMassComponent
-        Data:
-          Mass: 1
       - Name: CRigidBody2DComponent
         Data:
           Type: 0
@@ -73,9 +67,6 @@ Entities:
       - Name: CSpriteRendererComponent
         Data:
           Color: [1, 1, 1, 1]
-      - Name: CMassComponent
-        Data:
-          Mass: 1
       - Name: CRigidBody2DComponent
         Data:
           Type: 0

@@ -9,6 +9,7 @@
 #include <cmath>
 #include <ranges>
 #include <limits>
+#include <execution>
 
 #include <sstream>
 #include <array>

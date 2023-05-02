@@ -17,7 +17,7 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
-#include "../Scene/Entity.h"
+#include "ARC/Scene/Entity.h"
 namespace ARC {
 	struct SQuadVertex
 	{

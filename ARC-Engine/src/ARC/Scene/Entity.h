@@ -57,12 +57,18 @@ namespace ARC {
 			return comp;
 		}
 		
+		void Kill()
+		{
+			mScene->GetManager().destroy(mEntity);
+			OnKill();
+		}
+
 		CEntity Duplicate()
 		{
 			return mScene->DuplicateEntity(*this);
 		}
 
-		operator bool() const { return mEntity != entt::null; }
+		operator bool() const { return mEntity != entt::null && mScene->GetManager().valid(mEntity); }
 		bool operator == (const CEntity _) const { return mEntity == _.mEntity && mScene == _.mScene; }
 		bool operator != (const CEntity _) const { return !(*this == _); }
 	protected:

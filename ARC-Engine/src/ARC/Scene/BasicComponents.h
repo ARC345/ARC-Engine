@@ -99,8 +99,8 @@ namespace ARC {
 		CSceneCamera Camera;
 		virtual ~CCameraComponent() = default;
 
-		uint8_t bPrimary : 1;
-		uint8_t bFixedAspectRatio : 1;
+		uint8_t Primary : 1;
+		uint8_t FixedAspectRatio : 1;
 
 		CCameraComponent() = default;
 		CCameraComponent(const CCameraComponent&) = default;
@@ -135,17 +135,6 @@ namespace ARC {
 			InstantiateDelegate.Bind([]() { return new T(); });
 			DestroyInstancesDelegate.Bind([](CEntityController*& pInst) { delete pInst; pInst = nullptr; });
 		}
-	};
-	struct CMassComponent : public CComponentBase
-	{
-		float Mass = 1;
-
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
-
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
 	};
 
 	struct CRigidBody2DComponent : public CComponentBase

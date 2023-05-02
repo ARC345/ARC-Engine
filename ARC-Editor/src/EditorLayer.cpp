@@ -85,9 +85,11 @@ namespace ARC {
 		switch (mSceneState) {
 		case ESceneState::Edit:
 			mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
+			mLifeSim2D->OnUpdateEditor(_DeltaTime);
 			break;
 		case ESceneState::Play:
 			mActiveScene->OnUpdateRuntime(_DeltaTime);
+			mLifeSim2D->OnUpdateRuntime(_DeltaTime);
 			break;
 		case ESceneState::Simulate:
 			mActiveScene->OnUpdateSimulation(_DeltaTime, mEditorCamera);
@@ -102,13 +104,10 @@ namespace ARC {
 			auto readPixel = mFrameBuffer->ReadPixel(1, MousePos.x, MousePos.y);
 			mHoveredEntity =  readPixel == -1 ? CEntity{} : CEntity{ TEntityID(readPixel), mActiveScene.get() };
 		}
-		mLifeSim2D->OnUpdate(_DeltaTime);
 		OnOverlayRender();
 		mFrameBuffer->UnBind();
 
 		mEditorCamera.OnUpdate(_DeltaTime);
-
-
 	}
 
 	void CEditorLayer::OnEvent(CEvent& _Event)
@@ -473,7 +472,9 @@ namespace ARC {
 			mActiveScene->OnSetSceneState((TUInt8)mSceneState, 0);
 		}
 
-		mActiveScene = CScene::Copy(mEditorScene);
+		mActiveScene = pNewState == ESceneState::Edit ? mEditorScene : CScene::Copy(mEditorScene); 
+		
+		mLifeSim2D->SetScene(mActiveScene);
 		mActiveScene->OnSetSceneState(0, (TUInt8)pNewState);
 		mSceneState = pNewState;
 

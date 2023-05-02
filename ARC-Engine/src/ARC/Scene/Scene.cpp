@@ -22,7 +22,6 @@ namespace ARC {
 		SSceneRegistry::SetupComponent<CSpriteRendererComponent>();
 		SSceneRegistry::SetupComponent<CCameraComponent>();
 		SSceneRegistry::SetupComponent<CNativeScriptComponent>();
-		SSceneRegistry::SetupComponent<CMassComponent>();
 		SSceneRegistry::SetupComponent<CRigidBody2DComponent>();
 		SSceneRegistry::SetupComponent<CBoxCollider2DComponent>();
 		SSceneRegistry::SetupComponent<CCircleCollider2DComponent>();
@@ -325,6 +324,8 @@ namespace ARC {
 					continue;
 				}
 				
+				auto compName = compData["Name"].as<TString>();
+
 				SSceneRegistry::GetMetaComponents()[SSceneRegistry::GetRegisteredComponentNameIDMap()[compData["Name"].as<TString>()]].AddComponent(deserializedEntity)->Deserialize(Node);
 			}
 		}
@@ -341,7 +342,7 @@ namespace ARC {
 		CEntity rval;
 		mManager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
 			{
-				if (cameraComp.bPrimary)
+				if (cameraComp.Primary)
 				{
 					rval = { entity, this };
 					return;

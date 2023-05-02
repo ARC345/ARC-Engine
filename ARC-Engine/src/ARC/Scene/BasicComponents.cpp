@@ -40,9 +40,9 @@ namespace ARC
 
 	void CCameraComponent::DrawPropertiesUI(CEntity& pEntity)
 	{
-		bool bprimary = bPrimary;
+		bool bprimary = Primary;
 		ImGui::Checkbox("PrimaryCamera", &bprimary);
-		bPrimary = bprimary;  
+		Primary = bprimary;  
 		static const char* projectionTypeStrings[] = { "Perspective", "Orthographic" };
 		const char* currentProjectionTypeString = projectionTypeStrings[(int)Camera.GetProjectionType()];
 
@@ -95,8 +95,8 @@ namespace ARC
 
 	void CCameraComponent::Serialize(YAML::Emitter& pOut)
 	{
-		pOut << YAML::Key << "Primary" << YAML::Value << bool(bPrimary) <<
-		YAML::Key << "FixedAspectRatio" << YAML::Value << bool(bFixedAspectRatio) <<
+		pOut << YAML::Key << "Primary" << YAML::Value << bool(Primary) <<
+		YAML::Key << "FixedAspectRatio" << YAML::Value << bool(FixedAspectRatio) <<
 		YAML::Key << "ProjectionType" << YAML::Value << (int)Camera.GetProjectionType() <<
 			YAML::Key << "Perspective" << YAML::Value << YAML::BeginMap <<
 				YAML::Key << "FOV" << YAML::Value  << Camera.GetPerspectiveFOV() <<
@@ -112,8 +112,8 @@ namespace ARC
 
 	void CCameraComponent::Deserialize(YAML::Node& pData)
 	{
-		bPrimary = pData["Primary"].as<bool>();
-		bFixedAspectRatio = pData["FixedAspectRatio"].as<bool>();
+		Primary = pData["Primary"].as<bool>();
+		FixedAspectRatio = pData["FixedAspectRatio"].as<bool>();
 
 		Camera.SetProjectionType(CSceneCamera::EProjectionType(pData["ProjectionType"].as<int>()));
 		
@@ -198,21 +198,6 @@ namespace ARC
 			Texture = CTexture2D::Create(texturePath);
 			TextureScaling = pData["TextureScaling"].as<FVec2>();
 		}
-	}
-
-	void CMassComponent::DrawPropertiesUI(CEntity& pEntity)
-	{
-		ImGui::DragFloat("Mass", &Mass);
-	}
-
-	void CMassComponent::Serialize(YAML::Emitter & pOut)
-	{
-		pOut << YAML::Key << "Mass" << YAML::Value << Mass;
-	}
-
-	void CMassComponent::Deserialize(YAML::Node & pData)
-	{
-		Mass = pData["Mass"].as<float>();
 	}
 
 	void CBoxCollider2DComponent::DrawPropertiesUI(CEntity& pEntity)
