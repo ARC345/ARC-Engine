@@ -16,18 +16,18 @@
 #include "ImGuizmo.h"
 
 
-namespace ARC {
-	CImGuiLayer::CImGuiLayer() : CLayer("ImGuiLayer"), mbBlockEvents(1u) {}
-	CImGuiLayer::~CImGuiLayer() {}
+namespace arc {
+	imgui_layer::imgui_layer() : layer("ImGuiLayer"), block_events_(1u) {}
+	imgui_layer::~imgui_layer() {}
 	
-	void CImGuiLayer::OnAttach()
+	void imgui_layer::on_attach()
 	{
 		ARC_PROFILE_FUNCTION();
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGui::StyleColorsClassic();
 
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		io.IniFilename = "config/imgui.ini";
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -39,23 +39,23 @@ namespace ARC {
 		io.Fonts->AddFontFromFileTTF("assets/fonts/MavenPro-Bold.ttf", 16.f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/MavenPro-Regular.ttf", 16.f);
 
-		ImGuiStyle& style = ImGui::GetStyle();
+		ImGuiStyle& style = ImGui::get_style();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			style.WindowRounding=0.0f;
 			style.Colors[ImGuiCol_WindowBg].w=1.0f;
 		}
 
-		SetDarkThemeColors();
+		set_dark_theme_colors();
 		ImGui::StyleColorsDark();
-		auto& app = CApplication::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		auto& app = application::Get();
+		GLFWwindow* window = static_cast<GLFWwindow*>(app.get_window().get_native_window());
 
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}
 
-	void CImGuiLayer::OnDetach()
+	void imgui_layer::on_detach()
 	{
 		ARC_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_Shutdown();
@@ -63,15 +63,15 @@ namespace ARC {
 		ImGui::DestroyContext();
 	}
 
-	void CImGuiLayer::OnEvent(CEvent& _e)
+	void imgui_layer::on_event(event& _e)
 	{
-		if (!mbBlockEvents) return;
-		ImGuiIO& io = ImGui::GetIO();
-		_e.bHandled |= _e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-		_e.bHandled |= _e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+		if (!block_events_) return;
+		ImGuiIO& io = ImGui::get_io();
+		_e.bHandled |= _e.is_in_category(EventCategoryMouse) & io.WantCaptureMouse;
+		_e.bHandled |= _e.is_in_category(EventCategoryKeyboard) & io.WantCaptureKeyboard;
 	}
 
-	void CImGuiLayer::Begin()
+	void imgui_layer::begin()
 	{
 		ARC_PROFILE_FUNCTION();
 		ImGui_ImplOpenGL3_NewFrame();
@@ -80,14 +80,14 @@ namespace ARC {
 		ImGuizmo::BeginFrame();
 	}
 
-	void CImGuiLayer::End()
+	void imgui_layer::end()
 	{
 		ARC_PROFILE_FUNCTION();
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)CApplication::Get().GetWindow().GetWidth(), (float)CApplication::Get().GetWindow().GetHeight());
+		ImGuiIO& io = ImGui::get_io();
+		io.DisplaySize = ImVec2((float)application::Get().get_window().get_width(), (float)application::Get().get_window().get_height());
 
 		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::get_draw_data());
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
@@ -98,9 +98,9 @@ namespace ARC {
 		}
 	}
 
-	void CImGuiLayer::SetDarkThemeColors()
+	void imgui_layer::set_dark_theme_colors()
 	{
-		auto& colors = ImGui::GetStyle().Colors;
+		auto& colors = ImGui::get_style().Colors;
 // 		colors[ImGuiCol_WindowBg]				= ImVec4(.01, .012, .031, 1);
 // 		colors[ImGuiCol_PopupBg]				= ImVec4(0.2, 0.2, 0.2, 1);
 // 		colors[ImGuiCol_Border]					= ImVec4(1, 1, 1, 0.8);
@@ -147,7 +147,7 @@ namespace ARC {
 // 		colors[ImGuiCol_ModalWindowDimBg]		= ImVec4(.165, .212, .231, 1);
 	}
 
-	void CImGuiLayer::OnGuiRender()
+	void imgui_layer::on_gui_render()
 	{
 		//static bool show = true;
 		//ImGui::ShowDemoWindow(&show);

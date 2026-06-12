@@ -1,10 +1,10 @@
 #pragma once
 
-namespace ARC
+namespace arc
 {
 	// treated as a static class
 	template <typename To, typename From>
-	struct SConvert
+	struct convert
 	{
 		static inline 
 		bool CanConv(const From& p)

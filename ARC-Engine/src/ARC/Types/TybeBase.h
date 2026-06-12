@@ -4,25 +4,25 @@
 
 #define ARC_TYPE() // public: template<typename __T__> __T__ To() const { return HPR::template Conv<__T__>(*this); } private:
 
-namespace ARC
+namespace arc
 {
-	struct ARC_API TTypeBase
+	struct ARC_API type_base
 	{
 	protected:
-		TTypeBase() {};
+		type_base() {};
 	};
 
-	using TString = std::string;
-	using TName = const char*; // very temp
+	using string = std::string;
+	using name = const char*; // very temp
 
-	using TUInt = unsigned int;
-	using TUChar = unsigned char;
-	using TULong = unsigned long;
+	using uint = unsigned int;
+	using uchar = unsigned char;
+	using ulong = unsigned long;
 
-	using TUInt8 = uint8_t;
-	using TUInt16 = uint16_t;
-	using TUInt32 = uint32_t;
-	using TUInt64 = uint64_t;
+	using u8 = uint8_t;
+	using u16 = uint16_t;
+	using u32 = uint32_t;
+	using u64 = uint64_t;
 
-	using TFloat = float;
+	using float32 = float;
 }

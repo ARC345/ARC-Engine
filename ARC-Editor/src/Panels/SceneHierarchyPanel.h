@@ -2,26 +2,26 @@
 #include "ARC\Types\Pointer.h"
 #include "ARC\Scene\Entity.h"
 
-namespace ARC { class CScene; }
+namespace arc { class scene; }
 
-namespace ARC {
-	class CSceneHierarchyPanel
+namespace arc {
+	class scene_hierarchy_panel
 	{
 	public:
-		CSceneHierarchyPanel()=default;
-		CSceneHierarchyPanel(const TRef<CScene>& pScene);
+		scene_hierarchy_panel()=default;
+		scene_hierarchy_panel(const ref<scene>& pScene);
 
-		void SetContext(const TRef<CScene>& pScene);
-		void OnImGuiRender();
+		void set_context(const ref<scene>& pScene);
+		void on_imgui_render();
 
-		CEntity GetSelectedEntity() const { return mSelectedEntity; }
-		void SetSelectedEntity(CEntity p) { mSelectedEntity = p; }
-
-	private:
-		void DrawEntityNode(CEntity pEntity);
+		entity get_selected_entity() const { return selected_entity_; }
+		void set_selected_entity(entity p) { selected_entity_ = p; }
 
 	private:
-		TRef<CScene> mContext;
-		CEntity mSelectedEntity;
+		void DrawEntityNode(entity pEntity);
+
+	private:
+		ref<scene> context_;
+		entity selected_entity_;
 	};
 }

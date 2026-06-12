@@ -2,19 +2,19 @@
 #include <filesystem>
 #include "ARC/Types/Pointer.h"
 
-namespace ARC { class CTexture2D; }
+namespace arc { class texture_2d; }
 
-namespace ARC {
-	class CContentBrowserPanel
+namespace arc {
+	class content_browser_panel
 	{
 	public:
-		CContentBrowserPanel();
+		content_browser_panel();
 
-		void OnImGuiRender();
+		void on_imgui_render();
 
 	private:
-		std::filesystem::path mCurrentDir;
-		TRef<CTexture2D> mDirectoryIcon;
-		TRef<CTexture2D> mFileIcon;
+		std::filesystem::path current_dir_;
+		ref<texture_2d> directory_icon_;
+		ref<texture_2d> file_icon_;
 	};
 }

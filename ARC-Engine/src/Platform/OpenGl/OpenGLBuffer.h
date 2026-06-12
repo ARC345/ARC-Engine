@@ -1,40 +1,40 @@
 #pragma once
 #include "ARC\Renderer\Buffer.h"
 
-namespace ARC {
-	class COpenGLVertexBuffer : public CVertexBuffer
+namespace arc {
+	class opengl_vertex_buffer : public vertex_buffer
 	{
 	public:
-		COpenGLVertexBuffer(float* pVertices, TUInt32 pSize);
-		COpenGLVertexBuffer(TUInt32 pSize);
-		virtual ~COpenGLVertexBuffer();
+		opengl_vertex_buffer(float* pVertices, u32 pSize);
+		opengl_vertex_buffer(u32 pSize);
+		virtual ~opengl_vertex_buffer();
 
-		virtual void Bind() const override;
+		virtual void bind() const override;
 		virtual void UnBind() const override;
 
-		virtual void SetLayout(const CBufferLayout& pLayout) override { mLayout = pLayout; }
-		virtual const CBufferLayout& GetLayout() const override { return mLayout; }
+		virtual void set_layout(const buffer_layout& pLayout) override { layout_ = pLayout; }
+		virtual const buffer_layout& get_layout() const override { return layout_; }
 
-		virtual void SetData(const void* pData, TUInt32 pSize) override;
+		virtual void set_data(const void* pData, u32 pSize) override;
 
 	private:
-		TUInt32 mRenderer_id;
-		CBufferLayout mLayout;
+		u32 renderer_id_;
+		buffer_layout layout_;
 	};
 	
-	class COpenGLIndexBuffer : public CIndexBuffer
+	class opengl_index_buffer : public index_buffer
 	{
 	public:
-		COpenGLIndexBuffer(TUInt32* pIndiices, TUInt32 pCount);
-		virtual ~COpenGLIndexBuffer();
+		opengl_index_buffer(u32* pIndiices, u32 pCount);
+		virtual ~opengl_index_buffer();
 
-		virtual void Bind() const override;
+		virtual void bind() const override;
 		virtual void UnBind() const override;
 
-		virtual TUInt32 GetCount() const override;
+		virtual u32 get_count() const override;
 
 	private:
-		TUInt32 mRenderer_id;
-		TUInt32 mCount;
+		u32 renderer_id_;
+		u32 count_;
 	};
 }

@@ -1,26 +1,26 @@
 #pragma once
 #include "TybeBase.h"
 
-namespace ARC
+namespace arc
 {
 	namespace Base
 	{
-		struct FArray_Base : public TTypeBase{};
+		struct array_base : public type_base{};
 	}
 
 	template <typename T>
-	struct TArray : public FArray_Base
+	struct array : public array_base
 	{
 		/*--------------FUNCS--------------*/
 		public:
-			TArray(size_t p_cap = 5u) : mCap(p_cap);
-			~TArray();
-			TArray(const TArray& p_obj)
+			array(size_t p_cap = 5u) : cap_(p_cap);
+			~array();
+			array(const array& p_obj)
 
 			T& operator[](const size_t p_index)
 
-			void Init(const T& p_from);
-			void Init(const size_t& p_from);
+			void init(const T& p_from);
+			void init(const size_t& p_from);
 
 			void Expand();
 			void Push();
@@ -28,8 +28,8 @@ namespace ARC
 			void Pop(const size_t& p_index);
 			void Remove();
 
-			virtual __forceinline const size_t& GetSize() const override {
-				return mLen;
+			virtual __forceinline const size_t& get_size() const override {
+				return len_;
 			}
 		protected:
 		private:
@@ -39,9 +39,9 @@ namespace ARC
 		public:
 		protected:
 		private:
-			size_t mLen;
-			size_t mCap;
-			T** mArr;
+			size_t len_;
+			size_t cap_;
+			T** arr_;
 		/*---------------------------------*/
 	};
 };

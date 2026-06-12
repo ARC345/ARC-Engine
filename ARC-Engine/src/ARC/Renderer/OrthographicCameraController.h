@@ -2,41 +2,41 @@
 #include "ARC/Renderer/OrthographicCamera.h"
 #include "ARC/Objects/Object.h"
 
-namespace ARC { class CMouseScrolledEvent; }
-namespace ARC { class CWindowResizeEvent; }
-namespace ARC { class CEvent; }
+namespace arc { class mouse_scrolled_event; }
+namespace arc { class window_resize_event; }
+namespace arc { class event; }
 
-namespace ARC {
-	class COrthographicCameraController : public CObject
+namespace arc {
+	class orthographic_camera_controller : public object
 	{
 	public:
-		COrthographicCameraController(float _AspectRatio, bool _bCanRotate);
+		orthographic_camera_controller(float aspect_ratio, bool _bCanRotate);
 
-		void OnUpdate(float _DeltaTime);
-		void OnEvent(CEvent& _Event);
+		void on_update(float delta_time);
+		void on_event(event& event);
 		void OnResize(float width, float height);
 
-		COrthographicCamera& GetCamera() { return mCamera; }
-		const COrthographicCamera& GetCamera() const { return mCamera; }
-		inline float GetZoomLevel() const { return mZoomLevel; }
-		inline void SetZoomLevel(float _val) { 
-			mZoomLevel = _val;
+		orthographic_camera& get_camera() { return camera_; }
+		const orthographic_camera& get_camera() const { return camera_; }
+		inline float get_zoom_level() const { return zoom_level_; }
+		inline void set_zoom_level(float _val) { 
+			zoom_level_ = _val;
 			CalculateView();
 		}
 	private:
 		void CalculateView();
 
-		bool OnMouseScrolledEvent(CMouseScrolledEvent& _Event);
-		bool OnWindowResized(CWindowResizeEvent& _Event);
+		bool OnMouseScrolledEvent(mouse_scrolled_event& event);
+		bool OnWindowResized(window_resize_event& event);
 	private:
-		uint8_t mbCanRotate : 1;
-		uint8_t mbNeedsRecalculation : 1;
+		uint8_t can_rotate_ : 1;
+		uint8_t needs_recalculation_ : 1;
 
-		float mCamMoveSpeed = 10.f;
-		float mCamRotSpeed = 180.f;
+		float cam_move_speed_ = 10.f;
+		float cam_rot_speed_ = 180.f;
 
-		float mAspectRatio;
-		float mZoomLevel = 1;
-		COrthographicCamera mCamera;
+		float aspect_ratio_;
+		float zoom_level_ = 1;
+		orthographic_camera camera_;
 	};
 }

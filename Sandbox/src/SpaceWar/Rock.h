@@ -4,24 +4,24 @@
 #include <array>
 #include <vector>
 #include <memory>
-namespace ARC {
-	class CRock
+namespace arc {
+	class rock
 	{
 	public:
-		void Load(FVec2 _Velocity, FVec2 _Position);
-		void OnUpdate(float _DeltaTime);
+		void Load(vec2 velocity, vec2 position);
+		void on_update(float delta_time);
 
-		void CalculateRandomVelocity();
-		void CalculateRandomPosition();
+		void calculate_random_velocity();
+		void calculate_random_position();
 
-		CPrimitive2D Sprite;
-		FVec2 Velocity;
+		primitive_2d Sprite;
+		vec2 Velocity;
 		int SpriteIndex = 0;
 		float MinDist = 0;
 		float RotationVelocity = 0;
 	private:
-		static constexpr size_t s_NumberOfRockSprites = 5;
+		static constexpr size_t number_of_rock_sprites = 5;
 	public:
-		static std::array<std::vector<std::shared_ptr<TVec2<uint8_t>>>, s_NumberOfRockSprites> SpriteCollisionData;
+		static std::array<std::vector<std::shared_ptr<vec2<uint8_t>>>, number_of_rock_sprites> SpriteCollisionData;
 	};
 }

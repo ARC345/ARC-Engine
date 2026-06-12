@@ -12,11 +12,11 @@
 namespace YAML { class Emitter; }
 namespace YAML { class Node; }
 
-namespace ARC {
-	class CEntity;
+namespace arc {
+	class entity;
 
-	namespace ECF {
-		enum EComponentFlags : uint32_t
+	namespace ecf {
+		enum component_flags : uint32_t
 		{
 			ComponentFlagsNone = 0,
 			ShowInPropertiesPanel = 1 << 0,
@@ -26,15 +26,15 @@ namespace ARC {
 		};
 	}
 
-	struct CComponentBase
+	struct component_base
 	{
-		virtual void OnConstruct(CEntity& pOwningEntity){};
-		virtual void DrawPropertiesUI(CEntity& pEntity) {};
-		virtual void Serialize(YAML::Emitter& pOut) {};
-		virtual void Deserialize(YAML::Node& pData) {};
-		virtual uint32_t GetFlags()=0;
+		virtual void on_construct(entity& pOwningEntity){};
+		virtual void draw_properties_ui(entity& pEntity) {};
+		virtual void serialize(YAML::Emitter& pOut) {};
+		virtual void deserialize(YAML::Node& pData) {};
+		virtual uint32_t get_flags()=0;
 
-		static inline uint32_t Flags = ECF::DefaultComponentFlags;
+		static inline uint32_t Flags = ecf::DefaultComponentFlags;
 		static inline int32_t OnTopPriority = 0; // >1 top priority, <1 means bottom priority in scene heirachy panel @TODO implemeant
 	};
 }

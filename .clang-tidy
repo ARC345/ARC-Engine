@@ -1,0 +1,52 @@
+Checks: '-*,readability-identifier-naming'
+CheckOptions:
+  # Namespace: lowercase
+  - { key: readability-identifier-naming.NamespaceCase,                        value: lower_case }
+
+  # Class/Struct: strip C/S prefix, snake_case
+  - { key: readability-identifier-naming.ClassCase,                           value: lower_case }
+  - { key: readability-identifier-naming.ClassPrefix,                         value: 'C' }
+  - { key: readability-identifier-naming.StructCase,                          value: lower_case }
+  - { key: readability-identifier-naming.StructPrefix,                        value: 'S' }
+  - { key: readability-identifier-naming.UnionCase,                           value: lower_case }
+  - { key: readability-identifier-naming.EnumCase,                            value: lower_case }
+  - { key: readability-identifier-naming.ScopedEnumCase,                      value: lower_case }
+  - { key: readability-identifier-naming.EnumPrefix,                          value: 'E' }
+  - { key: readability-identifier-naming.TypedefCase,                         value: lower_case }
+  - { key: readability-identifier-naming.TypeAliasCase,                       value: lower_case }
+  - { key: readability-identifier-naming.TemplateParameterCase,               value: lower_case }
+
+  # Function/Method: snake_case
+  - { key: readability-identifier-naming.FunctionCase,                        value: lower_case }
+  - { key: readability-identifier-naming.GlobalFunctionCase,                  value: lower_case }
+  - { key: readability-identifier-naming.MethodCase,                          value: lower_case }
+
+  # Variables: snake_case
+  - { key: readability-identifier-naming.VariableCase,                        value: lower_case }
+  - { key: readability-identifier-naming.GlobalVariableCase,                  value: lower_case }
+  - { key: readability-identifier-naming.MemberCase,                          value: lower_case }
+  - { key: readability-identifier-naming.PrivateMemberCase,                   value: lower_case }
+  - { key: readability-identifier-naming.ProtectedMemberCase,                 value: lower_case }
+  - { key: readability-identifier-naming.PublicMemberCase,                    value: lower_case }
+  - { key: readability-identifier-naming.ConstantCase,                        value: lower_case }
+  - { key: readability-identifier-naming.ConstantMemberCase,                  value: lower_case }
+  - { key: readability-identifier-naming.StaticConstantCase,                  value: lower_case }
+
+  # Members: strip m prefix, add trailing _
+  - { key: readability-identifier-naming.MemberPrefix,                        value: 'm' }
+  - { key: readability-identifier-naming.MemberSuffix,                        value: '_' }
+  - { key: readability-identifier-naming.PrivateMemberPrefix,                 value: 'm' }
+  - { key: readability-identifier-naming.PrivateMemberSuffix,                 value: '_' }
+  - { key: readability-identifier-naming.ProtectedMemberPrefix,               value: 'm' }
+  - { key: readability-identifier-naming.ProtectedMemberSuffix,               value: '_' }
+
+  # Parameter: strip p prefix, snake_case
+  - { key: readability-identifier-naming.ParameterCase,                       value: lower_case }
+  - { key: readability-identifier-naming.ParameterPrefix,                     value: 'p' }
+  - { key: readability-identifier-naming.ParameterPackCase,                   value: lower_case }
+
+  # Enum values: snake_case
+  - { key: readability-identifier-naming.EnumConstantCase,                    value: lower_case }
+
+  # Macro: keep UPPER_CASE
+  - { key: readability-identifier-naming.MacroDefinitionCase,                 value: UPPER_CASE }

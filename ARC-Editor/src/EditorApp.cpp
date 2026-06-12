@@ -5,14 +5,14 @@
 #include "EditorApp.h"
 #include "EditorLayer.h"
 
-namespace ARC {
-	CApplication* CreateApplication()
+namespace arc {
+	application* create_application()
 	{
-		return new CEditorApp();
+		return new editor_app();
 	}
-	CEditorApp::CEditorApp() :
-		CApplication("ARC-Editor")
+	editor_app::editor_app() :
+		application("ARC-Editor")
 	{
-		PushLayer(new CEditorLayer());
+		push_layer(new editor_layer());
 	}
 }

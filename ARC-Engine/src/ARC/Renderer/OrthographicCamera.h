@@ -1,15 +1,15 @@
 #pragma once
 #include "ARC/Wrappers/Glm.h"
 
-namespace ARC {
-	class COrthographicCamera
+namespace arc {
+	class orthographic_camera
 	{
 	public:
-		COrthographicCamera(float _Left, float _Right, float _Bottom, float _Top);
-		void SetProjection(float _Left, float _Right, float _Bottom, float _Top);
+		orthographic_camera(float left, float right, float bottom, float top);
+		void set_projection(float left, float right, float bottom, float top);
 		
-		inline const FGLMMat4& GetViewMatrix() const { return mViewMatrix; }
-		inline const FGLMMat4& GetViewProjectionMatrix() const { return mViewProjectionMatrix; }
+		inline const mat4& get_view_matrix() const { return view_matrix_; }
+		inline const mat4& get_view_projection_matrix() const { return view_projection_matrix_; }
 		void RecalculateViewProjectionMatrix();
 
 	public:
@@ -17,8 +17,8 @@ namespace ARC {
 		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
 		float Rotation = 0.0f;
 	private:
-		FGLMMat4 mProjectionMatrix;
-		FGLMMat4 mViewMatrix;
-		FGLMMat4 mViewProjectionMatrix;
+		mat4 projection_matrix_;
+		mat4 view_matrix_;
+		mat4 view_projection_matrix_;
 	};
 }

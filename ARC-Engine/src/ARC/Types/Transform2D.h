@@ -1,22 +1,22 @@
 #pragma once
 #include "Vector.h"
 
-namespace ARC {
+namespace arc {
 	template<typename T>
-	class TTransform2D : public TTypeBase
+	class transform_2d : public type_base
 	{
 		ARC_TYPE();
 
 	public:
-		TTransform2D() : Location(TVec3<T>::ZeroVector()), Rotation(0), Scale(TVec2<T>::OneVector()) {}
-		TTransform2D(TVec3<T> _L, T _R, TVec2<T> _S) : Location(_L), Rotation(_R), Scale(_S) {}
+		transform_2d() : Location(vec3<T>::ZeroVector()), Rotation(0), Scale(vec2<T>::OneVector()) {}
+		transform_2d(vec3<T> l, T r, vec2<T> s) : Location(l), Rotation(r), Scale(s) {}
 		
-		TVec3<T> Location;
+		vec3<T> Location;
 		T Rotation;
-		TVec2<T> Scale;
+		vec2<T> Scale;
 
-		static const TTransform2D<T>& DefaultTransform() { static TTransform2D<T> s;  return s; };
+		static const transform_2d<T>& default_transform() { static transform_2d<T> s;  return s; };
 	};
 
-	using FTransform2D = TTransform2D<float>;
+	using transform_2d = transform_2d<float>;
 }

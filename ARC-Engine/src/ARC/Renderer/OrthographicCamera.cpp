@@ -3,27 +3,27 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace ARC {
-	COrthographicCamera::COrthographicCamera(float _Left, float _Right, float _Bottom, float _Top) :
-		mProjectionMatrix(glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f)),
-		mViewMatrix(1.0f)
+namespace arc {
+	orthographic_camera::orthographic_camera(float left, float right, float bottom, float top) :
+		projection_matrix_(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)),
+		view_matrix_(1.0f)
 	{
-		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
+		view_projection_matrix_ = projection_matrix_ * view_matrix_;
 	}
 
-	void COrthographicCamera::SetProjection(float _Left, float _Right, float _Bottom, float _Top)
+	void orthographic_camera::set_projection(float left, float right, float bottom, float top)
 	{
-		mProjectionMatrix = glm::ortho(_Left, _Right, _Bottom, _Top, -1.0f, 1.0f);
+		projection_matrix_ = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
 		
-		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
+		view_projection_matrix_ = projection_matrix_ * view_matrix_;
 	}
 
-	void COrthographicCamera::RecalculateViewProjectionMatrix()
+	void orthographic_camera::RecalculateViewProjectionMatrix()
 	{
-		FGLMMat4 transform = glm::translate(FGLMMat4(1.0f), Position) *
-			glm::rotate(FGLMMat4(1.0f), glm::radians(Rotation), glm::vec3(0, 0, 1));
+		mat4 transform = glm::translate(mat4(1.0f), Position) *
+			glm::rotate(mat4(1.0f), glm::radians(Rotation), glm::vec3(0, 0, 1));
 
-		mViewMatrix = glm::inverse(transform);
-		mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
+		view_matrix_ = glm::inverse(transform);
+		view_projection_matrix_ = projection_matrix_ * view_matrix_;
 	}		
 }

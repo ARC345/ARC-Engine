@@ -2,17 +2,17 @@
 
 #include "ARC/Wrappers/Glm.h"
 
-namespace ARC
+namespace arc
 {
-	class CCamera
+	class camera
 	{
 	public:
-		CCamera() = default;
-		CCamera(const FGLMMat4& pProjection) : mProjection(pProjection){};
+		camera() = default;
+		camera(const mat4& pProjection) : projection_(pProjection){};
 
-		const FGLMMat4& GetProjection() const { return mProjection; }
+		const mat4& get_projection() const { return projection_; }
 
 	protected:
-		FGLMMat4 mProjection = FGLMMat4(1.0f);
+		mat4 projection_ = mat4(1.0f);
 	};
 }

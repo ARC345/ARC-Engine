@@ -2,61 +2,61 @@
 
 #include "Core.h"
 
-#include "ARC/Renderer/LayerStack.h"
+#include "ARC/Renderer/layer_stack.h"
 
 #include <string>
 #include <memory>
 #include "../Types/vector.h"
 
-namespace ARC { class CLayer; }
-namespace ARC { class CImGuiLayer; }
+namespace arc { class layer; }
+namespace arc { class imgui_layer; }
 
-namespace ARC { class CWindowCloseEvent; }
-namespace ARC { class CWindowResizeEvent; }
-namespace ARC { class CEvent; }
+namespace arc { class window_close_event; }
+namespace arc { class window_resize_event; }
+namespace arc { class event; }
 
-namespace ARC{
-	class CWindow;
-	class ARC_API CApplication
+namespace arc{
+	class window;
+	class ARC_API application
 	{
 	public:
-		CApplication(const TString& _Name = "ARC-Engine");
-		virtual ~CApplication();
+		application(const string& name = "ARC-Engine");
+		virtual ~application();
 
-		void Run();
-		void OnEvent(CEvent& _e);
+		void run();
+		void on_event(event& _e);
 
-		void PushLayer(CLayer* _layer);
-		void PushOverlay(CLayer* _overlay);
+		void push_layer(layer* _layer);
+		void push_overlay(layer* _overlay);
 
-		inline CWindow& GetWindow() const { return *mWindow; }
+		inline window& get_window() const { return *window_; }
 
-		void Shutdown();
-		CImGuiLayer* GetImGuiLayer() { return mImGuiLayer; };
+		void shutdown();
+		imgui_layer* get_imgui_layer() { return imgui_layer_; };
 
-		inline static CApplication& Get() { return *s_Instance; }
-		inline virtual TString GetAppName() =0;
-		inline const TString& GetEngineName() { static TString rval = "ARC_Engine"; return rval; };
-		inline float GetDeltaTime() const { return mDeltaTime; }
+		inline static application& Get() { return *instance; }
+		inline virtual string get_app_name() =0;
+		inline const string& get_engine_name() { static string rval = "ARC_Engine"; return rval; };
+		inline float get_delta_time() const { return delta_time_; }
 
 	private:
-		bool OnWindowClose(CWindowCloseEvent& pE);
-		bool OnWindowResize(CWindowResizeEvent& pE);
+		bool on_window_close(window_close_event& pE);
+		bool on_window_resize(window_resize_event& pE);
 		
 	private:
 		
-		float mDeltaTime;
-		float mLastFrameTime = 0;
+		float delta_time_;
+		float last_frame_time_ = 0;
 		
-		std::unique_ptr<CWindow> mWindow;
+		std::unique_ptr<window> window_;
 		
-		CImGuiLayer* mImGuiLayer;
-		TUInt8 mbRunning : 1;
-		TUInt8 mbMinimized: 1;
-		LayerStack mLayerStack;
-		static CApplication* s_Instance;
+		imgui_layer* imgui_layer_;
+		u8 running_ : 1;
+		u8 minimized_: 1;
+		layer_stack layer_stack_;
+		static application* instance;
 	};
 
 	//Defined in client
-	CApplication* CreateApplication();
+	application* create_application();
 }

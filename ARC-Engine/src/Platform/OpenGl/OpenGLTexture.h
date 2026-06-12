@@ -2,40 +2,40 @@
 #include "ARC\Renderer\Texture.h"
 #include <utility>
 
-namespace ARC {
-	class COpenGLTexture2D :
-		public CTexture2D
+namespace arc {
+	class opengl_texture_2d :
+		public texture_2d
 	{
 		public:
-			COpenGLTexture2D(const TVec2<uint32_t>& _Dimentions);
-			COpenGLTexture2D(const std::filesystem::path & _Path, bool bManualClear = false);
-			virtual ~COpenGLTexture2D() override;
+			opengl_texture_2d(const vec2<uint32_t>& dimentions);
+			opengl_texture_2d(const std::filesystem::path & path, bool bManualClear = false);
+			virtual ~opengl_texture_2d() override;
 
-			virtual void SetData(void* _Data, uint32_t _Size) override;
+			virtual void set_data(void* data, uint32_t size) override;
 
-			virtual void Bind(uint32_t _Slot = 0) const override;
+			virtual void bind(uint32_t slot = 0) const override;
 			virtual void ClearData() override;
 
-			virtual const std::filesystem::path& GetPath() const override { return mPath; };
+			virtual const std::filesystem::path& get_path() const override { return path_; };
 
-			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) override;
+			virtual vec4<unsigned char> get_pixel_color(vec2<uint32_t> xy) override;
 
-			virtual bool operator==(const CTexture& _Tex) const override {
-				return mRendererID == ((COpenGLTexture2D&)_Tex).mRendererID;
+			virtual bool operator==(const texture& tex) const override {
+				return renderer_id_ == ((opengl_texture_2d&)tex).renderer_id_;
 			};
 
-			uint32_t GetRendererID() override { return mRendererID; };
+			uint32_t get_renderer_id() override { return renderer_id_; };
 
 	private:
-			TVec2<uint32_t> Load(const TVec2<uint32_t>& _Dimentions);
-			TVec2<uint32_t> Load(const std::filesystem::path& _Path);
+			vec2<uint32_t> Load(const vec2<uint32_t>& dimentions);
+			vec2<uint32_t> Load(const std::filesystem::path& path);
 		private:
-			uint32_t mBytesPerPixel;
+			uint32_t bytes_per_pixel_;
 
-			unsigned int mInternalFormat; //GLenum 
-			unsigned int mDataFormat; //GLenum 
-			unsigned char* mData;
-			std::filesystem::path mPath;
-			uint32_t mRendererID;
+			unsigned int internal_format_; //GLenum 
+			unsigned int data_format_; //GLenum 
+			unsigned char* data_;
+			std::filesystem::path path_;
+			uint32_t renderer_id_;
 	};
 }

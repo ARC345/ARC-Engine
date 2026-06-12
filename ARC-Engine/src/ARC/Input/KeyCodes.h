@@ -1,9 +1,9 @@
 #pragma once
 
-namespace ARC {
-	namespace EKey
+namespace arc {
+	namespace key
 	{
-		enum EKey : TUInt16
+		enum key : u16
 		{
 			// From glfw3.h
 			Space = 32,
@@ -76,7 +76,7 @@ namespace ARC {
 			PageUp = 266,
 			PageDown = 267,
 			Home = 268,
-			End = 269,
+			end = 269,
 			CapsLock = 280,
 			ScrollLock = 281,
 			NumLock = 282,
@@ -139,9 +139,9 @@ namespace ARC {
 		};
 	}
 
-	namespace EMouse
+	namespace mouse
 	{
-		enum EMouse : TUInt16
+		enum mouse : u16
 		{
 			// From glfw3.h
 			Button0 = 0,

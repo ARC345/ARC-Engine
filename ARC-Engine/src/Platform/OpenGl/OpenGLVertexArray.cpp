@@ -3,22 +3,22 @@
 #include "glad\glad.h"
 #include "ARC\Renderer\Buffer.h"
 
-namespace ARC {
+namespace arc {
 	struct SOpenGLShaderHelper {
-		static GLenum ShaderTypeToOpenGlBaseType(EShaderDataType _Type) {
-			switch (_Type)
+		static GLenum ShaderTypeToOpenGlBaseType(shader_data_type type) {
+			switch (type)
 			{
-			case EShaderDataType::Float:	return GL_FLOAT;
-			case EShaderDataType::Float2:	return GL_FLOAT;
-			case EShaderDataType::Float3:	return GL_FLOAT;
-			case EShaderDataType::Float4:	return GL_FLOAT;
-			case EShaderDataType::Mat3:		return GL_FLOAT;
-			case EShaderDataType::Mat4:		return GL_FLOAT;
-			case EShaderDataType::Int:		return GL_INT;
-			case EShaderDataType::Int2:		return GL_INT;
-			case EShaderDataType::Int3:		return GL_INT;
-			case EShaderDataType::Int4:		return GL_INT;
-			case EShaderDataType::Bool:		return GL_BOOL;
+			case shader_data_type::Float:	return GL_FLOAT;
+			case shader_data_type::Float2:	return GL_FLOAT;
+			case shader_data_type::Float3:	return GL_FLOAT;
+			case shader_data_type::Float4:	return GL_FLOAT;
+			case shader_data_type::Mat3:		return GL_FLOAT;
+			case shader_data_type::Mat4:		return GL_FLOAT;
+			case shader_data_type::Int:		return GL_INT;
+			case shader_data_type::Int2:		return GL_INT;
+			case shader_data_type::Int3:		return GL_INT;
+			case shader_data_type::Int4:		return GL_INT;
+			case shader_data_type::Bool:		return GL_BOOL;
 			}
 
 			ARC_CORE_ASSERT(false, "UnknownShaderDataType");
@@ -26,63 +26,63 @@ namespace ARC {
 		};
 	};
 
-	COpenGLVertexArray::COpenGLVertexArray()
+	opengl_vertex_array::opengl_vertex_array()
 	{
-		glCreateVertexArrays(1, &mRendererId);
+		glCreateVertexArrays(1, &renderer_id_);
 	}
 
-	COpenGLVertexArray::~COpenGLVertexArray()
+	opengl_vertex_array::~opengl_vertex_array()
 	{
-		glDeleteVertexArrays(1, &mRendererId);
+		glDeleteVertexArrays(1, &renderer_id_);
 	}
 	
-	void COpenGLVertexArray::AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer)
+	void opengl_vertex_array::add_vertex_buffer(const ref<vertex_buffer>& vertex_buffer)
 	{
-		Bind();
-		_VertexBuffer->Bind();
+		bind();
+		vertex_buffer->bind();
 
-		ARC_CORE_ASSERT(_VertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+		ARC_CORE_ASSERT(vertex_buffer->get_layout().get_elements().size(), "Vertex Buffer has no layout!");
 
 		uint32_t index = 0;
-		const auto& layout = _VertexBuffer->GetLayout();
+		const auto& layout = vertex_buffer->get_layout();
 		for (const auto& ielement : layout)
 		{
 			switch (ielement.Type)
 			{
-			case EShaderDataType::Float:
-			case EShaderDataType::Float2:
-			case EShaderDataType::Float3:
-			case EShaderDataType::Float4:
+			case shader_data_type::Float:
+			case shader_data_type::Float2:
+			case shader_data_type::Float3:
+			case shader_data_type::Float4:
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribPointer(index,
-					SShaderHelper::GetComponentCount(ielement.Type),
+					shader_helper::get_component_count(ielement.Type),
 					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
 					ielement.bNormalized ? GL_TRUE : GL_FALSE,
-					layout.GetStride(),
-					(const void*)(const TUInt64)ielement.Offset);
+					layout.get_stride(),
+					(const void*)(const u64)ielement.Offset);
 				index++;
 				break;
 			}
-			case EShaderDataType::Int:
-			case EShaderDataType::Int2:
-			case EShaderDataType::Int3:
-			case EShaderDataType::Int4:
-			case EShaderDataType::Bool:
+			case shader_data_type::Int:
+			case shader_data_type::Int2:
+			case shader_data_type::Int3:
+			case shader_data_type::Int4:
+			case shader_data_type::Bool:
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribIPointer(index,
-					SShaderHelper::GetComponentCount(ielement.Type),
+					shader_helper::get_component_count(ielement.Type),
 					SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
-					layout.GetStride(),
-					(const void*)(const TUInt64)ielement.Offset);
+					layout.get_stride(),
+					(const void*)(const u64)ielement.Offset);
 				index++;
 				break;
 			}
-			case EShaderDataType::Mat3:
-			case EShaderDataType::Mat4:
+			case shader_data_type::Mat3:
+			case shader_data_type::Mat4:
 			{
-				uint8_t count = SShaderHelper::GetComponentCount(ielement.Type);
+				uint8_t count = shader_helper::get_component_count(ielement.Type);
 				for (uint8_t i = 0; i < count; i++)
 				{
 					glEnableVertexAttribArray(index);
@@ -90,7 +90,7 @@ namespace ARC {
 						count,
 						SOpenGLShaderHelper::ShaderTypeToOpenGlBaseType(ielement.Type),
 						ielement.bNormalized ? GL_TRUE : GL_FALSE,
-						layout.GetStride(),
+						layout.get_stride(),
 						(const void*)(ielement.Offset + sizeof(float) * count * i));
 					glVertexAttribDivisor(index, 1);
 					index++;
@@ -98,36 +98,36 @@ namespace ARC {
 				break;
 			}
 			default:
-				ARC_CORE_ASSERT(false, "Unknown EShaderDataType!");
+				ARC_CORE_ASSERT(false, "Unknown shader_data_type!");
 			}
 		}
 
-		mVertexBuffers.push_back(_VertexBuffer);
+		vertex_buffers_.push_back(vertex_buffer);
 	}
 
-	void COpenGLVertexArray::SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer)
+	void opengl_vertex_array::set_index_buffer(const ref<index_buffer>& index_buffer)
 	{
-		Bind();
-		_IndexBuffer->Bind();
+		bind();
+		index_buffer->bind();
 
-		mIndexBuffer = _IndexBuffer;
+		index_buffer_ = index_buffer;
 	}
 
-	const std::vector<TRef<CVertexBuffer>>& COpenGLVertexArray::GetVertexBuffers() const
+	const std::vector<ref<vertex_buffer>>& opengl_vertex_array::get_vertex_buffers() const
 	{
-		return mVertexBuffers;
+		return vertex_buffers_;
 	}
 
-	const TRef<CIndexBuffer>& COpenGLVertexArray::GetIndexBuffer() const
+	const ref<index_buffer>& opengl_vertex_array::get_index_buffer() const
 	{
-		return mIndexBuffer;
+		return index_buffer_;
 	}
-	void COpenGLVertexArray::Bind() const
+	void opengl_vertex_array::bind() const
 	{
-		glBindVertexArray(mRendererId);
+		glBindVertexArray(renderer_id_);
 	}
 
-	void COpenGLVertexArray::UnBind() const
+	void opengl_vertex_array::UnBind() const
 	{
 		glBindVertexArray(0);
 	}

@@ -5,31 +5,31 @@
 #include "ARC/Types/Transform2D.h"
 #include "ARC/Types/Pointer.h"
 
-namespace ARC { class CSubTexture2D; }
-namespace ARC { class CTexture2D; }
+namespace arc { class sub_texture_2d; }
+namespace arc { class texture_2d; }
 
-namespace ARC {
-	class CPrimitive2D :
-		public CObject
+namespace arc {
+	class primitive_2d :
+		public object
 	{
 	public:
-		inline const FVec3& GetLocation() const { return Transform.Location; }
-		inline FVec3 GetLocation() { return Transform.Location; }
+		inline const vec3& get_location() const { return Transform.Location; }
+		inline vec3 get_location() { return Transform.Location; }
 
-		inline const float& GetRotation() const { return Transform.Rotation; }
-		inline float GetRotation() { return Transform.Rotation; }
+		inline const float& get_rotation() const { return Transform.Rotation; }
+		inline float get_rotation() { return Transform.Rotation; }
 
-		inline const FVec2& GetScale() const { return Transform.Scale; }
-		inline FVec2 GetScale() { return Transform.Scale; }
+		inline const vec2& get_scale() const { return Transform.Scale; }
+		inline vec2 get_scale() { return Transform.Scale; }
 
-		inline const FTransform2D& GetTransform() const { return Transform; }
-		inline FTransform2D GetTransform() { return Transform; }
+		inline const transform_2d& get_transform() const { return Transform; }
+		inline transform_2d get_transform() { return Transform; }
 
 	public:
-		FTransform2D Transform;
-		TTransparencyType TransparencyLevel;
-		FColor4 Color = FColor4::White();
-		TRef<CTexture2D> Texture = nullptr;
-		FVec2 TextureScaling = FVec2::OneVector();
+		transform_2d Transform;
+		transparency_type TransparencyLevel;
+		color4 Color = color4::White();
+		ref<texture_2d> Texture = nullptr;
+		vec2 TextureScaling = vec2::OneVector();
 	};
 }

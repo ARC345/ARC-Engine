@@ -7,68 +7,68 @@
 
 class b2World;
 
-namespace ARC {
+namespace arc {
 
-	using SManager = entt::registry;
+	using manager = entt::registry;
 
-	class CEditorCamera;
-	class CEntity;
+	class editor_camera;
+	class entity;
 
-	class CScene
+	class scene
 	{
 	public:
-		CScene();
-		~CScene();
+		scene();
+		~scene();
 		
-		static TRef<CScene> Copy(const TRef<CScene> p);
+		static ref<scene> copy(const ref<scene> p);
 
-		CEntity CreateEntity(const TString& pName = "Entity", const TUUID pUUID = SUUID::Generate());
-		void RemoveEntity(CEntity Entity);
+		entity create_entity(const string& pName = "Entity", const uuid pUUID = uuid::generate());
+		void remove_entity(entity Entity);
 	
-		inline size_t GetEntityCount() const { return mManager.alive(); }
+		inline size_t get_entity_count() const { return manager_.alive(); }
 	
-		inline SManager& GetManager() { return mManager; }
-		inline const SManager& GetManager() const { return mManager; }
+		inline manager& get_manager() { return manager_; }
+		inline const manager& get_manager() const { return manager_; }
 		
-		void OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera);
-		void OnUpdateRuntime(float DeltaTime);
-		void OnUpdateSimulation(float pDeltaTime, CEditorCamera& pCamera);
+		void on_update_editor(float DeltaTime, editor_camera& pCamera);
+		void on_update_runtime(float DeltaTime);
+		void on_update_simulation(float pDeltaTime, editor_camera& pCamera);
 
-		void OnViewportResize(TVec2<uint32_t> pNewSize);
-		void OnSetSceneState(TUInt8 pCurrentSceneState, TUInt8 pNewSceneState); // Raw ESceneState
+		void on_viewport_resize(vec2<uint32_t> pNewSize);
+		void on_set_scene_state(u8 pCurrentSceneState, u8 pNewSceneState); // Raw scene_state
 		
-		void SerializeToText(const std::filesystem::path& pFilepath);
-		void SerializeToBinary(const std::filesystem::path& pFilepath);
-		bool DeserializeFromText(const std::filesystem::path& pFilepath);
-		bool DeserializeFromBinary(const std::filesystem::path& pFilepath);
+		void serialize_to_text(const std::filesystem::path& pFilepath);
+		void serialize_to_binary(const std::filesystem::path& pFilepath);
+		bool deserialize_from_text(const std::filesystem::path& pFilepath);
+		bool deserialize_from_binary(const std::filesystem::path& pFilepath);
 
 		template<typename... Ts>
-		decltype(auto) FilterByComponents() { return mManager.view<Ts...>(); }
+		decltype(auto) FilterByComponents() { return manager_.view<Ts...>(); }
 
-		inline decltype(auto) GetViewportSize() { return mViewportSize; }
+		inline decltype(auto) get_viewport_size() { return viewport_size_; }
 
-		CEntity GetPrimaryCameraEntity();
-		CEntity DuplicateEntity(CEntity pSrcEntity);
+		entity get_primary_camera_entity();
+		entity duplicate_entity(entity pSrcEntity);
 
 	private:
-		void BeginPhysics();
-		void EndPhysics();
+		void begin_physics();
+		void end_physics();
 		
 		void RenderScene();
-		void UpdatePhysics(float pDeltaTime);
+		void update_physics(float pDeltaTime);
 
-		void SerializeEntity(YAML::Emitter& pOut, CEntity pEntity);
-		void DeserializeEntity(YAML::Emitter& pOut, CEntity pEntity);
+		void serialize_entity(YAML::Emitter& pOut, entity pEntity);
+		void DeserializeEntity(YAML::Emitter& pOut, entity pEntity);
 	public:
 	private:
-		TVec2<TUInt32> mViewportSize;
+		vec2<u32> viewport_size_;
 		
-		SManager mManager;
-		b2World* mPhysicsWorld = nullptr;
+		manager manager_;
+		b2World* physics_world_ = nullptr;
 
-		TDelegate<bool(const TString&)> mTreeNodeBeginFunc;
-		TDelegate<void()> mTreeNodeEndFunc;
+		delegate<bool(const string&)> tree_node_begin_func_;
+		delegate<void()> tree_node_end_func_;
 		
-		friend class CSceneHierarchyPanel;
+		friend class scene_hierarchy_panel;
 	};
 }

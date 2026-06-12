@@ -3,33 +3,33 @@
 #include "ARC/Scene/Scene.h"
 #include "ARC/Scene/Entity.h"
 
-namespace ARC {
+namespace arc {
 
-	struct SComponentTraits
+	struct component_traits
 	{
 		template<typename T>
 		static constexpr inline
-		bool IsComponent() { return std::is_base_of_v<CComponentBase, T>; }
+		bool is_component() { return std::is_base_of_v<component_base, T>; }
 
 		template<typename T>
 		static constexpr inline
-		decltype(auto) GetName()
+		decltype(auto) get_name()
 		{
-			static_assert(IsComponent<T>());
-			return SHPR::GetClassName<T>();
+			static_assert(is_component<T>());
+			return shpr::get_class_name<T>();
 		}
 
 		template<typename T>
 		static inline
-		auto& GetFlags()
+		auto& get_flags()
 		{
-			static_assert(IsComponent<T>());
+			static_assert(is_component<T>());
 			return T::Flags;
 		}
 
 		template<typename T>
 		static constexpr const inline
-		auto GetID() noexcept {
+		auto get_id() noexcept {
 			static const auto value = ItrlCounter();
 			return value;
 		}
@@ -37,78 +37,78 @@ namespace ARC {
 	private:
 		static inline
 			auto ItrlCounter() noexcept {
-			static TUInt32 value = 0;
+			static u32 value = 0;
 			return value++;
 		}
 	};
 
-	struct SSceneRegistry
+	struct scene_registry
 	{
-		struct SMetaComponent {
-			TDelegate<void(CEntity pEntity)> RemoveComponent;
-			TDelegate<CComponentBase* (CEntity pEntity)> GetComponent;
-			TDelegate<CComponentBase* (CEntity pEntity)> AddComponent;
-			TDelegate<CComponentBase* (CEntity pDstEntity, const CEntity pSrcEntity)> CopyComponent;
-			TDelegate<TUInt32& ()> GetFlags;
-			TDelegate<TString ()> GetName;
+		struct meta_component {
+			delegate<void(entity pEntity)> remove_component;
+			delegate<component_base* (entity pEntity)> get_component;
+			delegate<component_base* (entity pEntity)> add_component;
+			delegate<component_base* (entity pDstEntity, const entity pSrcEntity)> copy_component;
+			delegate<u32& ()> get_flags;
+			delegate<string ()> get_name;
 		};
 
 		template<typename T>
-		static void SetupComponent()
+		static void setup_component()
 		{
 			static bool bRet = false;
 			if(bRet) return;
 			bRet = true;
 
-			const TString& compName = SComponentTraits::GetName<T>();
-			const auto compID = SComponentTraits::GetID<T>();
-			mRegisteredComponentNames.push_back(compName);
-			mRegisteredComponentNameIDMap[compName] = compID;
+			const string& compName = component_traits::get_name<T>();
+			const auto compID = component_traits::get_id<T>();
+			registered_component_names_.push_back(compName);
+			registered_component_name_id_map_[compName] = compID;
 			
-			auto& mc = mMetaComponents.emplace(compID, SMetaComponent()).first->second;
-			mc.GetComponent = [](CEntity pEntity) -> CComponentBase* {
-				static_assert(SComponentTraits::IsComponent<T>());
-				if (pEntity && pEntity.HasComponent<T>())
-					return &pEntity.GetComponent<T>();
+			auto& mc = meta_components_.emplace(compID, meta_component()).first->second;
+			mc.get_component = [](entity pEntity) -> component_base* {
+				static_assert(component_traits::is_component<T>());
+				if (pEntity && pEntity.has_component<T>())
+					return &pEntity.get_component<T>();
 				return nullptr;
 					};
-			mc.AddComponent = [](CEntity pEntity) -> CComponentBase* {
-				static_assert(SComponentTraits::IsComponent<T>());
-				if (pEntity && !pEntity.HasComponent<T>())
-					return &pEntity.AddComponent<T>();
+			mc.add_component = [](entity pEntity) -> component_base* {
+				static_assert(component_traits::is_component<T>());
+				if (pEntity && !pEntity.has_component<T>())
+					return &pEntity.add_component<T>();
 				return nullptr;
 				};
-			mc.RemoveComponent = [](CEntity pEntity) {
-				static_assert(SComponentTraits::IsComponent<T>());
-				if (pEntity && pEntity.HasComponent<T>())
-					pEntity.RemoveComponent<T>();
+			mc.remove_component = [](entity pEntity) {
+				static_assert(component_traits::is_component<T>());
+				if (pEntity && pEntity.has_component<T>())
+					pEntity.remove_component<T>();
 				};
-			mc.CopyComponent = [](CEntity pDstEntity, const CEntity pSrcEntity) -> CComponentBase* {
-				static_assert(SComponentTraits::IsComponent<T>());
-				if (pDstEntity && pSrcEntity && pSrcEntity.HasComponent<T>())
-					return &pDstEntity.AddComponent<T>(pSrcEntity.GetComponent<T>());
+			mc.copy_component = [](entity pDstEntity, const entity pSrcEntity) -> component_base* {
+				static_assert(component_traits::is_component<T>());
+				if (pDstEntity && pSrcEntity && pSrcEntity.has_component<T>())
+					return &pDstEntity.add_component<T>(pSrcEntity.get_component<T>());
 				return nullptr;
 				};
-			mc.GetFlags = []() -> TUInt32& {
-				static_assert(SComponentTraits::IsComponent<T>());
-				return SComponentTraits::GetFlags<T>();
+			mc.get_flags = []() -> u32& {
+				static_assert(component_traits::is_component<T>());
+				return component_traits::get_flags<T>();
 				};
-			mc.GetName = []() {
-				static_assert(SComponentTraits::IsComponent<T>());
-				return SComponentTraits::GetName<T>();
+			mc.get_name = []() {
+				static_assert(component_traits::is_component<T>());
+				return component_traits::get_name<T>();
 				};
 		};
 
-		static auto& GetRegisteredComponentsNames() { return mRegisteredComponentNames; }
-		static auto& GetRegisteredComponentNameIDMap() { return mRegisteredComponentNameIDMap; }
-		static auto& GetMetaComponents() { return mMetaComponents; }
+		static auto& get_registered_components_names() { return registered_component_names_; }
+		static auto& get_registered_component_name_id_map() { return registered_component_name_id_map_; }
+		static auto& get_meta_components() { return meta_components_; }
 
 	private:
 		// @Editor functionality @ TODO wrap around macro
 	
-		static inline std::vector<TString> mRegisteredComponentNames;
-		static inline std::unordered_map<TString, TUInt32> mRegisteredComponentNameIDMap;
-		static inline std::unordered_map<TUInt32, SMetaComponent> mMetaComponents;
+		static inline std::vector<string> registered_component_names_;
+		static inline std::unordered_map<string, u32> registered_component_name_id_map_;
+		static inline std::unordered_map<u32, meta_component> meta_components_;
 
 	};
 

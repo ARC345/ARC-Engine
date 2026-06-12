@@ -1,7 +1,7 @@
 #pragma once
 
-namespace ARC {
-	struct SConstants {
+namespace arc {
+	struct constants {
 
 	};
 }

@@ -2,53 +2,53 @@
 #include "SceneCamera.h"
 #include "glm\ext\matrix_clip_space.inl"
 
-namespace ARC {
+namespace arc {
 
-	CSceneCamera::CSceneCamera()
+	scene_camera::scene_camera()
 	{
 		RecalculateProjection();
 	}
 
-	void CSceneCamera::SetOrthographic(float pSize, float pNearClip, float pFarClip)
+	void scene_camera::set_orthographic(float pSize, float pNearClip, float pFarClip)
 	{
-		mCurrentProjectionType = EProjectionType::Orthographic;
-		mOrthographicSize = pSize;
-		mOrthographicNear = pNearClip;
-		mOrthographicFar = pFarClip;
+		current_projection_type_ = projection_type::Orthographic;
+		orthographic_size_ = pSize;
+		orthographic_near_ = pNearClip;
+		orthographic_far_ = pFarClip;
 		RecalculateProjection();
 	}
 
-	void CSceneCamera::SetPerspective(float pFOV, float pNearClip, float pFarClip)
+	void scene_camera::set_perspective(float pFOV, float pNearClip, float pFarClip)
 	{
-		mCurrentProjectionType = EProjectionType::Perspective;
-		mPerspectiveFOV = pFOV;
-		mPerspectiveNear = pNearClip;
-		mPerspectiveFar = pFarClip;
+		current_projection_type_ = projection_type::Perspective;
+		perspective_fov_ = pFOV;
+		perspective_near_ = pNearClip;
+		perspective_far_ = pFarClip;
 		RecalculateProjection();
 	}
 
-	void CSceneCamera::SetViewportSize(TVec2<uint32_t> pSize)
+	void scene_camera::set_viewport_size(vec2<uint32_t> pSize)
 	{
-		mAspectRatio = (float)pSize.x / (float)pSize.y;
+		aspect_ratio_ = (float)pSize.x / (float)pSize.y;
 		RecalculateProjection();
 	}
 
-	void CSceneCamera::RecalculateProjection()
+	void scene_camera::RecalculateProjection()
 	{
-		switch (mCurrentProjectionType)
+		switch (current_projection_type_)
 		{
-		case EProjectionType::Orthographic:
+		case projection_type::Orthographic:
 		{
-			float orthoLeft = -mOrthographicSize * mAspectRatio * 0.5f;
-			float orthoRight = mOrthographicSize * mAspectRatio * 0.5f;
-			float orthoBottom = -mOrthographicSize * 0.5f;
-			float orthoTop = mOrthographicSize * 0.5f;
-			mProjection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, mOrthographicNear, mOrthographicFar);
+			float orthoLeft = -orthographic_size_ * aspect_ratio_ * 0.5f;
+			float orthoRight = orthographic_size_ * aspect_ratio_ * 0.5f;
+			float orthoBottom = -orthographic_size_ * 0.5f;
+			float orthoTop = orthographic_size_ * 0.5f;
+			projection_ = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, orthographic_near_, orthographic_far_);
 			break;
 		}
-		case EProjectionType::Perspective:
+		case projection_type::Perspective:
 		{
-			mProjection = glm::perspective(mPerspectiveFOV, mAspectRatio, mPerspectiveNear, mPerspectiveFar);
+			projection_ = glm::perspective(perspective_fov_, aspect_ratio_, perspective_near_, perspective_far_);
 			break;
 		}
 		default:

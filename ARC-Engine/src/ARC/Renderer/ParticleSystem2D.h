@@ -7,52 +7,52 @@
 #include <unordered_map>
 #include <vector>
 
-namespace ARC { class CParticleModifier2D; }
-namespace ARC { class CParticle2D; }
+namespace arc { class particle_modifier_2d; }
+namespace arc { class particle_2d; }
 
-namespace ARC {
+namespace arc {
 
 	// @todo
-	enum EVariationApplicationType : uint8_t {
+	enum variation_application_type : uint8_t {
 		VariationPlus,
 		VariationMinus,
 		VariationHalfPlusHalfMinus,
 		VariationPlusMinus
 	};
-	enum class EVariationApplicationTime : uint8_t {
+	enum class variation_application_time : uint8_t {
 		OnEmit,
-		OnUpdate
+		on_update
 	};
 
-	class CParticle2D {
+	class particle_2d {
 	public:
-		CParticle2D() : bIsActive(1u) {}
-		FVec3 Location = {0.f, 0.f, 0.f};
+		particle_2d() : bIsActive(1u) {}
+		vec3 Location = {0.f, 0.f, 0.f};
 		float Rotation = 0.f;
-		FVec2 Scale = {1.f, 1.f};
-		FColor4 Color = FColor4::White();
-		TRef<CTexture2D> Texture = nullptr;
-		FVec3 Velocity = {0.f, 0.f, 0.f};
+		vec2 Scale = {1.f, 1.f};
+		color4 Color = color4::White();
+		ref<texture_2d> Texture = nullptr;
+		vec3 Velocity = {0.f, 0.f, 0.f};
 		float Life = 1.f;
 		uint8_t bIsActive : 1;
 		uint8_t bInitial : 1;		
 	};
-	class CParticleSystem2D
+	class particle_system_2d
 	{
 	public:
-		CParticleSystem2D(uint32_t _PoolSize = 1000);
-		~CParticleSystem2D();
+		particle_system_2d(uint32_t pool_size = 1000);
+		~particle_system_2d();
 		void Emit();
 
-		void OnUpdate(float _DeltaTime);
+		void on_update(float delta_time);
 		void OnRender();
 
-		void AddParticleModifier(EVariationApplicationTime VAP, CParticleModifier2D* Variation) { mModifiers[VAP].push_back(Variation); };
+		void AddParticleModifier(variation_application_time VAP, particle_modifier_2d* Variation) { modifiers_[VAP].push_back(Variation); };
 
-		CParticle2D Defaults;
+		particle_2d Defaults;
 	private:
-		std::unordered_map<EVariationApplicationTime, std::vector<CParticleModifier2D*>> mModifiers;
-		std::vector<CParticle2D> mParticlePool;
-		uint32_t mPoolIndex;
+		std::unordered_map<variation_application_time, std::vector<particle_modifier_2d*>> modifiers_;
+		std::vector<particle_2d> particle_pool_;
+		uint32_t pool_index_;
 	};
 }

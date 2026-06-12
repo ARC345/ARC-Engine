@@ -28,15 +28,15 @@
 
 #define BIND_FN(x) std::bind(x, this, std::placeholders::_1)
 
-#define LIKELY(mCondition) __builtin_expect(!!(mCondition), 1)
-#define UNLIKELY(mCondition) __builtin_expect(!!(mCondition), 0)
+#define LIKELY(condition_) __builtin_expect(!!(condition_), 1)
+#define UNLIKELY(condition_) __builtin_expect(!!(condition_), 0)
 
 #define ARC_PROFILE
 #ifdef ARC_PROFILE
-#define ARC_PROFILE_SCOPE(name) ::ARC::CTimer COMBINE2(ARC_timer, __LINE__)(name, true, true)
+#define ARC_PROFILE_SCOPE(name) ::arc::timer COMBINE2(ARC_timer, __LINE__)(name, true, true)
 #define ARC_PROFILE_FUNCTION() ARC_PROFILE_SCOPE(__FUNCSIG__)
-#define ARC_PROFILE_BEGIN_SESSION(name, filepath) ::ARC::CInstrumentor::Get().BeginSession(name, filepath)
-#define ARC_PROFILE_END_SESSION() ::ARC::CInstrumentor::Get().EndSession()
+#define ARC_PROFILE_BEGIN_SESSION(name, filepath) ::arc::instrumentor::Get().begin_session(name, filepath)
+#define ARC_PROFILE_END_SESSION() ::arc::instrumentor::Get().end_session()
 #else	
 #define ARC_PROFILE_SCOPE(name)
 #define ARC_PROFILE_FUNCTION()

@@ -19,10 +19,10 @@
 #include "ARC/Types/Vector.h"
 #include "ARC/Types/Delegate.h"
 
-namespace ARC { static bool bStressTest = false; }
-static const uint32_t s_MapWidth = 24;
-static uint32_t s_MapHeight = 12;
-static const char* s_MapTiles =
+namespace arc { static bool bStressTest = false; }
+static const uint32_t map_width = 24;
+static uint32_t map_height = 12;
+static const char* map_tiles =
 "WWWWWWWWWWWWWWWWWWWWWWWW"
 "WWWWDDDDDDDDWWWWWWWWWWWW"
 "WWWDDDDDDDDDDDDDDDWWWWWW"
@@ -36,138 +36,138 @@ static const char* s_MapTiles =
 "WWWWWWWWDDDDDDDWWWWWWWWW"
 "WWWWWWWWWWWWWWWWWWWWWWWW";
 
-CSandbox2D::CSandbox2D() :
-	CLayer("Sandbox2D"),
+sandbox_2d::sandbox_2d() :
+	layer("Sandbox2D"),
 	m_CameraController(1280.f / 780.f, true)
 {
-	ParticleSystem = ARC::CreateRef<ARC::CParticleSystem2D>();
+	ParticleSystem = arc::create_ref<arc::particle_system_2d>();
 	ParticleSystem->Defaults.bIsActive=false;
 	ParticleSystem->Defaults.Scale = {0.4f, 0.4f};
-	ParticleSystem->Defaults.Color = ARC::CColor::Red;
+	ParticleSystem->Defaults.Color = arc::CColor::Red;
 	ParticleSystem->Defaults.Velocity = {0.f, 3.f};
 	ParticleSystem->Defaults.Life = 1.1f;
 
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Life, 0.3f));
-	//ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Color, ARC::CColor(0.1f, 0.1f, 0.1f, 0.f)));
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Location, ARC::FVec2(0.5f, 0.5f)));
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Scale, ARC::FVec2(0.2f, 0.2f)));
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Velocity, ARC::FVec2(0.6f, 1.0f)));
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnUpdate, new ARC::CParticleLifetimeModifier2D(&ARC::CParticle2D::Color, ARC::CColor(1.f,1.f,0.f,1.f)));
-	ParticleSystem->AddParticleModifier(ARC::EVariationApplicationTime::OnUpdate, new ARC::CParticleLifetimeModifier2D<Flip<Quadratic>, ARC::FVec2>(&ARC::CParticle2D::Scale, ARC::FVec2::ZeroVector));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Life, 0.3f));
+	//ParticleSystem->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Color, arc::CColor(0.1f, 0.1f, 0.1f, 0.f)));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Location, arc::vec2(0.5f, 0.5f)));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Scale, arc::vec2(0.2f, 0.2f)));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Velocity, arc::vec2(0.6f, 1.0f)));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::on_update, new arc::particle_lifetime_modifier_2d(&arc::particle_2d::Color, arc::CColor(1.f,1.f,0.f,1.f)));
+	ParticleSystem->AddParticleModifier(arc::variation_application_time::on_update, new arc::particle_lifetime_modifier_2d<Flip<Quadratic>, arc::vec2>(&arc::particle_2d::Scale, arc::vec2::ZeroVector));
 	
-	Smoke = ARC::CreateRef<ARC::CParticleSystem2D>();
+	Smoke = arc::create_ref<arc::particle_system_2d>();
 	Smoke->Defaults.bIsActive=false;
 	Smoke->Defaults.Scale = {0.4f, 0.4f};
 	Smoke->Defaults.Color = {0.2f, 0.2f, 0.2f, 1.f};
 
 	Smoke->Defaults.Velocity = {0.f, 3.f};
 	Smoke->Defaults.Life = 1.1f;
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Life, 0.3f));
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Color, ARC::CColor(0.1f, 0.1f, 0.1f, 0.f)));
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Location, ARC::FVec2(1.f, 1.f)));
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Scale, ARC::FVec2(0.2f, 0.2f)));
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnEmit, new ARC::CParticleVariationModifier2D(&ARC::CParticle2D::Velocity, ARC::FVec2(0.6f, 1.0f)));
-	Smoke->AddParticleModifier(ARC::EVariationApplicationTime::OnUpdate, new ARC::CParticleLifetimeModifier2D<Flip<Quadratic>, ARC::FVec2>(&ARC::CParticle2D::Scale, ARC::FVec2::ZeroVector));
+	Smoke->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Life, 0.3f));
+	Smoke->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Color, arc::CColor(0.1f, 0.1f, 0.1f, 0.f)));
+	Smoke->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Location, arc::vec2(1.f, 1.f)));
+	Smoke->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Scale, arc::vec2(0.2f, 0.2f)));
+	Smoke->AddParticleModifier(arc::variation_application_time::OnEmit, new arc::particle_variation_modifier_2d(&arc::particle_2d::Velocity, arc::vec2(0.6f, 1.0f)));
+	Smoke->AddParticleModifier(arc::variation_application_time::on_update, new arc::particle_lifetime_modifier_2d<Flip<Quadratic>, arc::vec2>(&arc::particle_2d::Scale, arc::vec2::ZeroVector));
 	
 }
 
-void CSandbox2D::OnAttach()
+void sandbox_2d::on_attach()
 {
-	ARC::CIniFile inif;
-	ARC::TMulticastDelegate<void(const char*)> x;
-	x.Bind<&CSandbox2D::___Print___>(this);
-	x.Bind<&CSandbox2D::___Print___>(this);
-	x.Bind<&CSandbox2D::___Print___>(this);
-	x.Bind<&CSandbox2D::___Print___>(this);
-	x.Bind([](const char* v) -> void { ARC_TRACE(v); });
+	arc::CIniFile inif;
+	arc::multicast_delegate<void(const char*)> x;
+	x.bind<&sandbox_2d::___Print___>(this);
+	x.bind<&sandbox_2d::___Print___>(this);
+	x.bind<&sandbox_2d::___Print___>(this);
+	x.bind<&sandbox_2d::___Print___>(this);
+	x.bind([](const char* v) -> void { ARC_TRACE(v); });
 	x("Hello");
 	
-	ARC::TDelegate<void(const char*)> y;
-	y.Bind<&CSandbox2D::___Print___>(this);
-	y.Bind<&CSandbox2D::___Print___>(this);
-	y.Bind<&CSandbox2D::___Print___>(this);
-	y.Bind<&CSandbox2D::___Print___>(this);
+	arc::delegate<void(const char*)> y;
+	y.bind<&sandbox_2d::___Print___>(this);
+	y.bind<&sandbox_2d::___Print___>(this);
+	y.bind<&sandbox_2d::___Print___>(this);
+	y.bind<&sandbox_2d::___Print___>(this);
 	y("Hi");
 
-	ARC::FVec3 abxd;
-	ARC_TRACE("{}", abxd.ToString());
+	arc::vec3 abxd;
+	ARC_TRACE("{}", abxd.to_string());
 
-	//ARC::Experimental::EntityManager em(10);
+	//arc::Experimental::EntityManager em(10);
 	//for (size_t i = 0; i < 100; i++)
 	//{
-	//	em.CreateEntity();
+	//	em.create_entity();
 	//}
 	
-	m_CheckerboardTexture = ARC::CTexture2D::Create("assets/textures/Checkerboard.png");
-	m_Spritesheet = ARC::CTexture2D::Create("assets/textures/RPGpack_sheet_2X.png");
+	m_CheckerboardTexture = arc::texture_2d::create("assets/textures/Checkerboard.png");
+	m_Spritesheet = arc::texture_2d::create("assets/textures/RPGpack_sheet_2X.png");
 
-	s_MapHeight = strlen(s_MapTiles) / s_MapWidth;
+	map_height = strlen(map_tiles) / map_width;
 
-	m_Tree = ARC::CSubTexture2D::CreateFromCoords(m_Spritesheet, {2.f, 1.f}, {128.f, 128.f}, {1, 2});
-	s_textureMap['W'] = ARC::CSubTexture2D::CreateFromCoords(m_Spritesheet, { 11.f, 11.f }, { 128.f, 128.f });
-	s_textureMap['D'] = ARC::CSubTexture2D::CreateFromCoords(m_Spritesheet, { 6.f, 11.f }, { 128.f, 128.f });
+	m_Tree = arc::sub_texture_2d::CreateFromCoords(m_Spritesheet, {2.f, 1.f}, {128.f, 128.f}, {1, 2});
+	s_textureMap['W'] = arc::sub_texture_2d::CreateFromCoords(m_Spritesheet, { 11.f, 11.f }, { 128.f, 128.f });
+	s_textureMap['D'] = arc::sub_texture_2d::CreateFromCoords(m_Spritesheet, { 6.f, 11.f }, { 128.f, 128.f });
 	ParticleSystem->Defaults.Texture = m_CheckerboardTexture;
-	m_CameraController.SetZoomLevel(1.f);
+	m_CameraController.set_zoom_level(1.f);
 
-	ARC::SFrameBufferSpecifications frame_buffer_specs;
+	arc::SFrameBufferSpecifications frame_buffer_specs;
 	frame_buffer_specs.Width = 1280;
 	frame_buffer_specs.Height = 720;
 }
 
-void CSandbox2D::OnDetach()
+void sandbox_2d::on_detach()
 {
-	ARC::CInstrumentor::Get().EndSession();
+	arc::instrumentor::Get().end_session();
 }
 
-void CSandbox2D::OnUpdate(float _DeltaTime)
+void sandbox_2d::on_update(float delta_time)
 {
 	ARC_PROFILE_FUNCTION();
 		
 	{
 		ARC_PROFILE_SCOPE("Stuff");
-		m_CameraController.OnUpdate(_DeltaTime);
+		m_CameraController.on_update(delta_time);
 
-		ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
-		ARC::CRenderCommand::Clear();
+		arc::render_command::set_clear_colour({ .1f, .1f, .1f, 1.f });
+		arc::render_command::clear();
 	}
 	
-	ARC::CRenderer2D::ResetStats();
+	arc::CRenderer2D::ResetStats();
 	{
 		ARC_PROFILE_SCOPE("Stuff2");
 
-		ARC::CRenderer2D::BeginScene(m_CameraController.GetCamera());
+		arc::CRenderer2D::begin_scene(m_CameraController.get_camera());
 
 		ParticleSystem->Emit();
-		ParticleSystem->OnUpdate(_DeltaTime);
+		ParticleSystem->on_update(delta_time);
 		ParticleSystem->OnRender();
 		
 		Smoke->Emit();
-		Smoke->OnUpdate(_DeltaTime);
+		Smoke->on_update(delta_time);
 		Smoke->OnRender();
 		
-		for (size_t x = 0; x < s_MapWidth; x++)
+		for (size_t x = 0; x < map_width; x++)
 		{
-			for (size_t y = 0; y < s_MapHeight; y++)
+			for (size_t y = 0; y < map_height; y++)
 			{
-				char tt = s_MapTiles[x+y*s_MapWidth];
-				ARC::TRef<ARC::CSubTexture2D> tex;
+				char tt = map_tiles[x+y*map_width];
+				arc::ref<arc::sub_texture_2d> tex;
 				if (s_textureMap.find(tt) != s_textureMap.end())
 					tex = s_textureMap[tt];
 				else
 					continue;
 
-				ARC::CRenderer2D::DrawQuad({ (float)x-s_MapWidth/2, (float)s_MapHeight- y-s_MapHeight/2 }, 0.f, ARC::FVec2(1.f, 1.f), .5f, ARC::CColor::White, tex, {1.f, 1.f});
+				arc::CRenderer2D::draw_quad({ (float)x-map_width/2, (float)map_height- y-map_height/2 }, 0.f, arc::vec2(1.f, 1.f), .5f, arc::CColor::White, tex, {1.f, 1.f});
 			}
 		}
-		ARC::CRenderer2D::DrawQuad({ 0.0f, 2.f }, 0, ARC::FVec2(1.f, 2.f), 0.6f, ARC::CColor::White, m_Tree, {1.f, 1.f});
+		arc::CRenderer2D::draw_quad({ 0.0f, 2.f }, 0, arc::vec2(1.f, 2.f), 0.6f, arc::CColor::White, m_Tree, {1.f, 1.f});
 
 
-		if (ARC::bStressTest)
+		if (arc::bStressTest)
 		{
-			ARC::CPrimitive2D Quad;
-			Quad.Color = ARC::FColor::Red;
+			arc::primitive_2d Quad;
+			Quad.Color = arc::FColor::Red;
 
-			ARC::CRenderer2D::DrawQuad({ 0.0f, 0.0f }, 0, { 50.0f, 50.f }, 0.f, ARC::CColor::White, m_CheckerboardTexture);
+			arc::CRenderer2D::draw_quad({ 0.0f, 0.0f }, 0, { 50.0f, 50.f }, 0.f, arc::CColor::White, m_CheckerboardTexture);
 			for (float x = -10.f; x <= 10; x += 0.5)
 			{
 				for (float y = -10; y <= 10; y += 0.5)
@@ -175,152 +175,152 @@ void CSandbox2D::OnUpdate(float _DeltaTime)
 					Quad.Transform.Location = { x, y };
 					Quad.Transform.Scale = { 0.45f, 0.45f };
 					Quad.Transform.ZOrder = 0.1f;
-					Quad.Color = ARC::FColor((x + 5) / 10, 0.4f, (y + 5) / 10, 0.69f);
-					ARC::CRenderer2D::DrawQuad(Quad);
+					Quad.Color = arc::FColor((x + 5) / 10, 0.4f, (y + 5) / 10, 0.69f);
+					arc::CRenderer2D::draw_quad(Quad);
 				}
 			}
-			prev += 10.f * _DeltaTime;
+			prev += 10.f * delta_time;
 
-			ARC::CPrimitive2D Quad2;
+			arc::primitive_2d Quad2;
 			Quad2.Transform.Location = { 0.f, 0.f };
 			Quad2.Transform.Rotation = glm::radians(prev);
 			Quad2.Transform.Scale = { 10.f, 10.f };
 			Quad2.Transform.ZOrder = 0.2f;
-			Quad2.Color = ARC::FColor::Red;
+			Quad2.Color = arc::FColor::Red;
 
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 90);
 
 			Quad2.Transform.Scale = { 9.f, 9.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Yellow;
+			Quad2.Color = arc::CColor::Yellow;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 8.f, 8.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Black;
+			Quad2.Color = arc::CColor::Black;
 
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 7.f, 7.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Yellow;
+			Quad2.Color = arc::CColor::Yellow;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 6.f, 6.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Black;
+			Quad2.Color = arc::CColor::Black;
 
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 5.f, 5.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Yellow;
+			Quad2.Color = arc::CColor::Yellow;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 4.f, 4.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Black;
+			Quad2.Color = arc::CColor::Black;
 
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 3.f, 3.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Yellow;
+			Quad2.Color = arc::CColor::Yellow;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 2.f, 2.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::CColor::Black;
+			Quad2.Color = arc::CColor::Black;
 
 			Quad2.Transform.Rotation = glm::radians(prev + 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(prev + 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
 			Quad2.Transform.Scale = { 1.f, 1.f };
 			Quad2.Transform.ZOrder += 0.001f;
-			Quad2.Color = ARC::FColor::Red;
+			Quad2.Color = arc::FColor::Red;
 
 			Quad2.Transform.Rotation = glm::radians(-prev - 30);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 60);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 			Quad2.Transform.Rotation = glm::radians(-prev - 90);
-			ARC::CRenderer2D::DrawQuad(Quad2);
+			arc::CRenderer2D::draw_quad(Quad2);
 
-			ARC::CRenderer2D::DrawQuad(ARC::FVec2::ZeroVector, 0.f, { 50.0f, 50.f }, 0.f, ARC::CColor::White, m_CheckerboardTexture);
+			arc::CRenderer2D::draw_quad(arc::vec2::ZeroVector, 0.f, { 50.0f, 50.f }, 0.f, arc::CColor::White, m_CheckerboardTexture);
 
 		}
-		ARC::CRenderer2D::EndScene();
-		m_CameraController.GetCamera().RecalculateViewProjectionMatrix();
+		arc::CRenderer2D::end_scene();
+		m_CameraController.get_camera().RecalculateViewProjectionMatrix();
 	}
 }
 
-void CSandbox2D::OnEvent(ARC::CEvent& _Event)
+void sandbox_2d::on_event(arc::event& event)
 {
 	ARC_PROFILE_FUNCTION();
-	m_CameraController.OnEvent(_Event);
+	m_CameraController.on_event(event);
 }
 
-void CSandbox2D::OnGuiRender()
+void sandbox_2d::on_gui_render()
 {
 	ARC_PROFILE_FUNCTION();
 	
-	auto stats = ARC::CRenderer2D::GetStats();
-	ImGui::Begin("Renderer2D");
-	ImGui::Image((void*)m_CheckerboardTexture->GetRendererID(), ImVec2(100.f, 100.f));
+	auto stats = arc::CRenderer2D::get_stats();
+	ImGui::begin("Renderer2D");
+	ImGui::Image((void*)m_CheckerboardTexture->get_renderer_id(), ImVec2(100.f, 100.f));
 	ImGui::Text("DrawCalls: %d", stats.DrawCalls);
 	ImGui::Text("QuadCount: %d", stats.QuadCount);
-	ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-	ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
-	ImGui::End();
-	ImGui::Begin((ARC::bStressTest ? "StressTest" : "Sandbox"));
+	ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
+	ImGui::Text("Indices: %d", stats.get_total_index_count());
+	ImGui::end();
+	ImGui::begin((arc::bStressTest ? "StressTest" : "Sandbox"));
 	if (ImGui::TreeNode("Particles"))
 	{
 		ImGui::DragFloat3("Particle Loc", ParticleSystem->Defaults.Location.Data());
@@ -331,11 +331,11 @@ void CSandbox2D::OnGuiRender()
 		ImGui::ColorEdit4("SQ_Colour", SQ_Colour.Data());
 		ImGui::TreePop();
 	}
-	if (ImGui::Button(ARC::bStressTest ? "Go to Sandbox?" : "Go to StressTest?")) { ARC::bStressTest = !ARC::bStressTest; }
-	ImGui::End();
+	if (ImGui::Button(arc::bStressTest ? "Go to Sandbox?" : "Go to StressTest?")) { arc::bStressTest = !arc::bStressTest; }
+	ImGui::end();
 }
 
-void CSandbox2D::___Print___(const char* _)
+void sandbox_2d::___Print___(const char* _)
 {
 	ARC_WARN(_);
 }

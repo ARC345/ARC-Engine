@@ -5,161 +5,161 @@
 namespace YAML { class Node; }
 namespace YAML { class Emitter; }
 
-namespace ARC {
-	struct CTransform2DComponent : public CComponentBase
+namespace arc {
+	struct transform_2d_component : public component_base
 	{
-		FTransform2D Transform;
+		transform_2d Transform;
 
-		CTransform2DComponent() = default;
-		CTransform2DComponent(const CTransform2DComponent&) = default;
-		CTransform2DComponent(const FTransform2D& pTransform) : Transform(pTransform) {};
+		transform_2d_component() = default;
+		transform_2d_component(const transform_2d_component&) = default;
+		transform_2d_component(const transform_2d& pTransform) : Transform(pTransform) {};
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 
-		operator FTransform2D& () { return Transform; }
-		operator const FTransform2D& () const { return Transform; }
+		operator transform_2d& () { return Transform; }
+		operator const transform_2d& () const { return Transform; }
 	};
 
-	struct CSpriteRendererComponent : public CComponentBase
+	struct sprite_renderer_component : public component_base
 	{
-		FColor4 Color = FColor4::White();
-		TRef<CTexture2D> Texture = nullptr;
-		FVec2 TextureScaling = FVec2::OneVector();
+		color4 Color = color4::White();
+		ref<texture_2d> Texture = nullptr;
+		vec2 TextureScaling = vec2::OneVector();
 
-		CSpriteRendererComponent() = default;
-		CSpriteRendererComponent(const CSpriteRendererComponent&) = default;
-		CSpriteRendererComponent(const FColor4& pColor, const TRef<CTexture2D>& pTex, const FVec2& pTexScaling) : Color(pColor), Texture(pTex), TextureScaling(pTexScaling) {};
+		sprite_renderer_component() = default;
+		sprite_renderer_component(const sprite_renderer_component&) = default;
+		sprite_renderer_component(const color4& pColor, const ref<texture_2d>& pTex, const vec2& pTexScaling) : Color(pColor), Texture(pTex), TextureScaling(pTexScaling) {};
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 	};
 
-	struct CCircleRendererComponent : public CComponentBase
+	struct circle_renderer_component : public component_base
 	{
-		FColor4 Color = FColor4::White();
+		color4 Color = color4::White();
 		float Thickness = 1.0f;
 		float Sharpness = 0.995f;
 
-		CCircleRendererComponent() = default;
-		CCircleRendererComponent(const CCircleRendererComponent&) = default;
+		circle_renderer_component() = default;
+		circle_renderer_component(const circle_renderer_component&) = default;
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 	};
 
-	struct CIDComponent : public CComponentBase
+	struct id_component : public component_base
 	{
-		TUUID ID = SUUID::Generate();
+		uuid ID = uuid::generate();
 
-		CIDComponent() = default;
-		CIDComponent(const CIDComponent& p) = default;
-		CIDComponent(const TUUID& pID) : ID(pID) {};
+		id_component() = default;
+		id_component(const id_component& p) = default;
+		id_component(const uuid& pID) : ID(pID) {};
 
-		virtual TUInt32 GetFlags() override { return Flags; };
-		static inline TUInt32 Flags = ECF::ComponentFlagsNone; // using custom serialisation ECF::Serializable;
+		virtual u32 get_flags() override { return Flags; };
+		static inline u32 Flags = ecf::ComponentFlagsNone; // using custom serialisation ecf::Serializable;
 
 		operator auto& () { return ID; }
 		operator const auto& () const { return ID; }
 	};
 
-	struct CNameComponent : public CComponentBase
+	struct name_component : public component_base
 	{
-		TString Name;
+		string Name;
 
-		CNameComponent() = default;
-		CNameComponent(const CNameComponent&) = default;
-		CNameComponent(const TString& pName) : Name(pName) {};
+		name_component() = default;
+		name_component(const name_component&) = default;
+		name_component(const string& pName) : Name(pName) {};
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::ShowInPropertiesPanel | ECF::Serializable;
+		static inline u32 Flags = ecf::ShowInPropertiesPanel | ecf::Serializable;
 
 		operator auto& () { return Name; }
 		operator const auto& () const { return Name; }
 	};
 
-	struct CCameraComponent : public CComponentBase
+	struct camera_component : public component_base
 	{
-		CSceneCamera Camera;
-		virtual ~CCameraComponent() = default;
+		scene_camera Camera;
+		virtual ~camera_component() = default;
 
 		uint8_t Primary : 1;
 		uint8_t FixedAspectRatio : 1;
 
-		CCameraComponent() = default;
-		CCameraComponent(const CCameraComponent&) = default;
+		camera_component() = default;
+		camera_component(const camera_component&) = default;
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 
 		operator auto& () { return Camera; }
 		operator const auto& () const { return Camera; }
 	};
 
-	struct CNativeScriptComponent : public CComponentBase
+	struct native_script_component : public component_base
 	{
-		CEntity* OwningEntity = nullptr;
-		CEntityController* Controller = nullptr;
+		entity* OwningEntity = nullptr;
+		entity_controller* Controller = nullptr;
 
-		TDelegate<CEntityController* ()> InstantiateDelegate;
-		TDelegate<void(CEntityController*&)> DestroyInstancesDelegate;
+		delegate<entity_controller* ()> InstantiateDelegate;
+		delegate<void(entity_controller*&)> DestroyInstancesDelegate;
 
-		virtual void OnConstruct(CEntity& pOwningEntity) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void on_construct(entity& pOwningEntity) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::ComponentFlagsNone;
+		static inline u32 Flags = ecf::ComponentFlagsNone;
 
 		template<typename T>
 		void BindController()
 		{
-			InstantiateDelegate.Bind([]() { return new T(); });
-			DestroyInstancesDelegate.Bind([](CEntityController*& pInst) { delete pInst; pInst = nullptr; });
+			InstantiateDelegate.bind([]() { return new T(); });
+			DestroyInstancesDelegate.bind([](entity_controller*& pInst) { delete pInst; pInst = nullptr; });
 		}
 	};
 
-	struct CRigidBody2DComponent : public CComponentBase
+	struct rigid_body_2d_component : public component_base
 	{
-		enum class EBodyType { Static = 0, Kinematic, Dynamic };
-		EBodyType Type = EBodyType::Static;
+		enum class body_type { Static = 0, Kinematic, Dynamic };
+		body_type Type = body_type::Static;
 		bool bFixedRotation;
 
 		void* RuntimeBody = nullptr;
 
-		CRigidBody2DComponent() = default;
-		CRigidBody2DComponent(const CRigidBody2DComponent&) = default;
+		rigid_body_2d_component() = default;
+		rigid_body_2d_component(const rigid_body_2d_component&) = default;
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 	};
 
-	struct CBoxCollider2DComponent : public CComponentBase
+	struct box_collider_2d_component : public component_base
 	{
-		FVec2 Offset = FVec2::ZeroVector();
-		FVec2 Size = FVec2::OneVector()*0.5f;
+		vec2 Offset = vec2::ZeroVector();
+		vec2 size = vec2::OneVector()*0.5f;
 
 		float Density=1.f;
 		float Friction=0.5f;
@@ -168,20 +168,20 @@ namespace ARC {
 
 		void* RuntimeFixture = nullptr;
 
-		CBoxCollider2DComponent() = default;
-		CBoxCollider2DComponent(const CBoxCollider2DComponent&) = default;
+		box_collider_2d_component() = default;
+		box_collider_2d_component(const box_collider_2d_component&) = default;
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 	};
 
-	struct CCircleCollider2DComponent : public CComponentBase
+	struct circle_collider_2d_component : public component_base
 	{
-		FVec2 Offset = FVec2::ZeroVector();
+		vec2 Offset = vec2::ZeroVector();
 		float Radius = 0.5f;
 
 		float Density = 1.f;
@@ -191,14 +191,14 @@ namespace ARC {
 
 		void* RuntimeFixture = nullptr;
 
-		CCircleCollider2DComponent() = default;
-		CCircleCollider2DComponent(const CCircleCollider2DComponent&) = default;
+		circle_collider_2d_component() = default;
+		circle_collider_2d_component(const circle_collider_2d_component&) = default;
 
-		virtual void DrawPropertiesUI(CEntity& pEntity) override;
-		virtual void Serialize(YAML::Emitter& pOut) override;
-		virtual void Deserialize(YAML::Node& pData) override;
-		virtual TUInt32 GetFlags() override { return Flags; };
+		virtual void draw_properties_ui(entity& pEntity) override;
+		virtual void serialize(YAML::Emitter& pOut) override;
+		virtual void deserialize(YAML::Node& pData) override;
+		virtual u32 get_flags() override { return Flags; };
 
-		static inline TUInt32 Flags = ECF::DefaultComponentFlags | ECF::Serializable;
+		static inline u32 Flags = ecf::DefaultComponentFlags | ecf::Serializable;
 	};
 }

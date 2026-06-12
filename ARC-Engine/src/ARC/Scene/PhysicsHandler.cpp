@@ -1,63 +1,63 @@
 #include "arc_pch.h"
 #include "PhysicsHandler.h"
 
-namespace ARC {
-	void SPhysyicsHandler::ProjectVertices(std::vector<FVec3>& pA, FVec3 pAxis, OUT float& pMin, OUT float& pMax) {
+namespace arc {
+	void physyics_handler::ProjectVertices(std::vector<vec3>& pA, vec3 pAxis, OUT float& pMin, OUT float& pMax) {
 		pMin = std::numeric_limits<float>::max();
 		pMax = -std::numeric_limits<float>::max();
 
 		for (auto _ : pA)
 		{
-			auto proj = SMath::Dot(_, pAxis);
+			auto proj = math::Dot(_, pAxis);
 
-			pMin = SMath::Min(pMin, proj);
-			pMax = SMath::Max(pMax, proj);
+			pMin = math::Min(pMin, proj);
+			pMax = math::Max(pMax, proj);
 		}
 	};
 
-	void SPhysyicsHandler::ProjectSphere(FVec3 pLoc, float pRadius, FVec3 pAxis, OUT float& pMin, OUT float& pMax)
+	void physyics_handler::ProjectSphere(vec3 pLoc, float pRadius, vec3 pAxis, OUT float& pMin, OUT float& pMax)
 	{
 		auto p1 = pLoc + pAxis.Normalize()*pRadius;
 		auto p2 = pLoc - pAxis.Normalize()*pRadius;
 
-		auto d1 = SMath::Dot(p1, pAxis);
-		auto d2 = SMath::Dot(p2, pAxis);
+		auto d1 = math::Dot(p1, pAxis);
+		auto d2 = math::Dot(p2, pAxis);
 
-		pMin = SMath::Min(d1, d2);
-		pMax = SMath::Max(d1, d2);
+		pMin = math::Min(d1, d2);
+		pMax = math::Max(d1, d2);
 	}
 
-	bool SPhysyicsHandler::IsCollidingSphere(FVec3 pLoc1, FVec3 pLoc2, float pRadiusSum, OUT FVec3& pNormal, OUT float& pDepth)
+	bool physyics_handler::is_colliding_sphere(vec3 pLoc1, vec3 pLoc2, float pRadiusSum, OUT vec3& pNormal, OUT float& pDepth)
 	{
-		float dist = SMath::DistSqr(pLoc1, pLoc2);
+		float dist = math::DistSqr(pLoc1, pLoc2);
 
-		if (dist > SMath::Sqr(pRadiusSum)) return false;
+		if (dist > math::Sqr(pRadiusSum)) return false;
 
-		dist = SMath::Sqrt(dist);
+		dist = math::Sqrt(dist);
 		pDepth = pRadiusSum-dist;
 		pNormal  = (pLoc2 - pLoc1) / dist;
 		return true;
 	}
 
-	bool SPhysyicsHandler::IsCollidingSphere(FVec3 pLoc1, FVec3 pLoc2, float pRadiusSum)
+	bool physyics_handler::is_colliding_sphere(vec3 pLoc1, vec3 pLoc2, float pRadiusSum)
 	{
-		return SMath::DistSqr(pLoc1, pLoc2) <= SMath::Sqr(pRadiusSum);
+		return math::DistSqr(pLoc1, pLoc2) <= math::Sqr(pRadiusSum);
 	}
 
 
-	bool SPhysyicsHandler::IsCollidingPolygon2D(std::vector<FVec3>& pA, std::vector<FVec3>& pB, OUT FVec3& pNormal, OUT float& pDepth)
+	bool physyics_handler::is_colliding_polygon2_d(std::vector<vec3>& pA, std::vector<vec3>& pB, OUT vec3& pNormal, OUT float& pDepth)
 	{
-		pNormal = FVec3::ZeroVector();
+		pNormal = vec3::ZeroVector();
 		pDepth = std::numeric_limits<float>::max();
 
-		auto fn = [&](std::vector<FVec3>& p1) -> bool {
+		auto fn = [&](std::vector<vec3>& p1) -> bool {
 			for (size_t i = 0; i < p1.size(); i++)
 			{
-				FVec3 vi = p1[i];
-				FVec3 vi2 = p1[(i + 1) % p1.size()];
+				vec3 vi = p1[i];
+				vec3 vi2 = p1[(i + 1) % p1.size()];
 
-				FVec3 edge = vi2 - vi;
-				FVec3 axis = FVec3(-edge.y, edge.x, 0);
+				vec3 edge = vi2 - vi;
+				vec3 axis = vec3(-edge.y, edge.x, 0);
 
 				float min, max, min2, max2;
 				ProjectVertices(pA, axis, min, max);
@@ -66,7 +66,7 @@ namespace ARC {
 				if (min >= max2 || min2 >= max)
 					return false;
 
-				float axisDepth = SMath::Min(max2 - min, max - min2);
+				float axisDepth = math::Min(max2 - min, max - min2);
 				if (axisDepth < pDepth)
 				{
 					pDepth = axisDepth;
@@ -82,7 +82,7 @@ namespace ARC {
 		pDepth /= pNormal.Length();
 		pNormal = pNormal.Normalize();
 
-		if (SMath::Dot(	SMath::Mean(pB)	- SMath::Mean(pA),	pNormal ) < 0.f )
+		if (math::Dot(	math::Mean(pB)	- math::Mean(pA),	pNormal ) < 0.f )
 		{
 			pNormal=pNormal*-1.f;
 		}
@@ -90,13 +90,13 @@ namespace ARC {
 		return true;
 	}
 
-	bool SPhysyicsHandler::IsCollidingPolygon2DVsSphere(std::vector<FVec3>& pA, FVec3 pSphereLoc, float pRadius, OUT FVec3& pNormal, OUT float& pDepth)
+	bool physyics_handler::is_colliding_polygon2_d_vs_sphere(std::vector<vec3>& pA, vec3 pSphereLoc, float pRadius, OUT vec3& pNormal, OUT float& pDepth)
 	{
-		pNormal = FVec3::ZeroVector();
+		pNormal = vec3::ZeroVector();
 		pDepth = std::numeric_limits<float>::max();
 
-		auto fn = [&](FVec3 edge) -> bool {
-			FVec3 axis = FVec3(-edge.y, edge.x, 0);
+		auto fn = [&](vec3 edge) -> bool {
+			vec3 axis = vec3(-edge.y, edge.x, 0);
 
 			float min, max, min2, max2;
 			ProjectVertices(pA, axis, min, max);
@@ -105,7 +105,7 @@ namespace ARC {
 			if (min >= max2 || min2 >= max)
 				return false;
 
-			float axisDepth = SMath::Min(max2 - min, max - min2);
+			float axisDepth = math::Min(max2 - min, max - min2);
 			if (axisDepth < pDepth)
 			{
 				pDepth = axisDepth;
@@ -124,7 +124,7 @@ namespace ARC {
 			float MinDistSqr = std::numeric_limits<float>::max();
 			for (int i = 0; i < pA.size(); i++)
 			{
-				auto distSqr = SMath::DistSqr(pA[i], pSphereLoc);
+				auto distSqr = math::DistSqr(pA[i], pSphereLoc);
 				if (MinDistSqr > distSqr)
 				{
 					ClossestPointIndex = i;
@@ -137,7 +137,7 @@ namespace ARC {
 		pDepth /= pNormal.Length();
 		pNormal = pNormal.Normalize();
 
-		if (SMath::Dot(pSphereLoc - SMath::Mean(pA), pNormal) < 0.f)
+		if (math::Dot(pSphereLoc - math::Mean(pA), pNormal) < 0.f)
 		{
 			pNormal = pNormal * -1.f;
 		}
@@ -145,41 +145,41 @@ namespace ARC {
 		return true;
 	}
 
-	void SPhysyicsHandler::ClearOverlap(FVec3& pLHS, FVec3& pRHS, FVec3 pNormal, float pDepth)
+	void physyics_handler::ClearOverlap(vec3& pLHS, vec3& pRHS, vec3 pNormal, float pDepth)
 	{
 		pLHS -= pNormal * pDepth / 2.f;
 		pRHS += pNormal * pDepth / 2.f;
 	}
 
-	void SPhysyicsHandler::HandleLinearCollisionResponse(FVec3& pVelocity1, FVec3& pVelocity2, float pMass1, float pMass2, FVec3 pNormal, float pRestitution /*= 1.f*/)
+	void physyics_handler::HandleLinearCollisionResponse(vec3& pVelocity1, vec3& pVelocity2, float pMass1, float pMass2, vec3 pNormal, float pRestitution /*= 1.f*/)
 	{
-		float j = -(1.f + pRestitution) * SMath::Dot((pVelocity2 - pVelocity1), pNormal) / (1 / pMass1 + 1 / pMass2);
+		float j = -(1.f + pRestitution) * math::Dot((pVelocity2 - pVelocity1), pNormal) / (1 / pMass1 + 1 / pMass2);
 
 		pVelocity1 -= pNormal * j / pMass1;
 		pVelocity2 += pNormal * j / pMass2;
 	}
 
-	void SPhysyicsHandler::HandleAngularCollisionResponse(FVec3& pAngularVelocity1, FVec3& pAngularVelocity2, float pMass1, float pMass2, FVec3 pNormal, float pRestitution /*= 1.f*/)
+	void physyics_handler::HandleAngularCollisionResponse(vec3& pAngularVelocity1, vec3& pAngularVelocity2, float pMass1, float pMass2, vec3 pNormal, float pRestitution /*= 1.f*/)
 	{
 
 	}
 
-	void SPhysyicsHandler::UpdateFrameLinearVelocity(FTransform2D& pTrans, const FVec3& pVelocity, float pDeltaTime)
+	void physyics_handler::UpdateFrameLinearVelocity(transform_2d& pTrans, const vec3& pVelocity, float pDeltaTime)
 	{
 		pTrans.Location += pVelocity * pDeltaTime;
 	}
 
-	void SPhysyicsHandler::UpdateFrameAngularVelocity(FTransform2D& pTrans, const FVec3& pAngularVelocity, float pDeltaTime)
+	void physyics_handler::UpdateFrameAngularVelocity(transform_2d& pTrans, const vec3& pAngularVelocity, float pDeltaTime)
 	{
 		pTrans.Rotation += pAngularVelocity.x * pDeltaTime;
 	}
 
-	void SPhysyicsHandler::UpdateFrameAcceleration(FVec3& pVelocity, const FVec3& pAcceleration, float pDeltaTime)
+	void physyics_handler::UpdateFrameAcceleration(vec3& pVelocity, const vec3& pAcceleration, float pDeltaTime)
 	{
 		pVelocity += pAcceleration * pDeltaTime;
 	}
 
-	void SPhysyicsHandler::UpdateFrameAngularAcceleration(FVec3& pAngularVelocity, const FVec3& pAngularAcceleration, float pDeltaTime)
+	void physyics_handler::UpdateFrameAngularAcceleration(vec3& pAngularVelocity, const vec3& pAngularAcceleration, float pDeltaTime)
 	{
 		pAngularVelocity += pAngularAcceleration * pDeltaTime;
 	}

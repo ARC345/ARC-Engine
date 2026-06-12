@@ -16,13 +16,13 @@
 #include "ARC/Events/MouseEvent.h"
 #include "ARC/Events/KeyEvent.h"
 
-namespace ARC {
-	static CEntity ESquare;
-	static CEntity ECamera;
+namespace arc {
+	static entity ESquare;
+	static entity ECamera;
 
-	CEditorLayer::CEditorLayer() :
-		CLayer("EditorLayer"),
-		mCameraController(1280.f / 780.f, true)
+	editor_layer::editor_layer() :
+		layer("EditorLayer"),
+		camera_controller_(1280.f / 780.f, true)
 		#ifdef ARC_DRAW_DEBUG_SHAPES
 		, DrawDebugShapes(1u)
 		#endif // ARC_DRAW_DEBUG_SHAPES
@@ -30,135 +30,135 @@ namespace ARC {
 	{
 	}
 
-	void CEditorLayer::OnAttach()
+	void editor_layer::on_attach()
 	{
-		mPlayButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PlayButton.png"));
-		mStopButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/StopButton.png"));
-		mPauseButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/PauseButton.png"));
-		mSimulateButtonTexture = CTexture2D::Create(std::filesystem::path("resources/icons/SimulateButton.png"));
+		play_button_texture_ = texture_2d::create(std::filesystem::path("resources/icons/PlayButton.png"));
+		stop_button_texture_ = texture_2d::create(std::filesystem::path("resources/icons/StopButton.png"));
+		pause_button_texture_ = texture_2d::create(std::filesystem::path("resources/icons/PauseButton.png"));
+		simulate_button_texture_ = texture_2d::create(std::filesystem::path("resources/icons/SimulateButton.png"));
 
-		SFrameBufferSpecification frame_buffer_specs;
+		frame_buffer_specification frame_buffer_specs;
 		frame_buffer_specs.Width = 1280;
 		frame_buffer_specs.Height = 720;
-		frame_buffer_specs.Attachments = { EFrameBufferTextureFormat::RGBA8, EFrameBufferTextureFormat::RED_INTEGER, EFrameBufferTextureFormat::DEPTH24STENCIL8 };
-		mFrameBuffer = CFrameBuffer::Create(frame_buffer_specs);
+		frame_buffer_specs.Attachments = { frame_buffer_texture_format::RGBA8, frame_buffer_texture_format::RED_INTEGER, frame_buffer_texture_format::DEPTH24STENCIL8 };
+		frame_buffer_ = framebuffer::create(frame_buffer_specs);
 
-		mActiveScene = CreateRef<CScene>();
+		active_scene_ = create_ref<scene>();
 
-		mEditorScene = mActiveScene;
+		editor_scene_ = active_scene_;
 
-		mLifeSim2D = CreateRef<CLifeSim2D>();
-		mSceneHierachyPanel.SetContext(mActiveScene);
-		mEditorCamera = CEditorCamera(30.0f, 1.778f, 0.1f, 1000.0f);
+		life_sim2_d_ = create_ref<life_sim_2d>();
+		scene_hierachy_panel_.set_context(active_scene_);
+		editor_camera_ = editor_camera(30.0f, 1.778f, 0.1f, 1000.0f);
 
-		mLifeSim2D->OnAttach(mActiveScene);
+		life_sim2_d_->on_attach(active_scene_);
 	}
 
-	void CEditorLayer::OnDetach()
+	void editor_layer::on_detach()
 	{
-		mLifeSim2D->OnDetach();
+		life_sim2_d_->on_detach();
 	}
 
-	void CEditorLayer::OnUpdate(float _DeltaTime)
+	void editor_layer::on_update(float delta_time)
 	{
-		if (SFrameBufferSpecification spec = mFrameBuffer->GetSpecifications();
-			mViewportSize.x > 0.0f && mViewportSize.y > 0.0f && // zero sized framebuffer is invalid
-			(spec.Width != mViewportSize.x || spec.Height != mViewportSize.y))
+		if (frame_buffer_specification spec = frame_buffer_->get_specifications();
+			viewport_size_.x > 0.0f && viewport_size_.y > 0.0f && // zero sized framebuffer is invalid
+			(spec.Width != viewport_size_.x || spec.Height != viewport_size_.y))
 		{
-			mFrameBuffer->Resize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
-			mCameraController.OnResize(mViewportSize.x, mViewportSize.y);
-			mEditorCamera.SetViewportSize(mViewportSize.x, mViewportSize.y);
-			mActiveScene->OnViewportResize({ (TUInt32)mViewportSize.x, (TUInt32)mViewportSize.y });
+			frame_buffer_->resize({ (u32)viewport_size_.x, (u32)viewport_size_.y });
+			camera_controller_.OnResize(viewport_size_.x, viewport_size_.y);
+			editor_camera_.set_viewport_size(viewport_size_.x, viewport_size_.y);
+			active_scene_->on_viewport_resize({ (u32)viewport_size_.x, (u32)viewport_size_.y });
 		}
 
-		if (mIsViewportHovered && mIsViewportFocused)	mCameraController.OnUpdate(_DeltaTime);
+		if (is_viewport_hovered_ && is_viewport_focused_)	camera_controller_.on_update(delta_time);
 		
-		SRenderer2D::ResetStats();
+		renderer_2d::ResetStats();
 
-		mFrameBuffer->Bind();
+		frame_buffer_->bind();
 
-		CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
-		CRenderCommand::Clear();
+		render_command::set_clear_colour({ .1f, .1f, .1f, 1.f });
+		render_command::clear();
 
-		mFrameBuffer->ClearColorAttachment(1, -1);
+		frame_buffer_->ClearColorAttachment(1, -1);
 
-		switch (mSceneState) {
-		case ESceneState::Edit:
-			mActiveScene->OnUpdateEditor(_DeltaTime, mEditorCamera);
-			mLifeSim2D->OnUpdateEditor(_DeltaTime);
+		switch (scene_state_) {
+		case scene_state::Edit:
+			active_scene_->on_update_editor(delta_time, editor_camera_);
+			life_sim2_d_->on_update_editor(delta_time);
 			break;
-		case ESceneState::Play:
-			mActiveScene->OnUpdateRuntime(_DeltaTime);
-			mLifeSim2D->OnUpdateRuntime(_DeltaTime);
+		case scene_state::Play:
+			active_scene_->on_update_runtime(delta_time);
+			life_sim2_d_->on_update_runtime(delta_time);
 			break;
-		case ESceneState::Simulate:
-			mActiveScene->OnUpdateSimulation(_DeltaTime, mEditorCamera);
+		case scene_state::Simulate:
+			active_scene_->on_update_simulation(delta_time, editor_camera_);
 			break;
 		}
 
-		auto viewportSize = mViewportMaxBound-mViewportMinBound;
-		auto MousePos = (FVec2&)ImGui::GetMousePos() - mViewportMinBound;
+		auto viewportSize = viewport_max_bound_-viewport_min_bound_;
+		auto MousePos = (vec2&)ImGui::get_mouse_pos() - viewport_min_bound_;
 		MousePos.y = viewportSize.y - MousePos.y;
 
 		if (MousePos.x >= 0 && MousePos.y >= 0 && MousePos.x < viewportSize.x && MousePos.y < viewportSize.y) {
-			auto readPixel = mFrameBuffer->ReadPixel(1, MousePos.x, MousePos.y);
-			mHoveredEntity =  readPixel == -1 ? CEntity{} : CEntity{ TEntityID(readPixel), mActiveScene.get() };
+			auto readPixel = frame_buffer_->read_pixel(1, MousePos.x, MousePos.y);
+			hovered_entity_ =  readPixel == -1 ? entity{} : entity{ entity_id(readPixel), active_scene_.get() };
 		}
 		OnOverlayRender();
-		mFrameBuffer->UnBind();
+		frame_buffer_->UnBind();
 
-		mEditorCamera.OnUpdate(_DeltaTime);
+		editor_camera_.on_update(delta_time);
 	}
 
-	void CEditorLayer::OnEvent(CEvent& _Event)
+	void editor_layer::on_event(event& event)
 	{
-		mEditorCamera.OnEvent(_Event);
-		CEventDispatcher dispatcher(_Event);
-		dispatcher.Dispatch<CKeyPressedEvent>(BIND_FN(&CEditorLayer::OnKeyPressed));
-		dispatcher.Dispatch<CMouseButtonPressedEvent>(BIND_FN(&CEditorLayer::OnMousePressedEvent));
+		editor_camera_.on_event(event);
+		event_dispatcher dispatcher(event);
+		dispatcher.Dispatch<key_pressed_event>(BIND_FN(&editor_layer::on_key_pressed));
+		dispatcher.Dispatch<mouse_button_pressed_event>(BIND_FN(&editor_layer::OnMousePressedEvent));
 	}
-	bool CEditorLayer::OnKeyPressed(CKeyPressedEvent& pE)
+	bool editor_layer::on_key_pressed(key_pressed_event& pE)
 	{
-		if (pE.GetRepeatCount() > 0)
+		if (pE.get_repeat_count() > 0)
 			return false;
 
-		bool control = SInput::IsKeyPressed(EKey::LeftControl) || SInput::IsKeyPressed(EKey::RightControl);
-		bool shift = SInput::IsKeyPressed(EKey::LeftShift) || SInput::IsKeyPressed(EKey::RightShift);
+		bool control = input::is_key_pressed(key::LeftControl) || input::is_key_pressed(key::RightControl);
+		bool shift = input::is_key_pressed(key::LeftShift) || input::is_key_pressed(key::RightShift);
 
-		switch (pE.GetKeyCode())
+		switch (pE.get_key_code())
 		{
 		// Scene
-		case EKey::N:
+		case key::N:
 		{
 			if (control)
-				NewScene();
+				new_scene();
 
 			break;
 		}
-		case EKey::O:
+		case key::O:
 		{
 			if (control)
-				OpenScene();
+				open_scene();
 
 			break;
 		}
-		case EKey::S:
+		case key::S:
 		{
 			if (control) {
 				if (shift)
-					SaveSceneAs();
+					save_scene_as();
 				else
-					SaveScene();
+					save_scene();
 			}
 			break;
 		}
 		// Editor
-		case EKey::D:
+		case key::D:
 		{
-			switch (mSceneState) {
-			case ESceneState::Edit:
-				if (control && mSceneHierachyPanel.GetSelectedEntity()) 
-					mSceneHierachyPanel.GetSelectedEntity().Duplicate(); // @TODO: Rename
+			switch (scene_state_) {
+			case scene_state::Edit:
+				if (control && scene_hierachy_panel_.get_selected_entity()) 
+					scene_hierachy_panel_.get_selected_entity().Duplicate(); // @TODO: Rename
 				
 				break;
 			};
@@ -166,41 +166,41 @@ namespace ARC {
 		}
 		
 		// Gizmos
-		case EKey::Q:
+		case key::Q:
 		{
-			if (!ImGuizmo::IsUsing())
-				mGuizmoType = -1;
+			if (!ImGuizmo::is_using())
+				guizmo_type_ = -1;
 			break;
 		}
-		case EKey::W:
+		case key::W:
 		{
-			if (!ImGuizmo::IsUsing())
-				mGuizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			if (!ImGuizmo::is_using())
+				guizmo_type_ = ImGuizmo::OPERATION::TRANSLATE;
 			break;
 		}
-		case EKey::E:
+		case key::E:
 		{
-			if (!ImGuizmo::IsUsing())
-				mGuizmoType = ImGuizmo::OPERATION::ROTATE;
+			if (!ImGuizmo::is_using())
+				guizmo_type_ = ImGuizmo::OPERATION::ROTATE;
 			break;
 		}
-		case EKey::R:
+		case key::R:
 		{
-			if (!ImGuizmo::IsUsing())
-				mGuizmoType = ImGuizmo::OPERATION::SCALE;
+			if (!ImGuizmo::is_using())
+				guizmo_type_ = ImGuizmo::OPERATION::SCALE;
 			break;
 		}
 		}
 	}
-	bool CEditorLayer::OnMousePressedEvent(CMouseButtonPressedEvent& pE)
+	bool editor_layer::OnMousePressedEvent(mouse_button_pressed_event& pE)
 	{
-		if (pE.GetMouseButton() == EMouse::ButtonLeft)
-			if (mIsViewportHovered && !ImGuizmo::IsOver() && !SInput::IsKeyPressed(EKey::LeftAlt))
-				mSceneHierachyPanel.SetSelectedEntity(mHoveredEntity);
+		if (pE.get_mouse_button() == mouse::ButtonLeft)
+			if (is_viewport_hovered_ && !ImGuizmo::is_over() && !input::is_key_pressed(key::LeftAlt))
+				scene_hierachy_panel_.set_selected_entity(hovered_entity_);
 		return false;
 	}
 
-	void CEditorLayer::OnGuiRender()
+	void editor_layer::on_gui_render()
 	{
 		ARC_PROFILE_FUNCTION();
 		// Note: Switch this to true to enable dockspace
@@ -217,37 +217,37 @@ namespace ARC {
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
 			if (opt_fullscreen)
 			{
-				ImGuiViewport* viewport = ImGui::GetMainViewport();
-				ImGui::SetNextWindowPos(viewport->Pos);
-				ImGui::SetNextWindowSize(viewport->Size);
-				ImGui::SetNextWindowViewport(viewport->ID);
+				ImGuiViewport* viewport = ImGui::get_main_viewport();
+				ImGui::set_next_window_pos(viewport->Pos);
+				ImGui::set_next_window_size(viewport->size);
+				ImGui::set_next_window_viewport(viewport->ID);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 				window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 			}
 
-			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask Begin() to not render a background.
+			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background and handle the pass-thru hole, so we ask begin() to not render a background.
 			if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
 				window_flags |= ImGuiWindowFlags_NoBackground;
 
-			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+			// Important: note that we proceed even if begin() returns false (aka window is collapsed).
 			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive, 
 			// all active windows docked into it will lose their parent and become undocked.
 			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise 
 			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-			ImGui::Begin("DockSpace Demo", &dockspaceOpen, window_flags);
+			ImGui::begin("DockSpace Demo", &dockspaceOpen, window_flags);
 			ImGui::PopStyleVar();
 
 			if (opt_fullscreen)
 				ImGui::PopStyleVar(2);
 
 			// DockSpace
-			ImGuiIO& io = ImGui::GetIO();
+			ImGuiIO& io = ImGui::get_io();
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
-				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+				ImGuiID dockspace_id = ImGui::get_id("MyDockSpace");
 				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			}
 
@@ -262,39 +262,39 @@ namespace ARC {
 					if (ImGui::MenuItem("Save")) {}
 					if (ImGui::MenuItem("Open...", "Ctrl+O"))
 					{
-						auto filepath = SFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						auto filepath = file_dialogs::open_file("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
-							OpenScene(filepath);
+							open_scene(filepath);
 					}
 					if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 					{
-						auto filepath = SFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+						auto filepath = file_dialogs::save_file("ARC-Engine Scene (*.arc)\0*.arc\0");
 						if (!filepath.empty())
-							mActiveScene->SerializeToText(filepath);
+							active_scene_->serialize_to_text(filepath);
 					}
-					if (ImGui::MenuItem("Exit")) CApplication::Get().Shutdown();
+					if (ImGui::MenuItem("Exit")) application::Get().shutdown();
 					ImGui::EndMenu();
 				}
 
 				ImGui::EndMenuBar();
 			}
 
-			mSceneHierachyPanel.OnImGuiRender();
-			mContentBrowserPanel.OnImGuiRender();
+			scene_hierachy_panel_.on_imgui_render();
+			content_browser_panel_.on_imgui_render();
 
-			ImGui::Begin("Settings");
+			ImGui::begin("set_tings");
 
-			auto stats = SRenderer2D::GetStats();
+			auto stats = renderer_2d::get_stats();
 			ImGui::Text("Renderer2D Stats:");
 			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 			ImGui::Text("Quads: %d", stats.QuadCount);
-			ImGui::Text("Vertices: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Indices: %d", stats.GetTotalIndexCount());
+			ImGui::Text("Vertices: %d", stats.get_total_vertex_count());
+			ImGui::Text("Indices: %d", stats.get_total_index_count());
 
-			TString name = "None";
+			string name = "None";
 
-			if (mHoveredEntity && mHoveredEntity.HasComponent<CNameComponent>())
-				name = mHoveredEntity.GetComponent<CNameComponent>().Name;
+			if (hovered_entity_ && hovered_entity_.has_component<name_component>())
+				name = hovered_entity_.get_component<name_component>().Name;
 
 			ImGui::Text("Hovered Entity: %s", name.c_str());
 
@@ -318,203 +318,203 @@ namespace ARC {
 				ImGui::TreePop();
 			}
 
-			ImGui::End();
+			ImGui::end();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 5, 5 });
-			ImGui::Begin("Viewport");
-			auto viewportMinRegion = (FVec2&)ImGui::GetWindowContentRegionMin();
-			auto viewportMaxRegion = (FVec2&)ImGui::GetWindowContentRegionMax();
-			auto viewportOffset = (FVec2&)ImGui::GetWindowPos();
+			ImGui::begin("Viewport");
+			auto viewportMinRegion = (vec2&)ImGui::get_window_content_region_min();
+			auto viewportMaxRegion = (vec2&)ImGui::get_window_content_region_max();
+			auto viewportOffset = (vec2&)ImGui::get_window_pos();
 
-			mViewportMinBound = viewportMinRegion + viewportOffset;
-			mViewportMaxBound = viewportMaxRegion + viewportOffset;
+			viewport_min_bound_ = viewportMinRegion + viewportOffset;
+			viewport_max_bound_ = viewportMaxRegion + viewportOffset;
 
-			mIsViewportFocused = ImGui::IsWindowFocused();
-			mIsViewportHovered = ImGui::IsWindowHovered();
+			is_viewport_focused_ = ImGui::is_window_focused();
+			is_viewport_hovered_ = ImGui::is_window_hovered();
 			
-			CApplication::Get().GetImGuiLayer()->SetBlockEvents(!mIsViewportFocused || !mIsViewportHovered);
-			ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-			mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			TUInt64 textureID = mFrameBuffer->GetColorAttachmentRendererID();
+			application::Get().get_imgui_layer()->set_block_events(!is_viewport_focused_ || !is_viewport_hovered_);
+			ImVec2 viewportPanelSize = ImGui::get_content_region_avail();
+			viewport_size_ = { viewportPanelSize.x, viewportPanelSize.y };
+			u64 textureID = frame_buffer_->get_color_attachment_renderer_id();
 			
-			ImGui::Image((void*)textureID, ImVec2{ mViewportSize.x, mViewportSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::Image((void*)textureID, ImVec2{ viewport_size_.x, viewport_size_.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 			if (ImGui::BeginDragDropTarget())
 			{
 				if (const auto* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 				{
 					const auto* path = (const wchar_t*)payload->Data;
-					OpenScene(std::filesystem::path("assets")/std::filesystem::path(path));
+					open_scene(std::filesystem::path("assets")/std::filesystem::path(path));
 				}
 				ImGui::EndDragDropTarget();
 			}
 
 			// Gizmos
-			CEntity selectedEntity = mSceneHierachyPanel.GetSelectedEntity();
-			if (selectedEntity && mGuizmoType != -1)
+			entity selectedEntity = scene_hierachy_panel_.get_selected_entity();
+			if (selectedEntity && guizmo_type_ != -1)
 			{
-				ImGuizmo::SetOrthographic(false);
-				ImGuizmo::SetDrawlist();
-				ImGuizmo::SetRect(mViewportMinBound.x, mViewportMinBound.y, mViewportMaxBound.x-mViewportMinBound.x, mViewportMaxBound.y - mViewportMinBound.y);
+				ImGuizmo::set_orthographic(false);
+				ImGuizmo::set_drawlist();
+				ImGuizmo::set_rect(viewport_min_bound_.x, viewport_min_bound_.y, viewport_max_bound_.x-viewport_min_bound_.x, viewport_max_bound_.y - viewport_min_bound_.y);
 				
-				if (selectedEntity.HasComponent<CTransform2DComponent>())
+				if (selectedEntity.has_component<transform_2d_component>())
 				{
 					// Snapping
-					bool snap = SInput::IsKeyPressed(EKey::LeftControl);
+					bool snap = input::is_key_pressed(key::LeftControl);
 					float snapValue = 0.5f; // Snap to 0.5m for translation/scale
 
 					// Snap to 45 degrees for rotation
-					if (mGuizmoType == ImGuizmo::OPERATION::ROTATE)
+					if (guizmo_type_ == ImGuizmo::OPERATION::ROTATE)
 						snapValue = 45.0f;
 
 					float snapValues[3] = { snapValue, snapValue, snapValue };
 
-					auto& entityTransform = selectedEntity.GetComponent<CTransform2DComponent>().Transform;
-					auto entityTransformMatrix = SConvert<FGLMMat4, FTransform2D>::Conv(entityTransform);
+					auto& entityTransform = selectedEntity.get_component<transform_2d_component>().Transform;
+					auto entityTransformMatrix = convert<mat4, transform_2d>::Conv(entityTransform);
 					ImGuizmo::Manipulate(
-						glm::value_ptr(mEditorCamera.GetViewMatrix()),
-						glm::value_ptr(mEditorCamera.GetProjection()),
-						(ImGuizmo::OPERATION)mGuizmoType,
+						glm::value_ptr(editor_camera_.get_view_matrix()),
+						glm::value_ptr(editor_camera_.get_projection()),
+						(ImGuizmo::OPERATION)guizmo_type_,
 						ImGuizmo::LOCAL,
 						glm::value_ptr(entityTransformMatrix),
 						nullptr,
 						snap ? snapValues : nullptr
 					);
-					if (ImGuizmo::IsUsing())
-						entityTransform = SConvert<FTransform2D, FGLMMat4>::Conv(entityTransformMatrix);
+					if (ImGuizmo::is_using())
+						entityTransform = convert<transform_2d, mat4>::Conv(entityTransformMatrix);
 				}
 			}
 
-			ImGui::End();
+			ImGui::end();
 			ImGui::PopStyleVar();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 2));
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0,0,0,0.1));
-			const auto& tmp = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+			const auto& tmp = ImGui::get_style().Colors[ImGuiCol_ButtonHovered];
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { tmp.x,tmp.y,tmp.z,tmp.w / 2 });
-			const auto& tmp2 = ImGui::GetStyle().Colors[ImGuiCol_ButtonHovered];
+			const auto& tmp2 = ImGui::get_style().Colors[ImGuiCol_ButtonHovered];
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, { tmp2.x,tmp2.y,tmp2.z,tmp2.w / 2 });
-			ImGui::Begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
-			auto buttonSize = ImGui::GetWindowHeight()-10;
-			switch (mSceneState) {
-			case ESceneState::Edit:
-				ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x) * 0.5f - buttonSize);
+			ImGui::begin("##toolbar", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse);
+			auto buttonSize = ImGui::get_window_height()-10;
+			switch (scene_state_) {
+			case scene_state::Edit:
+				ImGui::set_cursor_pos_x((ImGui::get_content_region_max().x) * 0.5f - buttonSize);
 
-				if (ImGui::ImageButton((ImTextureID)(uint64_t)mPlayButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-					SetSceneState(ESceneState::Play);
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)play_button_texture_->get_renderer_id(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					set_scene_state(scene_state::Play);
 				}
 				ImGui::SameLine();
-				if (ImGui::ImageButton((ImTextureID)(uint64_t)mSimulateButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-					SetSceneState(ESceneState::Simulate);
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)simulate_button_texture_->get_renderer_id(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					set_scene_state(scene_state::Simulate);
 				}
 				break;
-			case ESceneState::Play: case ESceneState::Simulate:
-				ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x - buttonSize) * 0.5f);
-				if (ImGui::ImageButton((ImTextureID)(uint64_t)mStopButtonTexture->GetRendererID(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
-					SetSceneState(ESceneState::Edit);
+			case scene_state::Play: case scene_state::Simulate:
+				ImGui::set_cursor_pos_x((ImGui::get_content_region_max().x - buttonSize) * 0.5f);
+				if (ImGui::ImageButton((ImTextureID)(uint64_t)stop_button_texture_->get_renderer_id(), ImVec2(buttonSize, buttonSize), ImVec2(0, 0), ImVec2(1, 1), 0)) {
+					set_scene_state(scene_state::Edit);
 				}
 				break;
 			}
 
-			ImGui::End();
+			ImGui::end();
 			ImGui::PopStyleVar(2);
 			ImGui::PopStyleColor(3);
-			mLifeSim2D->OnGuiRender();
-			ImGui::End();
+			life_sim2_d_->on_gui_render();
+			ImGui::end();
 
 		}
 	}
 
-	void CEditorLayer::NewScene()
+	void editor_layer::new_scene()
 	{
-		mActiveScene = CreateRef<CScene>();
-		mActiveScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
-		mSceneHierachyPanel.SetContext(mActiveScene);
-		mEditorScenePath = std::filesystem::path();
+		active_scene_ = create_ref<scene>();
+		active_scene_->on_viewport_resize(vec2<uint32_t>(viewport_size_.x, viewport_size_.y));
+		scene_hierachy_panel_.set_context(active_scene_);
+		editor_scene_path_ = std::filesystem::path();
 	}
 
-	void CEditorLayer::OpenScene()
+	void editor_layer::open_scene()
 	{
-		OpenScene(SFileDialogs::OpenFile("ARC-Engine Scene (*.arc)\0*.arc\0"));
+		open_scene(file_dialogs::open_file("ARC-Engine Scene (*.arc)\0*.arc\0"));
 	}
 
-	void CEditorLayer::OpenScene(const std::filesystem::path& pFilepath)
+	void editor_layer::open_scene(const std::filesystem::path& pFilepath)
 	{
 		if (pFilepath.empty()) return;
 		if (pFilepath.extension().string() != ".arc") return;
 
-		mEditorScene = CreateRef<CScene>();
-		mEditorScene->OnViewportResize(TVec2<uint32_t>(mViewportSize.x, mViewportSize.y));
-		mEditorScene->DeserializeFromText(pFilepath);
+		editor_scene_ = create_ref<scene>();
+		editor_scene_->on_viewport_resize(vec2<uint32_t>(viewport_size_.x, viewport_size_.y));
+		editor_scene_->deserialize_from_text(pFilepath);
 
-		SetSceneState(ESceneState::Edit);
+		set_scene_state(scene_state::Edit);
 
-		mEditorScenePath = pFilepath;
+		editor_scene_path_ = pFilepath;
 	}
 
-	void CEditorLayer::SaveSceneAs()
+	void editor_layer::save_scene_as()
 	{
-		auto filepath = SFileDialogs::SaveFile("ARC-Engine Scene (*.arc)\0*.arc\0");
+		auto filepath = file_dialogs::save_file("ARC-Engine Scene (*.arc)\0*.arc\0");
 		if (filepath.empty()) return;
-		mEditorScenePath = filepath;
-		mActiveScene->SerializeToText(filepath);
+		editor_scene_path_ = filepath;
+		active_scene_->serialize_to_text(filepath);
 	}
 
-	void CEditorLayer::SaveScene()
+	void editor_layer::save_scene()
 	{
-		if (mEditorScenePath.empty()) SaveSceneAs();
-		else mActiveScene->SerializeToText(mEditorScenePath);
+		if (editor_scene_path_.empty()) save_scene_as();
+		else active_scene_->serialize_to_text(editor_scene_path_);
 	}
 
-	void CEditorLayer::SetSceneState(ESceneState pNewState)
+	void editor_layer::set_scene_state(scene_state pNewState)
 	{
-		if (mSceneState == ESceneState::Play || mSceneState == ESceneState::Simulate) {
-			mActiveScene->OnSetSceneState((TUInt8)mSceneState, 0);
+		if (scene_state_ == scene_state::Play || scene_state_ == scene_state::Simulate) {
+			active_scene_->on_set_scene_state((u8)scene_state_, 0);
 		}
 
-		mActiveScene = pNewState == ESceneState::Edit ? mEditorScene : CScene::Copy(mEditorScene); 
+		active_scene_ = pNewState == scene_state::Edit ? editor_scene_ : scene::copy(editor_scene_); 
 		
-		mLifeSim2D->SetScene(mActiveScene);
-		mActiveScene->OnSetSceneState(0, (TUInt8)pNewState);
-		mSceneState = pNewState;
+		life_sim2_d_->set_scene(active_scene_);
+		active_scene_->on_set_scene_state(0, (u8)pNewState);
+		scene_state_ = pNewState;
 
-		mSceneHierachyPanel.SetContext(mActiveScene);
+		scene_hierachy_panel_.set_context(active_scene_);
 	}
 
-	void CEditorLayer::OnOverlayRender()
+	void editor_layer::OnOverlayRender()
 	{
 		#ifdef ARC_DRAW_DEBUG_SHAPES
-		SRenderer2D::EndScene();
-		switch (mSceneState) {
-		case ESceneState::Edit: case ESceneState::Simulate:
-			SRenderer2D::BeginScene(mEditorCamera);
+		renderer_2d::end_scene();
+		switch (scene_state_) {
+		case scene_state::Edit: case scene_state::Simulate:
+			renderer_2d::begin_scene(editor_camera_);
 			break;
-		case ESceneState::Play:
-			if (auto e = mActiveScene->GetPrimaryCameraEntity())
-				SRenderer2D::BeginScene(e.GetComponent<CCameraComponent>().Camera, e.GetComponent<CTransform2DComponent>().Transform);
+		case scene_state::Play:
+			if (auto e = active_scene_->get_primary_camera_entity())
+				renderer_2d::begin_scene(e.get_component<camera_component>().Camera, e.get_component<transform_2d_component>().Transform);
 			break;
 		}
-		mActiveScene->FilterByComponents<CTransform2DComponent, CCircleCollider2DComponent>().each([&](auto e, auto& transformComponent, auto& circleColliderComponent) {
+		active_scene_->FilterByComponents<transform_2d_component, circle_collider_2d_component>().each([&](auto e, auto& transformComponent, auto& circleColliderComponent) {
 			if (DrawDebugShapes)
 			{
-				SRenderer2D::DrawCircle(transformComponent.Transform.Location+FVec3(circleColliderComponent.Offset.x, circleColliderComponent.Offset.y, 0.001), transformComponent.Transform.Rotation, FVec2(circleColliderComponent.Radius) * transformComponent.Transform.Scale.x * 2.f, DebugCircleColliderColor, DebugCircleColliderThickness, 0.995, (int)e);
+				renderer_2d::draw_circle(transformComponent.Transform.Location+vec3(circleColliderComponent.Offset.x, circleColliderComponent.Offset.y, 0.001), transformComponent.Transform.Rotation, vec2(circleColliderComponent.Radius) * transformComponent.Transform.Scale.x * 2.f, DebugCircleColliderColor, DebugCircleColliderThickness, 0.995, (int)e);
 			}
 			});
-		mActiveScene->FilterByComponents<CTransform2DComponent, CBoxCollider2DComponent>().each([&](auto e, auto& transformComponent, auto& boxColliderComponent) {
+		active_scene_->FilterByComponents<transform_2d_component, box_collider_2d_component>().each([&](auto e, auto& transformComponent, auto& boxColliderComponent) {
 			if (DrawDebugShapes)
 			{
-				float lT = SRenderer2D::GetLineThickness();
-				SRenderer2D::SetLineThickness(DebugBoxColliderThickness);
-				SRenderer2D::DrawRect(
-					transformComponent.Transform.Location + FVec3(boxColliderComponent.Offset.x, boxColliderComponent.Offset.y, 0.001),
+				float lT = renderer_2d::get_line_thickness();
+				renderer_2d::set_line_thickness(DebugBoxColliderThickness);
+				renderer_2d::DrawRect(
+					transformComponent.Transform.Location + vec3(boxColliderComponent.Offset.x, boxColliderComponent.Offset.y, 0.001),
 					transformComponent.Transform.Rotation,
-					boxColliderComponent.Size * transformComponent.Transform.Scale * 2.f,
+					boxColliderComponent.size * transformComponent.Transform.Scale * 2.f,
 					DebugBoxColliderColor,
 					(int)e);
-				SRenderer2D::SetLineThickness(lT);
+				renderer_2d::set_line_thickness(lT);
 			}
 			});
-		SRenderer2D::EndScene();
+		renderer_2d::end_scene();
 		#endif // ARC_DRAW_DEBUG_SHAPES
 		
 	}

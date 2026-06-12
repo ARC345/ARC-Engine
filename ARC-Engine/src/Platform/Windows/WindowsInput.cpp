@@ -4,31 +4,31 @@
 #include "GLFW/glfw3.h"
 #include "ARC/Core/Window.h"
 
-namespace ARC {
-	bool SInput::IsKeyPressed(int _keycode)
+namespace arc {
+	bool input::is_key_pressed(int _keycode)
 	{
-		auto state	= GetKey(_keycode); 
+		auto state	= get_key(_keycode); 
 		return state == GLFW_PRESS || state == GLFW_REPEAT;
 	}
 
-	bool SInput::IsMouseButtonPressed(int _button)
+	bool input::is_mouse_button_pressed(int _button)
 	{
-		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(application::Get().get_window().get_native_window());
 		auto state = glfwGetMouseButton(window, _button);
 		return state == GLFW_PRESS;
 	}
 
-	FVec2 SInput::GetMouseXY()
+	vec2 input::get_mouse_xy()
 	{
-		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
-		TVec2<double> mousexy;
+		auto window = static_cast<GLFWwindow*>(application::Get().get_window().get_native_window());
+		vec2<double> mousexy;
 		glfwGetCursorPos(window, &mousexy.x, &mousexy.y);
-		return FVec2((float)mousexy.x, (float)mousexy.y);
+		return vec2((float)mousexy.x, (float)mousexy.y);
 	}
 
-	int SInput::GetKey(int _keycode)
+	int input::get_key(int _keycode)
 	{
-		auto window = static_cast<GLFWwindow*>(CApplication::Get().GetWindow().GetNativeWindow());
+		auto window = static_cast<GLFWwindow*>(application::Get().get_window().get_native_window());
 		return glfwGetKey(window, _keycode);
 	}
 }

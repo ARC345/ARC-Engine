@@ -4,30 +4,30 @@
 #include "ARC\Types\Pointer.h"
 #include "ARC\Types\Color.h"
 
-namespace ARC { class CVertexArray; }
+namespace arc { class vertex_array; }
 
-namespace ARC {
-	class CRendererAPI {
+namespace arc {
+	class renderer_api {
 	public:
-		enum class ERendererAPI
+		enum class renderer_api
 		{
 			None = 0,
 			OpenGL = 1
 		};
 	public:
-		virtual ~CRendererAPI() = default;
+		virtual ~renderer_api() = default;
 
-		virtual void Init() = 0;
-		virtual void SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions) = 0;
-		virtual void SetClearColour(const FColor4 _Colour) = 0;
-		virtual void Clear() = 0;
+		virtual void init() = 0;
+		virtual void set_viewport(const vec2<uint32_t> bottem_left_coord, const vec2<uint32_t> dimentions) = 0;
+		virtual void set_clear_colour(const color4 colour) = 0;
+		virtual void clear() = 0;
 
-		virtual void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) = 0;
-		virtual void DrawLine(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) = 0;
-		virtual void SetLineThickness(float pThickness) = 0;
+		virtual void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t count) = 0;
+		virtual void draw_line(const ref<vertex_array>& vertex_array, uint32_t count) = 0;
+		virtual void set_line_thickness(float pThickness) = 0;
 
-		inline static ERendererAPI GetAPI() { return s_API; };
+		inline static renderer_api get_api() { return api; };
 	private:
-		inline static ERendererAPI s_API = ERendererAPI::OpenGL;
+		inline static renderer_api api = renderer_api::OpenGL;
 	};
 }

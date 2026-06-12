@@ -10,17 +10,17 @@
 #include "ARC/Renderer/Renderer2D.h"
 #include "imgui/imgui_internal.h"
 
-namespace ARC {
+namespace arc {
 	// 2d only
 	static bool bPause = false;
 
-	static FVec3 FindClosestPointOnLine(FVec3 pLB, FVec3 pLE, FVec3 pP)
+	static vec3 FindClosestPointOnLine(vec3 pLB, vec3 pLE, vec3 pP)
 	{
-		float LineLength = SMath::Dist(pLB, pLE);
-		FVec3 Vector = pP - pLB;
-		FVec3 LineDirection = (pLE - pLB) / LineLength;
+		float LineLength = math::Dist(pLB, pLE);
+		vec3 Vector = pP - pLB;
+		vec3 LineDirection = (pLE - pLB) / LineLength;
 
-		FVec3 tmp(Vector * LineDirection);
+		vec3 tmp(Vector * LineDirection);
 		float Distance = tmp.x + tmp.y;
 
 		if (Distance <= 0.f) return pLB;
@@ -28,27 +28,27 @@ namespace ARC {
 		return pLB + LineDirection * Distance;
 	}
 
-	static bool IsColliding(FVec3 p1, FVec3 p2, float pR1, float pR2) { return SMath::DistSqr(p1, p2) < SMath::Sqr(pR1+pR2); }
+	static bool is_colliding(vec3 p1, vec3 p2, float pR1, float pR2) { return math::DistSqr(p1, p2) < math::Sqr(pR1+pR2); }
 
 // basic simple light based organism simulator
 
-	void CEnergyComponent::DrawPropertiesUI(CEntity & pEntity)
+	void energy_component::draw_properties_ui(entity & pEntity)
 	{
 		ImGui::DragFloat("Energy", &Energy);
 	}
 
 
-	void CEnergyComponent::Serialize(YAML::Emitter& pOut)
+	void energy_component::serialize(YAML::Emitter& pOut)
 	{
 		pOut << YAML::Key << "Energy" << YAML::Value << Energy;
 	}
 
-	void CEnergyComponent::Deserialize(YAML::Node& pData)
+	void energy_component::deserialize(YAML::Node& pData)
 	{
 		Energy = pData["Energy"].as<float>();
 	}
 
-	void COrganismComponent::DrawPropertiesUI(CEntity& pEntity)
+	void organism_component::draw_properties_ui(entity& pEntity)
 	{
 		if (ImGui::CollapsingHeader("Data")) {
 			ImGui::DragFloat("Health", &Data.Health, 0.01 * Data.MaxHealth, 0, Data.MaxHealth);
@@ -67,13 +67,13 @@ namespace ARC {
 		}
 	}
 
-	void COrganismComponent::Serialize(YAML::Emitter& pOut)
+	void organism_component::serialize(YAML::Emitter& pOut)
 	{
 		pOut << YAML::Key << "Health" << YAML::Value << Data.Health;
 		pOut << YAML::Key << "Speed" << YAML::Value << Data.Speed;
 	}
 
-	void COrganismComponent::Deserialize(YAML::Node& pData)
+	void organism_component::deserialize(YAML::Node& pData)
 	{
 		Data.Health = pData["Health"].as<float>();
 		Data.Speed = pData["Speed"].as<float>();
@@ -82,7 +82,7 @@ namespace ARC {
 	struct SResourceManager
 	{
 		static float Consume(float pAmt, float& pResource, float pReserve=0.f) {
-			auto rval = SMath::Min(pResource-pReserve, pAmt);
+			auto rval = math::Min(pResource-pReserve, pAmt);
 			pResource -= rval;
 			return rval;
 		}
@@ -91,8 +91,8 @@ namespace ARC {
 		*/
 		static float Convert(float& pResourceFrom, float& pResourceTo, float pAmt, float pConversionFactor=1.f, float pResourceToCap=std::numeric_limits<float>::infinity()) {
 
-			auto deltaTo = SMath::Min(
-				SMath::Min(pResourceFrom, pAmt) * pConversionFactor,
+			auto deltaTo = math::Min(
+				math::Min(pResourceFrom, pAmt) * pConversionFactor,
 				pResourceToCap - pResourceTo
 			);
 			pResourceTo += deltaTo;
@@ -107,65 +107,65 @@ namespace ARC {
 
 	// @TODO add basic color schemeing and name bars for organisms
 
-	CEntity CLifeSim2D::MakeOrganism(const TString& pName)
+	entity life_sim_2d::MakeOrganism(const string& pName)
 	{
-		static auto CircleTex = CTexture2D::Create("assets/textures/circle-64.png");
+		static auto CircleTex = texture_2d::create("assets/textures/circle-64.png");
 
-		CEntity oE = mActiveScene->CreateEntity(pName == "##Default" ? "Organism#" + std::to_string(mEIndex++) : pName);
-		auto& trans = oE.AddComponent<CTransform2DComponent>();
-		oE.AddComponent<CSpriteRendererComponent>().Texture=CircleTex;
-		auto& organism = oE.AddComponent<COrganismComponent>();
-		auto& energy = oE.AddComponent<CEnergyComponent>().Energy = organism.Data.InitialEnergy;
-		auto& velocity = oE.AddComponent<CVelocityComponent>().Velocity = FVec2::ZeroVector();
+		entity oE = active_scene_->create_entity(pName == "##Default" ? "Organism#" + std::to_string(e_index_++) : pName);
+		auto& trans = oE.add_component<transform_2d_component>();
+		oE.add_component<sprite_renderer_component>().Texture=CircleTex;
+		auto& organism = oE.add_component<organism_component>();
+		auto& energy = oE.add_component<energy_component>().Energy = organism.Data.InitialEnergy;
+		auto& velocity = oE.add_component<velocity_component>().Velocity = vec2::ZeroVector();
 		return oE;
 	}
 
-	float CLifeSim2D::HealthToSize(float pHealth)
+	float life_sim_2d::HealthToSize(float pHealth)
 	{
-		return SMath::Max(pHealth*pHealth/8000, mMinSize);
+		return math::Max(pHealth*pHealth/8000, min_size_);
 	}
 
-	float CLifeSim2D::LightToRadiation(float pLight)
+	float life_sim_2d::LightToRadiation(float pLight)
 	{
 		return pLight*0.68;
 	}
 
-	CLifeSim2D::CWorldGeoData& CLifeSim2D::GetGeoDataFromLocation(FVec3 pLoc)
+	life_sim_2d::world_geo_data& life_sim_2d::get_geo_data_from_location(vec3 pLoc)
 	{
-		if (pLoc.x > mWorldMaxBounds.x || pLoc.x < -mWorldMaxBounds.x || pLoc.y > mWorldMaxBounds.y || pLoc.y < -mWorldMaxBounds.y) return mEmptySpace;
+		if (pLoc.x > world_max_bounds_.x || pLoc.x < -world_max_bounds_.x || pLoc.y > world_max_bounds_.y || pLoc.y < -world_max_bounds_.y) return empty_space_;
 
-		float nearestX = float(std::floor((mWorldMaxBounds.x + pLoc.x) * mGridDensity));
-		float nearestY = float(std::floor((mWorldMaxBounds.y - pLoc.y) * mGridDensity));
+		float nearestX = float(std::floor((world_max_bounds_.x + pLoc.x) * grid_density_));
+		float nearestY = float(std::floor((world_max_bounds_.y - pLoc.y) * grid_density_));
 		
-		return mWorldGeoData[int(nearestX + 2 * mWorldMaxBounds.x * mGridDensity * nearestY)];;
+		return world_geo_data_[int(nearestX + 2 * world_max_bounds_.x * grid_density_ * nearestY)];;
 	}
 
-	const CLifeSim2D::CWorldGeoData& CLifeSim2D::GetGeoDataFromLocation(FVec3 pLoc) const
+	const life_sim_2d::world_geo_data& life_sim_2d::get_geo_data_from_location(vec3 pLoc) const
 	{
-		if (pLoc.x > mWorldMaxBounds.x || pLoc.x < -mWorldMaxBounds.x || pLoc.y > mWorldMaxBounds.y || pLoc.y < -mWorldMaxBounds.y) return mEmptySpace;
+		if (pLoc.x > world_max_bounds_.x || pLoc.x < -world_max_bounds_.x || pLoc.y > world_max_bounds_.y || pLoc.y < -world_max_bounds_.y) return empty_space_;
 
-		float nearestX = float(std::floor((mWorldMaxBounds.x + pLoc.x) * mGridDensity));
-		float nearestY = float(std::floor((mWorldMaxBounds.y - pLoc.y) * mGridDensity));
+		float nearestX = float(std::floor((world_max_bounds_.x + pLoc.x) * grid_density_));
+		float nearestY = float(std::floor((world_max_bounds_.y - pLoc.y) * grid_density_));
 
-		auto _ = int(nearestX + 2 * mWorldMaxBounds.x * mGridDensity * nearestY);
+		auto _ = int(nearestX + 2 * world_max_bounds_.x * grid_density_ * nearestY);
 
-		return mWorldGeoData[_];
+		return world_geo_data_[_];
 	}
 
-	void CLifeSim2D::OnAttach(TRef<CScene> pActiveScene)
+	void life_sim_2d::on_attach(ref<scene> pActiveScene)
 	{
-		SetScene(pActiveScene);
+		set_scene(pActiveScene);
 		
-		SSceneRegistry::SetupComponent<CEnergyComponent>();
-		SSceneRegistry::SetupComponent<COrganismComponent>();
-		SSceneRegistry::SetupComponent<CVelocityComponent>();
+		scene_registry::setup_component<energy_component>();
+		scene_registry::setup_component<organism_component>();
+		scene_registry::setup_component<velocity_component>();
 
 		{
-		auto camE = mActiveScene->CreateEntity("Camera");
-		auto& trans = camE.AddComponent<CTransform2DComponent>();
-		auto& cam = camE.AddComponent<CCameraComponent>();
+		auto camE = active_scene_->create_entity("Camera");
+		auto& trans = camE.add_component<transform_2d_component>();
+		auto& cam = camE.add_component<camera_component>();
 		cam.Primary = true;
-		cam.Camera.SetOrthographicSize((mWorldMaxBounds.MaxComponent()*2.f));
+		cam.Camera.set_orthographic_size((world_max_bounds_.MaxComponent()*2.f));
 		}
 
 		for (int i = 0; i<1000; i++)
@@ -173,112 +173,112 @@ namespace ARC {
 
 	}
 
-	void CLifeSim2D::OnDetach()
+	void life_sim_2d::on_detach()
 	{
 	}
 
-	void CLifeSim2D::OnUpdateEditor(float pDeltaTime)
+	void life_sim_2d::on_update_editor(float pDeltaTime)
 	{
 		if (bPause) return;
-		static const FVec3 Mask = FVec3(1, 1, 0);
+		static const vec3 Mask = vec3(1, 1, 0);
 
 	}
 
-	void CLifeSim2D::OnUpdateRuntime(float pDeltaTime)
+	void life_sim_2d::on_update_runtime(float pDeltaTime)
 	{
 		if (bPause) return;
-		static const FVec3 Mask = FVec3(1, 1, 0);
+		static const vec3 Mask = vec3(1, 1, 0);
 
-		pDeltaTime*= mTimeMultiplier;
-		mTime += pDeltaTime;
+		pDeltaTime*= time_multiplier_;
+		time_ += pDeltaTime;
 
-		std::set<CEntity> DeathRow;
+		std::set<entity> DeathRow;
 
-		if (auto E = mActiveScene->GetPrimaryCameraEntity())
+		if (auto E = active_scene_->get_primary_camera_entity())
 		{
 			static bool itrlDO2 = true;
 		
-			SRenderer2D::BeginScene(E.GetComponent<CCameraComponent>().Camera, E.GetComponent<CTransform2DComponent>().Transform);
-			SRenderer2D::DrawRect(FVec3::ZeroVector(), 0.f, mWorldMaxBounds * 2.f, FColor4::Yellow()*0.7f);
-			SRenderer2D::DrawRect(FVec3::ZeroVector(), 0.f, (mWorldMaxBounds * 2.f) + 1, FColor4::Blue() * 0.9f);
+			renderer_2d::begin_scene(E.get_component<camera_component>().Camera, E.get_component<transform_2d_component>().Transform);
+			renderer_2d::DrawRect(vec3::ZeroVector(), 0.f, world_max_bounds_ * 2.f, color4::Yellow()*0.7f);
+			renderer_2d::DrawRect(vec3::ZeroVector(), 0.f, (world_max_bounds_ * 2.f) + 1, color4::Blue() * 0.9f);
 
 			{
-				auto view = mActiveScene->FilterByComponents<CTransform2DComponent, CVelocityComponent>();
+				auto view = active_scene_->FilterByComponents<transform_2d_component, velocity_component>();
 				std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&](auto e) {
-					auto& transformComponent = view.get<CTransform2DComponent>(e);
-					auto& velocityComponent = view.get<CVelocityComponent>(e);
+					auto& transformComponent = view.get<transform_2d_component>(e);
+					auto& velocityComponent = view.get<velocity_component>(e);
 
-					(FVec2&)transformComponent.Transform.Location += velocityComponent.Velocity*pDeltaTime;
+					(vec2&)transformComponent.Transform.Location += velocityComponent.Velocity*pDeltaTime;
 				});	
 			}
 			static float savedDT = 0;
 			savedDT += pDeltaTime;
 			{
-				auto view= mActiveScene->FilterByComponents<CTransform2DComponent, COrganismComponent>();
+				auto view= active_scene_->FilterByComponents<transform_2d_component, organism_component>();
 				std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&](auto e) {
-					auto& transformComponent = view.get<CTransform2DComponent>(e);
-					auto& organism = view.get<COrganismComponent>(e);
-					if (transformComponent.Transform.Location.x > mWorldMaxBounds.x) transformComponent.Transform.Location.x = -mWorldMaxBounds.x;
-					if (transformComponent.Transform.Location.x < -mWorldMaxBounds.x) transformComponent.Transform.Location.x = mWorldMaxBounds.x;
-					if (transformComponent.Transform.Location.y > mWorldMaxBounds.y) transformComponent.Transform.Location.y = -mWorldMaxBounds.y;
-					if (transformComponent.Transform.Location.y < -mWorldMaxBounds.y) transformComponent.Transform.Location.y = mWorldMaxBounds.y;
+					auto& transformComponent = view.get<transform_2d_component>(e);
+					auto& organism = view.get<organism_component>(e);
+					if (transformComponent.Transform.Location.x > world_max_bounds_.x) transformComponent.Transform.Location.x = -world_max_bounds_.x;
+					if (transformComponent.Transform.Location.x < -world_max_bounds_.x) transformComponent.Transform.Location.x = world_max_bounds_.x;
+					if (transformComponent.Transform.Location.y > world_max_bounds_.y) transformComponent.Transform.Location.y = -world_max_bounds_.y;
+					if (transformComponent.Transform.Location.y < -world_max_bounds_.y) transformComponent.Transform.Location.y = world_max_bounds_.y;
 
-					if (savedDT > SRandom::Float(1, 1.5)) {
-						transformComponent.Transform.Scale = FVec2(HealthToSize(organism.Data.Health));
+					if (savedDT > random::Float(1, 1.5)) {
+						transformComponent.Transform.Scale = vec2(HealthToSize(organism.Data.Health));
 
-						auto E = CEntity(e, mActiveScene.get());
-						auto& energy = E.GetComponent<CEnergyComponent>();
+						auto E = entity(e, active_scene_.get());
+						auto& energy = E.get_component<energy_component>();
 						float speed = 0.f;
-						SRM::Convert(energy.Energy, speed, energy.Energy, mSpeedPerEnergy, organism.Data.Speed);
+						SRM::Convert(energy.Energy, speed, energy.Energy, speed_per_energy_, organism.Data.Speed);
 
-						E.GetComponent<CVelocityComponent>().Velocity = FVec2(SMath::Sin(SRandom::Float(-1, 1) * PIf), SMath::Cos(SRandom::Float(-1, 1) * PIf)) * speed;
+						E.get_component<velocity_component>().Velocity = vec2(math::Sin(random::Float(-1, 1) * PIf), math::Cos(random::Float(-1, 1) * PIf)) * speed;
 						if (0.01f > energy.Energy) DeathRow.emplace(E);
 					}
 				});
 			}
 			if (savedDT>=1.2f) savedDT = 0.f;
 
-			if (fmodf(mTime, 10.f) < 0.1f) {
+			if (fmodf(time_, 10.f) < 0.1f) {
 				if (itrlDO2) {
-					std::for_each(std::execution::par_unseq, mWorldGeoData, mWorldGeoData+mGridCount, [&](auto&& i) {
-						auto lI = SRandom::Float(mMinLight, 5);
-						i = CLifeSim2D::CWorldGeoData(lI);
+					std::for_each(std::execution::par_unseq, world_geo_data_, world_geo_data_+grid_count_, [&](auto&& i) {
+						auto lI = random::Float(min_light_, 5);
+						i = life_sim_2d::world_geo_data(lI);
 					});
 					itrlDO2 = false;
 				}
 			}
 			else
 				itrlDO2 = true;
-// 			for (int i = 0; i < mGridCount; i++) {
-// 				auto xScale = mWorldMaxBounds.x / (mWorldMaxBounds.x + mWorldMaxBounds.y);
-// 				SRenderer2D::DrawQuad(
-// 					FVec3(
-// 						(i % int(mWorldMaxBounds.x * 2 * mGridDensity) - mWorldMaxBounds.x),
-// 						xScale*(i / int(mWorldMaxBounds.y * 2 * mGridDensity)) - mWorldMaxBounds.y,
+// 			for (int i = 0; i < grid_count_; i++) {
+// 				auto xScale = world_max_bounds_.x / (world_max_bounds_.x + world_max_bounds_.y);
+// 				renderer_2d::draw_quad(
+// 					vec3(
+// 						(i % int(world_max_bounds_.x * 2 * grid_density_) - world_max_bounds_.x),
+// 						xScale*(i / int(world_max_bounds_.y * 2 * grid_density_)) - world_max_bounds_.y,
 // 						-0.1),
 // 
 // 					0,
-// 					FVec2(1, 1-xScale) / mGridDensity,
-// 					ETransparencyType::Opaque,
-// 					FColor4::Yellow() * mWorldGeoData[i].LightIntensity / 5);
+// 					vec2(1, 1-xScale) / grid_density_,
+// 					transparency_type::Opaque,
+// 					color4::Yellow() * world_geo_data_[i].LightIntensity / 5);
 // 			}
 
-			auto view = mActiveScene->FilterByComponents<COrganismComponent, CEnergyComponent>();
+			auto view = active_scene_->FilterByComponents<organism_component, energy_component>();
 			std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&](auto e) {
 				// Photosynthesis
 
-				auto& organism = view.get<COrganismComponent>(e);
-				auto& energy = view.get<CEnergyComponent>(e);
-				float photoAbsorb = GetLightIntensityAtLocation(E.GetComponent<CTransform2DComponent>().Transform.Location);
-				energy.Energy = SMath::Clamp(energy.Energy + (photoAbsorb * organism.Data.PhotoSynthRate * pDeltaTime), 0.f, energy.MaxEnergy);
+				auto& organism = view.get<organism_component>(e);
+				auto& energy = view.get<energy_component>(e);
+				float photoAbsorb = get_light_intensity_at_location(E.get_component<transform_2d_component>().Transform.Location);
+				energy.Energy = math::Clamp(energy.Energy + (photoAbsorb * organism.Data.PhotoSynthRate * pDeltaTime), 0.f, energy.MaxEnergy);
 				// @TODO release appropriate energy amt
 				//if (0.01f > energy.Energy) ARC_CORE_INFO("death {}", int(e)); DeathRow.emplace(E);
 				
 				//energy leak
 				SRM::Consume(
-					SMath::Interp<EaseOut<2>>(
+					math::Interp<EaseOut<2>>(
 						0.f,
-						energy.MaxEnergy * mEnergyLeakMultiplier,
+						energy.MaxEnergy * energy_leak_multiplier_,
 						organism.Data.Health / organism.Data.MaxHealth) * pDeltaTime,
 					energy.Energy
 				);
@@ -289,13 +289,13 @@ namespace ARC {
 					energy.Energy,
 					organism.Data.Health,
 					energy.Energy * organism.Data.HealRate * pDeltaTime,
-					mHealthPerEnergy,
+					health_per_energy_,
 					organism.Data.MaxHealth
 				);
 
 				//if (0.01f > energy.Energy) ARC_CORE_INFO("death {}", int(e)); DeathRow.emplace(E);
 			});
-			auto iter = mActiveScene->FilterByComponents<COrganismComponent>().each();
+			auto iter = active_scene_->FilterByComponents<organism_component>().each();
 
 			for (auto i=iter.begin(); i!=iter.end(); i++)
 			{
@@ -311,45 +311,45 @@ namespace ARC {
 
 			// reproduction
 			{
-				auto view = mActiveScene->FilterByComponents<COrganismComponent, CEnergyComponent>();
+				auto view = active_scene_->FilterByComponents<organism_component, energy_component>();
 				std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&](auto e) {
 					// Photosynthesis
 
-					auto& organism = view.get<COrganismComponent>(e);
-					auto& energy = view.get<CEnergyComponent>(e);	auto E = CEntity(e, mActiveScene.get());
-					if (energy.Energy == energy.MaxEnergy && energy.Energy >= mMinReproductionEnergyCost) // does not reproduce until max energy
+					auto& organism = view.get<organism_component>(e);
+					auto& energy = view.get<energy_component>(e);	auto E = entity(e, active_scene_.get());
+					if (energy.Energy == energy.MaxEnergy && energy.Energy >= min_reproduction_energy_cost_) // does not reproduce until max energy
 					{
 						// reproduce
-						auto EChild = MakeOrganism(E.GetName()+"_child" + std::to_string(organism.NextChildsIndex++));
-						auto& ec_organismComp = EChild.GetComponent<COrganismComponent>();
-						auto& ec_energyComp = EChild.GetComponent<CEnergyComponent>();
+						auto EChild = MakeOrganism(E.get_name()+"_child" + std::to_string(organism.NextChildsIndex++));
+						auto& ec_organismComp = EChild.get_component<organism_component>();
+						auto& ec_energyComp = EChild.get_component<energy_component>();
 					
-						EChild.GetComponent<CTransform2DComponent>().Transform.Location = E.GetComponent<CTransform2DComponent>().Transform.Location;
-						EChild.GetComponent<CTransform2DComponent>().Transform.Location.y += E.GetComponent<CTransform2DComponent>().Transform.Scale.MaxComponent() + EChild.GetComponent<CTransform2DComponent>().Transform.Scale.MaxComponent() + 0.1f;
+						EChild.get_component<transform_2d_component>().Transform.Location = E.get_component<transform_2d_component>().Transform.Location;
+						EChild.get_component<transform_2d_component>().Transform.Location.y += E.get_component<transform_2d_component>().Transform.Scale.MaxComponent() + EChild.get_component<transform_2d_component>().Transform.Scale.MaxComponent() + 0.1f;
 
-						float RadiationFactor = LightToRadiation(GetLightIntensityAtLocation(E.GetComponent<CTransform2DComponent>().Transform.Location));
+						float RadiationFactor = LightToRadiation(get_light_intensity_at_location(E.get_component<transform_2d_component>().Transform.Location));
 
-						ec_organismComp.Data.MaxHealth += SRandom::Float(-ec_organismComp.MutationData.MaxHealth, ec_organismComp.MutationData.MaxHealth)*RadiationFactor;
-						ec_organismComp.Data.Speed += SRandom::Float(-ec_organismComp.MutationData.Speed, ec_organismComp.MutationData.Speed) * RadiationFactor;
-						ec_organismComp.Data.PhotoSynthRate += SRandom::Float(-ec_organismComp.MutationData.PhotoSynthRate, ec_organismComp.MutationData.PhotoSynthRate) * RadiationFactor;
-						ec_organismComp.Data.HealRate += SRandom::Float(-ec_organismComp.MutationData.HealRate, ec_organismComp.MutationData.HealRate) * RadiationFactor;
-						ec_organismComp.Data.InitialEnergy += SRandom::Float(-ec_organismComp.MutationData.InitialEnergy, ec_organismComp.MutationData.InitialEnergy) * RadiationFactor;
-						ec_organismComp.Data.PostReproductionEnergyReserve += SRandom::Float(-ec_organismComp.MutationData.PostReproductionEnergyReserve, ec_organismComp.MutationData.PostReproductionEnergyReserve) * RadiationFactor;
-						ec_energyComp.MaxEnergy += SRandom::Float(-ec_organismComp.MutationData.MaxEnergy, ec_organismComp.MutationData.MaxEnergy) * RadiationFactor;
+						ec_organismComp.Data.MaxHealth += random::Float(-ec_organismComp.MutationData.MaxHealth, ec_organismComp.MutationData.MaxHealth)*RadiationFactor;
+						ec_organismComp.Data.Speed += random::Float(-ec_organismComp.MutationData.Speed, ec_organismComp.MutationData.Speed) * RadiationFactor;
+						ec_organismComp.Data.PhotoSynthRate += random::Float(-ec_organismComp.MutationData.PhotoSynthRate, ec_organismComp.MutationData.PhotoSynthRate) * RadiationFactor;
+						ec_organismComp.Data.HealRate += random::Float(-ec_organismComp.MutationData.HealRate, ec_organismComp.MutationData.HealRate) * RadiationFactor;
+						ec_organismComp.Data.InitialEnergy += random::Float(-ec_organismComp.MutationData.InitialEnergy, ec_organismComp.MutationData.InitialEnergy) * RadiationFactor;
+						ec_organismComp.Data.PostReproductionEnergyReserve += random::Float(-ec_organismComp.MutationData.PostReproductionEnergyReserve, ec_organismComp.MutationData.PostReproductionEnergyReserve) * RadiationFactor;
+						ec_energyComp.MaxEnergy += random::Float(-ec_organismComp.MutationData.MaxEnergy, ec_organismComp.MutationData.MaxEnergy) * RadiationFactor;
 
-						ec_organismComp.Data.MaxHealth = SMath::Max(0.f, ec_organismComp.Data.MaxHealth);
-						ec_organismComp.Data.Speed = SMath::Max(0.f, ec_organismComp.Data.Speed);
-						ec_organismComp.Data.PhotoSynthRate = SMath::Max(0.f, ec_organismComp.Data.PhotoSynthRate);
-						ec_organismComp.Data.HealRate = SMath::Max(0.f, ec_organismComp.Data.HealRate);
-						ec_organismComp.Data.InitialEnergy = SMath::Max(0.f, ec_organismComp.Data.InitialEnergy);
-						ec_organismComp.Data.PostReproductionEnergyReserve = SMath::Max(0.f, ec_organismComp.Data.PostReproductionEnergyReserve);
-						ec_energyComp.MaxEnergy = SMath::Max(0.f, ec_energyComp.MaxEnergy);
+						ec_organismComp.Data.MaxHealth = math::Max(0.f, ec_organismComp.Data.MaxHealth);
+						ec_organismComp.Data.Speed = math::Max(0.f, ec_organismComp.Data.Speed);
+						ec_organismComp.Data.PhotoSynthRate = math::Max(0.f, ec_organismComp.Data.PhotoSynthRate);
+						ec_organismComp.Data.HealRate = math::Max(0.f, ec_organismComp.Data.HealRate);
+						ec_organismComp.Data.InitialEnergy = math::Max(0.f, ec_organismComp.Data.InitialEnergy);
+						ec_organismComp.Data.PostReproductionEnergyReserve = math::Max(0.f, ec_organismComp.Data.PostReproductionEnergyReserve);
+						ec_energyComp.MaxEnergy = math::Max(0.f, ec_energyComp.MaxEnergy);
 
 						ec_organismComp.Data.Health = 0.f;
 
-						SRM::Consume(mMinReproductionEnergyCost, energy.Energy, organism.Data.PostReproductionEnergyReserve);
+						SRM::Consume(min_reproduction_energy_cost_, energy.Energy, organism.Data.PostReproductionEnergyReserve);
 						SRM::Consume(ec_organismComp.Data.InitialEnergy, energy.Energy, organism.Data.PostReproductionEnergyReserve);
-						SRM::Convert(energy.Energy, ec_organismComp.Data.Health, energy.Energy - organism.Data.PostReproductionEnergyReserve, mHealthPerEnergy, ec_organismComp.Data.MaxHealth);
+						SRM::Convert(energy.Energy, ec_organismComp.Data.Health, energy.Energy - organism.Data.PostReproductionEnergyReserve, health_per_energy_, ec_organismComp.Data.MaxHealth);
 					}
 					if (0.01f > energy.Energy) { 
 						ARC_CORE_INFO("reproduction death{}", int(e)); DeathRow.emplace(E);
@@ -362,71 +362,71 @@ namespace ARC {
 			}
 
 
-			SRenderer2D::EndScene();
+			renderer_2d::end_scene();
 		}
 	}
 
-	void CLifeSim2D::OnGuiRender()
+	void life_sim_2d::on_gui_render()
 	{
-		ImGui::Begin("LS2D");
+		ImGui::begin("LS2D");
 
-		static FVec3 tmp = FVec3::ZeroVector();
-		float tmp2 = LightToRadiation(GetLightIntensityAtLocation(tmp)) / 5;
-		float tmp3 = GetLightIntensityAtLocation(tmp);
+		static vec3 tmp = vec3::ZeroVector();
+		float tmp2 = LightToRadiation(get_light_intensity_at_location(tmp)) / 5;
+		float tmp3 = get_light_intensity_at_location(tmp);
 		ImGui::DragFloat3("Rad@Loc", tmp.Data());
 		ImGui::DragFloat("Light@Loc", &tmp3, ImGuiSliderFlags_ReadOnly);
 		ImGui::DragFloat("LightTmp", &tmp2, ImGuiSliderFlags_ReadOnly);
 		
-		ImGui::DragFloat("Time Multiplier", &mTimeMultiplier);
-		ImGui::DragFloat("World Time", &mTime);
+		ImGui::DragFloat("Time Multiplier", &time_multiplier_);
+		ImGui::DragFloat("World Time", &time_);
 		float abcd = TimeToTimeOfDay();
 		ImGui::DragFloat("Time of day", &abcd);
-		abcd = GetLightIntensity();
+		abcd = get_light_intensity();
 		ImGui::DragFloat("LightIntensity", &abcd);
-		abcd = LightToRadiation(GetLightIntensity());
+		abcd = LightToRadiation(get_light_intensity());
 		ImGui::DragFloat("Radiation", &abcd);
 
-		TString timeofday = abcd > 0.2f ? "Morning" : "Night";
+		string timeofday = abcd > 0.2f ? "Morning" : "Night";
 
 		ImGui::Text(timeofday.c_str());
 
-		ImGui::End();
+		ImGui::end();
 	}
 
-	void CLifeSim2D::OnEvent(CEvent& pEvent)
+	void life_sim_2d::on_event(event& pEvent)
 	{
 	}
 
-	void CLifeSim2D::SetScene(TRef<CScene> pScene)
+	void life_sim_2d::set_scene(ref<scene> pScene)
 	{
-		mActiveScene = pScene;
-		mTime = 0.f;
-		delete[] mWorldGeoData;
-		mGridCount = int(4.f * mWorldMaxBounds.x* (mWorldMaxBounds.y+0.5) * mGridDensity)+1;
-		mWorldGeoData = new CWorldGeoData[mGridCount];
+		active_scene_ = pScene;
+		time_ = 0.f;
+		delete[] world_geo_data_;
+		grid_count_ = int(4.f * world_max_bounds_.x* (world_max_bounds_.y+0.5) * grid_density_)+1;
+		world_geo_data_ = new world_geo_data[grid_count_];
 
-		for (int i = 0; i < mGridCount; i++)
-			mWorldGeoData[i] = CLifeSim2D::CWorldGeoData(SRandom::Float(mMinLight, 5));
+		for (int i = 0; i < grid_count_; i++)
+			world_geo_data_[i] = life_sim_2d::world_geo_data(random::Float(min_light_, 5));
 
 	}
 
-	float CLifeSim2D::TimeToTimeOfDay() const
+	float life_sim_2d::TimeToTimeOfDay() const
 	{
-		return fmodf(mTime, mDayLength);
+		return fmodf(time_, day_length_);
 	}
 
-	float CLifeSim2D::GetLightIntensity() const
+	float life_sim_2d::get_light_intensity() const
 	{
-		auto _ = SMath::Clamp(
-			(SMath::Sin(SMath::Interp<Linear>(0.f, 1.2f * PIf, TimeToTimeOfDay() / mDayLength))) * mLightMultiplier, 
-			mMinLight,
-			mLightMultiplier
+		auto _ = math::Clamp(
+			(math::Sin(math::Interp<Linear>(0.f, 1.2f * PIf, TimeToTimeOfDay() / day_length_))) * light_multiplier_, 
+			min_light_,
+			light_multiplier_
 		);
 		return _;
 	}
 
-	float CLifeSim2D::GetLightIntensityAtLocation(FVec3 pLoc) const
+	float life_sim_2d::get_light_intensity_at_location(vec3 pLoc) const
 	{
-		return GetLightIntensity()* GetGeoDataFromLocation(pLoc).LightIntensity;
+		return get_light_intensity()* get_geo_data_from_location(pLoc).LightIntensity;
 	}
 }

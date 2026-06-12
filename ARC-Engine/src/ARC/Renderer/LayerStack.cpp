@@ -1,45 +1,45 @@
 #include "arc_pch.h"
-#include "LayerStack.h"
+#include "layer_stack.h"
 #include "Layer.h"
 
-namespace ARC {
-	LayerStack::LayerStack()
+namespace arc {
+	layer_stack::layer_stack()
 	{
 	}
 
-	LayerStack::~LayerStack()
+	layer_stack::~layer_stack()
 	{
-		for(CLayer* layer : mLayers){
-			layer->OnDetach();
+		for(layer* layer : layers_){
+			layer->on_detach();
 			delete layer;
 		}
 	}
 
-	void LayerStack::PushLayer(CLayer* _layer)
+	void layer_stack::push_layer(layer* _layer)
 	{
-		mLayers.emplace(mLayers.begin() + mLayerInsertIndex, _layer);
-		++mLayerInsertIndex;
+		layers_.emplace(layers_.begin() + layer_insert_index_, _layer);
+		++layer_insert_index_;
 	}
 
-	void LayerStack::PushOverlay(CLayer* _overlay)
+	void layer_stack::push_overlay(layer* _overlay)
 	{
-		mLayers.emplace_back(_overlay);
+		layers_.emplace_back(_overlay);
 	}
 
-	void LayerStack::PopLayer(CLayer* _layer)
+	void layer_stack::PopLayer(layer* _layer)
 	{
-		auto it = std::find(mLayers.begin(), mLayers.end(), _layer);
-		if (it != mLayers.end()) {
-			mLayers.erase(it);
-			--mLayerInsertIndex;
+		auto it = std::find(layers_.begin(), layers_.end(), _layer);
+		if (it != layers_.end()) {
+			layers_.erase(it);
+			--layer_insert_index_;
 		}
 	}
 
-	void LayerStack::PopOverlay(CLayer* _overlay)
+	void layer_stack::PopOverlay(layer* _overlay)
 	{
-		auto it = std::find(mLayers.begin(), mLayers.end(), _overlay);
-		if (it != mLayers.end()) {
-			mLayers.erase(it);
+		auto it = std::find(layers_.begin(), layers_.end(), _overlay);
+		if (it != layers_.end()) {
+			layers_.erase(it);
 		}
 	}
 }

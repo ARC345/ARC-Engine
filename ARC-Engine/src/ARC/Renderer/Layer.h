@@ -1,23 +1,23 @@
 #pragma once
 #include <string>
 
-namespace ARC {
-	class CEvent;
+namespace arc {
+	class event;
 
-	class ARC_API CLayer
+	class ARC_API layer
 	{
 	public:
-		CLayer(const std::string& _name="Layer");
-		virtual ~CLayer();
+		layer(const std::string& _name="Layer");
+		virtual ~layer();
 
-		virtual void OnAttach(){}
-		virtual void OnDetach(){}
-		virtual void OnUpdate(float _DeltaTime){}
-		virtual void OnGuiRender(){}
-		virtual void OnEvent(CEvent& _event){}
+		virtual void on_attach(){}
+		virtual void on_detach(){}
+		virtual void on_update(float delta_time){}
+		virtual void on_gui_render(){}
+		virtual void on_event(event& _event){}
 
-		inline const std::string& GetName() const { return mDebugName; }
+		inline const std::string& get_name() const { return debug_name_; }
 	protected:
-		std::string mDebugName;
+		std::string debug_name_;
 	};
 }

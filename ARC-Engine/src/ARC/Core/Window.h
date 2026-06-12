@@ -2,35 +2,35 @@
 
 #include <functional>
 
-namespace ARC { class CEvent; }
+namespace arc { class event; }
 
-namespace ARC {
-	struct SWindowProps {
-		TString Title;
+namespace arc {
+	struct window_props {
+		string Title;
 		uint32_t Width;
 		uint32_t Height;
 
-		SWindowProps(const TString& _title = "ARC-Engine", uint32_t _width = 1280, uint32_t _height = 720) : Title(_title), Width(_width), Height(_height){}
+		window_props(const string& _title = "ARC-Engine", uint32_t _width = 1280, uint32_t _height = 720) : Title(_title), Width(_width), Height(_height){}
 	};
 
-	class CWindow {
+	class window {
 	public:
-		using EventCallbackFn = std::function<void(CEvent&)>;
+		using event_callback_fn = std::function<void(event&)>;
 
-		virtual ~CWindow() {}
-		virtual void OnUpdate() = 0;
+		virtual ~window() {}
+		virtual void on_update() = 0;
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
-		virtual void SetWidth(uint32_t _) = 0;
-		virtual void SetHeight(uint32_t _) = 0;
+		virtual uint32_t get_width() const = 0;
+		virtual uint32_t get_height() const = 0;
+		virtual void set_width(uint32_t _) = 0;
+		virtual void set_height(uint32_t _) = 0;
 		
-		virtual void SetEventCallback(const EventCallbackFn& _callback) = 0;
-		virtual void SetVSync(bool _bEnabled) = 0;
-		virtual bool IsVSync() const = 0;
+		virtual void set_event_callback(const event_callback_fn& _callback) = 0;
+		virtual void set_vsync(bool _bEnabled) = 0;
+		virtual bool is_vsync() const = 0;
 
-		virtual void* GetNativeWindow() const = 0;
+		virtual void* get_native_window() const = 0;
 
-		static CWindow* Create(const SWindowProps& _props = SWindowProps());
+		static window* create(const window_props& _props = window_props());
 	};
 }

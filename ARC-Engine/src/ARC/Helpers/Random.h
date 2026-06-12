@@ -1,42 +1,42 @@
 #pragma once
 
-namespace ARC {
-	struct SRandom
+namespace arc {
+	struct random
 	{
 	public:
 		using randclass = std::mt19937;
 
-		static void Init()
+		static void init()
 		{
-			s_RandomEngine32.seed(std::random_device()());
+			random_engine32.seed(std::random_device()());
 		}
 		template<typename T>
-		static void Init(const T* _Seed)
+		static void init(const T* seed)
 		{
-			if constexpr (_Seed == nullptr)
-				Init();
+			if constexpr (seed == nullptr)
+				init();
 			else
-				s_RandomEngine32.seed(*_Seed);
+				random_engine32.seed(*seed);
 		}
 
 		template<typename T>
 		static T Get() {
-			return (T)s_Distribution(s_RandomEngine32);
+			return (T)distribution(random_engine32);
 		}
 		template<typename T>
-		static T Get(T _Min, T _Max) {
-			return _Min + ((T)s_Distribution(s_RandomEngine32) / ((T)randclass::max() / (_Max - _Min)));
+		static T Get(T min, T max) {
+			return min + ((T)distribution(random_engine32) / ((T)randclass::max() / (max - min)));
 		}
 
-		static inline float Float() { return SRandom::Get<float>(); }
-		static inline float Float(float _Min, float _Max) { return SRandom::Get(_Min, _Max); }
+		static inline float Float() { return random::Get<float>(); }
+		static inline float Float(float min, float max) { return random::Get(min, max); }
 
-		static inline int Int() { return SRandom::Get<int>(); }
-		static inline int Int(int _Min, int _Max) { return SRandom::Get(_Min, _Max); }
+		static inline int Int() { return random::Get<int>(); }
+		static inline int Int(int min, int max) { return random::Get(min, max); }
 
 	private:
 
-		static inline std::mt19937 s_RandomEngine32;
-		static inline std::uniform_int_distribution<std::mt19937::result_type> s_Distribution;
+		static inline std::mt19937 random_engine32;
+		static inline std::uniform_int_distribution<std::mt19937::result_type> distribution;
 	};
 }

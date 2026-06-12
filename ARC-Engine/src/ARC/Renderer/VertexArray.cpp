@@ -3,16 +3,16 @@
 #include "..\..\Platform\OpenGl\OpenGLVertexArray.h"
 #include "Renderer.h"
 
-namespace ARC {
-	TRef<CVertexArray> CVertexArray::Create()
+namespace arc {
+	ref<vertex_array> vertex_array::create()
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return std::make_shared<COpenGLVertexArray>();
+		case renderer_api::renderer_api::OpenGL:
+			return std::make_shared<opengl_vertex_array>();
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

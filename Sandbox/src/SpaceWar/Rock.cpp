@@ -4,16 +4,16 @@
 #include "ARC/Renderer/Renderer2D.h"
 #include "ARC/Helpers/Helpers.h"
 
-namespace ARC {
-	std::array< std::vector<std::shared_ptr<TVec2<uint8_t>>>, CRock::s_NumberOfRockSprites> CRock::SpriteCollisionData;
+namespace arc {
+	std::array< std::vector<std::shared_ptr<vec2<uint8_t>>>, rock::number_of_rock_sprites> rock::SpriteCollisionData;
 
-	void CRock::Load(FVec2 _Velocity, FVec2 _Position)
+	void rock::Load(vec2 velocity, vec2 position)
 	{
-		TString path = "assets/textures/Rock";
-		SpriteIndex = (int)(HPR::Random::Float() * s_NumberOfRockSprites);
+		string path = "assets/textures/Rock";
+		SpriteIndex = (int)(HPR::Random::Float() * number_of_rock_sprites);
 		path.Append(std::to_string(SpriteIndex+1));
-		path.Append(TString(".png"));
-		Sprite.Texture = CTexture2D::Create(path, true);
+		path.Append(string(".png"));
+		Sprite.Texture = texture_2d::create(path, true);
 
 		if (SpriteCollisionData[SpriteIndex].empty())
 		{
@@ -21,39 +21,39 @@ namespace ARC {
 			{
 				for (uint8_t y = 0; y < 32; y++)
 				{
-					if (Sprite.Texture->GetPixelColor({x, y}).a != 0 )
+					if (Sprite.Texture->get_pixel_color({x, y}).a != 0 )
 					{
-						SpriteCollisionData[SpriteIndex].push_back(std::make_shared<TVec2<uint8_t>>(x, y));
+						SpriteCollisionData[SpriteIndex].push_back(std::make_shared<vec2<uint8_t>>(x, y));
 					}
 				}
 			}
 		}
 
 		Sprite.Texture->ClearData();
-		Sprite.Transform.Location = _Position;
+		Sprite.Transform.Location = position;
 		Sprite.Transform.Rotation = HPR::Random::Float(0, 360);
-		ARC_CORE_TRACE("{0}", Sprite.GetRotation());
+		ARC_CORE_TRACE("{0}", Sprite.get_rotation());
 		Sprite.Transform.Scale = {
 			HPR::Random::Float(0.3f, 0.7f),
 			HPR::Random::Float(0.3f, 0.7f) };
-		Velocity = _Velocity;
+		Velocity = velocity;
 
-		auto TL = HPR::QUAD::GetCorner<TopLeft>(Sprite.GetTransform());
-		MinDist = FVec2::Dist(TL, Sprite.GetLocation());
+		auto TL = HPR::QUAD::get_corner<TopLeft>(Sprite.get_transform());
+		MinDist = vec2::Dist(TL, Sprite.get_location());
 	}
 
-	void CRock::OnUpdate(float _DeltaTime)
+	void rock::on_update(float delta_time)
 	{
-		Sprite.Transform.Location += Velocity * _DeltaTime;
-		Sprite.Transform.Rotation += RotationVelocity * _DeltaTime;
+		Sprite.Transform.Location += Velocity * delta_time;
+		Sprite.Transform.Rotation += RotationVelocity * delta_time;
 
-		if (Sprite.GetLocation().x >2 || Sprite.GetLocation().y > 1.5 || Sprite.GetLocation().x < -2 || Sprite.GetLocation().y < -1.5) {
-			CalculateRandomPosition();
-			CalculateRandomVelocity();
+		if (Sprite.get_location().x >2 || Sprite.get_location().y > 1.5 || Sprite.get_location().x < -2 || Sprite.get_location().y < -1.5) {
+			calculate_random_position();
+			calculate_random_velocity();
 		}
 	}
 
-	void CRock::CalculateRandomVelocity()
+	void rock::calculate_random_velocity()
 	{
 		if (int(HPR::Random::Float() * 2)) {
 			Velocity.x = 	HPR::Random::Float(0.2f, 1.f);
@@ -69,7 +69,7 @@ namespace ARC {
 		RotationVelocity = HPR::Random::Float(0.f, 3.f);
 	}
 
-	void CRock::CalculateRandomPosition()
+	void rock::calculate_random_position()
 	{
 		if (int(HPR::Random::Float()*2)) {
 			Sprite.Transform.Location.x = HPR::Random::Float(-1.8f, 1.8f);

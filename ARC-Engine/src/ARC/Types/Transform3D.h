@@ -2,20 +2,20 @@
 #include "Vector.h"
 #include "Transform2D.h"
 
-namespace ARC {
+namespace arc {
 	template<typename T>
-	class TTransform3D : public TTypeBase
+	class transform_3d : public type_base
 	{
 		ARC_TYPE();
 
 	public:
-		TTransform3D() : Location(TVec3<T>::ZeroVector()), Rotation(TVec3<T>::ZeroVector()), Scale(TVec3<T>::OneVector()) {}
-		TTransform3D(const TVec3<T>& _L, const TVec3<T>& _R, const TVec3<T>& _S) : Location(_L), Rotation(_R), Scale(_S) {}
+		transform_3d() : Location(vec3<T>::ZeroVector()), Rotation(vec3<T>::ZeroVector()), Scale(vec3<T>::OneVector()) {}
+		transform_3d(const vec3<T>& l, const vec3<T>& r, const vec3<T>& s) : Location(l), Rotation(r), Scale(s) {}
 		
-		TVec3<T> Location;
-		TVec3<T> Rotation;
-		TVec3<T> Scale;
+		vec3<T> Location;
+		vec3<T> Rotation;
+		vec3<T> Scale;
 	};
 	
-	using FTransform3D = TTransform3D<float>;
+	using transform_3d = transform_3d<float>;
 }

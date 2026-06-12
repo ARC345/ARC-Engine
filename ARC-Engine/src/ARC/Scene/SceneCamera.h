@@ -1,53 +1,53 @@
 #pragma once
 #include "ARC\Renderer\Camera.h"
 
-namespace ARC
+namespace arc
 {
-	struct CSceneCamera : public CCamera
+	struct scene_camera : public camera
 	{
 	public:
-		enum class EProjectionType { Perspective, Orthographic };
+		enum class projection_type { Perspective, Orthographic };
 
-		CSceneCamera();
-		virtual ~CSceneCamera() = default;
+		scene_camera();
+		virtual ~scene_camera() = default;
 
-		EProjectionType GetProjectionType() const { return mCurrentProjectionType; }
-		void SetViewportSize(TVec2<uint32_t> p_NewSize);
+		projection_type get_projection_type() const { return current_projection_type_; }
+		void set_viewport_size(vec2<uint32_t> new_size);
 
-		void SetOrthographic(float pSize, float pNearClip, float pFarClip);
-		void SetPerspective(float pFOV, float pNearClip, float pFarClip);
+		void set_orthographic(float pSize, float pNearClip, float pFarClip);
+		void set_perspective(float pFOV, float pNearClip, float pFarClip);
 
-		float GetOrthographicSize() const { return mOrthographicSize; }
-		float GetOrthographicNearClip() const { return mOrthographicNear; }
-		float GetOrthographicFarClip() const { return mOrthographicFar; }
+		float get_orthographic_size() const { return orthographic_size_; }
+		float get_orthographic_near_clip() const { return orthographic_near_; }
+		float get_orthographic_far_clip() const { return orthographic_far_; }
 		
-		float GetPerspectiveFOV() const { return mPerspectiveFOV; }
-		float GetPerspectiveNearClip() const { return mPerspectiveNear; }
-		float GetPerspectiveFarClip() const { return mPerspectiveFar; }
+		float get_perspective_fov() const { return perspective_fov_; }
+		float get_perspective_near_clip() const { return perspective_near_; }
+		float get_perspective_far_clip() const { return perspective_far_; }
 		
-		void SetProjectionType(EProjectionType pProjectionType) { mCurrentProjectionType = pProjectionType; RecalculateProjection(); }
+		void set_projection_type(projection_type pProjectionType) { current_projection_type_ = pProjectionType; RecalculateProjection(); }
 
-		void SetOrthographicSize(float _) { mOrthographicSize = _;	RecalculateProjection(); }
-		void SetOrthographicNearClip(float _) { mOrthographicNear = _;	RecalculateProjection(); }
-		void SetOrthographicFarClip(float _) { mOrthographicFar = _; RecalculateProjection(); }
+		void set_orthographic_size(float _) { orthographic_size_ = _;	RecalculateProjection(); }
+		void set_orthographic_near_clip(float _) { orthographic_near_ = _;	RecalculateProjection(); }
+		void set_orthographic_far_clip(float _) { orthographic_far_ = _; RecalculateProjection(); }
 		
-		void SetPerspectiveFOV(float _) { mPerspectiveFOV = _; RecalculateProjection(); }
-		void SetPerspectiveNearClip(float _) { mPerspectiveNear = _; RecalculateProjection(); }
-		void SetPerspectiveFarClip(float _) { mPerspectiveFar = _; RecalculateProjection(); }
+		void set_perspective_fov(float _) { perspective_fov_ = _; RecalculateProjection(); }
+		void set_perspective_near_clip(float _) { perspective_near_ = _; RecalculateProjection(); }
+		void set_perspective_far_clip(float _) { perspective_far_ = _; RecalculateProjection(); }
 
 	private:
 		void RecalculateProjection();
 	private:
-		EProjectionType mCurrentProjectionType = EProjectionType::Orthographic;
+		projection_type current_projection_type_ = projection_type::Orthographic;
 
-		float mOrthographicSize = 16.0f;
-		float mOrthographicNear = -1.0f;
-		float mOrthographicFar = 1.0f;
+		float orthographic_size_ = 16.0f;
+		float orthographic_near_ = -1.0f;
+		float orthographic_far_ = 1.0f;
 
-		float mPerspectiveFOV = SMath::Conv<ERotType::Degrees, ERotType::Radians>(45.f);
-		float mPerspectiveNear = 0.01f;
-		float mPerspectiveFar = 1.f;
+		float perspective_fov_ = math::Conv<rot_type::Degrees, rot_type::Radians>(45.f);
+		float perspective_near_ = 0.01f;
+		float perspective_far_ = 1.f;
 
-		float mAspectRatio = 0.f;
+		float aspect_ratio_ = 0.f;
 	};
 }

@@ -3,16 +3,16 @@
 #include "GLFW\glfw3.h"
 #include "glad\glad.h"
 
-namespace ARC {
+namespace arc {
 
-	COpenGLContext::COpenGLContext(GLFWwindow* _WindowHandle) : mWindowHandle(_WindowHandle)
+	opengl_context::opengl_context(GLFWwindow* window_handle) : window_handle_(window_handle)
 	{
-		ARC_CORE_ASSERT(mWindowHandle, "Window handle is null")
+		ARC_CORE_ASSERT(window_handle_, "Window handle is null")
 	}
-	void COpenGLContext::Init()
+	void opengl_context::init()
 	{
 		ARC_PROFILE_FUNCTION();
-		glfwMakeContextCurrent(mWindowHandle);
+		glfwMakeContextCurrent(window_handle_);
 
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		ARC_CORE_ASSERT(status, "Failed to load GLAD!")
@@ -30,8 +30,8 @@ namespace ARC {
 		ARC_CORE_ASSERT(versionMajor > 4 || (versionMajor == 4 && versionMinor >= 5), "ARC requires at least OpenGL version 4.5!");
 	}
 
-	void COpenGLContext::SwapBuffers()
+	void opengl_context::swap_buffers()
 	{
-		glfwSwapBuffers(mWindowHandle);
+		glfwSwapBuffers(window_handle_);
 	}
 }

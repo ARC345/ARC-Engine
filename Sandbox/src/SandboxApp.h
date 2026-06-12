@@ -6,53 +6,53 @@
 #include "ARC/Objects/Primitive2D.h"
 #include "ARC/Renderer/Color.h"
 
-namespace ARC { class CTexture2D; }
-namespace ARC { class CKeyPressedEvent; }
-namespace ARC { class CEvent; }
-namespace ARC { class CVertexArray; }
-namespace ARC { class CIndexBuffer; }
-namespace ARC { class CVertexBuffer; }
-namespace ARC { class CShader; }
+namespace arc { class texture_2d; }
+namespace arc { class key_pressed_event; }
+namespace arc { class event; }
+namespace arc { class vertex_array; }
+namespace arc { class index_buffer; }
+namespace arc { class vertex_buffer; }
+namespace arc { class shader; }
 
 
-class CExampleLayer : public ARC::CLayer
+class example_layer : public arc::layer
 {
 public:
-	CExampleLayer(); 
-	virtual void OnUpdate(float _DeltaTime) override;
-	virtual void OnEvent(ARC::CEvent& _event) override;
+	example_layer(); 
+	virtual void on_update(float delta_time) override;
+	virtual void on_event(arc::event& _event) override;
 
-	bool OnKeyPressedEvent(ARC::CKeyPressedEvent& _Event);
+	bool OnKeyPressedEvent(arc::key_pressed_event& event);
 
-	virtual void OnGuiRender() override;
+	virtual void on_gui_render() override;
 
-	inline ARC::COrthographicCameraBase& GetCam() { return m_CameraController.GetCamera(); }
+	inline arc::COrthographicCameraBase& get_cam() { return m_CameraController.get_camera(); }
 
 public:
 	float SQ_MoveSpeed = 3.f;
 	float SQ_RotSpeed = 180.f;
 
-	ARC::CColor SQ_Colour = ARC::CColor::Red;
+	arc::CColor SQ_Colour = arc::CColor::Red;
 
 private:
-	ARC::CShaderLibrary m_ShaderLibrary;
+	arc::shader_library m_ShaderLibrary;
 
-	ARC::TRef<ARC::CShader> m_TriangleShader;
-	ARC::TRef<ARC::CVertexArray> m_TriangleVertexArray;
+	arc::ref<arc::shader> m_TriangleShader;
+	arc::ref<arc::vertex_array> m_TriangleVertexArray;
 	
-	ARC::TRef<ARC::CShader> m_FlatColorShader;
-	ARC::TRef<ARC::CVertexArray> m_SquareVertexArray;
-	ARC::TRef<ARC::CTexture2D> m_Texture;
-	ARC::TRef<ARC::CTexture2D> m_TestTexture;
+	arc::ref<arc::shader> m_FlatColorShader;
+	arc::ref<arc::vertex_array> m_SquareVertexArray;
+	arc::ref<arc::texture_2d> m_Texture;
+	arc::ref<arc::texture_2d> m_TestTexture;
 
-	ARC::COrthographicCameraController m_CameraController;
+	arc::orthographic_camera_controller m_CameraController;
 };
 
-class CSandbox : public ARC::Core::CApplication
+class sandbox : public arc::Core::application
 {
 public:
-	CSandbox();
-	~CSandbox() {};
+	sandbox();
+	~sandbox() {};
 
-	inline virtual std::string GetAppName() override { return "Sandbox"; };
+	inline virtual std::string get_app_name() override { return "Sandbox"; };
 };

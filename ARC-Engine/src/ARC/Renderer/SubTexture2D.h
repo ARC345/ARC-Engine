@@ -3,21 +3,21 @@
 #include "ARC\Types\vector.h"
 #include "glm\ext\vector_float2.hpp"
 
-namespace ARC { class CTexture2D; }
+namespace arc { class texture_2d; }
 
-namespace ARC {
-	class CSubTexture2D
+namespace arc {
+	class sub_texture_2d
 	{
 	public:
-		CSubTexture2D(const TRef<CTexture2D>& _Texture, const FVec2& _Min, const FVec2& _Max);
+		sub_texture_2d(const ref<texture_2d>& texture, const vec2& min, const vec2& max);
 
-		inline const TRef<CTexture2D> GetTexture() const { return mTexture; };
-		inline const glm::vec2* GetTexCoords() const { return mTexCoords; };
+		inline const ref<texture_2d> get_texture() const { return texture_; };
+		inline const glm::vec2* get_tex_coords() const { return tex_coords_; };
 
-		static TRef<CSubTexture2D> CreateFromCoords(const TRef<CTexture2D>& _Texture, const FVec2& _Coords, const FVec2& _CellSize, const FVec2& _SpriteSize={1, 1});
+		static ref<sub_texture_2d> CreateFromCoords(const ref<texture_2d>& texture, const vec2& coords, const vec2& cell_size, const vec2& sprite_size={1, 1});
 	protected:
 	private:
-		TRef<CTexture2D> mTexture;
-		glm::vec2 mTexCoords[4];
+		ref<texture_2d> texture_;
+		glm::vec2 tex_coords_[4];
 	};
 }

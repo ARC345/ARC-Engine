@@ -13,82 +13,82 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_circle_shape.h"
 
-namespace ARC {
-	CScene::CScene()
+namespace arc {
+	scene::scene()
 	{
-		SSceneRegistry::SetupComponent<CIDComponent>();
-		SSceneRegistry::SetupComponent<CNameComponent>();
-		SSceneRegistry::SetupComponent<CTransform2DComponent>();
-		SSceneRegistry::SetupComponent<CSpriteRendererComponent>();
-		SSceneRegistry::SetupComponent<CCameraComponent>();
-		SSceneRegistry::SetupComponent<CNativeScriptComponent>();
-		SSceneRegistry::SetupComponent<CRigidBody2DComponent>();
-		SSceneRegistry::SetupComponent<CBoxCollider2DComponent>();
-		SSceneRegistry::SetupComponent<CCircleCollider2DComponent>();
-		SSceneRegistry::SetupComponent<CCircleRendererComponent>();
+		scene_registry::setup_component<id_component>();
+		scene_registry::setup_component<name_component>();
+		scene_registry::setup_component<transform_2d_component>();
+		scene_registry::setup_component<sprite_renderer_component>();
+		scene_registry::setup_component<camera_component>();
+		scene_registry::setup_component<native_script_component>();
+		scene_registry::setup_component<rigid_body_2d_component>();
+		scene_registry::setup_component<box_collider_2d_component>();
+		scene_registry::setup_component<circle_collider_2d_component>();
+		scene_registry::setup_component<circle_renderer_component>();
 	}
 
-	CScene::~CScene()
+	scene::~scene()
 	{
-		if (mPhysicsWorld) EndPhysics(); // just in case
+		if (physics_world_) end_physics(); // just in case
 	}
 
-	TRef<CScene> CScene::Copy(const TRef<CScene> p)
+	ref<scene> scene::copy(const ref<scene> p)
 	{
-		TRef<CScene> cpy = CreateRef<CScene>();
-		cpy->mViewportSize = p->mViewportSize;
+		ref<scene> cpy = create_ref<scene>();
+		cpy->viewport_size_ = p->viewport_size_;
 
-		p->mManager.view<CIDComponent>().each([=](auto iID, auto iUUID){
-			cpy->DuplicateEntity(CEntity(iID, p.get()));
+		p->manager_.view<id_component>().each([=](auto iID, auto iUUID){
+			cpy->duplicate_entity(entity(iID, p.get()));
 		});
 		
 		return cpy;
 	}
 
-	CEntity CScene::CreateEntity(const TString& pName, const TUUID pUUID)
+	entity scene::create_entity(const string& pName, const uuid pUUID)
 	{
-		CEntity entity(mManager.create(), this);
+		entity entity(manager_.create(), this);
 
-		entity.AddComponent<CIDComponent>(pUUID);
-		entity.AddComponent<CNameComponent>(pName);
+		entity.add_component<id_component>(pUUID);
+		entity.add_component<name_component>(pName);
 
 		return entity;
 	}
 
-	void CScene::RemoveEntity(CEntity Entity)
+	void scene::remove_entity(entity Entity)
 	{
-		mManager.destroy(Entity.GetID());
-		Entity.OnKill();
+		manager_.destroy(Entity.get_id());
+		Entity.on_kill();
 	}
 
-	void CScene::OnUpdateEditor(float DeltaTime, CEditorCamera& pCamera)
+	void scene::on_update_editor(float DeltaTime, editor_camera& pCamera)
 	{
-		SRenderer2D::BeginScene(pCamera);
+		renderer_2d::begin_scene(pCamera);
 		RenderScene();
-		SRenderer2D::EndScene();
+		renderer_2d::end_scene();
 	}
 
-	void CScene::OnUpdateRuntime(float pDeltaTime)
+	void scene::on_update_runtime(float pDeltaTime)
 	{
-		mManager.view<CNativeScriptComponent>().each([pDeltaTime](auto entity, auto& nativeScriptcomp)
+		manager_.view<native_script_component>().each([pDeltaTime](auto entity, auto& nativeScriptcomp)
 			{
 				if (!nativeScriptcomp.Controller)
 				{
 					nativeScriptcomp.Controller = nativeScriptcomp.InstantiateDelegate();
-					nativeScriptcomp.Controller->Setup(nativeScriptcomp.OwningEntity);
-					nativeScriptcomp.Controller->OnCreate();
+					nativeScriptcomp.Controller->set_up(nativeScriptcomp.OwningEntity);
+					nativeScriptcomp.Controller->on_create();
 				}
 
-				nativeScriptcomp.Controller->OnUpdate(pDeltaTime);
+				nativeScriptcomp.Controller->on_update(pDeltaTime);
 			});
 
-		UpdatePhysics(pDeltaTime);
+		update_physics(pDeltaTime);
 
-		if (auto primaryCameraEntity = GetPrimaryCameraEntity())
+		if (auto primaryCameraEntity = get_primary_camera_entity())
 		{
-			SRenderer2D::BeginScene(primaryCameraEntity.GetComponent<CCameraComponent>().Camera, primaryCameraEntity.GetComponent<CTransform2DComponent>().Transform);
+			renderer_2d::begin_scene(primaryCameraEntity.get_component<camera_component>().Camera, primaryCameraEntity.get_component<transform_2d_component>().Transform);
 			RenderScene();
-			SRenderer2D::EndScene();
+			renderer_2d::end_scene();
 		}
 
 		//std::for_each(std::execution::par_unseq, view.begin(), view.end(), [&view](auto entity) {
@@ -96,44 +96,44 @@ namespace ARC {
 		//	}); 
 	}
 
-	void CScene::OnUpdateSimulation(float pDeltaTime, CEditorCamera& pCamera)
+	void scene::on_update_simulation(float pDeltaTime, editor_camera& pCamera)
 	{
-		SRenderer2D::BeginScene(pCamera);
+		renderer_2d::begin_scene(pCamera);
 		RenderScene();
-		UpdatePhysics(pDeltaTime);
-		SRenderer2D::EndScene();
+		update_physics(pDeltaTime);
+		renderer_2d::end_scene();
 	}
 
-	void CScene::OnViewportResize(TVec2<uint32_t> pNewSize)
+	void scene::on_viewport_resize(vec2<uint32_t> pNewSize)
 	{
-		mViewportSize = pNewSize;
+		viewport_size_ = pNewSize;
 
-		mManager.view<CCameraComponent>().each([=](auto entity, auto& cameraComp)
+		manager_.view<camera_component>().each([=](auto entity, auto& cameraComp)
 			{
 				//if (cameraComp.bFixedAspectRatio) return @todo
-				cameraComp.Camera.SetViewportSize(pNewSize);
+				cameraComp.Camera.set_viewport_size(pNewSize);
 			});
 	}
 
-	void CScene::BeginPhysics(){
-		OnViewportResize(mViewportSize);
-		mPhysicsWorld = new b2World({ 0.0f, -9.8f });
-		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rigidBody2dComponent) {
-			CEntity entity = { e, this };
+	void scene::begin_physics(){
+		on_viewport_resize(viewport_size_);
+		physics_world_ = new b2World({ 0.0f, -9.8f });
+		manager_.view<transform_2d_component, rigid_body_2d_component>().each([&](auto e, auto& transformComponent, auto& rigidBody2dComponent) {
+			entity entity = { e, this };
 			b2BodyDef bodyDef;
 			bodyDef.type = (b2BodyType)rigidBody2dComponent.Type;
 			bodyDef.position.Set(transformComponent.Transform.Location.x, transformComponent.Transform.Location.y);
 			bodyDef.angle = transformComponent.Transform.Rotation;
 			bodyDef.fixedRotation = rigidBody2dComponent.bFixedRotation;
-			auto* body = mPhysicsWorld->CreateBody(&bodyDef);
+			auto* body = physics_world_->CreateBody(&bodyDef);
 			rigidBody2dComponent.RuntimeBody = body;
-			if (entity.HasComponent<CBoxCollider2DComponent>())
+			if (entity.has_component<box_collider_2d_component>())
 			{
-				auto& colliderComponent = entity.GetComponent<CBoxCollider2DComponent>();
+				auto& colliderComponent = entity.get_component<box_collider_2d_component>();
 				b2PolygonShape boxShape;
-				boxShape.SetAsBox(
-					transformComponent.Transform.Scale.x * colliderComponent.Size.x,
-					transformComponent.Transform.Scale.y * colliderComponent.Size.y
+				boxShape.set_as_box(
+					transformComponent.Transform.Scale.x * colliderComponent.size.x,
+					transformComponent.Transform.Scale.y * colliderComponent.size.y
 				);
 
 				b2FixtureDef fixureDef;
@@ -145,9 +145,9 @@ namespace ARC {
 
 				colliderComponent.RuntimeFixture = body->CreateFixture(&fixureDef);
 			}
-			if (entity.HasComponent<CCircleCollider2DComponent>())
+			if (entity.has_component<circle_collider_2d_component>())
 			{
-				auto& colliderComponent = entity.GetComponent<CCircleCollider2DComponent>();
+				auto& colliderComponent = entity.get_component<circle_collider_2d_component>();
 				b2CircleShape circleShape;
 				circleShape.m_p.Set(colliderComponent.Offset.x, colliderComponent.Offset.y);
 				circleShape.m_radius = colliderComponent.Radius * transformComponent.Transform.Scale.x;
@@ -164,27 +164,27 @@ namespace ARC {
 		});
 	}
 
-	void CScene::EndPhysics()
+	void scene::end_physics()
 	{
-		delete mPhysicsWorld;
-		mPhysicsWorld = nullptr;
+		delete physics_world_;
+		physics_world_ = nullptr;
 	}
 
-	void CScene::RenderScene()
+	void scene::RenderScene()
 	{
-		mManager.group<CTransform2DComponent>(entt::get<CSpriteRendererComponent>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
+		manager_.group<transform_2d_component>(entt::get<sprite_renderer_component>).each([](auto entity, auto& transformComp, auto& spriteRendererComp)
 			{
-				static CPrimitive2D Quad;
+				static primitive_2d Quad;
 				Quad.Color = spriteRendererComp.Color;
 				Quad.Texture = spriteRendererComp.Texture;
 				Quad.TextureScaling = spriteRendererComp.TextureScaling;
 				Quad.Transform = transformComp;
-				Quad.TransparencyLevel = (Quad.Texture || !SMath::IsEqual(Quad.Color.a, 1.f, 0.01f)) ? ETransparencyType::Translucent : ETransparencyType::Opaque;
-				SRenderer2D::DrawQuad(Quad, int(entity));
+				Quad.TransparencyLevel = (Quad.Texture || !math::is_equal(Quad.Color.a, 1.f, 0.01f)) ? transparency_type::Translucent : transparency_type::Opaque;
+				renderer_2d::draw_quad(Quad, int(entity));
 			});
-		mManager.view<CTransform2DComponent, CCircleRendererComponent>().each([](auto entity, auto& transformComp, auto& circleRendererComp)
+		manager_.view<transform_2d_component, circle_renderer_component>().each([](auto entity, auto& transformComp, auto& circleRendererComp)
 			{
-				SRenderer2D::DrawCircle(
+				renderer_2d::draw_circle(
 					transformComp.Transform.Location,
 					transformComp.Transform.Rotation,
 					transformComp.Transform.Scale,
@@ -195,15 +195,15 @@ namespace ARC {
 			});
 	}
 
-	void CScene::UpdatePhysics(float pDeltaTime)
+	void scene::update_physics(float pDeltaTime)
 	{
-		mPhysicsWorld->Step(pDeltaTime, 6, 2); /// expose to editor
-		mManager.view<CTransform2DComponent, CRigidBody2DComponent>().each([&](auto e, auto& transformComponent, auto& rb2dComponent) {
-				CEntity entity = {e, this};
+		physics_world_->Step(pDeltaTime, 6, 2); /// expose to editor
+		manager_.view<transform_2d_component, rigid_body_2d_component>().each([&](auto e, auto& transformComponent, auto& rb2dComponent) {
+				entity entity = {e, this};
 				b2Body* body = (b2Body*)rb2dComponent.RuntimeBody;
-				transformComponent.Transform.Location.x = body->GetPosition().x;
-				transformComponent.Transform.Location.y = body->GetPosition().y;
-				transformComponent.Transform.Rotation = body->GetAngle();
+				transformComponent.Transform.Location.x = body->get_position().x;
+				transformComponent.Transform.Location.y = body->get_position().y;
+				transformComponent.Transform.Rotation = body->get_angle();
 			});
 	}
 
@@ -213,22 +213,22 @@ namespace ARC {
 	* Play=2,
 	* Simulate=3
 	*/
-	void CScene::OnSetSceneState(TUInt8 pCurrentSceneState, TUInt8 pNewSceneState)
+	void scene::on_set_scene_state(u8 pCurrentSceneState, u8 pNewSceneState)
 	{
 		switch (pCurrentSceneState)
 		{
 		case 0:
 			break;
 		case 1:
-			//End Edit
+			//end Edit
 			break;
 		case 2:
-			//End Play
-			EndPhysics();
+			//end Play
+			end_physics();
 			break;
 		case 3:
-			//End Simulate
-			EndPhysics();
+			//end Simulate
+			end_physics();
 		default:
 			ARC_CORE_ASSERT("Invalid (Current) Scene State");
 		}
@@ -241,12 +241,12 @@ namespace ARC {
 			break;
 		case 2:
 			//Start Play
-			BeginPhysics();
+			begin_physics();
 
 			break;
 		case 3:
 			//Start Simulate
-			BeginPhysics();
+			begin_physics();
 			
 			break;
 		default:
@@ -254,20 +254,20 @@ namespace ARC {
 		}
 	}
 
-	void CScene::SerializeEntity(YAML::Emitter& pOut, CEntity pEntity)
+	void scene::serialize_entity(YAML::Emitter& pOut, entity pEntity)
 	{
 		pOut << YAML::BeginMap;
-		pOut << YAML::Key << "Entity" << YAML::Value << pEntity.GetComponent<CIDComponent>().ID; // @TODO
+		pOut << YAML::Key << "Entity" << YAML::Value << pEntity.get_component<id_component>().ID; // @TODO
 		pOut << YAML::Key << "Components" << YAML::Value << YAML::BeginSeq;
 
-		for (auto& compMeta : SSceneRegistry::GetMetaComponents())
-			if (auto* compPtr = compMeta.second.GetComponent(pEntity))
-				if (compPtr->GetFlags() & ECF::EComponentFlags::Serializable)
+		for (auto& compMeta : scene_registry::get_meta_components())
+			if (auto* compPtr = compMeta.second.get_component(pEntity))
+				if (compPtr->get_flags() & ecf::component_flags::Serializable)
 				{
 					pOut << YAML::BeginMap;
-					pOut << YAML::Key << "Name" << YAML::Value << compMeta.second.GetName();
+					pOut << YAML::Key << "Name" << YAML::Value << compMeta.second.get_name();
 					pOut << YAML::Key << "Data" << YAML::Value << YAML::BeginMap;
-					compPtr->Serialize(pOut);
+					compPtr->serialize(pOut);
 					pOut << YAML::EndMap;
 					pOut << YAML::EndMap;
 				}
@@ -276,19 +276,19 @@ namespace ARC {
 		pOut << YAML::EndMap;
 	}
 
-	void CScene::SerializeToText(const std::filesystem::path& pFilepath)
+	void scene::serialize_to_text(const std::filesystem::path& pFilepath)
 	{
 		YAML::Emitter out;
 		out << YAML::BeginMap;
 		out << YAML::Key << "Scene" << YAML::Value << "Untitled";
 		out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
-		mManager.each([&](const TEntityID pEID)
+		manager_.each([&](const entity_id pEID)
 			{
-				CEntity entity = { pEID, this };
+				entity entity = { pEID, this };
 				if (!entity) return;
 
-				CScene::SerializeEntity(out, entity);			
+				scene::serialize_entity(out, entity);			
 			});
 
 		out << YAML::EndSeq;
@@ -298,49 +298,49 @@ namespace ARC {
 		fout << out.c_str();
 	}
 
-	void CScene::SerializeToBinary(const std::filesystem::path& pFilepath)
+	void scene::serialize_to_binary(const std::filesystem::path& pFilepath)
 	{
 		
 	}
 
-	bool CScene::DeserializeFromText(const std::filesystem::path& pFilepath)
+	bool scene::deserialize_from_text(const std::filesystem::path& pFilepath)
 	{
 		YAML::Node data = YAML::LoadFile(pFilepath.string());
 		if (!data["Scene"]) return false;
 
-		TString SceneName = data["Scene"].as<TString>();
+		string SceneName = data["Scene"].as<string>();
 
 		auto entities = data["Entities"];
 		for (auto entity : entities)
 		{
-			CEntity deserializedEntity = CreateEntity("Entity", entity["Entity"].as<TUUID>());
+			entity deserializedEntity = create_entity("Entity", entity["Entity"].as<uuid>());
 			
 			for (auto compData : entity["Components"])
 			{
 				auto Node = compData["Data"];
 
-				if (compData["Name"].as<TString>() == SComponentTraits::GetName<CNameComponent>()) {
-					deserializedEntity.GetComponent<CNameComponent>().Deserialize(Node);
+				if (compData["Name"].as<string>() == component_traits::get_name<name_component>()) {
+					deserializedEntity.get_component<name_component>().deserialize(Node);
 					continue;
 				}
 				
-				auto compName = compData["Name"].as<TString>();
+				auto compName = compData["Name"].as<string>();
 
-				SSceneRegistry::GetMetaComponents()[SSceneRegistry::GetRegisteredComponentNameIDMap()[compData["Name"].as<TString>()]].AddComponent(deserializedEntity)->Deserialize(Node);
+				scene_registry::get_meta_components()[scene_registry::get_registered_component_name_id_map()[compData["Name"].as<string>()]].add_component(deserializedEntity)->deserialize(Node);
 			}
 		}
 		return true;
 	}
 
-	bool CScene::DeserializeFromBinary(const std::filesystem::path& pFilepath)
+	bool scene::deserialize_from_binary(const std::filesystem::path& pFilepath)
 	{
 		return false;
 	}
 
-	CEntity CScene::GetPrimaryCameraEntity()
+	entity scene::get_primary_camera_entity()
 	{
-		CEntity rval;
-		mManager.view<CTransform2DComponent, CCameraComponent>().each([&](auto entity, auto& transformComp, auto& cameraComp)
+		entity rval;
+		manager_.view<transform_2d_component, camera_component>().each([&](auto entity, auto& transformComp, auto& cameraComp)
 			{
 				if (cameraComp.Primary)
 				{
@@ -351,12 +351,12 @@ namespace ARC {
 		return rval;
 	}
 
-	CEntity CScene::DuplicateEntity(CEntity pSrcEntity)
+	entity scene::duplicate_entity(entity pSrcEntity)
 	{
-		auto dstEntity = CreateEntity(pSrcEntity.GetName(), pSrcEntity.GetUUID());
-		for (auto i : SSceneRegistry::GetMetaComponents()) {
-			if (i.first == SComponentTraits::GetID<CNameComponent>() || i.first == SComponentTraits::GetID<CIDComponent>()) continue;
-			i.second.CopyComponent(dstEntity, pSrcEntity);
+		auto dstEntity = create_entity(pSrcEntity.get_name(), pSrcEntity.get_uuid());
+		for (auto i : scene_registry::get_meta_components()) {
+			if (i.first == component_traits::get_id<name_component>() || i.first == component_traits::get_id<id_component>()) continue;
+			i.second.copy_component(dstEntity, pSrcEntity);
 		}
 		return dstEntity;
 	}

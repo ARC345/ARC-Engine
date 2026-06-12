@@ -1,6 +1,6 @@
 #pragma once
-#ifdef _WIN32
-	#ifdef _WIN64
+#ifdef win32
+	#ifdef win64
 		#define ARC_PLATFORM_WINDOWS
 	#else
 		#error "x86 Builds are not supported!"

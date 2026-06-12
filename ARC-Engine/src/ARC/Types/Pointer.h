@@ -1,19 +1,19 @@
 #pragma once
 #include <memory>
 
-namespace ARC {
+namespace arc {
 	template<typename T>
-	using TRef = std::shared_ptr<T>;
+	using ref = std::shared_ptr<T>;
 	
 	template<typename T>
 	using TScope = std::unique_ptr<T>;
 
 	template<typename T, typename ... TArgs>
-	inline constexpr TRef<T> CreateRef(TArgs&& ... _Args) {
-		return std::make_shared<T>(std::forward<TArgs>(_Args)...);
+	inline constexpr ref<T> create_ref(TArgs&& ... args) {
+		return std::make_shared<T>(std::forward<TArgs>(args)...);
 	}
 	template<typename T, typename ... TArgs>
-	inline constexpr TScope<T> CreateScope(TArgs&& ... _Args) {
-		return std::make_unique<T>(std::forward<TArgs>(_Args)...);
+	inline constexpr TScope<T> create_scope(TArgs&& ... args) {
+		return std::make_unique<T>(std::forward<TArgs>(args)...);
 	}
 }

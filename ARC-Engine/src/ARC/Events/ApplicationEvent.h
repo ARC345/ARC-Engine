@@ -2,22 +2,22 @@
 #include "Event.h"
 #include "../Types/vector.h"
 
-namespace ARC {
-	class ARC_API CWindowResizeEvent : public CEvent
+namespace arc {
+	class ARC_API window_resize_event : public event
 	{
 	public:
-		CWindowResizeEvent(TVec2<int>& p_Dimentions) :
-			mDimentions(p_Dimentions) {}
-		CWindowResizeEvent(int p_DimentionsX, int p_DimentionsY) :
-			mDimentions(TVec2<int>(p_DimentionsX, p_DimentionsY)) {}
+		window_resize_event(vec2<int>& dimentions) :
+			dimentions_(dimentions) {}
+		window_resize_event(int dimentions_x, int dimentions_y) :
+			dimentions_(vec2<int>(dimentions_x, dimentions_y)) {}
 
-		inline TVec2<int> GetDimentions() const { return mDimentions; };
-		inline int GetX() const { return GetDimentions().x; };
-		inline int GetY() const { return GetDimentions().y; };
+		inline vec2<int> get_dimentions() const { return dimentions_; };
+		inline int get_x() const { return get_dimentions().x; };
+		inline int get_y() const { return get_dimentions().y; };
 
-		virtual TString ToString() const override {
+		virtual string to_string() const override {
 			std::stringstream ss;
-			ss << GetName() << ": " << GetX() << ", " << GetY();
+			ss << get_name() << ": " << get_x() << ", " << get_y();
 			return ss.str();
 		}
 
@@ -25,19 +25,19 @@ namespace ARC {
 		EVENT_CLASS_TYPE(WindowResize)
 
 	private:
-		TVec2<int> mDimentions;
+		vec2<int> dimentions_;
 	};
 	
-	class ARC_API CWindowCloseEvent : public CEvent
+	class ARC_API window_close_event : public event
 	{
 	public:
-		CWindowCloseEvent(){}
+		window_close_event(){}
 
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 		EVENT_CLASS_TYPE(WindowClose)
 	};
 	
-	class ARC_API CAppTick : public CEvent
+	class ARC_API CAppTick : public event
 	{
 	public:
 		CAppTick(){}
@@ -46,7 +46,7 @@ namespace ARC {
 		EVENT_CLASS_TYPE(AppTick)
 	};
 	
-	class ARC_API CAppUpdate : public CEvent
+	class ARC_API CAppUpdate : public event
 	{
 	public:
 		CAppUpdate(){}
@@ -55,7 +55,7 @@ namespace ARC {
 		EVENT_CLASS_TYPE(AppUpdate)
 	};
 	
-	class ARC_API CAppRender : public CEvent
+	class ARC_API CAppRender : public event
 	{
 	public:
 		CAppRender(){}

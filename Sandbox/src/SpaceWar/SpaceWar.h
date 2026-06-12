@@ -7,50 +7,50 @@
 #include <vector>
 #include "imgui/imgui.h"
 
-namespace ARC { class CMouseButtonPressedEvent; }
-namespace ARC { class CVertexArray; }
-namespace ARC { class CTexture2D; }
-namespace ARC { class CPlayer; }
-namespace ARC { class CShader; }
-namespace ARC { class CEvent; }
-namespace ARC { class CRock; }
+namespace arc { class mouse_button_pressed_event; }
+namespace arc { class vertex_array; }
+namespace arc { class texture_2d; }
+namespace arc { class player; }
+namespace arc { class shader; }
+namespace arc { class event; }
+namespace arc { class rock; }
 
-enum class EGameState {
+enum class game_state {
 	Play = 0,
 	MainMenu = 1,
 	GameOver = 2
 };
 
-class CSpaceWar : public ARC::CLayer
+class space_war : public arc::layer
 {
 public:
-	CSpaceWar();
-	virtual ~CSpaceWar() = default;
+	space_war();
+	virtual ~space_war() = default;
 
-	virtual void OnAttach();
-	virtual void OnDetach();
+	virtual void on_attach();
+	virtual void on_detach();
 
-	virtual void OnUpdate(float _DeltaTime) override;
-	virtual void OnEvent(ARC::CEvent& _Event) override;
-	virtual void OnGuiRender() override;
+	virtual void on_update(float delta_time) override;
+	virtual void on_event(arc::event& event) override;
+	virtual void on_gui_render() override;
 	
-	void ResetLevel();
-	bool DetectCollision();
+	void reset_level();
+	bool detect_collision();
 	
-	bool OnMouseButtonPressed(ARC::CMouseButtonPressedEvent& _e);
+	bool on_mouse_button_pressed(arc::mouse_button_pressed_event& _e);
 
 	float prev = 0.f;
-	EGameState GameState;
+	game_state GameState;
 protected:
-	ARC::TRef<ARC::CShader> m_Shader;
-	ARC::TRef<ARC::CVertexArray> m_VertexArray;
-	ARC::TRef<ARC::CPlayer> m_Player;
-	//CParticleSystem2D m_ParticleSystem;
-	std::vector<ARC::TRef<ARC::CRock>> m_Rocks;
+	arc::ref<arc::shader> m_Shader;
+	arc::ref<arc::vertex_array> m_VertexArray;
+	arc::ref<arc::player> m_Player;
+	//particle_system_2d m_ParticleSystem;
+	std::vector<arc::ref<arc::rock>> m_Rocks;
 
 	bool m_Blink = true; 
 	ImFont* m_Font;
 
 private:
-	ARC::COrthographicCameraController m_CameraController;
+	arc::orthographic_camera_controller m_CameraController;
 };

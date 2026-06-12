@@ -4,28 +4,28 @@
 #include <streambuf>
 #include "inicpp.h"
 
-namespace ARC {
-	static std::unordered_map<TString, std::shared_ptr<ini::IniFile>> IniFiles;
+namespace arc {
+	static std::unordered_map<string, std::shared_ptr<ini::IniFile>> IniFiles;
 
-	TString SHPR::ReadFile(const TString& _Path)
+	string shpr::ReadFile(const string& path)
 	{
-		std::ifstream is(_Path.c_str(), std::ios::in | std::ios::binary);
-		ARC_CORE_ASSERT(is.is_open(), "Could not find the file \"{0}\"", _Path.c_str());
-		TString str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
+		std::ifstream is(path.c_str(), std::ios::in | std::ios::binary);
+		ARC_CORE_ASSERT(is.is_open(), "Could not find the file \"{0}\"", path.c_str());
+		string str((std::istreambuf_iterator<char>(is)), std::istreambuf_iterator<char>());
 		is.close();
 		return str;
 	}
 
-	TString SHPR::ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention /*= true*/)
+	string shpr::ExtractFileNameFromPath(const string& path, bool _bRemoveExtention /*= true*/)
 	{
-		auto lastSlash = _Path.find_last_of("/\\");
+		auto lastSlash = path.find_last_of("/\\");
 			
-		lastSlash = lastSlash == TString::npos ? 0 : lastSlash + 1;
-		if(!_bRemoveExtention) return _Path.substr(lastSlash);
+		lastSlash = lastSlash == string::npos ? 0 : lastSlash + 1;
+		if(!_bRemoveExtention) return path.substr(lastSlash);
 
-		auto lastDot = _Path.rfind('.');
-		auto count = (lastDot == TString::npos ? _Path.length() - lastSlash : lastDot - lastSlash);
+		auto lastDot = path.rfind('.');
+		auto count = (lastDot == string::npos ? path.length() - lastSlash : lastDot - lastSlash);
 
-		return _Path.substr(lastSlash, count);
+		return path.substr(lastSlash, count);
 	}
 }

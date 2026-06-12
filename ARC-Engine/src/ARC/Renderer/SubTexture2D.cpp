@@ -2,23 +2,23 @@
 #include "SubTexture2D.h"
 #include "ARC\Renderer\Texture.h"
 
-namespace ARC {
+namespace arc {
 
-	CSubTexture2D::CSubTexture2D(const TRef<CTexture2D>& _Texture, const FVec2& _Min, const FVec2& _Max) :
-		mTexture(_Texture)
+	sub_texture_2d::sub_texture_2d(const ref<texture_2d>& texture, const vec2& min, const vec2& max) :
+		texture_(texture)
 	{
-		mTexCoords[0] = { _Min.x, _Min.y };
-		mTexCoords[1] = { _Max.x, _Min.y };
-		mTexCoords[2] = { _Max.x, _Max.y };
-		mTexCoords[3] = { _Min.x, _Max.y };
+		tex_coords_[0] = { min.x, min.y };
+		tex_coords_[1] = { max.x, min.y };
+		tex_coords_[2] = { max.x, max.y };
+		tex_coords_[3] = { min.x, max.y };
 	}
 
-	TRef<CSubTexture2D> CSubTexture2D::CreateFromCoords(const TRef<CTexture2D>& _Texture, const FVec2& _Coords, const FVec2& _CellSize, const FVec2& _SpriteSize)
+	ref<sub_texture_2d> sub_texture_2d::CreateFromCoords(const ref<texture_2d>& texture, const vec2& coords, const vec2& cell_size, const vec2& sprite_size)
 	{
-		return CreateRef<CSubTexture2D>(
-			_Texture,
-			FVec2(_Coords.x * _CellSize.x / _Texture->Dimensions.x, _Coords.y * _CellSize.y / _Texture->Dimensions.y),
-			FVec2((_Coords.x + _SpriteSize.x) * _CellSize.x / _Texture->Dimensions.x, (_Coords.y + _SpriteSize.y) * _CellSize.y / _Texture->Dimensions.y)
+		return create_ref<sub_texture_2d>(
+			texture,
+			vec2(coords.x * cell_size.x / texture->Dimensions.x, coords.y * cell_size.y / texture->Dimensions.y),
+			vec2((coords.x + sprite_size.x) * cell_size.x / texture->Dimensions.x, (coords.y + sprite_size.y) * cell_size.y / texture->Dimensions.y)
 			);
 	}
 
