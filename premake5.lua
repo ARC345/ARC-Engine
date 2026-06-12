@@ -44,6 +44,7 @@ group ""
 include "ARC-Engine"
 include "Sandbox"
 include "ARC-Editor"
+include "Tests"
 
 filter "system:windows"
 	systemversion "latest"

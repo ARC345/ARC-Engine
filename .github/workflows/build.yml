@@ -61,8 +61,8 @@ jobs:
     - name: Generate makefiles
       run: premake5 gmake2
 
-    - name: Build Debug
-      run: make config=debug -j$(nproc)
+    - name: Build Tests
+      run: make Tests config=release -j$(nproc)
 
-    - name: Build Release
-      run: make config=release -j$(nproc)
+    - name: Run Tests
+      run: ./_bin/Release-linux-x86_64/Tests/Tests
