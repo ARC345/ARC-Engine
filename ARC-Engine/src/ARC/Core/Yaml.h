@@ -8,18 +8,18 @@
 namespace YAML
 {
 	template<>
-	struct convert<ARC::FVec2>
+	struct convert<arc::vec2>
 	{
-		static Node encode(const ARC::FVec2& rhs) {
+		static Node encode(const arc::vec2& rhs) {
 			Node node;
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
 
-			node.SetStyle(EmitterStyle::Flow);
+			node.set_style(EmitterStyle::Flow);
 			return node;
 		}
-		static bool decode(const Node& node, ARC::FVec2& rhs) {
-			if (!node.IsSequence() || node.size() != 2)
+		static bool decode(const Node& node, arc::vec2& rhs) {
+			if (!node.is_sequence() || node.size() != 2)
 				return false;
 
 			rhs.x = node[0].as<float>();
@@ -28,19 +28,19 @@ namespace YAML
 		}
 	};
 	template<>
-	struct convert<ARC::FVec3>
+	struct convert<arc::vec3>
 	{
-		static Node encode(const ARC::FVec3& rhs) {
+		static Node encode(const arc::vec3& rhs) {
 			Node node;
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
 
-			node.SetStyle(EmitterStyle::Flow);
+			node.set_style(EmitterStyle::Flow);
 			return node;
 		}
-		static bool decode(const Node& node, ARC::FVec3& rhs) {
-			if (!node.IsSequence() || node.size() != 3)
+		static bool decode(const Node& node, arc::vec3& rhs) {
+			if (!node.is_sequence() || node.size() != 3)
 				return false;
 
 			rhs.x = node[0].as<float>();
@@ -50,20 +50,20 @@ namespace YAML
 		}
 	};
 	template<>
-	struct convert<ARC::FVec4>
+	struct convert<arc::vec4>
 	{
-		static Node encode(const ARC::FVec4& rhs) {
+		static Node encode(const arc::vec4& rhs) {
 			Node node;
 			node.push_back(rhs.x);
 			node.push_back(rhs.y);
 			node.push_back(rhs.z);
 			node.push_back(rhs.w);
 
-			node.SetStyle(EmitterStyle::Flow);
+			node.set_style(EmitterStyle::Flow);
 			return node;
 		}
-		static bool decode(const Node& node, ARC::FVec4& rhs) {
-			if (!node.IsSequence() || node.size() != 4)
+		static bool decode(const Node& node, arc::vec4& rhs) {
+			if (!node.is_sequence() || node.size() != 4)
 				return false;
 
 			rhs.x = node[0].as<float>();
@@ -75,20 +75,20 @@ namespace YAML
 	};
 
 	template<>
-	struct convert<ARC::FColor4>
+	struct convert<arc::color4>
 	{
-		static Node encode(const ARC::FColor4& rhs) {
+		static Node encode(const arc::color4& rhs) {
 			Node node;
 			node.push_back(rhs.r);
 			node.push_back(rhs.g);
 			node.push_back(rhs.b);
 			node.push_back(rhs.a);
 
-			node.SetStyle(EmitterStyle::Flow);
+			node.set_style(EmitterStyle::Flow);
 			return node;
 		}
-		static bool decode(const Node& node, ARC::FColor4& rhs) {
-			if (!node.IsSequence() || node.size() != 4)
+		static bool decode(const Node& node, arc::color4& rhs) {
+			if (!node.is_sequence() || node.size() != 4)
 				return false;
 
 			rhs.r = node[0].as<float>();
@@ -99,7 +99,7 @@ namespace YAML
 		}
 	};
 }
-namespace ARC {
+namespace arc {
 	template <typename T_>
 	inline YAML::Emitter& operator<<(YAML::Emitter& out, const T_& rhs) {
 		out << YAML::convert<T_>::encode(rhs);

@@ -5,30 +5,30 @@
 #include "ARC/Types/Transform2D.h"
 #include "ARC/Types/Transform3D.h"
 
-namespace ARC
+namespace arc
 {
-	using FGLMMat4 = glm::mat4;
-	using FGLMMat3 = glm::mat3;
-	using FGLMMat2 = glm::mat2;
+	using mat4 = glm::mat4;
+	using mat3 = glm::mat3;
+	using mat2 = glm::mat2;
 	
-	using FGLMVec4 = glm::vec4;
-	using FGLMVec3 = glm::vec3;
-	using FGLMVec2 = glm::vec2;
+	using vec4 = glm::vec4;
+	using vec3 = glm::vec3;
+	using vec2 = glm::vec2;
 
 	template <>
-	struct SConvert<FGLMMat4, FTransform2D>
+	struct convert<mat4, transform_2d>
 	{
-		static FGLMMat4 Conv(const FTransform2D& p);
+		static mat4 Conv(const transform_2d& p);
 	};
 	template <>
-	struct SConvert<FTransform3D, FGLMMat4>
+	struct convert<transform_3d, mat4>
 	{
-		static bool CanConv(const FGLMMat4& p);
-		static FTransform3D Conv(const FGLMMat4& p);
+		static bool CanConv(const mat4& p);
+		static transform_3d Conv(const mat4& p);
 	};
 	template <>
-	struct SConvert<FTransform2D, FGLMMat4>
+	struct convert<transform_2d, mat4>
 	{
-		static FTransform2D Conv(const FGLMMat4& p);
+		static transform_2d Conv(const mat4& p);
 	};
 }

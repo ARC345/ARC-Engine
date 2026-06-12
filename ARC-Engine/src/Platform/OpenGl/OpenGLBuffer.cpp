@@ -2,70 +2,70 @@
 #include "OpenGLBuffer.h"
 #include "glad\glad.h"
 
-namespace ARC {
-	//---------------------------[CVertexBuffer]----------------------------//
+namespace arc {
+	//---------------------------[vertex_buffer]----------------------------//
 	
-	COpenGLVertexBuffer::COpenGLVertexBuffer(uint32_t _Size)
+	opengl_vertex_buffer::opengl_vertex_buffer(uint32_t size)
 	{
-		glCreateBuffers(1, &mRenderer_id);
-		Bind();
-		glBufferData(GL_ARRAY_BUFFER, _Size, nullptr, GL_DYNAMIC_DRAW);
+		glCreateBuffers(1, &renderer_id_);
+		bind();
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
-	COpenGLVertexBuffer::COpenGLVertexBuffer(float* _Vertices, uint32_t _Size)
+	opengl_vertex_buffer::opengl_vertex_buffer(float* vertices, uint32_t size)
 	{
-		glCreateBuffers(1, &mRenderer_id);
-		Bind();
-		glBufferData(GL_ARRAY_BUFFER, _Size, _Vertices, GL_STATIC_DRAW);
-	}
-
-	COpenGLVertexBuffer::~COpenGLVertexBuffer()
-	{
-		glDeleteBuffers(1, &mRenderer_id);
+		glCreateBuffers(1, &renderer_id_);
+		bind();
+		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
-	void COpenGLVertexBuffer::Bind() const
+	opengl_vertex_buffer::~opengl_vertex_buffer()
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, mRenderer_id);
+		glDeleteBuffers(1, &renderer_id_);
 	}
 
-	void COpenGLVertexBuffer::UnBind() const
+	void opengl_vertex_buffer::bind() const
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, renderer_id_);
+	}
+
+	void opengl_vertex_buffer::UnBind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
-	void COpenGLVertexBuffer::SetData(const void* _Data, uint32_t _Size)
+	void opengl_vertex_buffer::set_data(const void* data, uint32_t size)
 	{
-		Bind();
-		glBufferSubData(GL_ARRAY_BUFFER, 0, _Size, _Data);
+		bind();
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
-	//---------------------------[CIndexBuffer]----------------------------//
+	//---------------------------[index_buffer]----------------------------//
 
-	COpenGLIndexBuffer::COpenGLIndexBuffer(uint32_t* _Indiices, uint32_t _Count)
-		: mCount(_Count)
+	opengl_index_buffer::opengl_index_buffer(uint32_t* indiices, uint32_t count)
+		: count_(count)
 	{
-		glCreateBuffers(1, &mRenderer_id);
-		Bind();
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, _Count*sizeof(uint32_t), _Indiices, GL_STATIC_DRAW);
+		glCreateBuffers(1, &renderer_id_);
+		bind();
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count*sizeof(uint32_t), indiices, GL_STATIC_DRAW);
 	}
 
-	COpenGLIndexBuffer::~COpenGLIndexBuffer()
+	opengl_index_buffer::~opengl_index_buffer()
 	{
-		glDeleteBuffers(1, &mRenderer_id);
+		glDeleteBuffers(1, &renderer_id_);
 	}
 
-	void COpenGLIndexBuffer::Bind() const
+	void opengl_index_buffer::bind() const
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRenderer_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, renderer_id_);
 	}
 
-	void COpenGLIndexBuffer::UnBind() const
+	void opengl_index_buffer::UnBind() const
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
-	uint32_t COpenGLIndexBuffer::GetCount() const
+	uint32_t opengl_index_buffer::get_count() const
 	{
-		return mCount;
+		return count_;
 	}
 }

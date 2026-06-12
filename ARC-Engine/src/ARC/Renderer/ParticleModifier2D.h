@@ -1,88 +1,88 @@
 #pragma once
 #include "../Helpers/Random.h"
-namespace ARC { class CParticle2D; }
+namespace arc { class particle_2d; }
 
-namespace ARC {
-	class CParticleModifier2D {
+namespace arc {
+	class particle_modifier_2d {
 	public:
-		virtual void ApplyModifier(CParticle2D& _Particle) = 0;
-		virtual void ApplyInitialModifier(CParticle2D& _Particle) {
-			ApplyModifier(_Particle);
+		virtual void ApplyModifier(particle_2d& particle) = 0;
+		virtual void ApplyInitialModifier(particle_2d& particle) {
+			ApplyModifier(particle);
 		};
 	};
 
 	template<typename T>
-	class CParticleVariationModifier2D : public CParticleModifier2D {
+	class particle_variation_modifier_2d : public particle_modifier_2d {
 	public:
-		CParticleVariationModifier2D(T CParticle2D::* _MemberProperty, const T _Variation) : MemberProperty(_MemberProperty), Variation(_Variation) {};
-		T CParticle2D::* MemberProperty;
+		particle_variation_modifier_2d(T particle_2d::* member_property, const T variation) : MemberProperty(member_property), Variation(variation) {};
+		T particle_2d::* MemberProperty;
 		T Variation;
-		virtual inline void ApplyModifier(CParticle2D& _Particle) override;
+		virtual inline void ApplyModifier(particle_2d& particle) override;
 	};
 
-	template<typename LerpingFunction=Linear, typename T=float>
-	class CParticleLifetimeModifier2D : public CParticleModifier2D {
+	template<typename lerping_function=Linear, typename T=float>
+	class particle_lifetime_modifier_2d : public particle_modifier_2d {
 	public:
-		CParticleLifetimeModifier2D(T CParticle2D::* _MemberProperty, const T _End) : MemberProperty(_MemberProperty), EndVal(_End) {};
-		T CParticle2D::* MemberProperty;
+		particle_lifetime_modifier_2d(T particle_2d::* member_property, const T end) : MemberProperty(member_property), EndVal(end) {};
+		T particle_2d::* MemberProperty;
 		T InitialVal;
 		T EndVal;
 		float Scaling;
-		virtual inline void ApplyModifier(CParticle2D& _Particle) override;
-		virtual inline void ApplyInitialModifier(CParticle2D& _Particle) override;
+		virtual inline void ApplyModifier(particle_2d& particle) override;
+		virtual inline void ApplyInitialModifier(particle_2d& particle) override;
 	};
 
 	template<typename T>
-	void CParticleVariationModifier2D<T>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<T>::ApplyModifier(particle_2d& particle)
 	{
-		_Particle.*MemberProperty += (SRandom::Float() - 0.5f) * Variation;
+		particle.*MemberProperty += (random::Float() - 0.5f) * Variation;
 	}
 	template<>
-	void CParticleVariationModifier2D<float>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<float>::ApplyModifier(particle_2d& particle)
 	{
-		_Particle.*MemberProperty += (SRandom::Float() - 0.5f) * Variation;
+		particle.*MemberProperty += (random::Float() - 0.5f) * Variation;
 	}
 	template<>
-	void CParticleVariationModifier2D<FVec2>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<vec2>::ApplyModifier(particle_2d& particle)
 	{
-		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
+		(particle.*MemberProperty).x += (random::Float() - 0.5f) * Variation.x;
+		(particle.*MemberProperty).y += (random::Float() - 0.5f) * Variation.y;
 	}
 	template<>
-	void CParticleVariationModifier2D<FVec3>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<vec3>::ApplyModifier(particle_2d& particle)
 	{
-		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
+		(particle.*MemberProperty).x += (random::Float() - 0.5f) * Variation.x;
+		(particle.*MemberProperty).y += (random::Float() - 0.5f) * Variation.y;
+		(particle.*MemberProperty).z += (random::Float() - 0.5f) * Variation.z;
 	}
 	template<>
-	void CParticleVariationModifier2D<FVec4>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<vec4>::ApplyModifier(particle_2d& particle)
 	{
-		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
-		(_Particle.*MemberProperty).w += (SRandom::Float() - 0.5f) * Variation.w;
+		(particle.*MemberProperty).x += (random::Float() - 0.5f) * Variation.x;
+		(particle.*MemberProperty).y += (random::Float() - 0.5f) * Variation.y;
+		(particle.*MemberProperty).z += (random::Float() - 0.5f) * Variation.z;
+		(particle.*MemberProperty).w += (random::Float() - 0.5f) * Variation.w;
 	}
 
 	template<>
-	void CParticleVariationModifier2D<FColor4>::ApplyModifier(CParticle2D& _Particle)
+	void particle_variation_modifier_2d<color4>::ApplyModifier(particle_2d& particle)
 	{
-		(_Particle.*MemberProperty).x += (SRandom::Float() - 0.5f) * Variation.x;
-		(_Particle.*MemberProperty).y += (SRandom::Float() - 0.5f) * Variation.y;
-		(_Particle.*MemberProperty).z += (SRandom::Float() - 0.5f) * Variation.z;
-		(_Particle.*MemberProperty).w += (SRandom::Float() - 0.5f) * Variation.w;
+		(particle.*MemberProperty).x += (random::Float() - 0.5f) * Variation.x;
+		(particle.*MemberProperty).y += (random::Float() - 0.5f) * Variation.y;
+		(particle.*MemberProperty).z += (random::Float() - 0.5f) * Variation.z;
+		(particle.*MemberProperty).w += (random::Float() - 0.5f) * Variation.w;
 	}
 
-	template<typename LerpingFunction, typename T>
-	void CParticleLifetimeModifier2D<LerpingFunction, T>::ApplyModifier(CParticle2D& _Particle)
+	template<typename lerping_function, typename T>
+	void particle_lifetime_modifier_2d<lerping_function, T>::ApplyModifier(particle_2d& particle)
 	{
-		(_Particle.*MemberProperty) = SMath::InterpF<LerpingFunction, T>(InitialVal, EndVal, _Particle.Life/Scaling);
+		(particle.*MemberProperty) = math::InterpF<lerping_function, T>(InitialVal, EndVal, particle.Life/Scaling);
 	}
-	template<typename LerpingFunction, typename T>
-	void CParticleLifetimeModifier2D<LerpingFunction, T>::ApplyInitialModifier(CParticle2D& _Particle)
+	template<typename lerping_function, typename T>
+	void particle_lifetime_modifier_2d<lerping_function, T>::ApplyInitialModifier(particle_2d& particle)
 	{
-		InitialVal = (_Particle.*MemberProperty);
-		Scaling = _Particle.Life;
-		ApplyModifier(_Particle);
+		InitialVal = (particle.*MemberProperty);
+		Scaling = particle.Life;
+		ApplyModifier(particle);
 	}
 }

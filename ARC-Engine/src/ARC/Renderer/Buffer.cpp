@@ -4,47 +4,47 @@
 #include "Platform\OpenGl\OpenGLBuffer.h"
 #include "..\Core\Core.h"
 
-namespace ARC {
+namespace arc {
 
-	TRef<CVertexBuffer> CVertexBuffer::Create(float* _Vertices, uint32_t _Size)
+	ref<vertex_buffer> vertex_buffer::create(float* vertices, uint32_t size)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-			case CRendererAPI::ERendererAPI::None:
-				ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+			case renderer_api::renderer_api::None:
+				ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 				return nullptr;
-			case CRendererAPI::ERendererAPI::OpenGL:
-				return std::make_shared<COpenGLVertexBuffer>(_Vertices, _Size);
+			case renderer_api::renderer_api::OpenGL:
+				return std::make_shared<opengl_vertex_buffer>(vertices, size);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
 		return nullptr;
 	}
 
-	TRef<CVertexBuffer> CVertexBuffer::Create(uint32_t _Size)
+	ref<vertex_buffer> vertex_buffer::create(uint32_t size)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return std::make_shared<COpenGLVertexBuffer>(_Size);
+		case renderer_api::renderer_api::OpenGL:
+			return std::make_shared<opengl_vertex_buffer>(size);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
 		return nullptr;
 	}
 
-	TRef<CIndexBuffer> CIndexBuffer::Create(uint32_t* _Indices, uint32_t _Count)
+	ref<index_buffer> index_buffer::create(uint32_t* indices, uint32_t count)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return std::make_shared<COpenGLIndexBuffer>(_Indices, _Count);
+		case renderer_api::renderer_api::OpenGL:
+			return std::make_shared<opengl_index_buffer>(indices, count);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

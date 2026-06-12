@@ -2,9 +2,9 @@
 
 #include "ARC.h"
 
-namespace ARC {
+namespace arc {
 	
-	enum class EFrameBufferTextureFormat : TUInt32
+	enum class frame_buffer_texture_format : u32
 	{
 			None=0,
 
@@ -19,34 +19,34 @@ namespace ARC {
 			Depth = DEPTH24STENCIL8
 	};
 
-	struct SFrameBufferSpecification
+	struct frame_buffer_specification
 	{
-		TUInt32 Width, Height;
-		TUInt32 Samples=1;
+		u32 Width, Height;
+		u32 Samples=1;
 
-		std::vector<EFrameBufferTextureFormat> Attachments; // EFrameBufferTextureFormat
+		std::vector<frame_buffer_texture_format> Attachments; // frame_buffer_texture_format
 		
-		TUInt8 bSwapChainTarget : 1;
+		u8 bSwapChainTarget : 1;
 	};
 
-	class CFrameBuffer
+	class framebuffer
 	{
 	public:
-		virtual ~CFrameBuffer() = default;
+		virtual ~framebuffer() = default;
 
-		virtual void Bind()=0;
+		virtual void bind()=0;
 		virtual void UnBind()=0;
 		
-		virtual void Resize(const TVec2<TUInt32>& p)=0;
-		virtual int ReadPixel(TUInt32 pAttachmentIndex, int pX, int pY) = 0;
+		virtual void resize(const vec2<u32>& p)=0;
+		virtual int read_pixel(u32 pAttachmentIndex, int pX, int pY) = 0;
 
-		virtual const SFrameBufferSpecification& GetSpecifications() const = 0;
-		virtual TUInt32 GetColorAttachmentRendererID(TUInt32 pIndex = 0) const =0;
+		virtual const frame_buffer_specification& get_specifications() const = 0;
+		virtual u32 get_color_attachment_renderer_id(u32 pIndex = 0) const =0;
     
-		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue) = 0;
-		virtual void ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue) = 0;
+		virtual void ClearColorAttachment(u32 pAttachmentIndex, const int pValue) = 0;
+		virtual void ClearColorAttachment(u32 pAttachmentIndex, const float pValue) = 0;
 
-		static TRef<CFrameBuffer> Create(const SFrameBufferSpecification& pSpec);
+		static ref<framebuffer> create(const frame_buffer_specification& pSpec);
 
 	};
 }

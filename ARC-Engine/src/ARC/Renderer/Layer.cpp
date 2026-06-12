@@ -1,12 +1,12 @@
 #include "arc_pch.h"
 #include "Layer.h"
 
-namespace ARC {
-	CLayer::CLayer(const std::string& _name/*="Layer"*/) : mDebugName(_name)
+namespace arc {
+	layer::layer(const std::string& _name/*="Layer"*/) : debug_name_(_name)
 	{
 	}
 
-	CLayer::~CLayer()
+	layer::~layer()
 	{
 
 	}

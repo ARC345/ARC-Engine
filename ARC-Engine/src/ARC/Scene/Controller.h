@@ -1,35 +1,35 @@
 #pragma once
 
-namespace ARC { class CEntity; }
+namespace arc { class entity; }
 
-namespace ARC
+namespace arc
 {
-	class CEntityController
+	class entity_controller
 	{
 	public:
-		virtual ~CEntityController(){};
+		virtual ~entity_controller(){};
 
-		inline bool IsSetup() const { return mControlledEntity; }
-		CEntity* GetControlledEntity();
+		inline bool is_setup() const { return controlled_entity_; }
+		entity* get_controlled_entity();
 
-		virtual void Setup(CEntity* pEntity);
+		virtual void set_up(entity* pEntity);
 
-		virtual void OnCreate() {};
+		virtual void on_create() {};
 		virtual void OnDestroy() {};
-		virtual void OnUpdate(float pDeltaTime) {};
+		virtual void on_update(float pDeltaTime) {};
 	private:
-		CEntity* mControlledEntity;
-		friend class CScene;
+		entity* controlled_entity_;
+		friend class scene;
 	};
 
-	class CCameraController : public CEntityController
+	class camera_controller : public entity_controller
 	{
 	public:
-		CCameraController() {};
+		camera_controller() {};
 
-		virtual void OnCreate() override;
+		virtual void on_create() override;
 		virtual void OnDestroy() override;
-		virtual void OnUpdate(float pDeltaTime) override;
+		virtual void on_update(float pDeltaTime) override;
 	private:
 	};
 }

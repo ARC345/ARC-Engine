@@ -12,96 +12,96 @@
 #include "ARC/GUI/ImGuiLayer.h"
 #include "ARC/Helpers/Math.h"
 
-namespace ARC
+namespace arc
 {
-	CApplication* CApplication::s_Instance=nullptr;
-	CApplication::CApplication(const TString& _Name /*= "ARC-Engine"*/) :
-		mbRunning(1u)
+	application* application::instance=nullptr;
+	application::application(const string& name /*= "ARC-Engine"*/) :
+		running_(1u)
 	{
 		ARC_PROFILE_FUNCTION();
 
-		ARC_CORE_ASSERT(!s_Instance, "Application already exists");
+		ARC_CORE_ASSERT(!instance, "Application already exists");
 		
-		s_Instance= this;
+		instance= this;
 
-		mWindow = std::unique_ptr<CWindow>(CWindow::Create(_Name));
+		window_ = std::unique_ptr<window>(window::create(name));
 			
-		CRenderer::Init();
+		renderer::init();
 
-		mImGuiLayer = new CImGuiLayer();
-		PushOverlay(mImGuiLayer);
+		imgui_layer_ = new imgui_layer();
+		push_overlay(imgui_layer_);
 			
-		mWindow->SetEventCallback(BIND_FN(&CApplication::OnEvent));
+		window_->set_event_callback(BIND_FN(&application::on_event));
 	}
 
-	CApplication::~CApplication() {}
+	application::~application() {}
 
-	void CApplication::Run()
+	void application::run()
 	{
 		ARC_PROFILE_FUNCTION();
-		while (mbRunning)
+		while (running_)
 		{
 			//@TEMP
 			auto time = (float)glfwGetTime();
-			mDeltaTime = time - mLastFrameTime;
-			mLastFrameTime = time;
+			delta_time_ = time - last_frame_time_;
+			last_frame_time_ = time;
 
-			if(!mbMinimized) {
-				for (CLayer* layer : mLayerStack)
-					layer->OnUpdate(mDeltaTime);
+			if(!minimized_) {
+				for (layer* layer : layer_stack_)
+					layer->on_update(delta_time_);
 			}
-			mImGuiLayer->Begin();
-			for (CLayer* layer : mLayerStack)
-				layer->OnGuiRender();
-			mImGuiLayer->End();
-			mWindow->OnUpdate();
+			imgui_layer_->begin();
+			for (layer* layer : layer_stack_)
+				layer->on_gui_render();
+			imgui_layer_->end();
+			window_->on_update();
 		}
 	}
 
-	void CApplication::OnEvent(CEvent& _e)
+	void application::on_event(event& _e)
 	{
-		CEventDispatcher dispatcher(_e);
-		dispatcher.Dispatch<CWindowCloseEvent>(BIND_FN(&CApplication::OnWindowClose));
-		dispatcher.Dispatch<CWindowResizeEvent>(BIND_FN(&CApplication::OnWindowResize));
+		event_dispatcher dispatcher(_e);
+		dispatcher.Dispatch<window_close_event>(BIND_FN(&application::on_window_close));
+		dispatcher.Dispatch<window_resize_event>(BIND_FN(&application::on_window_resize));
 
-		for (auto it = mLayerStack.end(); it!= mLayerStack.begin();)
+		for (auto it = layer_stack_.end(); it!= layer_stack_.begin();)
 		{
-			(*--it)->OnEvent(_e);
+			(*--it)->on_event(_e);
 			if (_e.bHandled) break;
 		}
 	}
 
-	void CApplication::PushLayer(CLayer* _layer)
+	void application::push_layer(layer* _layer)
 	{
-		mLayerStack.PushLayer(_layer);
-		_layer->OnAttach();
+		layer_stack_.push_layer(_layer);
+		_layer->on_attach();
 	}
-	void CApplication::PushOverlay(CLayer* _overlay)
+	void application::push_overlay(layer* _overlay)
 	{
-		mLayerStack.PushOverlay(_overlay);
-		_overlay->OnAttach();
-	}
-
-	void CApplication::Shutdown()
-	{
-		mbRunning=false;
+		layer_stack_.push_overlay(_overlay);
+		_overlay->on_attach();
 	}
 
-	bool CApplication::OnWindowClose(CWindowCloseEvent& _e)
+	void application::shutdown()
 	{
-		mbRunning = false;
+		running_=false;
+	}
+
+	bool application::on_window_close(window_close_event& _e)
+	{
+		running_ = false;
 		return true;
 	}
-	bool CApplication::OnWindowResize(CWindowResizeEvent& _e)
+	bool application::on_window_resize(window_resize_event& _e)
 	{
-		if(_e.GetX() == 0 || _e.GetY() == 0){
-			mbMinimized = true;
+		if(_e.get_x() == 0 || _e.get_y() == 0){
+			minimized_ = true;
 			return false;
 		}
-		mbMinimized = false;
-		GetWindow().SetWidth(_e.GetX());
-		GetWindow().SetHeight(_e.GetY());
-		CRenderer::OnWindowResize(TVec2<uint32_t>(_e.GetX(), _e.GetY()));
+		minimized_ = false;
+		get_window().set_width(_e.get_x());
+		get_window().set_height(_e.get_y());
+		renderer::on_window_resize(vec2<uint32_t>(_e.get_x(), _e.get_y()));
 		return false;
 	}
 }

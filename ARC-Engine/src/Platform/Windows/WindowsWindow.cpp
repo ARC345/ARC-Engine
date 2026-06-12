@@ -12,51 +12,51 @@
 #include "Platform\OpenGl\OpenGLContext.h"
 #include "ARC/Core/Macros.h"
 
-namespace ARC{ 
+namespace arc{ 
 	static bool s_bGLFWInitialized = false;
 	static void GLFWErrorCallback(int _error, const char* _description)
 	{
 		ARC_CORE_ERROR("GLFW Error ({0}): {1}", _error, _description);
 	};
-	CWindowsWindow::CWindowsWindow(const SWindowProps& _props)
+	windows_window::windows_window(const window_props& _props)
 	{
 		ARC_PROFILE_FUNCTION();
-		Init(_props);
+		init(_props);
 	}
 
-	CWindowsWindow::~CWindowsWindow()
+	windows_window::~windows_window()
 	{
-		Shutdown();
+		shutdown();
 	}
 
-	void CWindowsWindow::OnUpdate()
+	void windows_window::on_update()
 	{
 		glfwPollEvents();
-		mContext->SwapBuffers();
+		context_->swap_buffers();
 	}
 
-	void CWindowsWindow::SetVSync(bool _bEnabled)
+	void windows_window::set_vsync(bool _bEnabled)
 	{
 		glfwSwapInterval(_bEnabled);
-		mData.bVSync = _bEnabled;
+		data_.bVSync = _bEnabled;
 	}
 
-	void* CWindowsWindow::GetNativeWindow() const
+	void* windows_window::get_native_window() const
 	{
-		return mWindow;
+		return window_;
 	}
 
-	CWindow* CWindow::Create(const SWindowProps& _props /*= WindowProps()*/)
+	window* window::create(const window_props& _props /*= WindowProps()*/)
 	{
-		return new CWindowsWindow(_props);
+		return new windows_window(_props);
 	}
 
-	void CWindowsWindow::Init(const SWindowProps& _props)
+	void windows_window::init(const window_props& _props)
 	{
 		ARC_PROFILE_FUNCTION();
-		mData.Title = _props.Title;
-		mData.Width = _props.Width;
-		mData.Height = _props.Height;
+		data_.Title = _props.Title;
+		data_.Width = _props.Width;
+		data_.Height = _props.Height;
 
 		ARC_CORE_INFO("Creating window {0} ({1}, {2})", _props.Title, _props.Width, _props.Height);
 
@@ -67,83 +67,83 @@ namespace ARC{
 			s_bGLFWInitialized = success;
 		}
 
-		mWindow = glfwCreateWindow((int)_props.Width, (int)_props.Height, _props.Title.c_str(), nullptr, nullptr);
+		window_ = glfwCreateWindow((int)_props.Width, (int)_props.Height, _props.Title.c_str(), nullptr, nullptr);
 
-		mContext = new COpenGLContext(mWindow);
-		mContext->Init();
+		context_ = new opengl_context(window_);
+		context_->init();
 
-		glfwSetWindowUserPointer(mWindow, &mData);
-		SetVSync(true);
+		glfwSetWindowUserPointer(window_, &data_);
+		set_vsync(true);
 
-		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* _window, int _width, int _height){
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
+		glfwSetWindowSizeCallback(window_, [](GLFWwindow* _window, int _width, int _height){
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
 			Data.Width = _width;
 			Data.Height = _height;
 
-			CWindowResizeEvent event(_width, _height);
+			window_resize_event event(_width, _height);
 			Data.EventCallback(event);
 		});
-		glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* _window){
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
-			CWindowCloseEvent event;
+		glfwSetWindowCloseCallback(window_, [](GLFWwindow* _window){
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
+			window_close_event event;
 			Data.EventCallback(event);
 		});
-		glfwSetKeyCallback(mWindow, [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods){
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
+		glfwSetKeyCallback(window_, [](GLFWwindow* _window, int _key, int _scancode, int _action, int _mods){
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
 			switch (_action)
 			{
 			case GLFW_PRESS: {
-				CKeyPressedEvent event(_key, 0);
+				key_pressed_event event(_key, 0);
 				Data.EventCallback(event);
 				break;
 				}
 			case GLFW_RELEASE: {
-				CKeyReleasedEvent event(_key);
+				key_released_event event(_key);
 				Data.EventCallback(event);
 				break;
 				}
 			case GLFW_REPEAT: {
-				CKeyReleasedEvent event(_key);
+				key_released_event event(_key);
 				Data.EventCallback(event);
 				break;
 				}
 			}
 		});
-		glfwSetCharCallback(mWindow, [](GLFWwindow* _window, TUInt _keycode) {
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
-			CKeyTypedEvent _event(_keycode);
+		glfwSetCharCallback(window_, [](GLFWwindow* _window, uint _keycode) {
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
+			key_typed_event _event(_keycode);
 			Data.EventCallback(_event);
 			});
-		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* _window, int _button, int _action, int _mods) {
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
+		glfwSetMouseButtonCallback(window_, [](GLFWwindow* _window, int _button, int _action, int _mods) {
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
 			switch (_action)
 			{
 			case GLFW_PRESS: {
-				CMouseButtonPressedEvent event(_button);
+				mouse_button_pressed_event event(_button);
 				Data.EventCallback(event);
 				break;
 				}
 			case GLFW_RELEASE: {
-				CMouseButtonReleasedEvent event(_button);
+				mouse_button_released_event event(_button);
 				Data.EventCallback(event);
 				break;
 				}
 			}
 		});
-		glfwSetScrollCallback(mWindow, [](GLFWwindow* _window, double _xoffset, double _yoffset) {
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
-			CMouseScrolledEvent event((float)_xoffset, (float)_yoffset);
+		glfwSetScrollCallback(window_, [](GLFWwindow* _window, double _xoffset, double _yoffset) {
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
+			mouse_scrolled_event event((float)_xoffset, (float)_yoffset);
 			Data.EventCallback(event);
 		});
- 		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* _window, double _xpos, double _ypos) {
-			SWindowData& Data = *(SWindowData*)glfwGetWindowUserPointer(_window);
-			CMouseMovedEvent _event((float)_xpos, (float)_ypos);
+ 		glfwSetCursorPosCallback(window_, [](GLFWwindow* _window, double _xpos, double _ypos) {
+			window_data& Data = *(window_data*)glfwGetWindowUserPointer(_window);
+			mouse_moved_event _event((float)_xpos, (float)_ypos);
 			Data.EventCallback(_event);
 		});
 	}
 
-	void CWindowsWindow::Shutdown()
+	void windows_window::shutdown()
 	{
-		glfwDestroyWindow(mWindow);
+		glfwDestroyWindow(window_);
 	}
 }

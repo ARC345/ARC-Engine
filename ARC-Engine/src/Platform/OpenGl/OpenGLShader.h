@@ -4,45 +4,45 @@
 #include <unordered_map>
 
 #include "glm/glm.hpp"
-namespace ARC {
-	class COpenGLShader :
-		public CShader
+namespace arc {
+	class opengl_shader :
+		public shader
 	{
 	public:
-		COpenGLShader(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc);
-		COpenGLShader(const TString& _Path);
+		opengl_shader(const string& name, const string& vertex_src, const string& fragment_src);
+		opengl_shader(const string& path);
 
-		virtual ~COpenGLShader();
+		virtual ~opengl_shader();
 
-		virtual void Bind() const override;
+		virtual void bind() const override;
 		virtual void UnBind() const override;
 
-		virtual inline const TString& GetName() const override { return mName; };
+		virtual inline const string& get_name() const override { return name_; };
 
 	private:
-		static unsigned int ShaderTypeFromString(TString& _Type);
-		static TString StringFromShaderType(unsigned int _Type);
+		static unsigned int ShaderTypeFromString(string& type);
+		static string StringFromShaderType(unsigned int type);
 
-		std::unordered_map<unsigned int, TString> PreProcess(const TString& _Source);
-		void Compile(const std::unordered_map<unsigned int, TString>& _ShaderSources);
+		std::unordered_map<unsigned int, string> PreProcess(const string& source);
+		void Compile(const std::unordered_map<unsigned int, string>& shader_sources);
 	private:
-		static TString s_Seperator;
-		TString mName;
-		uint32_t mRendererID;
+		static string seperator;
+		string name_;
+		uint32_t renderer_id_;
 	protected:
-		virtual void SetInt(const TString& _Name, const int* _Value) override;
-		virtual void SetInt2(const TString& _Name, const int* _Value) override;
-		virtual void SetInt3(const TString& _Name, const int* _Value) override;
-		virtual void SetInt4(const TString& _Name, const int* _Value) override;
-		virtual void SetMat4(const TString& _Name, const float* _Value) override;
-		virtual void SetMat3(const TString& _Name, const float* _Value) override;
-		virtual void SetFloat(const TString& _Name, const float* _Value) override;
-		virtual void SetFloat2(const TString& _Name, const float* _Value) override;
-		virtual void SetFloat3(const TString& _Name, const  float*  _Value) override;
-		virtual void SetFloat4(const TString& _Name, const  float* _Value) override;
+		virtual void set_int(const string& name, const int* value) override;
+		virtual void set_int2(const string& name, const int* value) override;
+		virtual void set_int3(const string& name, const int* value) override;
+		virtual void set_int4(const string& name, const int* value) override;
+		virtual void set_mat4(const string& name, const float* value) override;
+		virtual void set_mat3(const string& name, const float* value) override;
+		virtual void set_float(const string& name, const float* value) override;
+		virtual void set_float2(const string& name, const float* value) override;
+		virtual void set_float3(const string& name, const  float*  value) override;
+		virtual void set_float4(const string& name, const  float* value) override;
 
-		virtual void SetIntArray(const TString& _Name, const int* _Values, uint32_t _Count) override;
-		virtual void SetFloatArray(const TString& _Name, const float* _Values, uint32_t _Count) override;
+		virtual void set_int_array(const string& name, const int* values, uint32_t count) override;
+		virtual void set_float_array(const string& name, const float* values, uint32_t count) override;
 
 	};
 }

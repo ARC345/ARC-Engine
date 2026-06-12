@@ -8,40 +8,40 @@
 #include "ARC/Types/Vector.h"
 #include "Renderer2D.h"
 
-namespace ARC {
-	CRenderer::SSceneData* CRenderer::mSceneData = new CRenderer::SSceneData;
+namespace arc {
+	renderer::scene_data* renderer::scene_data_ = new renderer::scene_data;
 
-	void CRenderer::Init()
+	void renderer::init()
 	{
 		ARC_PROFILE_FUNCTION();
 
-		CRenderCommand::Init();
-		SRenderer2D::Init();
+		render_command::init();
+		renderer_2d::init();
 	}
 
-	void CRenderer::OnWindowResize(TVec2<uint32_t> _Dimentions)
+	void renderer::on_window_resize(vec2<uint32_t> dimentions)
 	{
-		CRenderCommand::SetViewport(TVec2<uint32_t>::ZeroVector(), _Dimentions);
+		render_command::set_viewport(vec2<uint32_t>::ZeroVector(), dimentions);
 	}
 
-	void CRenderer::BeginScene(COrthographicCamera& _Cam)
+	void renderer::begin_scene(orthographic_camera& cam)
 	{
 		// Submit View Projection Matrix
-		mSceneData->ViewProjectionMatrix = _Cam.GetViewProjectionMatrix();
+		scene_data_->ViewProjectionMatrix = cam.get_view_projection_matrix();
 	}
 
-	void CRenderer::EndScene()
+	void renderer::end_scene()
 	{
 
 	}
 
-	void CRenderer::Submit(const TRef<CShader>& _Shader, const TRef<CVertexArray>& _VertexArray, const FGLMMat4& _Transform)
+	void renderer::Submit(const ref<shader>& shader, const ref<vertex_array>& vertex_array, const mat4& transform)
 	{
-		_Shader->Bind();
-		_Shader->Set<FGLMMat4>("u_ViewProjection", mSceneData->ViewProjectionMatrix);
-		_Shader->Set<FGLMMat4>("u_Transform", _Transform);
-		_VertexArray->Bind();
-		CRenderCommand::DrawIndexed(_VertexArray);
+		shader->bind();
+		shader->Set<mat4>("u_ViewProjection", scene_data_->ViewProjectionMatrix);
+		shader->Set<mat4>("u_Transform", transform);
+		vertex_array->bind();
+		render_command::draw_indexed(vertex_array);
 	}
 
 }

@@ -4,13 +4,13 @@
 // #include <functional>
 // #include "ARC/Objects/Trial.h"
 // 
-// namespace ARC { class CShader; }
+// namespace arc { class shader; }
 // 
-// namespace ARC { class CVertexArray; }
+// namespace arc { class vertex_array; }
 // 
-// namespace ARC { class CEvent; }
+// namespace arc { class event; }
 // 
-// namespace ARC {
+// namespace arc {
 // 	using MyComponents = ECS::IMPL::ITRL_ComponentList<HPR::CustomCounter<ECS::ComponentCounterId>::Next()-1>::type;
 // 	//using MyComponents = ECS::ComponentList<CPosition, CVelocity, CAcceleration, CRender, CHealth, CLife, CHitbox, CCooldown>;
 // 	using MyTags = ECS::TagList<TPlayer, TBoss, TBullet, TPlayerBullet>;
@@ -33,34 +33,34 @@
 // 	using MySettings = ECS::SSettings<MyComponents, MyTags, MySignatures>;
 // 	using MyManager = ECS::CManager<MySettings>;
 // 
-//     class CECSExample :
-//         public CLayer
+//     class ecs_example :
+//         public layer
 //     {
 // 	public:
-// 		CECSExample();
-// 		virtual ~CECSExample() = default;
+// 		ecs_example();
+// 		virtual ~ecs_example() = default;
 // 
 // 	public:
-// 		virtual void OnAttach() override;
-// 		virtual void OnDetach() override;
-// 		virtual void OnUpdate(float _DeltaTime) override;
-// 		virtual void OnGuiRender() override;
-// 		virtual void OnEvent(CEvent& _) override;
+// 		virtual void on_attach() override;
+// 		virtual void on_detach() override;
+// 		virtual void on_update(float delta_time) override;
+// 		virtual void on_gui_render() override;
+// 		virtual void on_event(event& _) override;
 // 
 // 		void Render(ECS::EntityIndex_t _, CPosition& _0, CRender& _1);
 // 
-// 		void updatePlayerInput(float mFT, CPosition& pPos, CVelocity& pVel, CCooldown& pCD);
+// 		void updatePlayerInput(float ft_, CPosition& pPos, CVelocity& pVel, CCooldown& pCD);
 // 
 // 		ECS::EntityIndex_t mkPlayer();
 // 		ECS::EntityIndex_t mkBoss();
-// 		ECS::EntityIndex_t mkBullet(const FVec2& mPos);
-// 		ECS::EntityIndex_t mkPlayerBullet(const FVec2& mPos);
+// 		ECS::EntityIndex_t mkBullet(const vec2& pos_);
+// 		ECS::EntityIndex_t mkPlayerBullet(const vec2& pos_);
 // 
-// 		TRef<CShader> m_Shader;
-// 		TRef<CVertexArray> m_VertexArray;
+// 		ref<shader> m_Shader;
+// 		ref<vertex_array> m_VertexArray;
 // 
 // 	private:
-// 		COrthographicCameraController m_CameraController;
+// 		orthographic_camera_controller m_CameraController;
 // 		MyManager mgr;
 // 	};
 // 

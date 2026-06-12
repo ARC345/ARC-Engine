@@ -2,51 +2,51 @@
 #include <unordered_map>
 #include "ARC\Types\Pointer.h"
 
-namespace ARC {
-	class CShader
+namespace arc {
+	class shader
 	{
 	public:
-		virtual ~CShader() = default;
+		virtual ~shader() = default;
 
-		virtual void Bind() const = 0;
+		virtual void bind() const = 0;
 		virtual void UnBind() const = 0;
 
-		virtual const TString& GetName() const = 0;
+		virtual const string& get_name() const = 0;
 
-		static TRef<CShader> Create(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc);
-		static TRef<CShader> Create(const TString& _Path);
+		static ref<shader> create(const string& name, const string& vertex_src, const string& fragment_src);
+		static ref<shader> create(const string& path);
 
 		template<typename T>
-		inline void Set(const TString& _Name, const T& _Value);
+		inline void Set(const string& name, const T& value);
 		template<typename T>
-		inline void SetArray(const TString& _Name, const T* _Value, uint32_t _Count);
+		inline void set_array(const string& name, const T* value, uint32_t count);
 
 	protected:
-		virtual void SetInt(const TString& _Name, const int* _Value) = 0;
-		virtual void SetInt2(const TString& _Name, const int* _Value) = 0;
-		virtual void SetInt3(const TString& _Name, const int* _Value) = 0;
-		virtual void SetInt4(const TString& _Name, const int* _Value) = 0;
-		virtual void SetMat3(const TString& _Name, const float* _Value) = 0;
-		virtual void SetMat4(const TString& _Name, const float* _Value) = 0;
-		virtual void SetFloat(const TString& _Name, const float* _Value) = 0;
-		virtual void SetFloat2(const TString& _Name, const float* _Value) = 0;
-		virtual void SetFloat3(const TString& _Name, const float* _Value) = 0;
-		virtual void SetFloat4(const TString& _Name, const float* _Value) = 0;
+		virtual void set_int(const string& name, const int* value) = 0;
+		virtual void set_int2(const string& name, const int* value) = 0;
+		virtual void set_int3(const string& name, const int* value) = 0;
+		virtual void set_int4(const string& name, const int* value) = 0;
+		virtual void set_mat3(const string& name, const float* value) = 0;
+		virtual void set_mat4(const string& name, const float* value) = 0;
+		virtual void set_float(const string& name, const float* value) = 0;
+		virtual void set_float2(const string& name, const float* value) = 0;
+		virtual void set_float3(const string& name, const float* value) = 0;
+		virtual void set_float4(const string& name, const float* value) = 0;
 		
-		virtual void SetIntArray(const TString& _Name, const int* _Values, uint32_t _Count) = 0;
-		virtual void SetFloatArray(const TString& _Name, const float* _Values, uint32_t _Count) = 0;
+		virtual void set_int_array(const string& name, const int* values, uint32_t count) = 0;
+		virtual void set_float_array(const string& name, const float* values, uint32_t count) = 0;
 	};
 
-	class CShaderLibrary
+	class shader_library
 	{
 	public:
-		void Add(const TRef<CShader>& _Shader);
-		void Add(const TString& _Name, const TRef<CShader>& _Shader);
-		TRef<CShader> Load(const TString& _Path, const TString& _Name = "");
+		void Add(const ref<shader>& shader);
+		void Add(const string& name, const ref<shader>& shader);
+		ref<shader> Load(const string& path, const string& name = "");
 	public:
-		TRef<CShader> GetShader(const TString& _Name); 
-		bool Exists(const TString& _Name) const; 
+		ref<shader> get_shader(const string& name); 
+		bool Exists(const string& name) const; 
 	private:
-		std::unordered_map<TString, TRef<CShader>> mShaders;
+		std::unordered_map<string, ref<shader>> shaders_;
 	};
 }

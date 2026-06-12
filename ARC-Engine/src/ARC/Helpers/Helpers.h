@@ -13,25 +13,25 @@
 #if defined(__GNUC__) || defined(__GNUG__)
 	#include <cxxabi.h>
 #endif
-namespace ARC { namespace Core { class CApplication; } }
+namespace arc { namespace Core { class application; } }
 
-namespace ARC { class CEvent; }
+namespace arc { class event; }
 #define OUT
 
 struct CounterId {};
 
-enum class EQuadCorner {
+enum class quad_corner {
 	TopLeft,
 	TopRight,
 	BottomLeft,
 	BottomRight
 };
 
-namespace ARC {
-	struct SHPR {
+namespace arc {
+	struct shpr {
 		template<typename T, bool TbIncludeNamespace = false>
 		static 
-		TString GetClassName()
+		string get_class_name()
 		{
 			// @TODO Test code
 			#if defined(__GNUC__) || defined(__GNUG__)
@@ -41,7 +41,7 @@ namespace ARC {
 				realname.reset(abi::__cxa_demangle(ti.name(), 0, 0, &status));
 				assert(status == 0);
 				return std::string(realname.get());
-			#elif defined(_MSC_VER)
+			#elif defined(msc_ver)
 				auto rval = std::string(typeid(T).name());
 
 				std::size_t pos=0;
@@ -59,37 +59,37 @@ namespace ARC {
 
 		template<typename T, typename U>
 		static constexpr 
-		size_t GetDataMemberOffset(U T::* member)
+		size_t get_data_member_offset(U T::* member)
 		{
 			return (char*)&((T*)nullptr->*member) - (char*)nullptr;
 		}
 
 		[[nodiscard]] static
-		TString ReadFile(const TString& _Path);
+		string ReadFile(const string& path);
 		
 		[[nodiscard]] static
-		TString ExtractFileNameFromPath(const TString& _Path, bool _bRemoveExtention = true);
+		string ExtractFileNameFromPath(const string& path, bool _bRemoveExtention = true);
 
-		template<EQuadCorner T1>
+		template<quad_corner T1>
 		static
-		FVec2 GetScaledCorner(const FTransform2D& pTrans) {
-			GetScaledCorner(pTrans, SMath::Sin(pTrans.Rotation), SMath::Cos(pTrans.Rotation));
+		vec2 get_scaled_corner(const transform_2d& pTrans) {
+			get_scaled_corner(pTrans, math::Sin(pTrans.Rotation), math::Cos(pTrans.Rotation));
 		}
-		template<EQuadCorner T1>
+		template<quad_corner T1>
 		static
-		FVec2 GetScaledCorner(const FTransform2D& pTrans, float pSin, float pCos) {
+		vec2 get_scaled_corner(const transform_2d& pTrans, float pSin, float pCos) {
 			switch (T1)
 			{
-			case EQuadCorner::TopRight: return {
+			case quad_corner::TopRight: return {
 				pTrans.Location.x + ((pTrans.Scale.x / 2) * pCos) - ((pTrans.Scale.y / 2) * pSin),
 				pTrans.Location.y + ((pTrans.Scale.x / 2) * pSin) + ((pTrans.Scale.y / 2) * pCos) };
-			case EQuadCorner::BottomLeft: return {										    
+			case quad_corner::BottomLeft: return {										    
 				pTrans.Location.x - ((pTrans.Scale.x / 2) * pCos) + ((pTrans.Scale.y / 2) * pSin),
 				pTrans.Location.y - ((pTrans.Scale.x / 2) * pSin) - ((pTrans.Scale.y / 2) * pCos) };
-			case EQuadCorner::TopLeft: return {											    
+			case quad_corner::TopLeft: return {											    
 				pTrans.Location.x - ((pTrans.Scale.x / 2) * pCos) - ((pTrans.Scale.y / 2) * pSin),
 				pTrans.Location.y - ((pTrans.Scale.x / 2) * pSin) + ((pTrans.Scale.y / 2) * pCos) };
-			case EQuadCorner::BottomRight: return {										    
+			case quad_corner::BottomRight: return {										    
 				pTrans.Location.x + ((pTrans.Scale.x / 2) * pCos) + ((pTrans.Scale.y / 2) * pSin),
 				pTrans.Location.y + ((pTrans.Scale.x / 2) * pSin) - ((pTrans.Scale.y / 2) * pCos) };
 			}
@@ -98,7 +98,7 @@ namespace ARC {
 		template<typename To, typename From>
 		static
 		To Conv(const From& p) {
-			return SConvert<To, From>::Conv(p);
+			return convert<To, From>::Conv(p);
 		};
 
 		template<typename T>

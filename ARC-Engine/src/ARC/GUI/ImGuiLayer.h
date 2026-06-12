@@ -1,25 +1,25 @@
 #pragma once
 #include "ARC\Renderer\Layer.h"
 
-namespace ARC {
-	class ARC_API CImGuiLayer : public CLayer
+namespace arc {
+	class ARC_API imgui_layer : public layer
 	{
 	public:
-		CImGuiLayer();
-		~CImGuiLayer();
+		imgui_layer();
+		~imgui_layer();
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-		virtual void OnGuiRender() override;
-		virtual void OnEvent(CEvent& _e) override;
+		virtual void on_attach() override;
+		virtual void on_detach() override;
+		virtual void on_gui_render() override;
+		virtual void on_event(event& _e) override;
 
-		void Begin();
-		void End();
+		void begin();
+		void end();
 
-		void SetBlockEvents(bool _) {mbBlockEvents = _; };
-		void SetDarkThemeColors();
+		void set_block_events(bool _) {block_events_ = _; };
+		void set_dark_theme_colors();
 	private:
-		uint8_t mbBlockEvents : 1;
-		float mTime = 0.f;
+		uint8_t block_events_ : 1;
+		float time_ = 0.f;
 	};
 }

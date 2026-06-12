@@ -4,10 +4,10 @@
 #include "ARC\Core\Core.h"
 #include "glad\glad.h"
 
-namespace ARC {
-	COpenGLTexture2D::COpenGLTexture2D(const std::filesystem::path& _Path, bool bManualClear) :
-		CTexture2D(Load(_Path)),
-		mPath(_Path)
+namespace arc {
+	opengl_texture_2d::opengl_texture_2d(const std::filesystem::path& path, bool bManualClear) :
+		texture_2d(Load(path)),
+		path_(path)
 	{
 		if (!bManualClear)
 		{
@@ -15,40 +15,40 @@ namespace ARC {
 		}
 	}
 
-	COpenGLTexture2D::COpenGLTexture2D(const TVec2<uint32_t>& _Dimentions) :
-		CTexture2D(Load(_Dimentions))
+	opengl_texture_2d::opengl_texture_2d(const vec2<uint32_t>& dimentions) :
+		texture_2d(Load(dimentions))
 	{
 		
 	}
 
-	COpenGLTexture2D::~COpenGLTexture2D()
+	opengl_texture_2d::~opengl_texture_2d()
 	{
-		glDeleteTextures(1, &mRendererID);
+		glDeleteTextures(1, &renderer_id_);
 	}
 
-	void COpenGLTexture2D::SetData(void* _Data, uint32_t _Size)
+	void opengl_texture_2d::set_data(void* data, uint32_t size)
 	{
-		ARC_CORE_ASSERT(_Size == Dimensions.x * Dimensions.y * mBytesPerPixel, "Data must be entire texture");
-		glTextureSubImage2D(mRendererID, 0, 0, 0, Dimensions.x, Dimensions.y, mDataFormat, GL_UNSIGNED_BYTE, _Data);
+		ARC_CORE_ASSERT(size == Dimensions.x * Dimensions.y * bytes_per_pixel_, "Data must be entire texture");
+		glTextureSubImage2D(renderer_id_, 0, 0, 0, Dimensions.x, Dimensions.y, data_format_, GL_UNSIGNED_BYTE, data);
 	}
 
-	void COpenGLTexture2D::Bind(uint32_t _Slot /*= 0*/) const
+	void opengl_texture_2d::bind(uint32_t slot /*= 0*/) const
 	{
-		glBindTextureUnit(_Slot, mRendererID);
+		glBindTextureUnit(slot, renderer_id_);
 	}
 
-	void COpenGLTexture2D::ClearData()
+	void opengl_texture_2d::ClearData()
 	{
-		if (mData)
+		if (data_)
 		{
-			stbi_image_free(mData);
+			stbi_image_free(data_);
 		}
 	}
 
-	TVec4<unsigned char> COpenGLTexture2D::GetPixelColor(TVec2<uint32_t> xy)
+	vec4<unsigned char> opengl_texture_2d::get_pixel_color(vec2<uint32_t> xy)
 	{
-		TVec4<unsigned char> rval;
-		const stbi_uc* p = mData + (4 * (xy.y * Dimensions.x + xy.x));
+		vec4<unsigned char> rval;
+		const stbi_uc* p = data_ + (4 * (xy.y * Dimensions.x + xy.x));
 		rval.r = p[0];
 		rval.g = p[1];
 		rval.b = p[2];
@@ -56,68 +56,68 @@ namespace ARC {
 		return rval;
 	}
 
-	TVec2<uint32_t> COpenGLTexture2D::Load(const std::filesystem::path& _Path)
+	vec2<uint32_t> opengl_texture_2d::Load(const std::filesystem::path& path)
 	{
 		ARC_PROFILE_FUNCTION();
 		int channels, width, height;
 		stbi_set_flip_vertically_on_load(1);
-		mData = stbi_load(_Path.string().c_str(), &width, &height, &channels, 0);
-		ARC_CORE_ASSERT(mData, "Error loading texture from file");
+		data_ = stbi_load(path.string().c_str(), &width, &height, &channels, 0);
+		ARC_CORE_ASSERT(data_, "Error loading texture from file");
 
-		mInternalFormat = 0;
-		mDataFormat = 0;
-		mBytesPerPixel = channels;
+		internal_format_ = 0;
+		data_format_ = 0;
+		bytes_per_pixel_ = channels;
 
 		switch (channels)
 		{
 		case 4:
-			mInternalFormat = GL_RGBA8;
-			mDataFormat = GL_RGBA;
+			internal_format_ = GL_RGBA8;
+			data_format_ = GL_RGBA;
 			break;
 		case 3:
-			mInternalFormat = GL_RGB8;
-			mDataFormat = GL_RGB;
+			internal_format_ = GL_RGB8;
+			data_format_ = GL_RGB;
 			break;
 		case 2:
-			mInternalFormat = GL_RG8;
-			mDataFormat = GL_RG;
+			internal_format_ = GL_RG8;
+			data_format_ = GL_RG;
 			break;
 		case 1:
-			mInternalFormat = GL_R;
-			mDataFormat = GL_R;
+			internal_format_ = GL_R;
+			data_format_ = GL_R;
 			break;
 		default:
-			ARC_CORE_ASSERT(mData, "Texture format is not supported");
+			ARC_CORE_ASSERT(data_, "Texture format is not supported");
 			break;
 		}
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
-		glTextureStorage2D(mRendererID, 1, mInternalFormat, width, height);
+		glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
+		glTextureStorage2D(renderer_id_, 1, internal_format_, width, height);
 
-		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		glTextureSubImage2D(mRendererID, 0, 0, 0, width, height, mDataFormat, GL_UNSIGNED_BYTE, mData);
-		return TVec2<uint32_t>(width, height);
+		glTextureSubImage2D(renderer_id_, 0, 0, 0, width, height, data_format_, GL_UNSIGNED_BYTE, data_);
+		return vec2<uint32_t>(width, height);
 	}
 
-	TVec2<uint32_t> COpenGLTexture2D::Load(const TVec2<uint32_t>& _Dimentions)
+	vec2<uint32_t> opengl_texture_2d::Load(const vec2<uint32_t>& dimentions)
 	{
 		ARC_PROFILE_FUNCTION();
-		mInternalFormat = GL_RGBA8;
-		mDataFormat = GL_RGBA;
-		mBytesPerPixel = 4;
+		internal_format_ = GL_RGBA8;
+		data_format_ = GL_RGBA;
+		bytes_per_pixel_ = 4;
 
-		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
-		glTextureStorage2D(mRendererID, 1, mInternalFormat, _Dimentions.x, _Dimentions.y);
+		glCreateTextures(GL_TEXTURE_2D, 1, &renderer_id_);
+		glTextureStorage2D(renderer_id_, 1, internal_format_, dimentions.x, dimentions.y);
 
-		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(renderer_id_, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-		return _Dimentions;
+		return dimentions;
 	}
 }

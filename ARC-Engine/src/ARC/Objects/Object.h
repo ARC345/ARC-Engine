@@ -1,7 +1,7 @@
 #pragma once
 
-namespace ARC {
-	class CObject
+namespace arc {
+	class object
 	{
 	};
 }

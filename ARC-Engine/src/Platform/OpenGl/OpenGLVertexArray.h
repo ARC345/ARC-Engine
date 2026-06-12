@@ -1,29 +1,29 @@
 #pragma once
 #include "..\..\ARC\Renderer\VertexArray.h"
 
-namespace ARC {
-class COpenGLVertexArray : public CVertexArray
+namespace arc {
+class opengl_vertex_array : public vertex_array
 {
 	
 public:
-	COpenGLVertexArray();
-	virtual ~COpenGLVertexArray();
+	opengl_vertex_array();
+	virtual ~opengl_vertex_array();
 
 	/*
 	* @note Do not add vertex buffer before assigning a layout
 	*/
-	virtual void AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer) override;
-	virtual void SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer) override;
+	virtual void add_vertex_buffer(const ref<vertex_buffer>& vertex_buffer) override;
+	virtual void set_index_buffer(const ref<index_buffer>& index_buffer) override;
 
-	virtual const std::vector<TRef<CVertexBuffer>>& GetVertexBuffers() const override;
-	virtual const TRef<CIndexBuffer>& GetIndexBuffer() const override;
+	virtual const std::vector<ref<vertex_buffer>>& get_vertex_buffers() const override;
+	virtual const ref<index_buffer>& get_index_buffer() const override;
 
-	virtual void Bind() const override;
+	virtual void bind() const override;
 	virtual void UnBind() const override;
 
 private:
-	uint32_t mRendererId;
-	std::vector<TRef<CVertexBuffer>> mVertexBuffers;
-	TRef<CIndexBuffer> mIndexBuffer;
+	uint32_t renderer_id_;
+	std::vector<ref<vertex_buffer>> vertex_buffers_;
+	ref<index_buffer> index_buffer_;
 };
 }

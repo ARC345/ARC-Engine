@@ -3,6 +3,6 @@
 
 #include "Platform/OpenGl/OpenGLRendererAPI.h"
 
-namespace ARC {
-	CRendererAPI* CRenderCommand::sRendererAPI = new COpenGLRendererAPI; 
+namespace arc {
+	renderer_api* render_command::sRendererAPI = new opengl_renderer_api; 
 }

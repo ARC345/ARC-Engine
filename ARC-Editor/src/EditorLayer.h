@@ -7,44 +7,44 @@
 #include "ARC/Scene/EditorCamera.h"
 #include "ARC/Core/Macros.h"
 
-namespace ARC { class CLifeSim2D; }
-namespace ARC { class CFrameBuffer; }
-namespace ARC { class CScene; }
-namespace ARC { class CKeyPressedEvent; }
-namespace ARC { class CMouseButtonPressedEvent; }
-namespace ARC { class CMouseButtonReleasedEvent; }
+namespace arc { class life_sim_2d; }
+namespace arc { class framebuffer; }
+namespace arc { class scene; }
+namespace arc { class key_pressed_event; }
+namespace arc { class mouse_button_pressed_event; }
+namespace arc { class mouse_button_released_event; }
 
-namespace ARC {
-	enum class ESceneState : TUInt8 {
+namespace arc {
+	enum class scene_state : u8 {
 		None = 0,
 		Edit=1,
 		Play=2,
 		Simulate=3
 	};
 
-	class CEditorLayer : public CLayer
+	class editor_layer : public layer
 	{
 	public:
-		CEditorLayer();
-		virtual ~CEditorLayer() = default;
-		virtual void OnGuiRender() override;
+		editor_layer();
+		virtual ~editor_layer() = default;
+		virtual void on_gui_render() override;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
+		virtual void on_attach() override;
+		virtual void on_detach() override;
 
-		virtual void OnUpdate(float pDeltaTime) override;
-		virtual void OnEvent(CEvent& pEvent) override;
+		virtual void on_update(float pDeltaTime) override;
+		virtual void on_event(event& pEvent) override;
 
-		bool OnKeyPressed(CKeyPressedEvent& pE);
-		bool OnMousePressedEvent(CMouseButtonPressedEvent& pE);
+		bool on_key_pressed(key_pressed_event& pE);
+		bool OnMousePressedEvent(mouse_button_pressed_event& pE);
 
-		void NewScene();
-		void OpenScene();
-		void OpenScene(const std::filesystem::path& pFilepath);
-		void SaveSceneAs();
-		void SaveScene();
+		void new_scene();
+		void open_scene();
+		void open_scene(const std::filesystem::path& pFilepath);
+		void save_scene_as();
+		void save_scene();
 
-		void SetSceneState(ESceneState pNewState);
+		void set_scene_state(scene_state pNewState);
 
 		void OnOverlayRender();
 
@@ -53,37 +53,37 @@ namespace ARC {
 	#ifdef ARC_DRAW_DEBUG_SHAPES
 		bool DrawDebugShapes;
 		float DebugCircleColliderThickness = 0.1f;
-		FColor4 DebugCircleColliderColor = FColor4::Green();
+		color4 DebugCircleColliderColor = color4::Green();
 		float DebugBoxColliderThickness = 0.1f;
-		FColor4 DebugBoxColliderColor = FColor4::Green();
+		color4 DebugBoxColliderColor = color4::Green();
 	#endif
 		
 	protected:
 	private:
-		TUInt8 mIsViewportFocused : 1;
-		TUInt8 mIsViewportHovered : 1;
-		FVec2 mViewportSize;
-		FVec2 mViewportMinBound;
-		FVec2 mViewportMaxBound;
+		u8 is_viewport_focused_ : 1;
+		u8 is_viewport_hovered_ : 1;
+		vec2 viewport_size_;
+		vec2 viewport_min_bound_;
+		vec2 viewport_max_bound_;
 
-		int mGuizmoType = -1;
-		CEntity mHoveredEntity;
-		TRef<CFrameBuffer> mFrameBuffer;
-		TRef<CScene> mActiveScene;
-		TRef<CScene> mEditorScene;
-		TRef<CLifeSim2D> mLifeSim2D;
+		int guizmo_type_ = -1;
+		entity hovered_entity_;
+		ref<framebuffer> frame_buffer_;
+		ref<scene> active_scene_;
+		ref<scene> editor_scene_;
+		ref<life_sim_2d> life_sim2_d_;
 		
-		std::filesystem::path mEditorScenePath;
+		std::filesystem::path editor_scene_path_;
 
-		CEditorCamera mEditorCamera;
-		COrthographicCameraController mCameraController;
-		CSceneHierarchyPanel mSceneHierachyPanel;
-		CContentBrowserPanel mContentBrowserPanel;
+		editor_camera editor_camera_;
+		orthographic_camera_controller camera_controller_;
+		scene_hierarchy_panel scene_hierachy_panel_;
+		content_browser_panel content_browser_panel_;
 
-		ESceneState mSceneState = ESceneState::Edit;
-		TRef<CTexture2D> mPlayButtonTexture;
-		TRef<CTexture2D> mStopButtonTexture;
-		TRef<CTexture2D> mSimulateButtonTexture;
-		TRef<CTexture2D> mPauseButtonTexture;
+		scene_state scene_state_ = scene_state::Edit;
+		ref<texture_2d> play_button_texture_;
+		ref<texture_2d> stop_button_texture_;
+		ref<texture_2d> simulate_button_texture_;
+		ref<texture_2d> pause_button_texture_;
 	};
 }

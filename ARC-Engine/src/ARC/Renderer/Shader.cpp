@@ -7,145 +7,145 @@
 #include "glm/gtx/compatibility.hpp"
 #include "glm/gtc/type_ptr.inl"
 
-namespace ARC {
-	TRef<CShader> CShader::Create(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc)
+namespace arc {
+	ref<shader> shader::create(const string& name, const string& vertex_src, const string& fragment_src)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLShader>(_Name, _VertexSrc, _FragmentSrc);
+		case renderer_api::renderer_api::OpenGL:
+			return create_ref<opengl_shader>(name, vertex_src, fragment_src);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
 		return nullptr;
 	}
 
-	TRef<CShader> CShader::Create(const TString& _Path)
+	ref<shader> shader::create(const string& path)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLShader>(_Path);
+		case renderer_api::renderer_api::OpenGL:
+			return create_ref<opengl_shader>(path);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
 		return nullptr;
 	}
 
-	void CShaderLibrary::Add(const TRef<CShader>& _Shader)
+	void shader_library::Add(const ref<shader>& shader)
 	{
-		auto& name = _Shader->GetName();
-		Add(name, _Shader);
+		auto& name = shader->get_name();
+		Add(name, shader);
 	}
 
-	void CShaderLibrary::Add(const TString& _Name, const TRef<CShader>& _Shader)
+	void shader_library::Add(const string& name, const ref<shader>& shader)
 	{
-		ARC_CORE_ASSERT(!Exists(_Name), "Shader Already Exists");
-		mShaders[_Name] = _Shader;
+		ARC_CORE_ASSERT(!Exists(name), "Shader Already Exists");
+		shaders_[name] = shader;
 	}
 
-	TRef<CShader> CShaderLibrary::Load(const TString& _Path, const TString& _Name /*= ""*/)
+	ref<shader> shader_library::Load(const string& path, const string& name /*= ""*/)
 	{
 		ARC_PROFILE_FUNCTION();
-		auto shader = CShader::Create(_Path);
-		if(_Name == "") Add(shader);
-		else Add(_Name, shader);
+		auto shader = shader::create(path);
+		if(name == "") Add(shader);
+		else Add(name, shader);
 		return shader;
 	}
 
-	TRef<CShader> CShaderLibrary::GetShader(const TString& _Name)
+	ref<shader> shader_library::get_shader(const string& name)
 	{
-		ARC_CORE_ASSERT(Exists(_Name), "Shader Not Found");
-		return mShaders[_Name];
+		ARC_CORE_ASSERT(Exists(name), "Shader Not Found");
+		return shaders_[name];
 	}
 
-	bool CShaderLibrary::Exists(const TString& _Name) const
+	bool shader_library::Exists(const string& name) const
 	{
-		return mShaders.find(_Name) != mShaders.end();
+		return shaders_.find(name) != shaders_.end();
 	}
 
 	template<typename T>
-	void CShader::Set(const TString& _Name, const T& _Value)
+	void shader::Set(const string& name, const T& value)
 	{
 		ARC_CORE_WARN("Uploading {0} to Shader is currently not supported", typeid(T).name());
 	}
 
 	template<>
-	void CShader::Set<FVec4>(const TString& _Name, const FVec4& _Value)
+	void shader::Set<vec4>(const string& name, const vec4& value)
 	{
-		SetFloat4(_Name, _Value.Data());
+		set_float4(name, value.Data());
 	}
 	template<>
-	void CShader::Set<FVec3>(const TString& _Name, const FVec3& _Value)
+	void shader::Set<vec3>(const string& name, const vec3& value)
 	{
-		SetFloat3(_Name, _Value.Data());
+		set_float3(name, value.Data());
 	}
 	template<>
-	void CShader::Set<FVec2>(const TString& _Name, const FVec2& _Value)
+	void shader::Set<vec2>(const string& name, const vec2& value)
 	{
-		SetFloat2(_Name, _Value.Data());
+		set_float2(name, value.Data());
 	}
 	template<>
-	void CShader::Set<FColor4>(const TString& _Name, const FColor4& _Value)
+	void shader::Set<color4>(const string& name, const color4& value)
 	{
-		SetFloat4(_Name, _Value.Data());
+		set_float4(name, value.Data());
 	}
 	template<>
-	void CShader::Set<FGLMVec4>(const TString& _Name, const glm::vec4& _Value)
+	void shader::Set<vec4>(const string& name, const glm::vec4& value)
 	{
-		SetFloat4(_Name, glm::value_ptr(_Value));
+		set_float4(name, glm::value_ptr(value));
 	}
 	template<>
-	void CShader::Set<FGLMMat4>(const TString& _Name, const glm::mat4& _Value)
+	void shader::Set<mat4>(const string& name, const glm::mat4& value)
 	{
-		SetMat4(_Name, glm::value_ptr(_Value));
+		set_mat4(name, glm::value_ptr(value));
 	}
 	template<>
-	void CShader::Set<FGLMMat3>(const TString& _Name, const glm::mat3& _Value)
+	void shader::Set<mat3>(const string& name, const glm::mat3& value)
 	{
-		SetMat3(_Name, glm::value_ptr(_Value));
+		set_mat3(name, glm::value_ptr(value));
 	}
 	template<>
-	void CShader::Set<float>(const TString& _Name, const float& _Value)
+	void shader::Set<float>(const string& name, const float& value)
 	{
-		SetFloat(_Name, &_Value);
+		set_float(name, &value);
 	}
 	template<>
-	void CShader::Set<glm::float2>(const TString& _Name, const glm::float2& _Value)
+	void shader::Set<glm::float2>(const string& name, const glm::float2& value)
 	{
-		SetFloat2(_Name, glm::value_ptr(_Value));
+		set_float2(name, glm::value_ptr(value));
 	}
 	template<>
-	void CShader::Set<glm::float3>(const TString& _Name, const glm::float3& _Value)
+	void shader::Set<glm::float3>(const string& name, const glm::float3& value)
 	{
-		SetFloat3(_Name, glm::value_ptr(_Value));
+		set_float3(name, glm::value_ptr(value));
 	}
 	template<>
-	void CShader::Set<int>(const TString& _Name, const int& _Value)
+	void shader::Set<int>(const string& name, const int& value)
 	{
-		SetInt(_Name, &_Value);
+		set_int(name, &value);
 	}
 
 	template<typename T>
-	void CShader::SetArray(const TString& _Name, const T* _Value, uint32_t _Count)
+	void shader::set_array(const string& name, const T* value, uint32_t count)
 	{
 		ARC_CORE_WARN("Uploading {0} Array to Shader is currently not supported", typeid(T).name());
 	}
 
 	template<>
-	void CShader::SetArray<int>(const TString& _Name, const int* _Value, uint32_t _Count)
+	void shader::set_array<int>(const string& name, const int* value, uint32_t count)
 	{
-		SetIntArray(_Name, _Value, _Count);
+		set_int_array(name, value, count);
 	}
 	template<>
-	void CShader::SetArray<float>(const TString& _Name, const float* _Value, uint32_t _Count)
+	void shader::set_array<float>(const string& name, const float* value, uint32_t count)
 	{
-		SetFloatArray( _Name, _Value, _Count);
+		set_float_array( name, value, count);
 	}
 }

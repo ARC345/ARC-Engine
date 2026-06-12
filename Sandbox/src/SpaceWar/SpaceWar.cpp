@@ -26,69 +26,69 @@
 
 static float i = 0.5;
 
-CSpaceWar::CSpaceWar() :
-	CLayer("SpaceWar"),
+space_war::space_war() :
+	layer("SpaceWar"),
 	m_CameraController(1280.f / 780.f, true)
 {
 
 }
 
-void CSpaceWar::OnAttach()
+void space_war::on_attach()
 {
-	ARC::HPR::Random::Init();
-	GameState = EGameState::MainMenu;
-	m_Player = ARC::CreateRef<ARC::CPlayer>();
+	arc::HPR::Random::init();
+	GameState = game_state::MainMenu;
+	m_Player = arc::create_ref<arc::player>();
 	m_Player->Load();
 	m_Player->OwningLayer = this;
-	ImGuiIO io = ImGui::GetIO();
+	ImGuiIO io = ImGui::get_io();
 	m_Font = io.Fonts->AddFontFromFileTTF("assets/fonts/Inconsolata-Medium.ttf", 120.0f);
 }
 
-void CSpaceWar::OnDetach()
+void space_war::on_detach()
 {
-	ARC::CInstrumentor::Get().EndSession();
+	arc::instrumentor::Get().end_session();
 }
 
-bool CSpaceWar::DetectCollision()
+bool space_war::detect_collision()
 {
 	ARC_PROFILE_FUNCTION();
-	ARC::FVec2 TLPP = ARC::HPR::QUAD::GetCorner<TopLeft>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 TRPP = ARC::HPR::QUAD::GetCorner<TopRight>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 BLPP = ARC::HPR::QUAD::GetCorner<BottomLeft>(m_Player->PlayerSprite.GetTransform());
-	ARC::FVec2 BRPP = ARC::HPR::QUAD::GetCorner<BottomRight>(m_Player->PlayerSprite.GetTransform());
+	arc::vec2 TLPP = arc::HPR::QUAD::get_corner<TopLeft>(m_Player->PlayerSprite.get_transform());
+	arc::vec2 TRPP = arc::HPR::QUAD::get_corner<TopRight>(m_Player->PlayerSprite.get_transform());
+	arc::vec2 BLPP = arc::HPR::QUAD::get_corner<BottomLeft>(m_Player->PlayerSprite.get_transform());
+	arc::vec2 BRPP = arc::HPR::QUAD::get_corner<BottomRight>(m_Player->PlayerSprite.get_transform());
 
-	std::vector<std::shared_ptr<ARC::FVec2>> cachedLocs;
+	std::vector<std::shared_ptr<arc::vec2>> cachedLocs;
 	cachedLocs.reserve(m_Player->CollisionData.size());
 
 	for (auto& PlayerCC : m_Player->CollisionData)
 	{
-		ARC::FVec2 PCCTop = ARC::Math::InterpF<Linear>(TLPP, TRPP, float(PlayerCC->x) / 32);
-		ARC::FVec2 PCCBottom = ARC::Math::InterpF<Linear>(BLPP, BRPP, float(PlayerCC->x) / 32);
-		cachedLocs.push_back(std::make_shared<ARC::FVec2>(
-			ARC::Math::InterpF<Linear>(PCCBottom, PCCTop, float(PlayerCC->y) / 32)
+		arc::vec2 PCCTop = arc::Math::InterpF<Linear>(TLPP, TRPP, float(PlayerCC->x) / 32);
+		arc::vec2 PCCBottom = arc::Math::InterpF<Linear>(BLPP, BRPP, float(PlayerCC->x) / 32);
+		cachedLocs.push_back(std::make_shared<arc::vec2>(
+			arc::Math::InterpF<Linear>(PCCBottom, PCCTop, float(PlayerCC->y) / 32)
 		));
 	}
 	for (auto& rock : m_Rocks)
 	{
-		auto dist1 = ARC::FVec2::Dist(rock->Sprite.GetLocation(), m_Player->PlayerSprite.GetLocation());
-		auto dist2 = ARC::Math::Max(rock->MinDist, m_Player->MinDist);
+		auto dist1 = arc::vec2::Dist(rock->Sprite.get_location(), m_Player->PlayerSprite.get_location());
+		auto dist2 = arc::Math::Max(rock->MinDist, m_Player->MinDist);
 		if (dist1 < dist2)
 		{
-			ARC::FVec2 TLRP = ARC::HPR::QUAD::GetCorner<TopLeft>(rock->Sprite.GetTransform());
-			ARC::FVec2 TRRP = ARC::HPR::QUAD::GetCorner<TopRight>(rock->Sprite.GetTransform());
-			ARC::FVec2 BLRP = ARC::HPR::QUAD::GetCorner<BottomLeft>(rock->Sprite.GetTransform());
-			ARC::FVec2 BRRP = ARC::HPR::QUAD::GetCorner<BottomRight>(rock->Sprite.GetTransform());
+			arc::vec2 TLRP = arc::HPR::QUAD::get_corner<TopLeft>(rock->Sprite.get_transform());
+			arc::vec2 TRRP = arc::HPR::QUAD::get_corner<TopRight>(rock->Sprite.get_transform());
+			arc::vec2 BLRP = arc::HPR::QUAD::get_corner<BottomLeft>(rock->Sprite.get_transform());
+			arc::vec2 BRRP = arc::HPR::QUAD::get_corner<BottomRight>(rock->Sprite.get_transform());
 
-			for (auto& RockCC : ARC::CRock::SpriteCollisionData[rock->SpriteIndex])
+			for (auto& RockCC : arc::rock::SpriteCollisionData[rock->SpriteIndex])
 			{
-				ARC::FVec2 RCCTop = ARC::Math::InterpF<Linear>(TLRP, TRRP, float(RockCC->x) / 32);
-				ARC::FVec2 RCCBottom = ARC::Math::InterpF<Linear>(BLRP, BRRP, float(RockCC->x) / 32);
+				arc::vec2 RCCTop = arc::Math::InterpF<Linear>(TLRP, TRRP, float(RockCC->x) / 32);
+				arc::vec2 RCCBottom = arc::Math::InterpF<Linear>(BLRP, BRRP, float(RockCC->x) / 32);
 
-				ARC::FVec2 RCCN = ARC::Math::InterpF<Linear>(RCCBottom, RCCTop, float(RockCC->y) / 32);
+				arc::vec2 RCCN = arc::Math::InterpF<Linear>(RCCBottom, RCCTop, float(RockCC->y) / 32);
 
 				for (auto& PlayerCC : cachedLocs)
 				{
-					if (ARC::FVec2::AlmostEqual(*PlayerCC, RCCN, 0.01f))
+					if (arc::vec2::AlmostEqual(*PlayerCC, RCCN, 0.01f))
 					{
 						return true;
 					}
@@ -99,134 +99,134 @@ bool CSpaceWar::DetectCollision()
 	return false;
 }
 
-void CSpaceWar::OnUpdate(float _DeltaTime)
+void space_war::on_update(float delta_time)
 {
 	ARC_PROFILE_FUNCTION();
 	
 	static float TimePassed = 0;
 	static float PrevSpawnTime = 0;
-	TimePassed += _DeltaTime;
+	TimePassed += delta_time;
 	if ((int)(TimePassed*10) % 10>8)
 		m_Blink = !m_Blink;
 
-	m_CameraController.OnUpdate(_DeltaTime);
+	m_CameraController.on_update(delta_time);
 
-	ARC::CRenderCommand::SetClearColour({ .1f, .1f, .1f, 1.f });
-	ARC::CRenderCommand::Clear();
+	arc::render_command::set_clear_colour({ .1f, .1f, .1f, 1.f });
+	arc::render_command::clear();
 	
-	ARC::CRenderer2D::BeginScene(m_CameraController.GetCamera());
-	ARC::CRenderer2D::DrawQuad({0.f, 0.f}, 0.f, {10.f, 10.f}, 0.f, ARC::CColor(0.8f, 0.7f, 0.3f, 1.f));
+	arc::CRenderer2D::begin_scene(m_CameraController.get_camera());
+	arc::CRenderer2D::draw_quad({0.f, 0.f}, 0.f, {10.f, 10.f}, 0.f, arc::CColor(0.8f, 0.7f, 0.3f, 1.f));
 
-	if (GameState == EGameState::Play)
+	if (GameState == game_state::Play)
 	{
 		if (TimePassed - PrevSpawnTime > 3) {
 			if (!m_Rocks.empty() && m_Rocks.size() % 3 == 0)
 			{
-				m_Rocks.push_back(ARC::CreateRef<ARC::CRock>());
+				m_Rocks.push_back(arc::create_ref<arc::rock>());
 				i += 0.0001f;
 				m_Rocks.back()->Sprite.Transform.ZOrder = i;
-				m_Rocks.back()->CalculateRandomPosition();
+				m_Rocks.back()->calculate_random_position();
 			
 				m_Rocks.back()->Load({ 0,0 }, { 0,0 });
-				m_Rocks.back()->CalculateRandomPosition();
-				m_Rocks.back()->Velocity = (m_Player->PlayerSprite.GetLocation() / m_Player->PlayerSprite.GetLocation().Length())*-1.f;
+				m_Rocks.back()->calculate_random_position();
+				m_Rocks.back()->Velocity = (m_Player->PlayerSprite.get_location() / m_Player->PlayerSprite.get_location().Length())*-1.f;
 			}
 			else
 			{
-				m_Rocks.push_back(ARC::CreateRef<ARC::CRock>());
+				m_Rocks.push_back(arc::create_ref<arc::rock>());
 				i += 0.01f;
 				m_Rocks.back()->Sprite.Transform.ZOrder = i;
 				m_Rocks.back()->Load({ 0,0 }, { 0,0 });
-				m_Rocks.back()->CalculateRandomPosition();
-				m_Rocks.back()->CalculateRandomVelocity();
+				m_Rocks.back()->calculate_random_position();
+				m_Rocks.back()->calculate_random_velocity();
 			}
 			PrevSpawnTime = TimePassed;
 		}
-		if (DetectCollision())
+		if (detect_collision())
 		{
-			GameState = EGameState::GameOver;
+			GameState = game_state::GameOver;
 			m_Blink=true;
 		}
-		m_Player->OnUpdate(_DeltaTime);
+		m_Player->on_update(delta_time);
 		for (auto& rock : m_Rocks) {
-			rock->OnUpdate(_DeltaTime);
+			rock->on_update(delta_time);
 		}
 	}
-	ARC::CRenderer2D::DrawQuad(m_Player->PlayerSprite);
+	arc::CRenderer2D::draw_quad(m_Player->PlayerSprite);
 	m_Player->ParticleSystem.OnRender();
 	for (auto& rock : m_Rocks) {
-		ARC::CRenderer2D::DrawQuad(rock->Sprite);
+		arc::CRenderer2D::draw_quad(rock->Sprite);
 	}
-	ARC::CRenderer2D::EndScene();
+	arc::CRenderer2D::end_scene();
 }
 
-void CSpaceWar::OnEvent(ARC::CEvent& _Event)
+void space_war::on_event(arc::event& event)
 {
 	ARC_PROFILE_FUNCTION();
-	m_Player->OnEvent(_Event);
-	m_CameraController.OnEvent(_Event);
+	m_Player->on_event(event);
+	m_CameraController.on_event(event);
 
-	ARC::CEventDispatcher dispatcher(_Event);
-	dispatcher.Dispatch<ARC::CMouseButtonPressedEvent>(BIND_FN(&CSpaceWar::OnMouseButtonPressed));
+	arc::event_dispatcher dispatcher(event);
+	dispatcher.Dispatch<arc::mouse_button_pressed_event>(BIND_FN(&space_war::on_mouse_button_pressed));
 }
 
-bool CSpaceWar::OnMouseButtonPressed(ARC::CMouseButtonPressedEvent& _e)
+bool space_war::on_mouse_button_pressed(arc::mouse_button_pressed_event& _e)
 {
-	if (GameState == EGameState::GameOver)
-		ResetLevel();
+	if (GameState == game_state::GameOver)
+		reset_level();
 
-	GameState = EGameState::Play;
+	GameState = game_state::Play;
 	return false;
 }
 
-void CSpaceWar::OnGuiRender()
+void space_war::on_gui_render()
 {
 	ARC_PROFILE_FUNCTION();
 
 
 	switch (GameState)
 	{
-		case EGameState::Play:
+		case game_state::Play:
 		{
 			uint32_t playerScore = (uint32_t)m_Rocks.size();
 			std::string scoreStr = std::string("Score: ") + std::to_string(playerScore);
-			ImGui::GetForegroundDrawList()->AddText(m_Font, 48.0f, ImGui::GetWindowPos(), 0xffffffff, scoreStr.c_str());
+			ImGui::get_foreground_draw_list()->AddText(m_Font, 48.0f, ImGui::get_window_pos(), 0xffffffff, scoreStr.c_str());
 			break;
 		}
-		case EGameState::MainMenu:
+		case game_state::MainMenu:
 		{
-			auto pos = ImGui::GetWindowPos();
-			auto width = ARC::CApplication::Get().GetWindow().GetWidth();
-			auto height = ARC::CApplication::Get().GetWindow().GetHeight();
+			auto pos = ImGui::get_window_pos();
+			auto width = arc::application::Get().get_window().get_width();
+			auto height = arc::application::Get().get_window().get_height();
 			pos.x += width * 0.5f - 460.0f;
 			pos.y += 50.0f;
 			if (m_Blink)
-				ImGui::GetForegroundDrawList()->AddText(m_Font, 120.0f, pos, 0xffffffff, "Click to Play!");
+				ImGui::get_foreground_draw_list()->AddText(m_Font, 120.0f, pos, 0xffffffff, "Click to Play!");
 			break;
 		}
-		case EGameState::GameOver:
+		case game_state::GameOver:
 		{
-			auto pos = ImGui::GetWindowPos();
-			auto width = ARC::CApplication::Get().GetWindow().GetWidth();
-			auto height = ARC::CApplication::Get().GetWindow().GetHeight();
+			auto pos = ImGui::get_window_pos();
+			auto width = arc::application::Get().get_window().get_width();
+			auto height = arc::application::Get().get_window().get_height();
 			pos.x += width * 0.5f - 460.0f;
 			pos.y += 50.0f;
 			if (m_Blink)
-				ImGui::GetForegroundDrawList()->AddText(m_Font, 120.0f, pos, 0xffffffff, "Click to Play!");
+				ImGui::get_foreground_draw_list()->AddText(m_Font, 120.0f, pos, 0xffffffff, "Click to Play!");
 
 			pos.x += 305.0f;
 			pos.y += 150.0f;
 			uint32_t playerScore = (uint32_t)m_Rocks.size();
 			std::string scoreStr = std::string("Score: ") + std::to_string(playerScore);
-			ImGui::GetForegroundDrawList()->AddText(m_Font, 48.0f, pos, 0xffffffff, scoreStr.c_str());
+			ImGui::get_foreground_draw_list()->AddText(m_Font, 48.0f, pos, 0xffffffff, scoreStr.c_str());
 			break;
 		}
 	}
 }
 
-void CSpaceWar::ResetLevel()
+void space_war::reset_level()
 {
-	GameState = EGameState::Play;
+	GameState = game_state::Play;
 	i=0.5;
 	m_Player->Reset();
 	m_Rocks.clear();

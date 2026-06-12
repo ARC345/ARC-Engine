@@ -2,17 +2,17 @@
 #include "FrameBuffer.h"
 #include "Platform\OpenGl\OpenGLFrameBuffer.h"
 
-namespace ARC {
+namespace arc {
 
-	TRef<CFrameBuffer> CFrameBuffer::Create(const SFrameBufferSpecification& spec)
+	ref<framebuffer> framebuffer::create(const frame_buffer_specification& spec)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLFrameBuffer>(spec);
+		case renderer_api::renderer_api::OpenGL:
+			return create_ref<opengl_framebuffer>(spec);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

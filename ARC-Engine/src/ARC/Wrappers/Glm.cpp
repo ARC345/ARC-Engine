@@ -4,22 +4,22 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
 
-namespace ARC {
-	FGLMMat4 SConvert<FGLMMat4, FTransform2D>::Conv(const FTransform2D& pRhs)
+namespace arc {
+	mat4 convert<mat4, transform_2d>::Conv(const transform_2d& pRhs)
 	{
-		return glm::translate(FGLMMat4(1.0f), FGLMVec3(pRhs.Location.x, pRhs.Location.y, pRhs.Location.z)) *
-			glm::rotate(FGLMMat4(1.0f), pRhs.Rotation, FGLMVec3(0, 0, 1)) *
-			glm::scale(FGLMMat4(1.0f), FGLMVec3(pRhs.Scale.x, pRhs.Scale.y, 1.0f));
+		return glm::translate(mat4(1.0f), vec3(pRhs.Location.x, pRhs.Location.y, pRhs.Location.z)) *
+			glm::rotate(mat4(1.0f), pRhs.Rotation, vec3(0, 0, 1)) *
+			glm::scale(mat4(1.0f), vec3(pRhs.Scale.x, pRhs.Scale.y, 1.0f));
 	}
 
-	bool SConvert<FTransform3D, FGLMMat4>::CanConv(const FGLMMat4& pRhs)
+	bool convert<transform_3d, mat4>::CanConv(const mat4& pRhs)
 	{
 		using namespace glm;
 		using T = float;
 
 		return !epsilonEqual(pRhs[3][3], static_cast<float>(0), epsilon<T>());
 	}
-	FTransform3D SConvert<FTransform3D, FGLMMat4>::Conv(const FGLMMat4& pRhs)
+	transform_3d convert<transform_3d, mat4>::Conv(const mat4& pRhs)
 	{
 		// From glm::decompose in matrix_decompose.inl
 
@@ -27,7 +27,7 @@ namespace ARC {
 		using T = float;
 
 		mat4 localMatrix(pRhs);
-		FTransform3D rval;
+		transform_3d rval;
 
 		// Normalize the matrix.
 		ARC_CORE_ASSERT(!epsilonEqual(localMatrix[3][3], static_cast<float>(0), epsilon<T>()))
@@ -38,14 +38,14 @@ namespace ARC {
 			epsilonNotEqual(localMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
 			epsilonNotEqual(localMatrix[2][3], static_cast<T>(0), epsilon<T>()))
 		{
-			// Clear the perspective partition
+			// clear the perspective partition
 			localMatrix[0][3] = localMatrix[1][3] = localMatrix[2][3] = static_cast<T>(0);
 			localMatrix[3][3] = static_cast<T>(1);
 		}
 
 		// Next take care of translation (easy).
-		rval.Location = FVec3(localMatrix[3].x, localMatrix[3].y, localMatrix[3].z);
-		localMatrix[3] = FGLMVec4(0, 0, 0, localMatrix[3].w);
+		rval.Location = vec3(localMatrix[3].x, localMatrix[3].y, localMatrix[3].z);
+		localMatrix[3] = vec4(0, 0, 0, localMatrix[3].w);
 
 		vec3 Row[3];
 
@@ -89,7 +89,7 @@ namespace ARC {
 		return rval;
 	}
 
-	FTransform2D SConvert<FTransform2D, FGLMMat4>::Conv(const FGLMMat4& pRhs)
+	transform_2d convert<transform_2d, mat4>::Conv(const mat4& pRhs)
 	{
 		// From glm::decompose in matrix_decompose.inl
 
@@ -97,7 +97,7 @@ namespace ARC {
 		using T = float;
 
 		mat4 localMatrix(pRhs);
-		FTransform2D rval;
+		transform_2d rval;
 
 		// Normalize the matrix.
 		ARC_CORE_ASSERT(!epsilonEqual(localMatrix[3][3], static_cast<float>(0), epsilon<T>()))
@@ -108,14 +108,14 @@ namespace ARC {
 				epsilonNotEqual(localMatrix[1][3], static_cast<T>(0), epsilon<T>()) ||
 				epsilonNotEqual(localMatrix[2][3], static_cast<T>(0), epsilon<T>()))
 			{
-				// Clear the perspective partition
+				// clear the perspective partition
 				localMatrix[0][3] = localMatrix[1][3] = localMatrix[2][3] = static_cast<T>(0);
 				localMatrix[3][3] = static_cast<T>(1);
 			}
 
 		// Next take care of translation (easy).
-		rval.Location = FVec3(localMatrix[3].x, localMatrix[3].y, localMatrix[3].z);
-		localMatrix[3] = FGLMVec4(0, 0, 0, localMatrix[3].w);
+		rval.Location = vec3(localMatrix[3].x, localMatrix[3].y, localMatrix[3].z);
+		localMatrix[3] = vec4(0, 0, 0, localMatrix[3].w);
 
 		vec3 Row[3];
 

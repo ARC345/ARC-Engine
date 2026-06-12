@@ -7,42 +7,42 @@
 #include "Scene.h"
 #include "BasicComponents.h"
 
-namespace ARC
+namespace arc
 {
-	void CEntityController::Setup(CEntity* pEntity)
+	void entity_controller::set_up(entity* pEntity)
 	{
-		mControlledEntity = pEntity;
+		controlled_entity_ = pEntity;
 	}
 
-	CEntity* CEntityController::GetControlledEntity() {	return mControlledEntity; }
+	entity* entity_controller::get_controlled_entity() {	return controlled_entity_; }
 
 	//----------------------------------------------------------------------------//
 
-	void CCameraController::OnCreate()
+	void camera_controller::on_create()
 	{
 
 	}
 
-	void CCameraController::OnDestroy()
+	void camera_controller::OnDestroy()
 	{
 
 	}
 	
-	void CCameraController::OnUpdate(float pDeltaTime)
+	void camera_controller::on_update(float pDeltaTime)
 	{
 		return;
-		if (!GetControlledEntity()->IsValid()) return;
+		if (!get_controlled_entity()->is_valid()) return;
 			
-		auto& trans = GetControlledEntity()->GetComponent<CTransform2DComponent>().Transform;
+		auto& trans = get_controlled_entity()->get_component<transform_2d_component>().Transform;
 		float speed = 5.f;
 
-		if (SInput::IsKeyPressed(EKey::W))
+		if (input::is_key_pressed(key::W))
 			trans.Location.y -= speed * pDeltaTime;
-		if (SInput::IsKeyPressed(EKey::A))
+		if (input::is_key_pressed(key::A))
 			trans.Location.x += speed * pDeltaTime;
-		if (SInput::IsKeyPressed(EKey::S))
+		if (input::is_key_pressed(key::S))
 			trans.Location.y += speed * pDeltaTime;
-		if (SInput::IsKeyPressed(EKey::D))
+		if (input::is_key_pressed(key::D))
 			trans.Location.x -= speed * pDeltaTime;
 	}
 

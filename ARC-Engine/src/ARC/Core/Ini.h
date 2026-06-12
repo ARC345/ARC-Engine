@@ -1,7 +1,7 @@
 #pragma once
 #include "inicpp.h"
 
-namespace ARC {
+namespace arc {
 	using CIniFile = ini::IniFile;
 	using CIniFileCaseInsensitive = ini::IniFileCaseInsensitive;
 	using CIniField = ini::IniField;

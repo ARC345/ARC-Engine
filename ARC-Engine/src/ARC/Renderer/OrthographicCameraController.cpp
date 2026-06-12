@@ -9,119 +9,119 @@
 #include "ARC/Core/Macros.h"
 #include "ARC/Profiling/Timer.h"
 #include "glm/trigonometric.hpp"
-namespace ARC {
-	COrthographicCameraController::COrthographicCameraController(float _AspectRatio, bool _bCanRotate) :
-		mAspectRatio(_AspectRatio),
-		mCamera(-mAspectRatio *  mZoomLevel, mAspectRatio *  mZoomLevel, -mZoomLevel, mZoomLevel),
-		mbCanRotate(_bCanRotate)
+namespace arc {
+	orthographic_camera_controller::orthographic_camera_controller(float aspect_ratio, bool _bCanRotate) :
+		aspect_ratio_(aspect_ratio),
+		camera_(-aspect_ratio_ *  zoom_level_, aspect_ratio_ *  zoom_level_, -zoom_level_, zoom_level_),
+		can_rotate_(_bCanRotate)
 	{
 	}
 
-	void COrthographicCameraController::OnUpdate(float _DeltaTime)
+	void orthographic_camera_controller::on_update(float delta_time)
 	{
 		ARC_PROFILE_FUNCTION();
 
-		if (SInput::IsKeyPressed(EKey::A))
+		if (input::is_key_pressed(key::A))
 		{
-			mCamera.Position.x -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mCamera.Position.y -= sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
+			camera_.Position.x -= cos(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			camera_.Position.y -= sin(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
 		}
-		else if (SInput::IsKeyPressed(EKey::D))
+		else if (input::is_key_pressed(key::D))
 		{
-			mCamera.Position.x += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mCamera.Position.y += sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
-		}
-
-		if (SInput::IsKeyPressed(EKey::W))
-		{
-			mCamera.Position.x += -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mCamera.Position.y += cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
-		}
-		else if (SInput::IsKeyPressed(EKey::S))
-		{
-			mCamera.Position.x -= -sin(glm::radians(mCamera.Rotation)) * mCamMoveSpeed  * _DeltaTime;
-			mCamera.Position.y -= cos(glm::radians(mCamera.Rotation)) * mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
+			camera_.Position.x += cos(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			camera_.Position.y += sin(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
 		}
 
-		if (SInput::IsKeyPressed(EKey::A))
+		if (input::is_key_pressed(key::W))
 		{
-			mCamera.Position.x -= mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
+			camera_.Position.x += -sin(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			camera_.Position.y += cos(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
 		}
-		if (SInput::IsKeyPressed(EKey::D))
+		else if (input::is_key_pressed(key::S))
 		{
-			mCamera.Position.x += mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
-		}
-		if (SInput::IsKeyPressed(EKey::W))
-		{
-			mCamera.Position.y += mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
-		}
-		if (SInput::IsKeyPressed(EKey::S))
-		{
-			mCamera.Position.y -= mCamMoveSpeed * _DeltaTime;
-			mbNeedsRecalculation = 1u;
+			camera_.Position.x -= -sin(glm::radians(camera_.Rotation)) * cam_move_speed_  * delta_time;
+			camera_.Position.y -= cos(glm::radians(camera_.Rotation)) * cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
 		}
 
-		if(mbCanRotate) {
-			if (SInput::IsKeyPressed(EKey::Q))
+		if (input::is_key_pressed(key::A))
+		{
+			camera_.Position.x -= cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
+		}
+		if (input::is_key_pressed(key::D))
+		{
+			camera_.Position.x += cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
+		}
+		if (input::is_key_pressed(key::W))
+		{
+			camera_.Position.y += cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
+		}
+		if (input::is_key_pressed(key::S))
+		{
+			camera_.Position.y -= cam_move_speed_ * delta_time;
+			needs_recalculation_ = 1u;
+		}
+
+		if(can_rotate_) {
+			if (input::is_key_pressed(key::Q))
 			{
-				mCamera.Rotation += mCamRotSpeed * _DeltaTime;
-				mbNeedsRecalculation = 1u;
+				camera_.Rotation += cam_rot_speed_ * delta_time;
+				needs_recalculation_ = 1u;
 			}
-			if (SInput::IsKeyPressed(EKey::E))
+			if (input::is_key_pressed(key::E))
 			{
-				mCamera.Rotation -= mCamRotSpeed * _DeltaTime;
-				mbNeedsRecalculation = 1u;
+				camera_.Rotation -= cam_rot_speed_ * delta_time;
+				needs_recalculation_ = 1u;
 			}
 		}
 
-		mCamMoveSpeed = mZoomLevel;
+		cam_move_speed_ = zoom_level_;
 
-		if (mbNeedsRecalculation)
+		if (needs_recalculation_)
 		{
-			mCamera.RecalculateViewProjectionMatrix();
+			camera_.RecalculateViewProjectionMatrix();
 		}
 
 	}
 
-	void COrthographicCameraController::OnEvent(CEvent& _Event)
+	void orthographic_camera_controller::on_event(event& event)
 	{
 		ARC_PROFILE_FUNCTION();
-		CEventDispatcher dispatcher(_Event);
-		dispatcher.Dispatch<CMouseScrolledEvent>(BIND_FN(&COrthographicCameraController::OnMouseScrolledEvent));
-		dispatcher.Dispatch<CWindowResizeEvent>(BIND_FN(&COrthographicCameraController::OnWindowResized));
+		event_dispatcher dispatcher(event);
+		dispatcher.Dispatch<mouse_scrolled_event>(BIND_FN(&orthographic_camera_controller::OnMouseScrolledEvent));
+		dispatcher.Dispatch<window_resize_event>(BIND_FN(&orthographic_camera_controller::OnWindowResized));
 	}
 
-	void COrthographicCameraController::OnResize(float width, float height)
+	void orthographic_camera_controller::OnResize(float width, float height)
 	{
-		mAspectRatio = width / height;
+		aspect_ratio_ = width / height;
 		CalculateView();
 	}
 
-	void COrthographicCameraController::CalculateView()
+	void orthographic_camera_controller::CalculateView()
 	{
-		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
+		camera_.set_projection(-aspect_ratio_ * zoom_level_, aspect_ratio_ * zoom_level_, -zoom_level_, zoom_level_);
 	}
 
-	bool COrthographicCameraController::OnMouseScrolledEvent(CMouseScrolledEvent& _Event)
+	bool orthographic_camera_controller::OnMouseScrolledEvent(mouse_scrolled_event& event)
 	{
 		ARC_PROFILE_FUNCTION();
-		mZoomLevel -= _Event.GetYOffset() * 0.25f;
-		mZoomLevel = std::max(mZoomLevel, 0.25f);
+		zoom_level_ -= event.get_y_offset() * 0.25f;
+		zoom_level_ = std::max(zoom_level_, 0.25f);
 		CalculateView();
 		return false;
 	}
 
-	bool COrthographicCameraController::OnWindowResized(CWindowResizeEvent& _Event)
+	bool orthographic_camera_controller::OnWindowResized(window_resize_event& event)
 	{
 		ARC_PROFILE_FUNCTION();
-		OnResize((float)_Event.GetX(), (float)_Event.GetY());
+		OnResize((float)event.get_x(), (float)event.get_y());
 		return false;
 	}
 }

@@ -1,16 +1,16 @@
 #pragma once
 #include "ARC\Renderer\RendererAPI.h"
 
-namespace ARC {
-	class COpenGLRendererAPI : public CRendererAPI
+namespace arc {
+	class opengl_renderer_api : public renderer_api
 	{
 	public:
-		virtual void Init() override;
-		virtual void SetViewport(const TVec2<uint32_t> _BottemLeftCoord, const TVec2<uint32_t> _Dimentions) override;
-		virtual void SetClearColour(const FColor4 _Colour) override;
-		virtual void Clear() override;
-		virtual void DrawIndexed(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) override;
-		virtual void DrawLine(const TRef<CVertexArray>& _VertexArray, uint32_t _Count) override;
-		virtual void SetLineThickness(float pThickness) override;
+		virtual void init() override;
+		virtual void set_viewport(const vec2<uint32_t> bottem_left_coord, const vec2<uint32_t> dimentions) override;
+		virtual void set_clear_colour(const color4 colour) override;
+		virtual void clear() override;
+		virtual void draw_indexed(const ref<vertex_array>& vertex_array, uint32_t count) override;
+		virtual void draw_line(const ref<vertex_array>& vertex_array, uint32_t count) override;
+		virtual void set_line_thickness(float pThickness) override;
 	};
 }

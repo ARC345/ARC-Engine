@@ -1,11 +1,11 @@
 #pragma once
 
-namespace ARC {
-	class CGraphicsContext
+namespace arc {
+	class graphics_context
 	{
 	public:
-		virtual ~CGraphicsContext() = default;
-		virtual void Init()=0;
-		virtual void SwapBuffers()=0;
+		virtual ~graphics_context() = default;
+		virtual void init()=0;
+		virtual void swap_buffers()=0;
 	};
 }

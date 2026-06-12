@@ -3,17 +3,17 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
-namespace ARC {
+namespace arc {
 
-	void SGuiHelper::DrawGuiControl(FVec1& pVec, const char* pID, float pColumnWidth, const FVec1& pDefaults)
+	void gui_helper::draw_gui_control(vec1& pVec, const char* pID, float pColumnWidth, const vec1& pDefaults)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		auto BoldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, pColumnWidth);
+		ImGui::set_column_width(0, pColumnWidth);
 		ImGui::Text(pID);
 		ImGui::NextColumn();
 
@@ -40,15 +40,15 @@ namespace ARC {
 		ImGui::Columns(1);
 	}
 
-	void SGuiHelper::DrawGuiControl(FVec2& pVec, const char* pID, float pColumnWidth, const FVec2& pDefaults)
+	void gui_helper::draw_gui_control(vec2& pVec, const char* pID, float pColumnWidth, const vec2& pDefaults)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		auto BoldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, pColumnWidth);
+		ImGui::set_column_width(0, pColumnWidth);
 		ImGui::Text(pID);
 		ImGui::NextColumn();
 
@@ -91,15 +91,15 @@ namespace ARC {
 		ImGui::Columns(1);
 	}
 
-	void SGuiHelper::DrawGuiControl(FVec3& pVec, const char* pID, float pColumnWidth, const FVec3& pDefaults)
+	void gui_helper::draw_gui_control(vec3& pVec, const char* pID, float pColumnWidth, const vec3& pDefaults)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		auto BoldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, pColumnWidth);
+		ImGui::set_column_width(0, pColumnWidth);
 		ImGui::Spacing();
 		ImGui::Text(pID);
 		ImGui::NextColumn();
@@ -159,15 +159,15 @@ namespace ARC {
 		ImGui::Columns(1);
 	}
 	
-	void SGuiHelper::DrawGuiControl(FVec4 & pVec, const char* pID, float pColumnWidth, const FVec4& pDefaults)
+	void gui_helper::draw_gui_control(vec4 & pVec, const char* pID, float pColumnWidth, const vec4& pDefaults)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		auto BoldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, pColumnWidth);
+		ImGui::set_column_width(0, pColumnWidth);
 		ImGui::Spacing();
 		ImGui::Text(pID);
 		ImGui::NextColumn();
@@ -242,15 +242,15 @@ namespace ARC {
 		ImGui::Columns(1);
 	}
 
-	void SGuiHelper::DrawGuiControl(FColor4& pColor, const char* pID, float pColumnWidth, const FColor4& pDefaults /*= FColor4::White()*/)
+	void gui_helper::draw_gui_control(color4& pColor, const char* pID, float pColumnWidth, const color4& pDefaults /*= color4::White()*/)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO& io = ImGui::get_io();
 		auto BoldFont = io.Fonts->Fonts[0];
 
 		ImGui::PushID(pID);
 
 		ImGui::Columns(2);
-		ImGui::SetColumnWidth(0, pColumnWidth);
+		ImGui::set_column_width(0, pColumnWidth);
 		ImGui::Spacing();
 		ImGui::Text(pID);
 		ImGui::NextColumn();

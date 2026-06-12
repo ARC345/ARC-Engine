@@ -1,13 +1,13 @@
 #pragma once
 #include "ARC/Core/Application.h"
 
-namespace ARC {
-	class CEditorApp : public ARC::CApplication
+namespace arc {
+	class editor_app : public arc::application
 	{
 	public:
-		CEditorApp();
-		~CEditorApp() {};
+		editor_app();
+		~editor_app() {};
 
-		inline virtual std::string GetAppName() override { return "ARC-Editor"; };
+		inline virtual std::string get_app_name() override { return "ARC-Editor"; };
 	};
 }

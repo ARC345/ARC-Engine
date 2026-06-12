@@ -10,134 +10,134 @@
 #include <glm/gtx/quaternion.hpp>
 #include "../Events/MouseEvent.h"
 
-namespace ARC {
+namespace arc {
 
-	CEditorCamera::CEditorCamera(float fov, float aspectRatio, float nearClip, float farClip)
-		: mFOV(fov), mAspectRatio(aspectRatio), mNearClip(nearClip), mFarClip(farClip), CCamera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
+	editor_camera::editor_camera(float fov, float aspectRatio, float nearClip, float farClip)
+		: fov_(fov), aspect_ratio_(aspectRatio), near_clip_(nearClip), far_clip_(farClip), camera(glm::perspective(glm::radians(fov), aspectRatio, nearClip, farClip))
 	{
 		UpdateView();
 	}
 
-	void CEditorCamera::UpdateProjection()
+	void editor_camera::UpdateProjection()
 	{
-		mAspectRatio = mViewportWidth / mViewportHeight;
-		mProjection = glm::perspective(glm::radians(mFOV), mAspectRatio, mNearClip, mFarClip);
+		aspect_ratio_ = viewport_width_ / viewport_height_;
+		projection_ = glm::perspective(glm::radians(fov_), aspect_ratio_, near_clip_, far_clip_);
 	}
 
-	void CEditorCamera::UpdateView()
+	void editor_camera::UpdateView()
 	{
-		// mYaw = mPitch = 0.0f; // Lock the camera's rotation
-		mPosition = CalculatePosition();
+		// yaw_ = pitch_ = 0.0f; // Lock the camera's rotation
+		position_ = CalculatePosition();
 
-		glm::quat orientation = GetOrientation();
-		mViewMatrix = glm::translate(glm::mat4(1.0f), mPosition) * glm::toMat4(orientation);
-		mViewMatrix = glm::inverse(mViewMatrix);
+		glm::quat orientation = get_orientation();
+		view_matrix_ = glm::translate(glm::mat4(1.0f), position_) * glm::toMat4(orientation);
+		view_matrix_ = glm::inverse(view_matrix_);
 	}
 
-	std::pair<float, float> CEditorCamera::PanSpeed() const
+	std::pair<float, float> editor_camera::PanSpeed() const
 	{
-		float x = std::min(mViewportWidth / 1000.0f, 2.4f); // max = 2.4f
+		float x = std::min(viewport_width_ / 1000.0f, 2.4f); // max = 2.4f
 		float xFactor = 0.0366f * (x * x) - 0.1778f * x + 0.3021f;
 
-		float y = std::min(mViewportHeight / 1000.0f, 2.4f); // max = 2.4f
+		float y = std::min(viewport_height_ / 1000.0f, 2.4f); // max = 2.4f
 		float yFactor = 0.0366f * (y * y) - 0.1778f * y + 0.3021f;
 
 		return { xFactor, yFactor };
 	}
 
-	float CEditorCamera::RotationSpeed() const
+	float editor_camera::RotationSpeed() const
 	{
 		return 0.8f;
 	}
 
-	float CEditorCamera::ZoomSpeed() const
+	float editor_camera::ZoomSpeed() const
 	{
-		float distance = mDistance * 0.2f;
+		float distance = distance_ * 0.2f;
 		distance = std::max(distance, 0.0f);
 		float speed = distance * distance;
 		speed = std::min(speed, 100.0f); // max speed = 100
 		return speed;
 	}
 
-	void CEditorCamera::OnUpdate(float ts)
+	void editor_camera::on_update(float ts)
 	{
-		if (SInput::IsKeyPressed(EKey::LeftAlt))
+		if (input::is_key_pressed(key::LeftAlt))
 		{
-			const FGLMVec2& mouse =  (const FGLMVec2&)SInput::GetMouseXY();
-			FGLMVec2 delta = (mouse - mInitialMousePosition) * 0.003f;
-			mInitialMousePosition = mouse;
+			const vec2& mouse =  (const vec2&)input::get_mouse_xy();
+			vec2 delta = (mouse - initial_mouse_position_) * 0.003f;
+			initial_mouse_position_ = mouse;
 
-			if (SInput::IsMouseButtonPressed(EMouse::ButtonMiddle))
+			if (input::is_mouse_button_pressed(mouse::ButtonMiddle))
 				MousePan(delta);
-			else if (SInput::IsMouseButtonPressed(EMouse::ButtonLeft))
+			else if (input::is_mouse_button_pressed(mouse::ButtonLeft))
 				MouseRotate(delta);
-			else if (SInput::IsMouseButtonPressed(EMouse::ButtonRight))
+			else if (input::is_mouse_button_pressed(mouse::ButtonRight))
 				MouseZoom(delta.y);
 		}
 
 		UpdateView();
 	}
 
-	void CEditorCamera::OnEvent(CEvent& e)
+	void editor_camera::on_event(event& e)
 	{
-		CEventDispatcher dispatcher(e);
-		dispatcher.Dispatch<CMouseScrolledEvent>(BIND_FN(&CEditorCamera::OnMouseScroll));
+		event_dispatcher dispatcher(e);
+		dispatcher.Dispatch<mouse_scrolled_event>(BIND_FN(&editor_camera::OnMouseScroll));
 	}
 
-	bool CEditorCamera::OnMouseScroll(CMouseScrolledEvent& e)
+	bool editor_camera::OnMouseScroll(mouse_scrolled_event& e)
 	{
-		float delta = e.GetYOffset() * 0.1f;
+		float delta = e.get_y_offset() * 0.1f;
 		MouseZoom(delta);
 		UpdateView();
 		return false;
 	}
 
-	void CEditorCamera::MousePan(const FGLMVec2& delta)
+	void editor_camera::MousePan(const vec2& delta)
 	{
 		auto [xSpeed, ySpeed] = PanSpeed();
-		mFocalPoint += -GetRightDirection() * delta.x * xSpeed * mDistance;
-		mFocalPoint += GetUpDirection() * delta.y * ySpeed * mDistance;
+		focal_point_ += -get_right_direction() * delta.x * xSpeed * distance_;
+		focal_point_ += get_up_direction() * delta.y * ySpeed * distance_;
 	}
 
-	void CEditorCamera::MouseRotate(const FGLMVec2& delta)
+	void editor_camera::MouseRotate(const vec2& delta)
 	{
-		float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
-		mYaw += yawSign * delta.x * RotationSpeed();
-		mPitch += delta.y * RotationSpeed();
+		float yawSign = get_up_direction().y < 0 ? -1.0f : 1.0f;
+		yaw_ += yawSign * delta.x * RotationSpeed();
+		pitch_ += delta.y * RotationSpeed();
 	}
 
-	void CEditorCamera::MouseZoom(float delta)
+	void editor_camera::MouseZoom(float delta)
 	{
-		mDistance -= delta * ZoomSpeed();
-		if (mDistance < 1.0f)
+		distance_ -= delta * ZoomSpeed();
+		if (distance_ < 1.0f)
 		{
-			mFocalPoint += GetForwardDirection();
-			mDistance = 1.0f;
+			focal_point_ += get_forward_direction();
+			distance_ = 1.0f;
 		}
 	}
 
-	FGLMVec3 CEditorCamera::GetUpDirection() const
+	vec3 editor_camera::get_up_direction() const
 	{
-		return glm::rotate(GetOrientation(), FGLMVec3(0.0f, 1.0f, 0.0f));
+		return glm::rotate(get_orientation(), vec3(0.0f, 1.0f, 0.0f));
 	}
 
-	FGLMVec3 CEditorCamera::GetRightDirection() const
+	vec3 editor_camera::get_right_direction() const
 	{
-		return glm::rotate(GetOrientation(), FGLMVec3(1.0f, 0.0f, 0.0f));
+		return glm::rotate(get_orientation(), vec3(1.0f, 0.0f, 0.0f));
 	}
 
-	FGLMVec3 CEditorCamera::GetForwardDirection() const
+	vec3 editor_camera::get_forward_direction() const
 	{
-		return glm::rotate(GetOrientation(), FGLMVec3(0.0f, 0.0f, -1.0f));
+		return glm::rotate(get_orientation(), vec3(0.0f, 0.0f, -1.0f));
 	}
 
-	FGLMVec3 CEditorCamera::CalculatePosition() const
+	vec3 editor_camera::CalculatePosition() const
 	{
-		return mFocalPoint - GetForwardDirection() * mDistance;
+		return focal_point_ - get_forward_direction() * distance_;
 	}
 
-	glm::quat CEditorCamera::GetOrientation() const
+	glm::quat editor_camera::get_orientation() const
 	{
-		return glm::quat(FGLMVec3(-mPitch, -mYaw, 0.0f));
+		return glm::quat(vec3(-pitch_, -yaw_, 0.0f));
 	}
 }

@@ -3,15 +3,15 @@
 
 struct GLFWwindow;
 
-namespace ARC {
-	class COpenGLContext : public CGraphicsContext
+namespace arc {
+	class opengl_context : public graphics_context
 	{
 	public:
-		COpenGLContext(GLFWwindow* _WindowHandle);
-		virtual void Init() override;
-		virtual void SwapBuffers() override;
+		opengl_context(GLFWwindow* window_handle);
+		virtual void init() override;
+		virtual void swap_buffers() override;
 
 	private:
-		GLFWwindow* mWindowHandle;
+		GLFWwindow* window_handle_;
 	};
 }

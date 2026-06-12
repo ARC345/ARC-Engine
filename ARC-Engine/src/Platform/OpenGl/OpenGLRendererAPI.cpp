@@ -3,9 +3,9 @@
 #include <glad/glad.h>
 #include "ARC/Renderer/VertexArray.h"
 
-namespace ARC {
+namespace arc {
 
-	void COpenGLRendererAPI::Init()
+	void opengl_renderer_api::init()
 	{
 		ARC_PROFILE_FUNCTION();
 		glEnable(GL_BLEND);
@@ -14,37 +14,37 @@ namespace ARC {
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	void COpenGLRendererAPI::SetViewport(const TVec2<TUInt32> _BottemLeftCoord, const TVec2<TUInt32> _Dimentions)
+	void opengl_renderer_api::set_viewport(const vec2<u32> bottem_left_coord, const vec2<u32> dimentions)
 	{
-		glViewport(_BottemLeftCoord.x, _BottemLeftCoord.y, _Dimentions.x, _Dimentions.y);
+		glViewport(bottem_left_coord.x, bottem_left_coord.y, dimentions.x, dimentions.y);
 	}
 
-	void COpenGLRendererAPI::SetClearColour(const FColor4 _Colour)
+	void opengl_renderer_api::set_clear_colour(const color4 colour)
 	{
-		glClearColor(_Colour.r, _Colour.g, _Colour.b, _Colour.a);
+		glClearColor(colour.r, colour.g, colour.b, colour.a);
 	}
 
-	void COpenGLRendererAPI::Clear()
+	void opengl_renderer_api::clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void COpenGLRendererAPI::DrawIndexed(const TRef<CVertexArray>& _VertexArray, TUInt32 _Count)
+	void opengl_renderer_api::draw_indexed(const ref<vertex_array>& vertex_array, u32 count)
 	{
 		ARC_PROFILE_FUNCTION();
-		_VertexArray->Bind();
-		TUInt32 count = _Count ? _Count : _VertexArray->GetIndexBuffer()->GetCount();
+		vertex_array->bind();
+		u32 count = count ? count : vertex_array->get_index_buffer()->get_count();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 
-	void COpenGLRendererAPI::DrawLine(const TRef<CVertexArray>& _VertexArray, TUInt32 _Count)
+	void opengl_renderer_api::draw_line(const ref<vertex_array>& vertex_array, u32 count)
 	{
 		ARC_PROFILE_FUNCTION();
-		_VertexArray->Bind();
-		glDrawArrays(GL_LINES, 0, _Count);
+		vertex_array->bind();
+		glDrawArrays(GL_LINES, 0, count);
 	}
 
-	void COpenGLRendererAPI::SetLineThickness(float pThickness)
+	void opengl_renderer_api::set_line_thickness(float pThickness)
 	{
 		glLineWidth(pThickness);
 	}

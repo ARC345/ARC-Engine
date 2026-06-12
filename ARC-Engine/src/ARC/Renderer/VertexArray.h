@@ -2,20 +2,20 @@
 #include "ARC\Renderer\Buffer.h"
 #include <memory>
 
-namespace ARC {
-	class CVertexArray
+namespace arc {
+	class vertex_array
 	{
 	public:
-		virtual ~CVertexArray() = default;
-		static TRef<CVertexArray> Create();
+		virtual ~vertex_array() = default;
+		static ref<vertex_array> create();
 
-		virtual void AddVertexBuffer(const TRef<CVertexBuffer>& _VertexBuffer) = 0;
-		virtual void SetIndexBuffer(const TRef<CIndexBuffer>& _IndexBuffer) = 0;
+		virtual void add_vertex_buffer(const ref<vertex_buffer>& vertex_buffer) = 0;
+		virtual void set_index_buffer(const ref<index_buffer>& index_buffer) = 0;
 		
-		virtual const std::vector<TRef<CVertexBuffer>>& GetVertexBuffers() const = 0;
-		virtual const TRef<CIndexBuffer>& GetIndexBuffer() const = 0;
+		virtual const std::vector<ref<vertex_buffer>>& get_vertex_buffers() const = 0;
+		virtual const ref<index_buffer>& get_index_buffer() const = 0;
 
-		virtual void Bind() const = 0;
+		virtual void bind() const = 0;
 		virtual void UnBind() const = 0;
 	};
 }

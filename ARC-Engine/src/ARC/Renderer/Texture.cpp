@@ -4,32 +4,32 @@
 #include "Platform\OpenGl\OpenGLTexture.h"
 #include "ARC\Core\Core.h"
 
-namespace ARC {
+namespace arc {
 
-	TRef<CTexture2D> CTexture2D::Create(const std::filesystem::path& pPath, bool pbManualClear)
+	ref<texture_2d> texture_2d::create(const std::filesystem::path& pPath, bool pbManualClear)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLTexture2D>(pPath, pbManualClear);
+		case renderer_api::renderer_api::OpenGL:
+			return create_ref<opengl_texture_2d>(pPath, pbManualClear);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 
 		return nullptr;
 	}
 
-	TRef<CTexture2D> CTexture2D::Create(const TVec2<uint32_t> pDimentions)
+	ref<texture_2d> texture_2d::create(const vec2<uint32_t> pDimentions)
 	{
-		switch (CRenderer::GetCurrentAPI())
+		switch (renderer::get_current_api())
 		{
-		case CRendererAPI::ERendererAPI::None:
-			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (ERendererAPI::None)");
+		case renderer_api::renderer_api::None:
+			ARC_CORE_ASSERT(false, "Selected renderer API is not supported (renderer_api::None)");
 			return nullptr;
-		case CRendererAPI::ERendererAPI::OpenGL:
-			return CreateRef<COpenGLTexture2D>(pDimentions);
+		case renderer_api::renderer_api::OpenGL:
+			return create_ref<opengl_texture_2d>(pDimentions);
 		}
 		ARC_CORE_ASSERT(false, "Unknown renderer API");
 

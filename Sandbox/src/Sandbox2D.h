@@ -5,46 +5,46 @@
 #include "ARC/Renderer/ParticleSystem2D.h"
 #include "ARC/Objects/Primitive2D.h"
 
-namespace ARC { class CFrameBuffer; }
+namespace arc { class framebuffer; }
 
-namespace ARC { class CSubTexture2D; }
+namespace arc { class sub_texture_2d; }
 
-namespace ARC { class CTexture2D; }
+namespace arc { class texture_2d; }
 
-namespace ARC { class CVertexArray; }
+namespace arc { class vertex_array; }
 
-namespace ARC { class CShader; }
+namespace arc { class shader; }
 
-namespace ARC { class CEvent; }
+namespace arc { class event; }
 
-class CSandbox2D : public ARC::CLayer
+class sandbox_2d : public arc::layer
 {
 public:
-	CSandbox2D();
-	virtual ~CSandbox2D() = default;
+	sandbox_2d();
+	virtual ~sandbox_2d() = default;
 
-	virtual void OnAttach();
-	virtual void OnDetach();
+	virtual void on_attach();
+	virtual void on_detach();
 
-	virtual void OnUpdate(float _DeltaTime) override;
-	virtual void OnEvent(ARC::CEvent& _Event) override;
-	virtual void OnGuiRender() override;
+	virtual void on_update(float delta_time) override;
+	virtual void on_event(arc::event& event) override;
+	virtual void on_gui_render() override;
 
 	virtual void ___Print___(const char* _);
 
 	float prev = 0.f;
 protected:
-	ARC::TRef<ARC::CShader> m_Shader;
-	ARC::TRef<ARC::CVertexArray> m_VertexArray;
-	ARC::TRef<ARC::CTexture2D> m_CheckerboardTexture;
-	ARC::TRef<ARC::CTexture2D> m_Spritesheet;
-	ARC::TRef<ARC::CSubTexture2D> m_Tree;
-	ARC::TRef<ARC::CParticleSystem2D> ParticleSystem;
-	ARC::TRef<ARC::CParticleSystem2D> Smoke;
+	arc::ref<arc::shader> m_Shader;
+	arc::ref<arc::vertex_array> m_VertexArray;
+	arc::ref<arc::texture_2d> m_CheckerboardTexture;
+	arc::ref<arc::texture_2d> m_Spritesheet;
+	arc::ref<arc::sub_texture_2d> m_Tree;
+	arc::ref<arc::particle_system_2d> ParticleSystem;
+	arc::ref<arc::particle_system_2d> Smoke;
 
-	ARC::CColor SQ_Colour = ARC::CColor::Blue;
+	arc::CColor SQ_Colour = arc::CColor::Blue;
 
 private:
-	ARC::COrthographicCameraController m_CameraController;
-	std::unordered_map<char, ARC::TRef<ARC::CSubTexture2D>> s_textureMap;
+	arc::orthographic_camera_controller m_CameraController;
+	std::unordered_map<char, arc::ref<arc::sub_texture_2d>> s_textureMap;
 };

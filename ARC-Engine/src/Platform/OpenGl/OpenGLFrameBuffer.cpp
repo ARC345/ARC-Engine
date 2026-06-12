@@ -2,8 +2,8 @@
 #include "OpenGLFrameBuffer.h"
 #include "glad\glad.h"
 
-namespace ARC {
-	static constexpr TUInt32 MaxFrameBufferSize = 10000;
+namespace arc {
+	static constexpr u32 MaxFrameBufferSize = 10000;
 
 	static void CreateTextures(bool pbMultisampled, uint32_t* pOutID, uint32_t pCount)
 	{
@@ -106,120 +106,120 @@ namespace ARC {
 			);
 	}
 
-	static GLenum ARCFBTextureFormatToGL(EFrameBufferTextureFormat pFormat)
+	static GLenum ARCFBTextureFormatToGL(frame_buffer_texture_format pFormat)
 	{
 		switch (pFormat)
 		{
-			case EFrameBufferTextureFormat::RGBA8: return GL_RGBA8;
-			case EFrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			case frame_buffer_texture_format::RGBA8: return GL_RGBA8;
+			case frame_buffer_texture_format::RED_INTEGER: return GL_RED_INTEGER;
 		}
 
 		ARC_CORE_ASSERT(false);
 		return 0;
 	}
-	static GLenum GLDataType(EFrameBufferTextureFormat pFormat)
+	static GLenum GLDataType(frame_buffer_texture_format pFormat)
 	{
 		switch (pFormat)
 		{
-		case EFrameBufferTextureFormat::RGBA8: return GL_UNSIGNED_BYTE;
-		case EFrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+		case frame_buffer_texture_format::RGBA8: return GL_UNSIGNED_BYTE;
+		case frame_buffer_texture_format::RED_INTEGER: return GL_RED_INTEGER;
 		}
 
 		ARC_CORE_ASSERT(false);
 		return 0;
 	}
 
-	COpenGLFrameBuffer::COpenGLFrameBuffer(const SFrameBufferSpecification& pSpecs) :
-		mSpecification(pSpecs)
+	opengl_framebuffer::opengl_framebuffer(const frame_buffer_specification& pSpecs) :
+		specification_(pSpecs)
 	{
-		for (EFrameBufferTextureFormat ispec : mSpecification.Attachments)
+		for (frame_buffer_texture_format ispec : specification_.Attachments)
 		{
-			if (ispec != EFrameBufferTextureFormat::DEPTH24STENCIL8)
-				mColorAttachmentSpecifications.emplace_back(ispec);
+			if (ispec != frame_buffer_texture_format::DEPTH24STENCIL8)
+				color_attachment_specifications_.emplace_back(ispec);
 			else
-				mDepthAttachmentSpecification = ispec;
+				depth_attachment_specification_ = ispec;
 		}
 
 		Invalidate();
 	}
 
-	COpenGLFrameBuffer::~COpenGLFrameBuffer()
+	opengl_framebuffer::~opengl_framebuffer()
 	{
-		glDeleteFramebuffers(1, &mRendererID);
-		glDeleteTextures(mColorAttachmentSpecifications.size(), mColorAttachments.data());
-		glDeleteTextures(1, &mDepthAttachment);
+		glDeleteFramebuffers(1, &renderer_id_);
+		glDeleteTextures(color_attachment_specifications_.size(), color_attachments_.data());
+		glDeleteTextures(1, &depth_attachment_);
 	}
 
-	void COpenGLFrameBuffer::Invalidate()
+	void opengl_framebuffer::Invalidate()
 	{
-		if (mRendererID)
+		if (renderer_id_)
 		{
-			glDeleteFramebuffers(1, &mRendererID);
-			glDeleteTextures(mColorAttachmentSpecifications.size(), mColorAttachments.data());
-			glDeleteTextures(1, &mDepthAttachment);
+			glDeleteFramebuffers(1, &renderer_id_);
+			glDeleteTextures(color_attachment_specifications_.size(), color_attachments_.data());
+			glDeleteTextures(1, &depth_attachment_);
 
-			mColorAttachments.clear();
-			mDepthAttachment=0;
+			color_attachments_.clear();
+			depth_attachment_=0;
 		}
 
-		glCreateFramebuffers(1, &mRendererID);
-		glBindFramebuffer(GL_FRAMEBUFFER, mRendererID);
+		glCreateFramebuffers(1, &renderer_id_);
+		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 		
-		bool bmultisample = mSpecification.Samples>1;
+		bool bmultisample = specification_.Samples>1;
 
-		if (mColorAttachmentSpecifications.size())
+		if (color_attachment_specifications_.size())
 		{
-			mColorAttachments.resize(mColorAttachmentSpecifications.size());
-			CreateTextures(bmultisample, mColorAttachments.data(), (TUInt32)mColorAttachments.size());
+			color_attachments_.resize(color_attachment_specifications_.size());
+			CreateTextures(bmultisample, color_attachments_.data(), (u32)color_attachments_.size());
 
-			for (int i=0; i < mColorAttachments.size(); i++) {
-				BindTexture(bmultisample, mColorAttachments[i]);
+			for (int i=0; i < color_attachments_.size(); i++) {
+				BindTexture(bmultisample, color_attachments_[i]);
 
-				switch (mColorAttachmentSpecifications[i]) {
-					case EFrameBufferTextureFormat::RGBA8:
+				switch (color_attachment_specifications_[i]) {
+					case frame_buffer_texture_format::RGBA8:
 						AttachColorTexture(
-							mColorAttachments[i],
-							mSpecification.Samples,
+							color_attachments_[i],
+							specification_.Samples,
 							GL_RGBA8,
 							GL_RGBA,
-							mSpecification.Width,
-							mSpecification.Height,
+							specification_.Width,
+							specification_.Height,
 							i
 						);
 						break;
-					case EFrameBufferTextureFormat::RED_INTEGER:
+					case frame_buffer_texture_format::RED_INTEGER:
 						AttachColorTexture(
-							mColorAttachments[i],
-							mSpecification.Samples,
+							color_attachments_[i],
+							specification_.Samples,
 							GL_R32I,
 							GL_RED_INTEGER,
-							mSpecification.Width,
-							mSpecification.Height,
+							specification_.Width,
+							specification_.Height,
 							i
 						);
 						break;
 				}
 			}
 		}
-		if (mDepthAttachmentSpecification != EFrameBufferTextureFormat::None)
+		if (depth_attachment_specification_ != frame_buffer_texture_format::None)
 		{
-			CreateTextures(bmultisample, &mDepthAttachment, 1);
-			BindTexture(bmultisample, mDepthAttachment);
+			CreateTextures(bmultisample, &depth_attachment_, 1);
+			BindTexture(bmultisample, depth_attachment_);
 
-			if (mDepthAttachmentSpecification == EFrameBufferTextureFormat::DEPTH24STENCIL8)
+			if (depth_attachment_specification_ == frame_buffer_texture_format::DEPTH24STENCIL8)
 				AttachDepthTexture(
-					mDepthAttachment,
-					mSpecification.Samples,
+					depth_attachment_,
+					specification_.Samples,
 					GL_DEPTH24_STENCIL8,
 					GL_DEPTH_STENCIL_ATTACHMENT,
-					mSpecification.Width,
-					mSpecification.Height
+					specification_.Width,
+					specification_.Height
 				);
 		}
 
-		if (mColorAttachments.size()>1)
+		if (color_attachments_.size()>1)
 		{
-				ARC_CORE_ASSERT(mColorAttachments.size()<=4, "Currently only 4 ColorAttachments Supported");
+				ARC_CORE_ASSERT(color_attachments_.size()<=4, "Currently only 4 ColorAttachments Supported");
 
 				GLenum buffers[4] = {
 						GL_COLOR_ATTACHMENT0,
@@ -228,9 +228,9 @@ namespace ARC {
 						GL_COLOR_ATTACHMENT3,
 				};
 
-				glDrawBuffers(mColorAttachments.size(), buffers);
+				glDrawBuffers(color_attachments_.size(), buffers);
 		}
-		else if (mColorAttachments.empty())
+		else if (color_attachments_.empty())
 			glDrawBuffer(GL_NONE);
 
 		ARC_CORE_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");
@@ -238,30 +238,30 @@ namespace ARC {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void COpenGLFrameBuffer::Bind()
+	void opengl_framebuffer::bind()
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, mRendererID);
-		glViewport(0,0,mSpecification.Width, mSpecification.Height);
+		glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
+		glViewport(0,0,specification_.Width, specification_.Height);
 	}
 
-	void COpenGLFrameBuffer::UnBind()
+	void opengl_framebuffer::UnBind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void COpenGLFrameBuffer::Resize(const TVec2<TUInt32>& p)
+	void opengl_framebuffer::resize(const vec2<u32>& p)
 	{
-		if (mSpecification.Width==0.f || mSpecification.Height==0.f || mSpecification.Height > MaxFrameBufferSize || mSpecification.Width > MaxFrameBufferSize) 
+		if (specification_.Width==0.f || specification_.Height==0.f || specification_.Height > MaxFrameBufferSize || specification_.Width > MaxFrameBufferSize) 
 			return;
 
-		mSpecification.Width = p.x;
-		mSpecification.Height = p.y;
+		specification_.Width = p.x;
+		specification_.Height = p.y;
 		Invalidate();
 	}
 
-	int COpenGLFrameBuffer::ReadPixel(TUInt32 pAttachmentIndex, int pX, int pY)
+	int opengl_framebuffer::read_pixel(u32 pAttachmentIndex, int pX, int pY)
 	{
-		ARC_CORE_ASSERT(pAttachmentIndex<mColorAttachments.size());
+		ARC_CORE_ASSERT(pAttachmentIndex<color_attachments_.size());
 
 		int pixelData;
 		glReadBuffer(GL_COLOR_ATTACHMENT0+pAttachmentIndex);
@@ -269,26 +269,26 @@ namespace ARC {
 
 		return pixelData;
 	}
-	void COpenGLFrameBuffer::ClearColorAttachment(TUInt32 pAttachmentIndex, const int pValue)
+	void opengl_framebuffer::ClearColorAttachment(u32 pAttachmentIndex, const int pValue)
 	{
-		ARC_CORE_ASSERT(pAttachmentIndex < mColorAttachments.size());
+		ARC_CORE_ASSERT(pAttachmentIndex < color_attachments_.size());
 
 		glClearTexImage(
-			mColorAttachments[pAttachmentIndex],
+			color_attachments_[pAttachmentIndex],
 			0,
-			ARCFBTextureFormatToGL(mColorAttachmentSpecifications[pAttachmentIndex]),
+			ARCFBTextureFormatToGL(color_attachment_specifications_[pAttachmentIndex]),
 			GL_INT,
 			&pValue
 		);
 	}
-	void COpenGLFrameBuffer::ClearColorAttachment(TUInt32 pAttachmentIndex, const float pValue)
+	void opengl_framebuffer::ClearColorAttachment(u32 pAttachmentIndex, const float pValue)
 	{
-		ARC_CORE_ASSERT(pAttachmentIndex < mColorAttachments.size());
+		ARC_CORE_ASSERT(pAttachmentIndex < color_attachments_.size());
 
 		glClearTexImage(
-			mColorAttachments[pAttachmentIndex],
+			color_attachments_[pAttachmentIndex],
 			0,
-			ARCFBTextureFormatToGL(mColorAttachmentSpecifications[pAttachmentIndex]),
+			ARCFBTextureFormatToGL(color_attachment_specifications_[pAttachmentIndex]),
 			GL_FLOAT,
 			&pValue
 		);

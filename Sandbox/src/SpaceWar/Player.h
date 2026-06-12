@@ -5,33 +5,33 @@
 #include <memory>
 #include "ARC/Renderer/ParticleSystem2D.h"
 
-namespace ARC { class CLayer; }
+namespace arc { class layer; }
 
-namespace ARC { class CKeyReleasedEvent; }
+namespace arc { class key_released_event; }
 
-namespace ARC { class CKeyPressedEvent; }
+namespace arc { class key_pressed_event; }
 
-namespace ARC { class CEvent; }
-namespace ARC { class CMouseMovedEvent; }
+namespace arc { class event; }
+namespace arc { class mouse_moved_event; }
 
-namespace ARC {
-	class CPlayer
+namespace arc {
+	class player
 	{
 	public:
-		CPlayer();
+		player();
 		void Load();
 		void Reset();
-		void OnUpdate(float _DeltaTime);
-		void OnEvent(ARC::CEvent& _Event);
-		CPrimitive2D PlayerSprite;
-		CParticleSystem2D ParticleSystem;
+		void on_update(float delta_time);
+		void on_event(arc::event& event);
+		primitive_2d PlayerSprite;
+		particle_system_2d ParticleSystem;
 		uint8_t bIsAlive : 1;
 		float Speed;
 		// Minimum distance from object for collision to activate
 		float MinDist;
-		FVec2 Velocity;
-		CLayer* OwningLayer;
-		std::vector<std::shared_ptr<TVec2<uint8_t>>> CollisionData;
+		vec2 Velocity;
+		layer* OwningLayer;
+		std::vector<std::shared_ptr<vec2<uint8_t>>> CollisionData;
 	protected:
 	private:
 	};

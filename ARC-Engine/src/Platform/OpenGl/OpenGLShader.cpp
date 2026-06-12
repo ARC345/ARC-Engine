@@ -6,56 +6,56 @@
 #include "ARC\Helpers\Helpers.h"
 #include "ARC/Types/Color.h"
 
-namespace ARC {
-	TString COpenGLShader::s_Seperator = "#type";
+namespace arc {
+	string opengl_shader::seperator = "#type";
 
-	COpenGLShader::COpenGLShader(const TString& _Name, const TString& _VertexSrc, const TString& _FragmentSrc) :
-		mName(_Name)
+	opengl_shader::opengl_shader(const string& name, const string& vertex_src, const string& fragment_src) :
+		name_(name)
 	{
-		std::unordered_map<GLenum, TString> sources;
-		sources[GL_VERTEX_SHADER] = _VertexSrc;
-		sources[GL_FRAGMENT_SHADER] = _FragmentSrc;
+		std::unordered_map<GLenum, string> sources;
+		sources[GL_VERTEX_SHADER] = vertex_src;
+		sources[GL_FRAGMENT_SHADER] = fragment_src;
 		Compile(sources);
 	}
 
-	COpenGLShader::COpenGLShader(const TString& _Path)
+	opengl_shader::opengl_shader(const string& path)
 	{
-		TString source = SHPR::ReadFile(_Path);
+		string source = shpr::ReadFile(path);
 		auto shaderSources = PreProcess(source);
 		Compile(shaderSources);
 
-		mName = SHPR::ExtractFileNameFromPath(_Path);
+		name_ = shpr::ExtractFileNameFromPath(path);
 	}
 
-	COpenGLShader::~COpenGLShader()
+	opengl_shader::~opengl_shader()
 	{
-		glDeleteProgram(mRendererID);
+		glDeleteProgram(renderer_id_);
 	}
 
-	void COpenGLShader::Bind() const
+	void opengl_shader::bind() const
 	{
-		glUseProgram(mRendererID);
+		glUseProgram(renderer_id_);
 	}
 
-	void COpenGLShader::UnBind() const
+	void opengl_shader::UnBind() const
 	{
 		glUseProgram(0);
 	}
 
-	unsigned int COpenGLShader::ShaderTypeFromString(TString& _Type)
+	unsigned int opengl_shader::ShaderTypeFromString(string& type)
 	{
-		if (_Type == "vertex")
+		if (type == "vertex")
 			return GL_VERTEX_SHADER;
-		if (_Type == "fragment" || _Type == "pixel")
+		if (type == "fragment" || type == "pixel")
 			return GL_FRAGMENT_SHADER;
 		
 		ARC_CORE_ASSERT(0, "Invalid shader type specifier");
 		return 0;
 	}
 
-	TString COpenGLShader::StringFromShaderType(unsigned int _Type)
+	string opengl_shader::StringFromShaderType(unsigned int type)
 	{
-		switch (_Type)
+		switch (type)
 		{
 			case GL_VERTEX_SHADER:
 				return "vertex";
@@ -67,45 +67,45 @@ namespace ARC {
 		}
 	}
 
-	std::unordered_map<GLenum, TString> COpenGLShader::PreProcess(const TString& _Source)
+	std::unordered_map<GLenum, string> opengl_shader::PreProcess(const string& source)
 	{
 		ARC_PROFILE_FUNCTION();
-		std::unordered_map<GLenum, TString> shaderSources;
-		size_t pos = _Source.find(s_Seperator.c_str(), 0);
+		std::unordered_map<GLenum, string> shaderSources;
+		size_t pos = source.find(seperator.c_str(), 0);
 
-		while (pos != TString::npos)
+		while (pos != string::npos)
 		{
-			size_t eol = _Source.find_first_of("\r\n", pos); // Finds first newline position
-			ARC_CORE_ASSERT(eol != TString::npos, "Syntax Error");
-			size_t begin = pos + s_Seperator.length() + 1; // Find first s_Seperator
-			TString type = _Source.substr(begin, eol - begin);
+			size_t eol = source.find_first_of("\r\n", pos); // Finds first newline position
+			ARC_CORE_ASSERT(eol != string::npos, "Syntax Error");
+			size_t begin = pos + seperator.length() + 1; // Find first seperator
+			string type = source.substr(begin, eol - begin);
 			
-			size_t nextLinePos = _Source.find_first_not_of("\r\n", eol);
-			ARC_CORE_ASSERT(nextLinePos != TString::npos, "Syntax error");
-			pos = _Source.find(s_Seperator, nextLinePos);
-			shaderSources[ShaderTypeFromString(type)] = _Source.substr(nextLinePos, pos - (nextLinePos == TString::npos ? _Source.length() - 1 : nextLinePos));
+			size_t nextLinePos = source.find_first_not_of("\r\n", eol);
+			ARC_CORE_ASSERT(nextLinePos != string::npos, "Syntax error");
+			pos = source.find(seperator, nextLinePos);
+			shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, pos - (nextLinePos == string::npos ? source.length() - 1 : nextLinePos));
 		}
 
 		return shaderSources;
 	}
 
-	void COpenGLShader::Compile(const std::unordered_map<GLenum, TString>& _ShaderSources)
+	void opengl_shader::Compile(const std::unordered_map<GLenum, string>& shader_sources)
 	{
 		ARC_PROFILE_FUNCTION();
 		// Get a program object.
 		GLuint program = glCreateProgram();
 
-		ARC_CORE_ASSERT(_ShaderSources.size() <= 2, "Only 2 shaders are supported currently");
+		ARC_CORE_ASSERT(shader_sources.size() <= 2, "Only 2 shaders are supported currently");
 		std::array<GLenum, 2> shaderHandles;
 		size_t shaderHandleIndex = 0;
 
-		for(auto&&[key, value]: _ShaderSources)
+		for(auto&&[key, value]: shader_sources)
 		{
-			// Create an empty shader handle
+			// create an empty shader handle
 			GLuint shader = glCreateShader(key);
 
 			// Send the shader source code to GL
-			// Note that TString's .CStr is NULL character terminated.
+			// Note that string's .CStr is NULL character terminated.
 			const GLchar* source = value.c_str();
 			glShaderSource(shader, 1, &source, 0);
 		
@@ -167,7 +167,7 @@ namespace ARC {
 			return;
 		}
 
-		mRendererID = program;
+		renderer_id_ = program;
 
 		// Always detach shaders after a successful link.
 		for (auto& shaderHandle : shaderHandles)
@@ -177,74 +177,74 @@ namespace ARC {
 		}
 	}
 
-	void COpenGLShader::SetMat4(const TString& _Name, const float* _Value)
+	void opengl_shader::set_mat4(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniformMatrix4fv(location, 1, GL_FALSE, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, value);
 	}
 
-	void COpenGLShader::SetMat3(const TString& _Name, const float* _Value)
+	void opengl_shader::set_mat3(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniformMatrix3fv(location, 1, GL_FALSE, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniformMatrix3fv(location, 1, GL_FALSE, value);
 	}
 
-	void COpenGLShader::SetInt(const TString& _Name, const int* _Value)
+	void opengl_shader::set_int(const string& name, const int* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform1iv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1iv(location, 1, value);
 	}
 
-	void COpenGLShader::SetInt2(const TString& _Name, const int* _Value)
+	void opengl_shader::set_int2(const string& name, const int* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform2iv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform2iv(location, 1, value);
 	}
 
-	void COpenGLShader::SetInt3(const TString& _Name, const int* _Value)
+	void opengl_shader::set_int3(const string& name, const int* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform3iv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform3iv(location, 1, value);
 	}
 
-	void COpenGLShader::SetInt4(const TString& _Name, const int* _Value)
+	void opengl_shader::set_int4(const string& name, const int* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform4iv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform4iv(location, 1, value);
 	}
-	void COpenGLShader::SetFloat(const TString& _Name, const float* _Value)
+	void opengl_shader::set_float(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform1fv(location, 1, _Value);
-	}
-
-	void COpenGLShader::SetFloat2(const TString& _Name, const float* _Value)
-	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform2fv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1fv(location, 1, value);
 	}
 
-	void COpenGLShader::SetFloat3(const TString& _Name, const float* _Value)
+	void opengl_shader::set_float2(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform3fv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform2fv(location, 1, value);
 	}
 
-	void COpenGLShader::SetFloat4(const TString& _Name, const float* _Value)
+	void opengl_shader::set_float3(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform4fv(location, 1, _Value);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform3fv(location, 1, value);
 	}
 
-	void COpenGLShader::SetIntArray(const TString& _Name, const int* _Values, uint32_t _Count)
+	void opengl_shader::set_float4(const string& name, const float* value)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform1iv(location, _Count, _Values);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform4fv(location, 1, value);
 	}
 
-	void COpenGLShader::SetFloatArray(const TString& _Name, const float* _Values, uint32_t _Count)
+	void opengl_shader::set_int_array(const string& name, const int* values, uint32_t count)
 	{
-		GLint location = glGetUniformLocation(mRendererID, _Name.c_str());
-		glUniform1fv(location, _Count, _Values);
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1iv(location, count, values);
+	}
+
+	void opengl_shader::set_float_array(const string& name, const float* values, uint32_t count)
+	{
+		GLint location = glGetUniformLocation(renderer_id_, name.c_str());
+		glUniform1fv(location, count, values);
 	}
 }

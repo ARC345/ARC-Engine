@@ -3,34 +3,34 @@
 #include "..\Types\vector.h"
 #include "glm\ext\vector_float2.hpp"
 
-namespace ARC {
-	class CTexture
+namespace arc {
+	class texture
 	{
 		public:
-			virtual ~CTexture() = default;
+			virtual ~texture() = default;
 
 			virtual void ClearData() = 0;
-			virtual const std::filesystem::path& GetPath() const = 0;
-			virtual void SetData(void*, uint32_t _Size) = 0;
-			virtual void Bind(uint32_t _Slot = 0) const = 0;
+			virtual const std::filesystem::path& get_path() const = 0;
+			virtual void set_data(void*, uint32_t size) = 0;
+			virtual void bind(uint32_t slot = 0) const = 0;
 
-			virtual uint32_t GetRendererID() = 0;
+			virtual uint32_t get_renderer_id() = 0;
 
-			virtual bool operator==(const CTexture& _Tex) const = 0;
+			virtual bool operator==(const texture& tex) const = 0;
 	};
 	
-	class CTexture2D : public CTexture
+	class texture_2d : public texture
 	{
 		public:
-			static TRef<CTexture2D> Create(const TVec2<uint32_t> _Dimentions);
-			static TRef<CTexture2D> Create(const std::filesystem::path& _Path, bool bManualClear = false);
+			static ref<texture_2d> create(const vec2<uint32_t> dimentions);
+			static ref<texture_2d> create(const std::filesystem::path& path, bool bManualClear = false);
 
-			virtual TVec4<unsigned char> GetPixelColor(TVec2<uint32_t> xy) = 0;
+			virtual vec4<unsigned char> get_pixel_color(vec2<uint32_t> xy) = 0;
 			
 		protected:
-			inline CTexture2D(TVec2<uint32_t> _Dimentions) : Dimensions(_Dimentions) {}
+			inline texture_2d(vec2<uint32_t> dimentions) : Dimensions(dimentions) {}
 		public:
-			TVec2<uint32_t> Dimensions;
+			vec2<uint32_t> Dimensions;
 
 			static constexpr glm::vec2 TexCoords[] = {
 				{0.f, 0.f},

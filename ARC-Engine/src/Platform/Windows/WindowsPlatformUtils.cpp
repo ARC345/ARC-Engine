@@ -8,47 +8,47 @@
 #include <GLFW/glfw3native.h>
 #include "ARC/Core/Window.h"
 
-namespace ARC
+namespace arc
 {
-	std::filesystem::path SFileDialogs::OpenFile(const char* _Filter)
+	std::filesystem::path file_dialogs::open_file(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)CApplication::Get().GetWindow().GetNativeWindow());
+		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)application::Get().get_window().get_native_window());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		if (GetCurrentDirectoryA(256, currentDir))
+		if (get_current_directory_a(256, currentDir))
 			ofn.lpstrInitialDir = currentDir;
-		ofn.lpstrFilter = _Filter;
+		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 
-		if (GetOpenFileNameA(&ofn) == TRUE)
+		if (get_open_file_name_a(&ofn) == TRUE)
 			return ofn.lpstrFile;
 
 		return std::filesystem::path();
 	}
-	std::filesystem::path SFileDialogs::SaveFile(const char* _Filter)
+	std::filesystem::path file_dialogs::save_file(const char* filter)
 	{
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
 		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)CApplication::Get().GetWindow().GetNativeWindow());
+		ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)application::Get().get_window().get_native_window());
 		ofn.lpstrFile = szFile;
 		ofn.nMaxFile = sizeof(szFile);
-		if (GetCurrentDirectoryA(256, currentDir))
+		if (get_current_directory_a(256, currentDir))
 			ofn.lpstrInitialDir = currentDir;
-		ofn.lpstrFilter = _Filter;
+		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
-		ofn.lpstrDefExt = std::strchr(_Filter, '\0') + 1;
+		ofn.lpstrDefExt = std::strchr(filter, '\0') + 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
 
-		if (GetSaveFileNameA(&ofn) == TRUE)
+		if (get_save_file_name_a(&ofn) == TRUE)
 			return ofn.lpstrFile;
 
 		return std::string();
