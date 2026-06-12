@@ -300,7 +300,158 @@ namespace ARC {
 
 	void CScene::SerializeToBinary(const std::filesystem::path& pFilepath)
 	{
-		
+		// Binary format:
+		// [magic: 4 bytes "ARC\0"] [version: uint32_t] [entity_count: uint32_t]
+		// For each entity:
+		//   [UUID: 16 bytes] [component_count: uint32_t]
+		//   For each component:
+		//     [name_hash: uint32_t] [data_size: uint32_t] [data: bytes...]
+
+		static constexpr uint32_t BINARY_MAGIC = 0x00435241; // "ARC\0"
+		static constexpr uint32_t BINARY_VERSION = 1;
+
+		std::ofstream file(pFilepath, std::ios::binary);
+		if (!file.is_open())
+		{
+			ARC_CORE_ERROR("Failed to open file for binary serialization: {}", pFilepath.string());
+			return;
+		}
+
+		// Header
+		file.write(reinterpret_cast<const char*>(&BINARY_MAGIC), sizeof(BINARY_MAGIC));
+		file.write(reinterpret_cast<const char*>(&BINARY_VERSION), sizeof(BINARY_VERSION));
+
+		// Collect entities
+		std::vector<CEntity> entities;
+		mManager.each([&](const TEntityID pEID)
+		{
+			CEntity entity = { pEID, this };
+			if (entity) entities.push_back(entity);
+		});
+
+		uint32_t entityCount = static_cast<uint32_t>(entities.size());
+		file.write(reinterpret_cast<const char*>(&entityCount), sizeof(entityCount));
+
+		for (auto& entity : entities)
+		{
+			// Write UUID
+			auto uuid = entity.GetComponent<CIDComponent>().ID;
+			file.write(reinterpret_cast<const char*>(&uuid), sizeof(uuid));
+
+			// Collect serializable components
+			std::vector<std::pair<std::string, CComponentBase*>> serializableComps;
+			for (auto& [compID, compMeta] : SSceneRegistry::GetMetaComponents())
+			{
+				if (auto* compPtr = compMeta.GetComponent(entity))
+				{
+					if (compPtr->GetFlags() & ECF::EComponentFlags::Serializable)
+					{
+						serializableComps.emplace_back(compMeta.GetName(), compPtr);
+					}
+				}
+			}
+
+			uint32_t compCount = static_cast<uint32_t>(serializableComps.size());
+			file.write(reinterpret_cast<const char*>(&compCount), sizeof(compCount));
+
+			for (auto& [compName, compPtr] : serializableComps)
+			{
+				// Write component name hash
+				uint32_t nameHash = std::hash<std::string>{}(compName);
+				file.write(reinterpret_cast<const char*>(&nameHash), sizeof(nameHash));
+
+				// YAML-serialize to string, then write as binary blob
+				YAML::Emitter yamlOut;
+				yamlOut << YAML::BeginMap;
+				compPtr->Serialize(yamlOut);
+				yamlOut << YAML::EndMap;
+
+				std::string yamlStr = yamlOut.c_str();
+				uint32_t dataSize = static_cast<uint32_t>(yamlStr.size());
+
+				file.write(reinterpret_cast<const char*>(&dataSize), sizeof(dataSize));
+				file.write(yamlStr.data(), dataSize);
+			}
+		}
+
+		file.close();
+		ARC_CORE_INFO("Binary scene saved: {} entities -> {}", entityCount, pFilepath.string());
+	}
+
+	bool CScene::DeserializeFromBinary(const std::filesystem::path& pFilepath)
+	{
+		static constexpr uint32_t BINARY_MAGIC = 0x00435241; // "ARC\0"
+		static constexpr uint32_t BINARY_VERSION = 1;
+
+		std::ifstream file(pFilepath, std::ios::binary);
+		if (!file.is_open())
+		{
+			ARC_CORE_ERROR("Failed to open file for binary deserialization: {}", pFilepath.string());
+			return false;
+		}
+
+		// Read header
+		uint32_t magic = 0;
+		uint32_t version = 0;
+		file.read(reinterpret_cast<char*>(&magic), sizeof(magic));
+		file.read(reinterpret_cast<char*>(&version), sizeof(version));
+
+		if (magic != BINARY_MAGIC || version != BINARY_VERSION)
+		{
+			ARC_CORE_ERROR("Invalid binary scene format (magic={:#x}, version={})", magic, version);
+			return false;
+		}
+
+		uint32_t entityCount = 0;
+		file.read(reinterpret_cast<char*>(&entityCount), sizeof(entityCount));
+
+		for (uint32_t e = 0; e < entityCount; e++)
+		{
+			// Read UUID
+			TUUID uuid = 0;
+			file.read(reinterpret_cast<char*>(&uuid), sizeof(uuid));
+
+			// Create entity with this UUID
+			CEntity entity = CreateEntity("Entity", uuid);
+
+			uint32_t compCount = 0;
+			file.read(reinterpret_cast<char*>(&compCount), sizeof(compCount));
+
+			for (uint32_t c = 0; c < compCount; c++)
+			{
+				uint32_t nameHash = 0;
+				file.read(reinterpret_cast<char*>(&nameHash), sizeof(nameHash));
+
+				uint32_t dataSize = 0;
+				file.read(reinterpret_cast<char*>(&dataSize), sizeof(dataSize));
+
+				std::string yamlStr(dataSize, '\0');
+				file.read(yamlStr.data(), dataSize);
+
+				// Look up component by name hash
+				auto& nameIDMap = SSceneRegistry::GetRegisteredComponentNameIDMap();
+				bool found = false;
+				for (auto& [name, compID] : nameIDMap)
+				{
+					if (std::hash<std::string>{}(name) == nameHash)
+					{
+						auto* comp = SSceneRegistry::GetMetaComponents()[compID].AddComponent(entity);
+						YAML::Node node = YAML::Load(yamlStr);
+						comp->Deserialize(node);
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					ARC_CORE_WARN("Unknown component (hash={:#x}) in binary scene, skipping", nameHash);
+				}
+			}
+		}
+
+		file.close();
+		ARC_CORE_INFO("Binary scene loaded: {} entities <- {}", entityCount, pFilepath.string());
+		return true;
 	}
 
 	bool CScene::DeserializeFromText(const std::filesystem::path& pFilepath)
@@ -330,11 +481,6 @@ namespace ARC {
 			}
 		}
 		return true;
-	}
-
-	bool CScene::DeserializeFromBinary(const std::filesystem::path& pFilepath)
-	{
-		return false;
 	}
 
 	CEntity CScene::GetPrimaryCameraEntity()

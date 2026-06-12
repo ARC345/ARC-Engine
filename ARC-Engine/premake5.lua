@@ -22,6 +22,25 @@ project "ARC-Engine"
 		"out/entt/src/entt/**.hpp",
 	}
 
+	filter "system:windows"
+		files
+		{
+			"src/Platform/Windows/**.h",
+			"src/Platform/Windows/**.cpp",
+		}
+
+	filter "system:linux"
+		files
+		{
+			"src/Platform/Linux/**.h",
+			"src/Platform/Linux/**.cpp",
+		}
+
+	filter "files:out/ImGuizmo/**.cpp"
+		flags "NoPCH"
+
+	filter {}
+
 	links
 	{
 		"Box2D",
@@ -29,8 +48,15 @@ project "ARC-Engine"
 		"GLAD",
 		"ImGui",
 		"yaml-cpp",
-		"opengl32.lib"
 	}
+
+	filter "system:windows"
+		links { "opengl32.lib" }
+
+	filter "system:linux"
+		links { "GL", "dl", "pthread" }
+
+	filter {}
 
 	defines
 	{
@@ -60,14 +86,18 @@ project "ARC-Engine"
 		"%{IncludeDir.entt}"
 	}
 
-	filter "files:out/ImGuizmo/**.cpp"
-		flags "NoPCH"
-
 	filter "system:windows"
 		systemversion "latest"
 
 		defines
 		{
+		}
+
+	filter "system:linux"
+		defines
+		{
+			"GLFW_INCLUDE_NONE",
+			"YAML_CPP_STATIC_DEFINE"
 		}
 
 	filter "configurations:Debug"
