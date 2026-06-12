@@ -8,8 +8,17 @@
 #endif
 
 #ifdef ARC_ENABLE_ASSERTS
-#define ARC_ASSERT(x, ...) { if(!(x)) { ARC_ERROR("Assertion Failed: "__VA_ARGS__); __debugbreak(); } }
-#define ARC_CORE_ASSERT(x, ...) { if(!(x)) { ARC_CORE_ERROR("Assertion Failed: "__VA_ARGS__); __debugbreak(); } }
+	#if defined(ARC_PLATFORM_WINDOWS)
+		#define ARC_DEBUGBREAK() __debugbreak()
+	#elif defined(ARC_PLATFORM_LINUX)
+		#include <signal.h>
+		#define ARC_DEBUGBREAK() raise(SIGTRAP)
+	#else
+		#define ARC_DEBUGBREAK() __builtin_trap()
+	#endif
+
+#define ARC_ASSERT(x, ...) { if(!(x)) { ARC_ERROR("Assertion Failed: " __VA_ARGS__); ARC_DEBUGBREAK(); } }
+#define ARC_CORE_ASSERT(x, ...) { if(!(x)) { ARC_CORE_ERROR("Assertion Failed: " __VA_ARGS__); ARC_DEBUGBREAK(); } }
 #else
 #define ARC_ASSERT(x, ...)
 #define ARC_CORE_ASSERT(x, ...)
@@ -34,7 +43,11 @@
 #define ARC_PROFILE
 #ifdef ARC_PROFILE
 #define ARC_PROFILE_SCOPE(name) ::ARC::CTimer COMBINE2(ARC_timer, __LINE__)(name, true, true)
+#if defined(_MSC_VER)
 #define ARC_PROFILE_FUNCTION() ARC_PROFILE_SCOPE(__FUNCSIG__)
+#else
+#define ARC_PROFILE_FUNCTION() ARC_PROFILE_SCOPE(__PRETTY_FUNCTION__)
+#endif
 #define ARC_PROFILE_BEGIN_SESSION(name, filepath) ::ARC::CInstrumentor::Get().BeginSession(name, filepath)
 #define ARC_PROFILE_END_SESSION() ::ARC::CInstrumentor::Get().EndSession()
 #else	

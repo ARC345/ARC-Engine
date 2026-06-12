@@ -47,9 +47,10 @@ project "ARC-Editor"
 	filter "system:windows"
 		systemversion "latest"
 
-		defines
-		{
-		}
+		defines {}
+
+	filter "system:linux"
+		defines {}
 
 	filter "configurations:Debug"
 		defines "ARC_DEBUG"

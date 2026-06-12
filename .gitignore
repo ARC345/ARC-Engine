@@ -2,13 +2,12 @@
 .vs/
 _bin/
 _int/
-**/logs/	
+**/logs/
+Makefile*
+*.make
 
 #files
 *.user
-
-# Prerequisites
-*.d
 
 #visual studio
 .vs/
@@ -47,3 +46,6 @@ _int/
 *.out
 *.app
 /Sandbox/logs/*.json
+
+# Linux build artifacts
+/obj/

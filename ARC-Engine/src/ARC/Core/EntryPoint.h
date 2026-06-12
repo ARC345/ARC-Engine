@@ -6,7 +6,7 @@
 #include "Macros.h"
 #include "ARC/Profiling/Timer.h"
 
-#ifdef ARC_PLATFORM_WINDOWS
+#if defined(ARC_PLATFORM_WINDOWS) || defined(ARC_PLATFORM_LINUX)
 
 extern ARC::CApplication* ARC::CreateApplication();
 
@@ -15,7 +15,7 @@ int main(int p_ArgA, char** p_ArgB)
 	printf("Starting-ARC----\n");
 	
 	//-------------------Log-Init-------------------//
-	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::Log::Init", "logs/CSandBox2D-Log-Init.json");
+	ARC_PROFILE_BEGIN_SESSION("ARC::Log::Init", "logs/ARC-Log-Init.json");
 	printf("Initializing-Logger----\n");
 	bool bInitLogger = ARC::CLog::Init();
 	if(!bInitLogger)
@@ -26,7 +26,7 @@ int main(int p_ArgA, char** p_ArgB)
 	//-----------------Log-Init-End-----------------//
 	
 	//--------------Create-Application--------------//
-	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::Create::Application", "logs/CSandBox2D-Create-Application.json");
+	ARC_PROFILE_BEGIN_SESSION("ARC::Create::Application", "logs/ARC-Create-Application.json");
 	ARC_CORE_INFO("Creating-Application");
 	ARC::CApplication* App = ARC::CreateApplication();
 	ARC_CORE_INFO("Application:[{0}]-Created-Successfully", App->GetAppName());
@@ -34,7 +34,7 @@ int main(int p_ArgA, char** p_ArgB)
 	//--------------Application-Created-------------//
 	
 	//----------------RunLoop-Started---------------//
-	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::RunLoop", "logs/CSandBox2D-RunLoop.json");
+	ARC_PROFILE_BEGIN_SESSION("ARC::RunLoop", "logs/ARC-RunLoop.json");
 	ARC_CORE_INFO("Run-Loop-Started");
 	App->Run();
 	ARC_CORE_INFO("Run-Loop-Ended");
@@ -42,7 +42,7 @@ int main(int p_ArgA, char** p_ArgB)
 	//-----------------RunLoop-Ended----------------//
 	
 	//-------------Application-Deleting-------------//
-	ARC_PROFILE_BEGIN_SESSION("CSandBox2D::End", "logs/CSandBox2D-End.json");
+	ARC_PROFILE_BEGIN_SESSION("ARC::End", "logs/ARC-End.json");
 	ARC_CORE_INFO("Destroying-Application-[]");
 	delete App;
 	ARC_CORE_INFO("Application-Destroyed-Successfully");

@@ -44,3 +44,9 @@ group ""
 include "ARC-Engine"
 include "Sandbox"
 include "ARC-Editor"
+
+filter "system:windows"
+	systemversion "latest"
+
+filter "system:linux"
+	system "linux"

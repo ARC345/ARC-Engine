@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "ARC\Core\Macros.h"
+#include "ARC/Core/Macros.h"
 
 #define ARC_TYPE() // public: template<typename __T__> __T__ To() const { return HPR::template Conv<__T__>(*this); } private:
 

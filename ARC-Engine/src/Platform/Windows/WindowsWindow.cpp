@@ -2,14 +2,14 @@
 #include "WindowsWindow.h"
 #include "ARC/Core/Log.h"
 #include "ARC/Core/Window.h"
-#include "ARC\Events\ApplicationEvent.h"
-#include "ARC\Events\KeyEvent.h"
-#include "ARC\Events\MouseEvent.h"
+#include "ARC/Events/ApplicationEvent.h"
+#include "ARC/Events/KeyEvent.h"
+#include "ARC/Events/MouseEvent.h"
 
 #pragma warning(push, 0)
-#include "glad\glad.h"
+#include "glad/glad.h"
 #pragma warning(pop)
-#include "Platform\OpenGl\OpenGLContext.h"
+#include "Platform/OpenGl/OpenGLContext.h"
 #include "ARC/Core/Macros.h"
 
 namespace ARC{ 
@@ -46,10 +46,12 @@ namespace ARC{
 		return mWindow;
 	}
 
+#ifdef ARC_PLATFORM_WINDOWS
 	CWindow* CWindow::Create(const SWindowProps& _props /*= WindowProps()*/)
 	{
 		return new CWindowsWindow(_props);
 	}
+#endif
 
 	void CWindowsWindow::Init(const SWindowProps& _props)
 	{
